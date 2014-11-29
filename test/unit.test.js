@@ -40,7 +40,6 @@ var state = {
 
 // Tests
 describe('Precursors', function() {
-  var atom = new Atom(state);
 
   describe('Helpers', function() {
 
@@ -56,7 +55,7 @@ describe('Precursors', function() {
 
       it('should be possible to set nested values.', function() {
         var o1 = Immutable.fromJS({hello: {world: 'one'}}),
-            o2 = helpers.update(o1, {hello: {world: {$set: 'two'}}});
+            o2 = helpers.update(o1, {hello: {world: {$set: 'two'}}}).data;
 
         assert.deepEqual(o1.toJS(), {hello: {world: 'one'}});
         assert.deepEqual(o2.toJS(), {hello: {world: 'two'}});
@@ -64,7 +63,7 @@ describe('Precursors', function() {
 
       it('should be possible to push to nested values.', function() {
         var o1 = Immutable.fromJS({colors: ['orange']}),
-            o2 = helpers.update(o1, {colors: {$push: 'blue'}});
+            o2 = helpers.update(o1, {colors: {$push: 'blue'}}).data;
 
         assert.deepEqual(o1.toJS(), {colors: ['orange']});
         assert.deepEqual(o2.toJS(), {colors: ['orange', 'blue']});
@@ -73,6 +72,7 @@ describe('Precursors', function() {
   });
 
   describe('Atom API', function() {
+    var atom = new Atom(state);
 
     it('should be possible to retrieve full data.', function() {
       var data = atom.get();
@@ -117,6 +117,8 @@ describe('Precursors', function() {
   });
 
   describe('Cursor API', function() {
+    var atom = new Atom(state);
+
     var colorsCursor = atom.select(['one', 'subtwo', 'colors']),
         oneCursor = atom.select('one');
 

@@ -7,6 +7,7 @@
 var Immutable = require('immutable'),
     Map = Immutable.Map,
     Cursor = require('./cursor.js'),
+    EventEmitter = require('emmett'),
     helpers = require('./helpers.js'),
     defaults = require('../defaults.json');
 
@@ -18,12 +19,14 @@ function Atom(initialData, opts) {
   if (!initialData)
     throw Error('precursors.Atom: invalid data.');
 
+  // Extending
+  EventEmitter.call(this);
+
   // Properties
   this.data = Immutable.fromJS(initialData);
 
   // Privates
   this._futureUpdate = new Map();
-  this._modifiedCursors = [];
   this._willUpdate = false;
 
   // Merging defaults
@@ -31,16 +34,15 @@ function Atom(initialData, opts) {
   this.options = opts;
 }
 
+helpers.inherits(Atom, EventEmitter);
+
 /**
  * Private prototype
  */
 Atom.prototype._stack = function(cursor, spec) {
 
-  // TODO: merge update as immutable object
+  // TODO: handle conflicts and act on given command
   this._futureUpdate = this._futureUpdate.mergeDeep(spec);
-
-  if (!~this._modifiedCursors.indexOf(cursor))
-    this._modifiedCursors.push(cursor);
 
   if (!this._willUpdate) {
     this._willUpdate = true;
@@ -49,20 +51,29 @@ Atom.prototype._stack = function(cursor, spec) {
 };
 
 Atom.prototype._commit = function() {
+  var self = this;
 
   // Applying modification
-  this.data = helpers.update(this.data, this._futureUpdate);
+  var update = helpers.update(this.data, this._futureUpdate);
+  this.data = update.data;
 
   // Notifying
   // TODO: check for irrelevant cursors now
-  // TODO: update every relevant cursors
-  this._modifiedCursors.forEach(function(cursor) {
-    cursor.emit('update');
+  var dispatchedEvents = {};
+  update.log.forEach(function(path) {
+    path.slice(1).reduce(function(a, b) {
+      var e = a + '$$' + b;
+
+      if (!dispatchedEvents[e]) {
+        dispatchedEvents[e] = true;
+        self.emit(e);
+      }
+      return e;
+    }, path[0]);
   });
 
   // Resetting
   this._futureUpdate = new Map();
-  this._modifiedCursors = [];
   this._willUpdate = false;
 };
 

@@ -28,14 +28,22 @@ var COMMANDS = {};
   COMMANDS[c] = true;
 });
 
-function mutator(o, spec, last) {
-  var k,
+function mutator(log, o, spec, path) {
+  var path = path || [],
+      last = path[path.length - 1],
+      hash = path.join('$$'),
+      k,
       v;
 
   for (k in spec) {
     if (COMMANDS[k]) {
       v = spec[k];
 
+      // Logging update
+      if (!~log.indexOf(hash))
+        log.push(hash);
+
+      // Applying
       switch (k) {
         case '$set':
           o[last] = v;
@@ -50,7 +58,12 @@ function mutator(o, spec, last) {
     else {
       if (typeof o[k] === 'undefined')
         o[k] = {};
-      mutator(o[k] instanceof Object ? o[k] : o, spec[k], k);
+      mutator(
+        log,
+        o[k] instanceof Object ? o[k] : o,
+        spec[k],
+        path.concat(k)
+      );
     }
   }
 }
@@ -58,11 +71,17 @@ function mutator(o, spec, last) {
 function update(target, spec) {
   var o = target.toJS(),
       d = (spec.toJS) ? spec.toJS() : spec,
+      log = [],
       k;
 
-  mutator(o, d);
+  mutator(log, o, d);
 
-  return Immutable.fromJS(o);
+  return {
+    log: log.map(function(s) {
+      return s.split('$$');
+    }),
+    data: Immutable.fromJS(o)
+  };
 }
 
 function inherits(ctor, superCtor) {

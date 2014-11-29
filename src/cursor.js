@@ -11,6 +11,7 @@ var EventEmitter = require('emmett'),
  * Main Class
  */
 function Cursor(root, path) {
+  var self = this;
 
   // Extending event emitter
   EventEmitter.call(this);
@@ -22,6 +23,11 @@ function Cursor(root, path) {
   // Properties
   this.root = root;
   this.path = path;
+
+  // Root listener
+  this.root.on(this.path.join('$$'), function() {
+    self.emit('update');
+  });
 }
 
 helpers.inherits(Cursor, EventEmitter);
