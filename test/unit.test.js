@@ -135,5 +135,14 @@ describe('Precursors', function() {
       var sub = oneCursor.select(['subtwo', 'colors']);
       assertImmutable(sub.get(), state.colors);
     });
+
+    it('should be possible to listen to cursor update.', function(done) {
+      colorsCursor.on('update', function() {
+        assertImmutable(colorsCursor.get(), ['blue', 'yellow', 'purple']);
+        done();
+      });
+
+      colorsCursor.push('purple');
+    });
   });
 });

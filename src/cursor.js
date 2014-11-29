@@ -4,11 +4,16 @@
  *
  * Part selection into an immutable data tree.
  */
+var EventEmitter = require('emmett'),
+    helpers = require('./helpers');
 
 /**
  * Main Class
  */
 function Cursor(root, path) {
+
+  // Extending event emitter
+  EventEmitter.call(this);
 
   // Enforcing array
   path = path || [];
@@ -17,10 +22,16 @@ function Cursor(root, path) {
   // Properties
   this.root = root;
   this.path = path;
-
-  // Currying
-  this._stack = this.root._stack.bind(this.root, this.path);
 }
+
+helpers.inherits(Cursor, EventEmitter);
+
+/**
+ * Private prototype
+ */
+Cursor.prototype._stack = function(spec) {
+  return this.root._stack(this, helpers.pathObject(this.path, spec));
+};
 
 /**
  * Prototype
@@ -43,8 +54,12 @@ Cursor.prototype.set = function(value) {
   this._stack({$set: value});
 };
 
+Cursor.prototype.push = function(value) {
+  this._stack({$push: value});
+};
+
 // TODO: set/against update
-Cursor.prototype.update = function(def) {
+Cursor.prototype.update = function(spec) {
   // TODO: patterns
 };
 

@@ -7,7 +7,7 @@
 var Immutable = require('immutable'),
     Map = Immutable.Map,
     Cursor = require('./cursor.js'),
-    helper = require('./helpers.js'),
+    helpers = require('./helpers.js'),
     defaults = require('../defaults.json');
 
 /**
@@ -23,12 +23,47 @@ function Atom(initialData, opts) {
 
   // Privates
   this._futureUpdate = new Map();
-  this._willUpdate = true;
+  this._modifiedCursors = [];
+  this._willUpdate = false;
 
   // Merging defaults
   // TODO: ...
   this.options = opts;
 }
+
+/**
+ * Private prototype
+ */
+Atom.prototype._stack = function(cursor, spec) {
+
+  // TODO: merge update as immutable object
+  this._futureUpdate = this._futureUpdate.mergeDeep(spec);
+
+  if (!~this._modifiedCursors.indexOf(cursor))
+    this._modifiedCursors.push(cursor);
+
+  if (!this._willUpdate) {
+    this._willUpdate = true;
+    helpers.later(this._commit.bind(this));
+  }
+};
+
+Atom.prototype._commit = function() {
+
+  // Applying modification
+  this.data = helpers.update(this.data, this._futureUpdate);
+
+  // Notifying
+  // TODO: check for irrelevant cursors now
+  this._modifiedCursors.forEach(function(cursor) {
+    cursor.emit('update');
+  });
+
+  // Resetting
+  this._futureUpdate = new Map();
+  this._modifiedCursors = [];
+  this._willUpdate = false;
+};
 
 /**
  * Prototype
@@ -50,29 +85,6 @@ Atom.prototype.get = function(path) {
 
 Atom.prototype.update = function(spec) {
   // TODO: patterns
-};
-
-/**
- * Private prototype
- */
-Atom.prototype._stack = function(path, spec) {
-
-  // TODO: merge update as immutable object
-  this.futureUpdate = this.futureUpdate.mergeDeep(spec);
-
-  if (!this._willUpdate) {
-    this._willUpdate = true;
-    helpers.later(this._commit.bind(this));
-  }
-};
-
-Atom.prototype._commit = function() {
-
-  // Applying modification
-
-  // Resetting
-  this._futureUpdate = new Map();
-  this._willUpdate = false;
 };
 
 /**
