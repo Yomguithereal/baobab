@@ -17,6 +17,9 @@ function Cursor(root, path) {
   // Properties
   this.root = root;
   this.path = path;
+
+  // Currying
+  this._stack = this.root._stack.bind(this.root, this.path);
 }
 
 /**
@@ -37,7 +40,7 @@ Cursor.prototype.get = function(path) {
 };
 
 Cursor.prototype.set = function(value) {
-  this.root._addUpdateToStack({$set: value});
+  this._stack({$set: value});
 };
 
 // TODO: set/against update

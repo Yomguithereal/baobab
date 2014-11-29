@@ -61,6 +61,14 @@ describe('Precursors', function() {
         assert.deepEqual(o1.toJS(), {hello: {world: 'one'}});
         assert.deepEqual(o2.toJS(), {hello: {world: 'two'}});
       });
+
+      it('should be possible to push to nested values.', function() {
+        var o1 = Immutable.fromJS({colors: ['orange']}),
+            o2 = helpers.update(o1, {colors: {$push: 'blue'}});
+
+        assert.deepEqual(o1.toJS(), {colors: ['orange']});
+        assert.deepEqual(o2.toJS(), {colors: ['orange', 'blue']});
+      });
     });
   });
 

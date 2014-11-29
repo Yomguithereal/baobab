@@ -48,17 +48,17 @@ Atom.prototype.get = function(path) {
     return this.data;
 };
 
-Atom.prototype.update = function(def) {
+Atom.prototype.update = function(spec) {
   // TODO: patterns
 };
 
 /**
  * Private prototype
  */
-Atom.prototype._addUpdateToStack = function(def) {
+Atom.prototype._stack = function(path, spec) {
 
   // TODO: merge update as immutable object
-  this.futureUpdate = this.futureUpdate.mergeDeep(def);
+  this.futureUpdate = this.futureUpdate.mergeDeep(spec);
 
   if (!this._willUpdate) {
     this._willUpdate = true;

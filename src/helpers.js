@@ -8,14 +8,14 @@ var Immutable = require('immutable'),
     Map = Immutable.Map;
 
 // Return a fake object relative to the given path
-function pathObject(path, def) {
+function pathObject(path, spec) {
   var l = path.length,
       o = {},
       c = o,
       i;
 
   for (i = 0; i < l; i++) {
-    c[path[i]] = (i + 1 === l) ? def : {};
+    c[path[i]] = (i + 1 === l) ? spec : {};
     c = c[path[i]];
   }
 
@@ -28,28 +28,36 @@ var COMMANDS = {};
   COMMANDS[c] = true;
 });
 
-function mutator(o, def, last) {
-  var k;
+function mutator(o, spec, last) {
+  var k,
+      v;
 
-  for (k in def) {
+  for (k in spec) {
     if (COMMANDS[k]) {
+      v = spec[k];
+
       switch (k) {
         case '$set':
-          o[last] = def[k];
+          o[last] = v;
+          break;
+        case '$push':
+          if (!(o instanceof Array))
+            throw Error('precursors.update: applying command $push to a non array.');
+          o.push(v);
           break;
       }
     }
     else {
       if (typeof o[k] === 'undefined')
         o[k] = {};
-      mutator(o[k] instanceof Object ? o[k] : o, def[k], k);
+      mutator(o[k] instanceof Object ? o[k] : o, spec[k], k);
     }
   }
 }
 
-function update(target, def) {
+function update(target, spec) {
   var o = target.toJS(),
-      d = (def.toJS) ? def.toJS() : def,
+      d = (spec.toJS) ? spec.toJS() : spec,
       k;
 
   mutator(o, d);
