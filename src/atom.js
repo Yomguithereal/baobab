@@ -55,6 +55,7 @@ Atom.prototype._commit = function() {
 
   // Notifying
   // TODO: check for irrelevant cursors now
+  // TODO: update every relevant cursors
   this._modifiedCursors.forEach(function(cursor) {
     cursor.emit('update');
   });
