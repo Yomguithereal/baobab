@@ -36,8 +36,13 @@ Cursor.prototype.get = function(path) {
     return this.root.get(this.path);
 };
 
-Cursor.prototype.update = function(pattern) {
+Cursor.prototype.set = function(value) {
+  this.root._addUpdateToStack({$set: value});
+};
 
+// TODO: set/against update
+Cursor.prototype.update = function(def) {
+  // TODO: patterns
 };
 
 /**

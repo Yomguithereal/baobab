@@ -7,6 +7,7 @@
 var Immutable = require('immutable'),
     Map = Immutable.Map,
     Cursor = require('./cursor.js'),
+    helper = require('./helpers.js'),
     defaults = require('../defaults.json');
 
 /**
@@ -21,8 +22,8 @@ function Atom(initialData, opts) {
   this.data = Immutable.fromJS(initialData);
 
   // Privates
-  this._updateStack = [];
-  this._willUpdate = false;
+  this._futureUpdate = new Map();
+  this._willUpdate = true;
 
   // Merging defaults
   // TODO: ...
@@ -47,19 +48,31 @@ Atom.prototype.get = function(path) {
     return this.data;
 };
 
-Atom.prototype.update = function(pattern) {
-
+Atom.prototype.update = function(def) {
+  // TODO: patterns
 };
 
 /**
  * Private prototype
  */
-Atom.prototype._update = function(pattern) {
+Atom.prototype._addUpdateToStack = function(def) {
 
+  // TODO: merge update as immutable object
+  this.futureUpdate = this.futureUpdate.mergeDeep(def);
+
+  if (!this._willUpdate) {
+    this._willUpdate = true;
+    helpers.later(this._commit.bind(this));
+  }
 };
 
 Atom.prototype._commit = function() {
 
+  // Applying modification
+
+  // Resetting
+  this._futureUpdate = new Map();
+  this._willUpdate = false;
 };
 
 /**

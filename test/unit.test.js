@@ -3,7 +3,8 @@ var assert = require('assert'),
     Map = Immutable.Map,
     List = Immutable.List,
     Atom = require('../src/atom.js'),
-    Cursor = require('../src/cursor.js');
+    Cursor = require('../src/cursor.js'),
+    helpers = require('../src/helpers.js');
 
 // TODO LIST
 //-- 1) Update (with stack)
@@ -40,6 +41,28 @@ var state = {
 // Tests
 describe('Precursors', function() {
   var atom = new Atom(state);
+
+  describe('Helpers', function() {
+
+    describe('Object path', function() {
+
+      it('should be possible to retrieve path objects.', function() {
+        var o = helpers.pathObject(['one', 'subtwo'], {$set: ['purple']});
+        assert.deepEqual(o.toJS(), {one: {subtwo: {$set: ['purple']}}});
+      });
+    });
+
+    describe('Update API', function() {
+
+      it('should be possible to set nested values.', function() {
+        var o1 = Immutable.fromJS({hello: {world: 'one'}}),
+            o2 = helpers.update(o1, {hello: {world: {$set: 'two'}}});
+
+        assert.deepEqual(o1.toJS(), {hello: {world: 'one'}});
+        assert.deepEqual(o2.toJS(), {hello: {world: 'two'}});
+      });
+    });
+  });
 
   describe('Atom API', function() {
 
