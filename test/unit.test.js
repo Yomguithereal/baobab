@@ -10,9 +10,10 @@ var assert = require('assert'),
 //-- 1) Update (with stack)
 //-- 2) Events
 //-- 3) Recording
-//-- 4) Options cloning
+//-- 4) Options cloning/stack resolution
 //-- 5) Find isomorphic way to next animation frame (asap)
 //-- 6) Immutable types and so on... fit into typology and instantiation
+//-- 7) Mixins
 
 
 // Helpers
@@ -72,79 +73,98 @@ describe('Precursors', function() {
   });
 
   describe('Atom API', function() {
-    var atom = new Atom(state);
 
-    it('should be possible to retrieve full data.', function() {
-      var data = atom.get();
-      assert(data instanceof Map);
-      assertImmutable(data, state);
-    });
+    describe('Basics', function() {
+      var atom = new Atom(state);
 
-    it('should be possible to retrieve nested data.', function() {
-      var colors = atom.get(['one', 'subtwo', 'colors']);
-      assert(colors instanceof List);
-      assertImmutable(colors, state.colors);
+      it('should be possible to retrieve full data.', function() {
+        var data = atom.get();
+        assert(data instanceof Map);
+        assertImmutable(data, state);
+      });
 
-      // Polymorphism
-      var primitive = atom.get('primitive');
-      assert.strictEqual(primitive, 3);
-    });
+      it('should be possible to retrieve nested data.', function() {
+        var colors = atom.get(['one', 'subtwo', 'colors']);
+        assert(colors instanceof List);
+        assertImmutable(colors, state.colors);
 
-    it('should be possible to get data from both maps and lists.', function() {
-      var yellow = atom.get(['one', 'subtwo', 'colors', 1]);
+        // Polymorphism
+        var primitive = atom.get('primitive');
+        assert.strictEqual(primitive, 3);
+      });
 
-      assert.strictEqual(yellow, 'yellow');
-    });
+      it('should be possible to get data from both maps and lists.', function() {
+        var yellow = atom.get(['one', 'subtwo', 'colors', 1]);
 
-    it('should return undefined when data is not to be found through path.', function() {
-      var inexistant = atom.get(['no']);
-      assert.strictEqual(inexistant, undefined);
+        assert.strictEqual(yellow, 'yellow');
+      });
 
-      // Nesting
-      var nestedInexistant = atom.get(['no', 'no']);
-      assert.strictEqual(nestedInexistant, undefined);
-    });
+      it('should return undefined when data is not to be found through path.', function() {
+        var inexistant = atom.get(['no']);
+        assert.strictEqual(inexistant, undefined);
 
-    it('should throw an error when trying to instantiate an atom with incorrect data.', function() {
-      assert.throws(function() {
-        new Atom(undefined);
-      }, /invalid data/);
-    });
+        // Nesting
+        var nestedInexistant = atom.get(['no', 'no']);
+        assert.strictEqual(nestedInexistant, undefined);
+      });
 
-    it('selecting data in the atom should return a cursor.', function() {
-      assert(atom.select(['one']) instanceof Cursor);
+      it('should throw an error when trying to instantiate an atom with incorrect data.', function() {
+        assert.throws(function() {
+          new Atom(undefined);
+        }, /invalid data/);
+      });
+
+      it('selecting data in the atom should return a cursor.', function() {
+        assert(atom.select(['one']) instanceof Cursor);
+      });
     });
   });
 
   describe('Cursor API', function() {
-    var atom = new Atom(state);
 
-    var colorsCursor = atom.select(['one', 'subtwo', 'colors']),
-        oneCursor = atom.select('one');
+    describe('Basics', function() {
+      var atom = new Atom(state);
 
-    it('should be possible to retrieve the data at cursor.', function() {
-      var colors = colorsCursor.get();
-      assert(colors instanceof List);
-      assertImmutable(colors, state.colors);
-    });
-
-    it('should be possible to retrieve nested data.', function() {
-      var colors = oneCursor.get(['subtwo', 'colors']);
-      assertImmutable(colors, state.colors);
-    });
-
-    it('should be possible to create subcursors.', function() {
-      var sub = oneCursor.select(['subtwo', 'colors']);
-      assertImmutable(sub.get(), state.colors);
-    });
-
-    it('should be possible to listen to cursor update.', function(done) {
-      colorsCursor.on('update', function() {
-        assertImmutable(colorsCursor.get(), ['blue', 'yellow', 'purple']);
-        done();
+      it('should be possible to retrieve full data.', function() {
+        var data = atom.get();
+        assert(data instanceof Map);
+        assertImmutable(data, state);
       });
 
-      colorsCursor.push('purple');
+      it('should be possible to retrieve nested data.', function() {
+        var colors = atom.get(['one', 'subtwo', 'colors']);
+        assert(colors instanceof List);
+        assertImmutable(colors, state.colors);
+
+        // Polymorphism
+        var primitive = atom.get('primitive');
+        assert.strictEqual(primitive, 3);
+      });
+
+      it('should be possible to get data from both maps and lists.', function() {
+        var yellow = atom.get(['one', 'subtwo', 'colors', 1]);
+
+        assert.strictEqual(yellow, 'yellow');
+      });
+
+      it('should return undefined when data is not to be found through path.', function() {
+        var inexistant = atom.get(['no']);
+        assert.strictEqual(inexistant, undefined);
+
+        // Nesting
+        var nestedInexistant = atom.get(['no', 'no']);
+        assert.strictEqual(nestedInexistant, undefined);
+      });
+
+      it('should throw an error when trying to instantiate an atom with incorrect data.', function() {
+        assert.throws(function() {
+          new Atom(undefined);
+        }, /invalid data/);
+      });
+
+      it('selecting data in the atom should return a cursor.', function() {
+        assert(atom.select(['one']) instanceof Cursor);
+      });
     });
   });
 });
