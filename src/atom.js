@@ -39,7 +39,7 @@ helpers.inherits(Atom, EventEmitter);
 /**
  * Private prototype
  */
-Atom.prototype._stack = function(cursor, spec) {
+Atom.prototype._stack = function(spec) {
 
   // TODO: handle conflicts and act on given command
   this._futureUpdate = this._futureUpdate.mergeDeep(spec);
@@ -55,21 +55,26 @@ Atom.prototype._commit = function() {
 
   // Applying modification
   var update = helpers.update(this.data, this._futureUpdate);
+
+  // Atom-level update event
+  this.emit('update', {oldData: this.data, newData: update.data});
+
+  // Replacing data
   this.data = update.data;
 
   // Notifying
-  // TODO: check for irrelevant cursors now
+  // TODO: check for cursors that would now be irrelevant
   var dispatchedEvents = {};
   update.log.forEach(function(path) {
-    path.slice(1).reduce(function(a, b) {
-      var e = a + '$$' + b;
+    path.reduce(function(a, b) {
+      var e = a + (!a ? a : '$$') + b;
 
       if (!dispatchedEvents[e]) {
         dispatchedEvents[e] = true;
         self.emit(e);
       }
       return e;
-    }, path[0]);
+    }, '');
   });
 
   // Resetting
@@ -96,7 +101,9 @@ Atom.prototype.get = function(path) {
 };
 
 Atom.prototype.update = function(spec) {
-  // TODO: patterns
+
+  // TODO: type checking
+  this._stack(spec);
 };
 
 /**

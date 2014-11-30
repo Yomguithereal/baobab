@@ -5,7 +5,8 @@
  * Part selection into an immutable data tree.
  */
 var EventEmitter = require('emmett'),
-    helpers = require('./helpers');
+    mixins = require('./mixins.js');
+    helpers = require('./helpers.js');
 
 /**
  * Main Class
@@ -24,10 +25,13 @@ function Cursor(root, path) {
   this.root = root;
   this.path = path;
 
-  // Root listener
+  // Root listeners
   this.root.on(this.path.join('$$'), function() {
     self.emit('update');
   });
+
+  // Making mixin
+  this.mixin = mixins.cursor(this);
 }
 
 helpers.inherits(Cursor, EventEmitter);
@@ -36,7 +40,7 @@ helpers.inherits(Cursor, EventEmitter);
  * Private prototype
  */
 Cursor.prototype._stack = function(spec) {
-  return this.root._stack(this, helpers.pathObject(this.path, spec));
+  return this.root._stack(helpers.pathObject(this.path, spec));
 };
 
 /**
@@ -64,9 +68,8 @@ Cursor.prototype.push = function(value) {
   this._stack({$push: value});
 };
 
-// TODO: set/against update
 Cursor.prototype.update = function(spec) {
-  // TODO: patterns
+  this._stack(spec);
 };
 
 /**
