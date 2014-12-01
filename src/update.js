@@ -10,7 +10,11 @@ var Immutable = require('immutable');
 var COMMANDS = {};
 [
   '$set',
-  '$push'
+  '$push',
+  '$unshift',
+  '$merge',
+  '$deepMerge',
+  '$apply'
 ].forEach(function(c) {
   COMMANDS[c] = true;
 });
@@ -53,7 +57,7 @@ function mutator(log, o, spec, path) {
     else {
       if ('$set' in (spec[k] || {})) {
         h = hash ? hash + '$$' + k : k;
-        v = spec[k]['$set'];
+        v = spec[k].$set;
 
         // Logging update
         if (!~log.indexOf(h))

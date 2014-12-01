@@ -60,8 +60,8 @@ function Cursor(root, path) {
     var data = self.get() !== undefined;
 
     if (self.relevant) {
-      if (data) {
-        shouldFire && self.emit('update');
+      if (data && shouldFire) {
+        self.emit('update');
       }
       else {
         self.emit('irrelevant');
