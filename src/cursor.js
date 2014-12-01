@@ -37,6 +37,10 @@ function Cursor(root, path) {
 
     // TODO: handle removal and reinstallation here
 
+    // If selector listens at root, we fire
+    if (!self.path.length)
+      return self.emit('update');
+
     // Checking update log to see whether the cursor should update.
     for (i = 0, l = log.length; i < l; i++) {
       c = log[i];
@@ -76,6 +80,13 @@ Cursor.prototype.select = function(path) {
     throw Error('precursors.Cursor.select: invalid path.');
 
   return new Cursor(this.root, this.path.concat(path));
+};
+
+Cursor.prototype.up = function() {
+  if (this.path.length)
+    return new Cursor(this.root, this.path.slice(0, -1));
+  else
+    return new Cursor(this.root, []);
 };
 
 Cursor.prototype.get = function(path) {

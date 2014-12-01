@@ -143,7 +143,6 @@ describe('Precursors', function() {
       var colorCursor = atom.select(['one', 'subtwo', 'colors']),
           oneCursor = atom.select('one');
 
-
       it('should be possible to retrieve data at cursor.', function() {
         var colors = colorCursor.get();
 
@@ -157,11 +156,6 @@ describe('Precursors', function() {
         assertImmutable(colors, state.colors);
       });
 
-      it('should be possible to create subcursors.', function() {
-        var sub = oneCursor.select(['subtwo', 'colors']);
-        assertImmutable(sub.get(), state.colors)
-      });
-
       it('should be possible to listen to updates.', function(done) {
         colorCursor.on('update', function() {
           assertImmutable(colorCursor.get(), ['blue', 'yellow', 'purple']);
@@ -172,11 +166,32 @@ describe('Precursors', function() {
       });
     });
 
-    describe('Advanced', function() {
+    describe('Traversal', function() {
+      var atom = new Atom(state);
 
-      // NOTES: if parent update > children update
-      // NOTES: if child updates > parent updates
-      // NOTES: maybe I should let the parent propagate events (but only once. hard)
+      var colorCursor = atom.select(['one', 'subtwo', 'colors']),
+          oneCursor = atom.select('one');
+
+      it('should be possible to create subcursors.', function() {
+        var sub = oneCursor.select(['subtwo', 'colors']);
+        assertImmutable(sub.get(), state.colors)
+      });
+
+      it('should be possible to go up.', function() {
+        var parent = colorCursor.up();
+        assertImmutable(parent.get(), state.subtwo);
+      });
+
+      it('a cusor going up to root cannot go higher.', function() {
+        var up = atom.select('one').up(),
+            upper = up.up();
+
+        assertImmutable(up.get(), atom.get());
+        assertImmutable(upper.get(), up.get());
+      });
+    });
+
+    describe('Advanced', function() {
 
       it('when a parent updates, so does the child.', function(done) {
         var atom = new Atom(state),
@@ -253,15 +268,15 @@ describe('Precursors', function() {
         async.parallel({
           node: function(next) {
             parent.on('update', handler);
-            setTimeout(next, 100);
+            setTimeout(next, 30);
           },
           leaf1: function(next) {
             leaf1.on('update', handler);
-            setTimeout(next, 100);
+            setTimeout(next, 30);
           },
           leaf2: function(next) {
             leaf2.on('update', handler);
-            setTimeout(next, 100);
+            setTimeout(next, 30);
           }
         }, function() {
           assert.strictEqual(count, 2);
