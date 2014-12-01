@@ -26,8 +26,33 @@ function Cursor(root, path) {
   this.path = path;
 
   // Root listeners
-  this.root.on(this.path.join('$$'), function() {
-    self.emit('update');
+  this.root.on('update', function(e) {
+    var log = e.data.log,
+        c,
+        p,
+        l,
+        m,
+        i,
+        j;
+
+    // TODO: handle removal and reinstallation here
+
+    // Checking update log to see whether the cursor should update.
+    for (i = 0, l = log.length; i < l; i++) {
+      c = log[i];
+
+      for (j = 0, m = c.length; j < m; j++) {
+        p = c[j];
+
+        // If path is not relevant to us, we break
+        if (p !== self.path[j])
+          break;
+
+        // If we reached last item and we are relevant, we fire
+        if (j + 1 === m)
+          return self.emit('update');
+      }
+    }
   });
 
   // Making mixin

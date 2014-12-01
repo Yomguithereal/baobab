@@ -198,14 +198,12 @@ describe('Precursors', function() {
         async.parallel({
           parent: function(next) {
             parent.on('update', function() {
-              console.log('ici')
               count++;
               next();
             });
           },
           child: function(next) {
             child.on('update', function() {
-              console.log('ici')
               count++;
               next();
             });

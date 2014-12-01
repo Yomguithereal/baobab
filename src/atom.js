@@ -57,25 +57,14 @@ Atom.prototype._commit = function() {
   var update = helpers.update(this.data, this._futureUpdate);
 
   // Atom-level update event
-  this.emit('update', {oldData: this.data, newData: update.data});
+  this.emit('update', {
+    oldData: this.data,
+    newData: update.data,
+    log: update.log
+  });
 
   // Replacing data
   this.data = update.data;
-
-  // Notifying
-  // TODO: check for cursors that would now be irrelevant
-  var dispatchedEvents = {};
-  update.log.forEach(function(path) {
-    path.reduce(function(a, b) {
-      var e = a + (!a ? a : '$$') + b;
-
-      if (!dispatchedEvents[e]) {
-        dispatchedEvents[e] = true;
-        self.emit(e);
-      }
-      return e;
-    }, '');
-  });
 
   // Resetting
   this._futureUpdate = new Map();
