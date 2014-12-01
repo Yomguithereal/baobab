@@ -49,7 +49,7 @@ function Cursor(root, path) {
           break;
 
         // If we reached last item and we are relevant, we fire
-        if (j + 1 === m)
+        if (j + 1 === m || j + 1 === self.path.length)
           return self.emit('update');
       }
     }

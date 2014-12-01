@@ -182,9 +182,36 @@ describe('Precursors', function() {
         var atom = new Atom(state),
             parent = atom.select('two'),
             child = atom.select(['two', 'firstname']);
-console.log(atom);
-console.log(parent)
-console.log(child);
+
+        var count = 0;
+
+        async.parallel({
+          parent: function(next) {
+            parent.on('update', function() {
+              assertImmutable({firstname: 'Napoleon', lastname: 'Bonaparte'}, this.get());
+              count++;
+              next();
+            });
+          },
+          child: function(next) {
+            child.on('update', function() {
+              count++;
+              next();
+            });
+          }
+        }, function() {
+          assert.strictEqual(count, 2);
+          done();
+        });
+
+        parent.set({firstname: 'Napoleon', lastname: 'Bonaparte'});
+      });
+
+      it('when a child updates, so does the parent.', function(done) {
+        var atom = new Atom(state),
+            parent = atom.select('two'),
+            child = atom.select(['two', 'firstname']);
+
         var count = 0;
 
         async.parallel({
@@ -205,7 +232,43 @@ console.log(child);
           done();
         });
 
-        parent.set({firstname: 'Napoleon', lastname: 'Bonaparte'});
+        child.set('Napoleon');
+      });
+
+      it('when a leave updates, it should not update its siblings.', function(done) {
+        var atom = new Atom({
+          node: {
+            leaf1: 'hey',
+            leaf2: 'ho'
+          }
+        });
+
+        var parent = atom.select('node'),
+            leaf1 = parent.select('leaf1'),
+            leaf2 = parent.select('leaf2');
+
+        var count = 0,
+            handler = function() {count++;};
+
+        async.parallel({
+          node: function(next) {
+            parent.on('update', handler);
+            setTimeout(next, 100);
+          },
+          leaf1: function(next) {
+            leaf1.on('update', handler);
+            setTimeout(next, 100);
+          },
+          leaf2: function(next) {
+            leaf2.on('update', handler);
+            setTimeout(next, 100);
+          }
+        }, function() {
+          assert.strictEqual(count, 2);
+          done();
+        });
+
+        leaf1.set('tada');
       });
     });
   });

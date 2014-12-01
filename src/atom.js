@@ -5,7 +5,6 @@
  * Encloses an immutable set of data exposing useful cursors to its user.
  */
 var Immutable = require('immutable'),
-    Map = Immutable.Map,
     Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
     helpers = require('./helpers.js'),
@@ -30,7 +29,7 @@ function Atom(initialData, opts) {
   this.data = Immutable.fromJS(initialData);
 
   // Privates
-  this._futureUpdate = new Map();
+  this._futureUpdate = new Immutable.Map();
   this._willUpdate = false;
 
   // Merging defaults
@@ -60,18 +59,19 @@ Atom.prototype._commit = function() {
   // Applying modification
   var update = helpers.update(this.data, this._futureUpdate);
 
+  // Replacing data
+  var oldData = this.data;
+  this.data = update.data;
+
   // Atom-level update event
   this.emit('update', {
-    oldData: this.data,
-    newData: update.data,
+    oldData: oldData,
+    newData: this.data,
     log: update.log
   });
 
-  // Replacing data
-  this.data = update.data;
-
   // Resetting
-  this._futureUpdate = new Map();
+  this._futureUpdate = new Immutable.Map();
   this._willUpdate = false;
 };
 
