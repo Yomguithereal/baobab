@@ -7,22 +7,6 @@ var assert = require('assert'),
     async = require('async'),
     helpers = require('../src/helpers.js');
 
-// TODO LIST
-//-- 1) Update (with stack)
-//-- 2) Events
-//-- 3) Recording
-//-- 4) Options cloning/stack resolution
-//-- 6) Immutable types and so on... fit into typology and instantiation
-//-- 7) Mixins
-//-- 8) Go up in selection
-//-- 9) Merging pushes etc.
-//-- 0) Better error messages
-//-- 0) Selection in lists
-//-- 0) New should be optional
-//-- 0) Nice toJSON like Immutable
-//-- 0) Select polymorphisms
-//-- 0) refactor update --> Atom
-
 // Helpers
 function assertImmutable(v1, v2) {
   return Immutable.is(Immutable.fromJS(v1), Immutable.fromJS(v2));
@@ -141,6 +125,12 @@ describe('Precursors', function() {
         });
 
         atom.update({one: {subtwo: {colors: {$push: 'purple'}}}});
+      });
+
+      it('should be possible to instantiate without the "new" keyword.', function() {
+        var special = Atom(state);
+
+        assert(Immutable.is(special.get('two'), atom.get('two')));
       });
     });
   });

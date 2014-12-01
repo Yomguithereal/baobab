@@ -16,6 +16,10 @@ var Immutable = require('immutable'),
  */
 function Atom(initialData, opts) {
 
+  // New keyword optional
+  if (!(this instanceof Atom))
+    return new Atom(initialData, opts);
+
   if (!initialData)
     throw Error('precursors.Atom: invalid data.');
 
