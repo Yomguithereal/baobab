@@ -315,5 +315,22 @@ describe('Precursors', function() {
         }, 30);
       });
     });
+
+    describe('Advanced', function() {
+      it('should be possible to execute several orders within a synchronous stack.', function(done) {
+        var atom = new Atom({
+          one: 'coco',
+          two: 'koko'
+        });
+
+        atom.set('one', 'cece');
+        atom.set('two', 'keke');
+
+        helpers.later(function() {
+          assertImmutable(atom, {one: 'cece', two: 'keke'});
+          done();
+        });
+      });
+    });
   });
 });
