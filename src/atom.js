@@ -8,6 +8,7 @@ var Immutable = require('immutable'),
     Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
     helpers = require('./helpers.js'),
+    update = require('./update.js'),
     defaults = require('../defaults.json');
 
 /**
@@ -57,17 +58,17 @@ Atom.prototype._commit = function() {
   var self = this;
 
   // Applying modification
-  var update = helpers.update(this.data, this._futureUpdate);
+  var result = update(this.data, this._futureUpdate);
 
   // Replacing data
   var oldData = this.data;
-  this.data = update.data;
+  this.data = result.data;
 
   // Atom-level update event
   this.emit('update', {
     oldData: oldData,
     newData: this.data,
-    log: update.log
+    log: result.log
   });
 
   // Resetting
@@ -91,6 +92,17 @@ Atom.prototype.get = function(path) {
     return this.data.getIn(typeof path === 'string' ? [path] : path);
   else
     return this.data;
+};
+
+Atom.prototype.set = function(key, val) {
+
+  if (arguments.length < 2)
+    throw Error('precursors.Atom.set: expects a key and a value.');
+
+  var spec = {};
+  spec[key] = {$set: val};
+
+  this.update(spec);
 };
 
 Atom.prototype.update = function(spec) {

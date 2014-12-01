@@ -5,7 +5,8 @@ var assert = require('assert'),
     Atom = require('../src/atom.js'),
     Cursor = require('../src/cursor.js'),
     async = require('async'),
-    helpers = require('../src/helpers.js');
+    helpers = require('../src/helpers.js'),
+    update = require('../src/update.js');
 
 // Helpers
 function assertImmutable(v1, v2) {
@@ -51,7 +52,7 @@ describe('Precursors', function() {
 
       it('should be possible to set nested values.', function() {
         var o1 = Immutable.fromJS({hello: {world: 'one'}}),
-            o2 = helpers.update(o1, {hello: {world: {$set: 'two'}}}).data;
+            o2 = update(o1, {hello: {world: {$set: 'two'}}}).data;
 
         assert.deepEqual(o1.toJS(), {hello: {world: 'one'}});
         assert.deepEqual(o2.toJS(), {hello: {world: 'two'}});
@@ -59,7 +60,7 @@ describe('Precursors', function() {
 
       it('should be possible to push to nested values.', function() {
         var o1 = Immutable.fromJS({colors: ['orange']}),
-            o2 = helpers.update(o1, {colors: {$push: 'blue'}}).data;
+            o2 = update(o1, {colors: {$push: 'blue'}}).data;
 
         assert.deepEqual(o1.toJS(), {colors: ['orange']});
         assert.deepEqual(o2.toJS(), {colors: ['orange', 'blue']});
@@ -191,7 +192,7 @@ describe('Precursors', function() {
       });
     });
 
-    describe('Advanced', function() {
+    describe('Events', function() {
 
       it('when a parent updates, so does the child.', function(done) {
         var atom = new Atom(state),
@@ -284,6 +285,34 @@ describe('Precursors', function() {
         });
 
         leaf1.set('tada');
+      });
+
+      it('should be possible to listen to the cursor\'s relevancy.', function(done) {
+        var atom = new Atom({
+          one: {
+            two: 'hello'
+          }
+        });
+
+        var cursor = atom.select(['one', 'two']);
+
+        var irrelevant = false,
+            relevant = false;
+
+        cursor.on('irrelevant', function() {
+          irrelevant = true;
+        });
+
+        cursor.on('relevant', function() {
+          relevant = true;
+          assert(relevant && irrelevant);
+          done();
+        });
+
+        atom.set('one', {other: 'thing'});
+        setTimeout(function() {
+          atom.set('one', {two: 'hello'});
+        }, 30);
       });
     });
   });

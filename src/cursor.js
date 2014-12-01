@@ -24,24 +24,20 @@ function Cursor(root, path) {
   // Properties
   this.root = root;
   this.path = path;
+  this.relevant = this.get() !== undefined;
 
   // Root listeners
   this.root.on('update', function(e) {
     var log = e.data.log,
-        c,
-        p,
-        l,
-        m,
-        i,
-        j;
-
-    // TODO: handle removal and reinstallation here
+        shouldFire = false,
+        c, p, l, m, i, j;
 
     // If selector listens at root, we fire
     if (!self.path.length)
       return self.emit('update');
 
     // Checking update log to see whether the cursor should update.
+    root:
     for (i = 0, l = log.length; i < l; i++) {
       c = log[i];
 
@@ -53,8 +49,30 @@ function Cursor(root, path) {
           break;
 
         // If we reached last item and we are relevant, we fire
-        if (j + 1 === m || j + 1 === self.path.length)
-          return self.emit('update');
+        if (j + 1 === m || j + 1 === self.path.length) {
+          shouldFire = true;
+          break root;
+        }
+      }
+    }
+
+    // Handling relevancy
+    var data = self.get() !== undefined;
+
+    if (self.relevant) {
+      if (data) {
+        shouldFire && self.emit('update');
+      }
+      else {
+        self.emit('irrelevant');
+        self.relevant = false;
+      }
+    }
+    else {
+      if (data && shouldFire) {
+        self.emit('relevant');
+        self.emit('update');
+        self.relevant = true;
       }
     }
   });
@@ -97,11 +115,11 @@ Cursor.prototype.get = function(path) {
 };
 
 Cursor.prototype.set = function(value) {
-  this._stack({$set: value});
+  this.update({$set: value});
 };
 
 Cursor.prototype.push = function(value) {
-  this._stack({$push: value});
+  this.update({$push: value});
 };
 
 Cursor.prototype.update = function(spec) {
