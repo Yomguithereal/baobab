@@ -13,6 +13,9 @@ function pathObject(path, spec) {
       c = o,
       i;
 
+  if (!l)
+    o = spec;
+
   for (i = 0; i < l; i++) {
     c[path[i]] = (i + 1 === l) ? spec : {};
     c = c[path[i]];

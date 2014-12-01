@@ -16,8 +16,12 @@ var COMMANDS = {};
 });
 
 // Helpers
-function makeError() {
+function makeError(path, message) {
+  var e = new Error('precursors.update: ' + message + ' at path "/' +
+                    path.toString() + '"');
 
+  e.path = path;
+  return e;
 }
 
 // Function mutating the object for performance reasons
@@ -41,7 +45,7 @@ function mutator(log, o, spec, path) {
       switch (k) {
         case '$push':
           if (!(o instanceof Array))
-            throw Error('precursors.update: applying command $push to a non array.');
+            throw makeError(path, 'applying command $push to a non array');
           o.push(v);
           break;
       }
