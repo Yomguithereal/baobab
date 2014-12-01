@@ -100,6 +100,19 @@ Atom.prototype.update = function(spec) {
 };
 
 /**
+ * Output
+ */
+Atom.prototype.toJS = function() {
+  return this.data.toJS();
+};
+Atom.prototype.toJSON = Atom.prototype.toJS;
+Atom.prototype.toString = function() {
+  return 'Atom ' + this.data.toString().replace(/^[^{]+\{/, '{');
+};
+Atom.prototype.inspect = Atom.prototype.toString;
+Atom.prototype.toSource = Atom.prototype.toString;
+
+/**
  * Export
  */
 module.exports = Atom;

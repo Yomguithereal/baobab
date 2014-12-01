@@ -98,6 +98,19 @@ Cursor.prototype.update = function(spec) {
 };
 
 /**
+ * Output
+ */
+Cursor.prototype.toJS = function() {
+  return this.get().toJS();
+};
+Cursor.prototype.toJSON = Cursor.prototype.toJS;
+Cursor.prototype.toString = function() {
+  return 'Cursor ' + this.get().toString().replace(/^[^{]+\{/, '{');
+};
+Cursor.prototype.inspect = Cursor.prototype.toString;
+Cursor.prototype.toSource = Cursor.prototype.toString;
+
+/**
  * Export
  */
 module.exports = Cursor;

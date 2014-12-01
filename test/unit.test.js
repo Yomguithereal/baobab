@@ -182,7 +182,9 @@ describe('Precursors', function() {
         var atom = new Atom(state),
             parent = atom.select('two'),
             child = atom.select(['two', 'firstname']);
-
+console.log(atom);
+console.log(parent)
+console.log(child);
         var count = 0;
 
         async.parallel({
