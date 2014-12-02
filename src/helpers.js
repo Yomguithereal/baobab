@@ -20,17 +20,17 @@ function merge() {
 
         if (('$push' in (res[k] || {})) &&
             ('$push' in arguments[i][k])) {
-          if (types.check(res[k]['$push'], 'array'))
-            res[k]['$push'] = res[k]['$push'].concat(arguments[i][k]['$push']);
+          if (types.check(res[k].$push, 'array'))
+            res[k].$push = res[k].$push.concat(arguments[i][k].$push);
           else
-            res[k]['$push'] = [res[k]['$push']].concat(arguments[i][k]['$push']);
+            res[k].$push = [res[k].$push].concat(arguments[i][k].$push);
         }
         else if (('$unshift' in (res[k] || {})) &&
                  ('$unshift' in arguments[i][k])) {
-          if (types.check(arguments[i][k]['$unshift'], 'array'))
-            res[k]['$unshift'] = arguments[i][k]['$unshift'].concat(res[k]['$unshift']);
+          if (types.check(arguments[i][k].$unshift, 'array'))
+            res[k].$unshift = arguments[i][k].$unshift.concat(res[k].$unshift);
           else
-            res[k]['$unshift'] = [arguments[i][k]['$unshift']].concat(res[k]['$unshift']);
+            res[k].$unshift = [arguments[i][k].$unshift].concat(res[k].$unshift);
         }
         else {
           res[k] = merge(arguments[i][k], res[k]);
