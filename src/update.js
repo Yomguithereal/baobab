@@ -16,7 +16,6 @@ var COMMANDS = {};
   '$append',
   '$prepend',
   '$merge',
-  '$deepMerge',
   '$apply'
 ].forEach(function(c) {
   COMMANDS[c] = true;
@@ -36,6 +35,7 @@ function mutator(log, o, spec, path) {
   path = path || [];
 
   var hash = path.join('$$'),
+      fn,
       h,
       k,
       v,
@@ -54,19 +54,19 @@ function mutator(log, o, spec, path) {
       switch (k) {
         case '$push':
           if (!types.check(o, 'array'))
-            throw makeError(path, 'applying command $push to a non array');
+            throw makeError(path, 'using command $push to a non array');
 
           o.push(v);
           break;
         case '$unshift':
           if (!types.check(o, 'array'))
-            throw makeError(path, 'applying command $unshift to a non array');
+            throw makeError(path, 'using command $unshift to a non array');
 
           o.unshift(v);
           break;
         case '$append':
           if (!types.check(o, 'array'))
-            throw makeError(path, 'applying command $append to a non array');
+            throw makeError(path, 'using command $append to a non array');
 
           if (!types.check(v, 'array'))
             o.push(v);
@@ -75,7 +75,7 @@ function mutator(log, o, spec, path) {
           break;
         case '$prepend':
           if (!types.check(o, 'array'))
-            throw makeError(path, 'applying command $prepend to a non array');
+            throw makeError(path, 'using command $prepend to a non array');
 
           if (!types.check(v, 'array'))
             o.unshift(v);
@@ -85,6 +85,7 @@ function mutator(log, o, spec, path) {
       }
     }
     else {
+
       if ('$set' in (spec[k] || {})) {
         h = hash ? hash + '$$' + k : k;
         v = spec[k].$set;
@@ -93,6 +94,20 @@ function mutator(log, o, spec, path) {
         if (!~log.indexOf(h))
           log.push(h);
         o[k] = v;
+      }
+      else if ('$apply' in (spec[k] || {})) {
+        h = hash ? hash + '$$' + k : k;
+        fn = spec[k].$apply;
+
+        if (typeof fn !== 'function')
+          throw makeError(path.concat(k), 'using command $apply with a non function');
+
+        // Logging update
+        if (!~log.indexOf(h))
+          log.push(h);
+
+        // NOTE: should we send an immutable variable here?
+        o[k] = fn.call(null, o[k]);
       }
       else {
 

@@ -107,6 +107,14 @@ describe('Precursors', function() {
         assert.deepEqual(o3.toJS(), {colors: ['orange']});
         assert.deepEqual(o4.toJS(), {colors: ['blue', 'orange']});
       });
+
+      it('should be possible to apply a function to nested values.', function() {
+        var o1 = Immutable.fromJS({number: 10}),
+            o2 = update(o1, {number: {$apply: function(n) { return n * 2; }}}).data;
+
+        assert.deepEqual(o1.toJS(), {number: 10});
+        assert.deepEqual(o2.toJS(), {number: 20});
+      });
     });
   });
 
