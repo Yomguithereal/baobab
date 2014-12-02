@@ -114,6 +114,7 @@ function mutator(log, o, spec, path) {
 }
 
 // Core function
+// NOTE: possible to achieve something better optimized through `asMutable`?
 function update(target, spec) {
   var o = target.toJS(),
       d = (spec.toJS) ? spec.toJS() : spec,

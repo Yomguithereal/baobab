@@ -73,7 +73,7 @@ function inherits(ctor, superCtor) {
 var later = (typeof window === 'undefined') ?
   process.nextTick :
   ('requestAnimationFrame' in window) ?
-    window.requestAnimationFrame :
+    window.requestAnimationFrame.bind(window) :
     function(fn) {setTimeout(fn, 0);};
 
 module.exports = {
