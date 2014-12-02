@@ -115,6 +115,9 @@ Cursor.prototype.up = function() {
 };
 
 Cursor.prototype.get = function(path) {
+  if (arguments.length > 1)
+    path = Array.prototype.slice.call(arguments);
+
   if (path)
     return this.root.get(this.path.concat(path));
   else

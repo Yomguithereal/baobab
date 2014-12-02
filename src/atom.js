@@ -108,6 +108,9 @@ Atom.prototype.select = function(path) {
 Atom.prototype.get = function(path) {
   var data;
 
+  if (arguments.length > 1)
+    path = Array.prototype.slice.call(arguments);
+
   if (path)
     data = this.data.getIn(typeof path === 'string' ? [path] : path);
   else

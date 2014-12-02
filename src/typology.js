@@ -19,7 +19,7 @@ var typology = new Typology({
   },
   maplike: 'object|map',
   path: function(v) {
-    return typology.check(v, 'string') || typology.check(v, ['string']);
+    return typology.check(v, '?string') || typology.check(v, ['string']);
   }
 });
 

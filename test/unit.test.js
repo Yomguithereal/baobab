@@ -234,6 +234,12 @@ describe('Precursors', function() {
 
         assertImmutable(altCursor.get(), colorCursor.get());
       });
+
+      it('should be possible to use some polymorphism on the getter.', function() {
+        var altCursor = atom.select('one');
+
+        assertImmutable(altCursor.get('subtwo', 'colors'), state.colors);
+      });
     });
 
     describe('Traversal', function() {
