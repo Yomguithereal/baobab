@@ -21,7 +21,7 @@ function Atom(initialData, opts) {
   if (!(this instanceof Atom))
     return new Atom(initialData, opts);
 
-  if (!initialData)
+  if (!types.check(initialData, 'maplike'))
     throw Error('precursors.Atom: invalid data.');
 
   // Extending
@@ -35,8 +35,7 @@ function Atom(initialData, opts) {
   this._willUpdate = false;
 
   // Merging defaults
-  // TODO: ...
-  this.options = opts;
+  this.options = Immutable.fromJS(defaults).merge(opts);
 }
 
 helpers.inherits(Atom, EventEmitter);
@@ -54,6 +53,9 @@ Atom.prototype._stack = function(spec) {
     // TODO: decide here
     return [prev, next];
   }, spec);
+
+  if (!this.options.get('delay'))
+    return this._commit();
 
   if (!this._willUpdate) {
     this._willUpdate = true;
@@ -103,11 +105,17 @@ Atom.prototype.select = function(path) {
 };
 
 Atom.prototype.get = function(path) {
+  var data;
 
   if (path)
-    return this.data.getIn(typeof path === 'string' ? [path] : path);
+    data = this.data.getIn(typeof path === 'string' ? [path] : path);
   else
-    return this.data;
+    data = this.data;
+
+  if (this.options.get('toJS'))
+    return data.toJS();
+  else
+    return data;
 };
 
 Atom.prototype.set = function(key, val) {

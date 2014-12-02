@@ -184,6 +184,19 @@ describe('Precursors', function() {
         assert(Immutable.is(special.get('two'), atom.get('two')));
       });
     });
+
+    describe('Options', function() {
+      it('should be possible to commit changes immediately.', function() {
+        var atom = new Atom({hello: 'world'}, {delay: false});
+        atom.set('hello', 'you');
+        assert.strictEqual(atom.get('hello'), 'you');
+      });
+
+      it('should be possible to get data as raw JavaScript.', function() {
+        var atom = new Atom({hello: 'world'}, {toJS: true});
+        assert(types.check(atom.get(), 'object'));
+      });
+    });
   });
 
   describe('Cursor API', function() {
