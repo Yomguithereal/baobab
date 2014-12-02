@@ -1,4 +1,5 @@
 {
   "delay": true,
-  "toJS": false
+  "toJS": false,
+  "maxHistory": 0
 }

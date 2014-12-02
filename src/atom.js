@@ -33,6 +33,7 @@ function Atom(initialData, opts) {
   // Privates
   this._futureUpdate = new Immutable.Map();
   this._willUpdate = false;
+  this._history = [];
 
   // Merging defaults
   this.options = Immutable.fromJS(defaults).merge(opts);
