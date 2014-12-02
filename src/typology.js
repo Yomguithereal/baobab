@@ -16,7 +16,8 @@ var typology = new Typology({
   },
   list: function(v) {
     return v instanceof Immutable.List
-  }
+  },
+  maplike: 'object|map'
 });
 
 module.exports = typology;

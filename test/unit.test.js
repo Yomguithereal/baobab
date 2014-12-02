@@ -381,6 +381,18 @@ describe('Precursors', function() {
           done();
         });
       });
+
+      // it('should be possible to merge push-like specifications.', function(done) {
+      //   var atom = new Atom({list: [1]});
+      //       cursor = atom.select('list');
+
+      //   cursor.push(2).push(3);
+
+      //   helpers.later(function() {
+      //     console.log(cursor.get())
+      //     done();
+      //   });
+      // });
     });
   });
 });

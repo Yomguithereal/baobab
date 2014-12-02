@@ -9,6 +9,7 @@ var Immutable = require('immutable'),
     EventEmitter = require('emmett'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
+    types = require('./typology.js'),
     defaults = require('../defaults.json');
 
 /**
@@ -45,10 +46,14 @@ helpers.inherits(Atom, EventEmitter);
  */
 Atom.prototype._stack = function(spec) {
 
-  // TODO: check spec here before messing with it
+  if (!types.check(spec, 'maplike'))
+    throw Error('precursors.Atom.update: wrong specification.');
 
   // TODO: handle conflicts and act on given command
-  this._futureUpdate = this._futureUpdate.mergeDeep(spec);
+  this._futureUpdate = this._futureUpdate.mergeDeepWith(function(prev, next) {
+    // TODO: decide here
+    return [prev, next];
+  }, spec);
 
   if (!this._willUpdate) {
     this._willUpdate = true;
@@ -78,6 +83,8 @@ Atom.prototype._commit = function() {
   // Resetting
   this._futureUpdate = new Immutable.Map();
   this._willUpdate = false;
+
+  return this;
 };
 
 /**
