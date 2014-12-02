@@ -10,6 +10,7 @@ var Immutable = require('immutable'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     types = require('./typology.js'),
+    mixins = require('./mixins.js'),
     defaults = require('../defaults.json');
 
 /**
@@ -37,6 +38,9 @@ function Atom(initialData, opts) {
 
   // Merging defaults
   this.options = Immutable.fromJS(defaults).merge(opts);
+
+  // Mixin
+  this.mixin = mixins.atom(this);
 }
 
 helpers.inherits(Atom, EventEmitter);
