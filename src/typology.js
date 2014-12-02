@@ -15,7 +15,7 @@ var typology = new Typology({
     return v instanceof Immutable.Map;
   },
   list: function(v) {
-    return v instanceof Immutable.List
+    return v instanceof Immutable.List;
   },
   maplike: 'object|map',
   path: function(v) {

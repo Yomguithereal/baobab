@@ -250,7 +250,7 @@ describe('Precursors', function() {
 
       it('should be possible to create subcursors.', function() {
         var sub = oneCursor.select(['subtwo', 'colors']);
-        assertImmutable(sub.get(), state.colors)
+        assertImmutable(sub.get(), state.colors);
       });
 
       it('should be possible to go up.', function() {

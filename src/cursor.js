@@ -5,7 +5,7 @@
  * Part selection into an immutable data tree.
  */
 var EventEmitter = require('emmett'),
-    mixins = require('./mixins.js');
+    mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
     types = require('./typology.js');
 
