@@ -4,7 +4,44 @@
  *
  * Miscellaneous helper functions.
  */
-var Immutable = require('immutable');
+var Immutable = require('immutable'),
+    types = require('typology');
+
+// Merge objects
+function merge() {
+  var i,
+      k,
+      res = {},
+      l = arguments.length;
+
+  for (i = l - 1; i >= 0; i--)
+    for (k in arguments[i])
+      if (res[k] && types.check(arguments[i][k], 'object')) {
+
+        if (('$push' in (res[k] || {})) &&
+            ('$push' in arguments[i][k])) {
+          if (types.check(res[k]['$push'], 'array'))
+            res[k]['$push'] = res[k]['$push'].concat(arguments[i][k]['$push']);
+          else
+            res[k]['$push'] = [res[k]['$push']].concat(arguments[i][k]['$push']);
+        }
+        else if (('$unshift' in (res[k] || {})) &&
+                 ('$unshift' in arguments[i][k])) {
+          if (types.check(arguments[i][k]['$unshift'], 'array'))
+            res[k]['$unshift'] = arguments[i][k]['$unshift'].concat(res[k]['$unshift']);
+          else
+            res[k]['$unshift'] = [arguments[i][k]['$unshift']].concat(res[k]['$unshift']);
+        }
+        else {
+          res[k] = merge(arguments[i][k], res[k]);
+        }
+      }
+      else {
+        res[k] = arguments[i][k];
+      }
+
+  return res;
+}
 
 // Return a fake object relative to the given path
 function pathObject(path, spec) {
@@ -21,7 +58,7 @@ function pathObject(path, spec) {
     c = c[path[i]];
   }
 
-  return Immutable.fromJS(o);
+  return o;
 }
 
 function inherits(ctor, superCtor) {
@@ -42,5 +79,6 @@ var later = (typeof window === 'undefined') ?
 module.exports = {
   inherits: inherits,
   later: later,
+  merge: merge,
   pathObject: pathObject
 };

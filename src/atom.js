@@ -31,7 +31,7 @@ function Atom(initialData, opts) {
   this.data = Immutable.fromJS(initialData);
 
   // Privates
-  this._futureUpdate = new Immutable.Map();
+  this._futureUpdate = {};
   this._willUpdate = false;
   this._history = [];
 
@@ -49,11 +49,7 @@ Atom.prototype._stack = function(spec) {
   if (!types.check(spec, 'maplike'))
     throw Error('precursors.Atom.update: wrong specification.');
 
-  // TODO: handle conflicts and act on given command
-  this._futureUpdate = this._futureUpdate.mergeDeepWith(function(prev, next) {
-    // TODO: decide here
-    return [prev, next];
-  }, spec);
+  this._futureUpdate = helpers.merge(spec, this._futureUpdate);
 
   if (!this.options.get('delay'))
     return this._commit();
@@ -84,7 +80,7 @@ Atom.prototype._commit = function() {
   });
 
   // Resetting
-  this._futureUpdate = new Immutable.Map();
+  this._futureUpdate = {};
   this._willUpdate = false;
 
   return this;

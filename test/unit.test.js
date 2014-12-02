@@ -50,7 +50,7 @@ describe('Precursors', function() {
 
       it('should be possible to retrieve path objects.', function() {
         var o = helpers.pathObject(['one', 'subtwo'], {$set: ['purple']});
-        assert.deepEqual(o.toJS(), {one: {subtwo: {$set: ['purple']}}});
+        assert.deepEqual(o, {one: {subtwo: {$set: ['purple']}}});
       });
     });
 
@@ -82,13 +82,13 @@ describe('Precursors', function() {
 
       it('should be possible to append to nested values.', function() {
         var o1 = Immutable.fromJS({colors: ['orange']}),
-            o2 = update(o1, {colors: {$append: ['blue', 'purple']}}).data;
+            o2 = update(o1, {colors: {$push: ['blue', 'purple']}}).data;
 
         assert.deepEqual(o1.toJS(), {colors: ['orange']});
         assert.deepEqual(o2.toJS(), {colors: ['orange', 'blue', 'purple']});
 
         var o3 = Immutable.fromJS({colors: ['orange']}),
-            o4 = update(o1, {colors: {$append: 'blue'}}).data;
+            o4 = update(o1, {colors: {$push: 'blue'}}).data;
 
         assert.deepEqual(o3.toJS(), {colors: ['orange']});
         assert.deepEqual(o4.toJS(), {colors: ['orange', 'blue']});
@@ -96,13 +96,13 @@ describe('Precursors', function() {
 
       it('should be possible to prepend to nested values.', function() {
         var o1 = Immutable.fromJS({colors: ['orange']}),
-            o2 = update(o1, {colors: {$prepend: ['blue', 'purple']}}).data;
+            o2 = update(o1, {colors: {$unshift: ['blue', 'purple']}}).data;
 
         assert.deepEqual(o1.toJS(), {colors: ['orange']});
         assert.deepEqual(o2.toJS(), {colors: ['blue', 'purple', 'orange']});
 
         var o3 = Immutable.fromJS({colors: ['orange']}),
-            o4 = update(o1, {colors: {$prepend: 'blue'}}).data;
+            o4 = update(o1, {colors: {$unshift: 'blue'}}).data;
 
         assert.deepEqual(o3.toJS(), {colors: ['orange']});
         assert.deepEqual(o4.toJS(), {colors: ['blue', 'orange']});
@@ -392,7 +392,7 @@ describe('Precursors', function() {
     });
 
     describe('Advanced', function() {
-      it('should be possible to execute several orders within a synchronous stack.', function(done) {
+      it('should be possible to execute several orders within a single stack.', function(done) {
         var atom = new Atom({
           one: 'coco',
           two: 'koko'
@@ -407,17 +407,17 @@ describe('Precursors', function() {
         });
       });
 
-      // it('should be possible to merge push-like specifications.', function(done) {
-      //   var atom = new Atom({list: [1]});
-      //       cursor = atom.select('list');
+      it('should be possible to merge push-like specifications.', function(done) {
+        var atom = new Atom({list: [1]});
+            cursor = atom.select('list');
 
-      //   cursor.push(2).push(3);
+        cursor.push(2).push(3).unshift([-1, 0]).unshift(-2);
 
-      //   helpers.later(function() {
-      //     console.log(cursor.get())
-      //     done();
-      //   });
-      // });
+        helpers.later(function() {
+          assert.deepEqual(cursor.get().toJS(), [-2, -1, 0, 1, 2, 3]);
+          done();
+        });
+      });
     });
   });
 });

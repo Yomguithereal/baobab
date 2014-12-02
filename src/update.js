@@ -13,8 +13,6 @@ var COMMANDS = {};
   '$set',
   '$push',
   '$unshift',
-  '$append',
-  '$prepend',
   '$merge',
   '$apply'
 ].forEach(function(c) {
@@ -56,26 +54,14 @@ function mutator(log, o, spec, path) {
           if (!types.check(o, 'array'))
             throw makeError(path, 'using command $push to a non array');
 
-          o.push(v);
-          break;
-        case '$unshift':
-          if (!types.check(o, 'array'))
-            throw makeError(path, 'using command $unshift to a non array');
-
-          o.unshift(v);
-          break;
-        case '$append':
-          if (!types.check(o, 'array'))
-            throw makeError(path, 'using command $append to a non array');
-
           if (!types.check(v, 'array'))
             o.push(v);
           else
             o.push.apply(o, v);
           break;
-        case '$prepend':
+        case '$unshift':
           if (!types.check(o, 'array'))
-            throw makeError(path, 'using command $prepend to a non array');
+            throw makeError(path, 'using command $unshift to a non array');
 
           if (!types.check(v, 'array'))
             o.unshift(v);
