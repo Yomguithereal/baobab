@@ -17,7 +17,10 @@ var typology = new Typology({
   list: function(v) {
     return v instanceof Immutable.List
   },
-  maplike: 'object|map'
+  maplike: 'object|map',
+  path: function(v) {
+    return typology.check(v, 'string') || typology.check(v, ['string']);
+  }
 });
 
 module.exports = typology;

@@ -6,7 +6,8 @@
  */
 var EventEmitter = require('emmett'),
     mixins = require('./mixins.js');
-    helpers = require('./helpers.js');
+    helpers = require('./helpers.js'),
+    types = require('./typology.js');
 
 /**
  * Main Class
@@ -98,6 +99,11 @@ Cursor.prototype.select = function(path) {
   if (!path)
     throw Error('precursors.Cursor.select: invalid path.');
 
+  if (arguments.length > 1)
+    path = Array.prototype.slice.call(arguments);
+
+  if (!types.check(path, 'path'))
+    throw Error('precursors.Cursor.select: invalid path.');
   return new Cursor(this.root, this.path.concat(path));
 };
 

@@ -94,6 +94,11 @@ Atom.prototype.select = function(path) {
   if (!path)
     throw Error('precursors.Atom.select: invalid path.');
 
+  if (arguments.length > 1)
+    path = Array.prototype.slice.call(arguments);
+
+  if (!types.check(path, 'path'))
+    throw Error('precursors.Atom.select: invalid path.');
   return new Cursor(this, path);
 };
 

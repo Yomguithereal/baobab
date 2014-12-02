@@ -215,6 +215,12 @@ describe('Precursors', function() {
 
         colorCursor.push('purple');
       });
+
+      it('should be possible to use some polymorphism on the selection.', function() {
+        var altCursor = atom.select('one', 'subtwo', 'colors');
+
+        assertImmutable(altCursor.get(), colorCursor.get());
+      });
     });
 
     describe('Traversal', function() {
