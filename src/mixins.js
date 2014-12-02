@@ -13,6 +13,7 @@ module.exports = {
 
         // Binding atom to instance
         this.atom = atom;
+        this.__type = null;
 
         // Is there any cursors to create?
         if (this.cursor && this.cursors)
@@ -25,6 +26,7 @@ module.exports = {
             throw Error('precursors.Atom.mixin.cursor: invalid data (string or array).');
 
           this.cursor = atom.select(this.cursor);
+          this.__type = 'single';
         }
         else if (this.cursors) {
           if (!types.check(this.cursors, 'object|array'))
@@ -34,13 +36,46 @@ module.exports = {
             this.cursors = this.cursors.map(function(path) {
               return types.check(path, 'cursor') ? path : atom.select(path);
             });
+            this.__type = 'array';
           }
           else {
             for (var k in this.cursors) {
               if (!types.check(path, 'cursor'))
                 this.cursors[k] = atom.select(this.cursors[k]);
             }
+            this.__type = 'object';
           }
+        }
+
+        // Making update handler
+        this.__updateHandler = this.forceUpdate.bind(this);
+      },
+      componentDidMount: function() {
+        if (this.__type === 'single') {
+          this.cursor.on('update', this.__updateHandler);
+        }
+        else if (this.__type === 'array') {
+          this.cursors.forEach(function(cursor) {
+            cursor.on('update', this.__updateHandler);
+          }, this);
+        }
+        else if (this.__type === 'object') {
+          for (var k in this.cursors)
+            cursors[k].on('update', this.__updateHandler);
+        }
+      },
+      componentWillUnmount: function() {
+        if (this.__type === 'single') {
+          this.cursor.off('update', this.__updateHandler);
+        }
+        else if (this.__type === 'array') {
+          this.cursors.forEach(function(cursor) {
+            cursor.off('update', this.__updateHandler);
+          }, this);
+        }
+        else if (this.__type === 'object') {
+          for (var k in this.cursors)
+            cursors[k].off('update', this.__updateHandler);
         }
       }
     };
