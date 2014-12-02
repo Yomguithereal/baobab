@@ -3,7 +3,7 @@ var gulp = require('gulp'),
     mocha = require('gulp-mocha');
 
 // Files
-var files = ['./index.js', './src/*.js'];
+var files = ['./index.js', './src/*.js', './test/*.js'];
 
 // Linting
 gulp.task('lint', function() {

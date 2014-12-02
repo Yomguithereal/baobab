@@ -1,12 +1,11 @@
 var assert = require('assert'),
     Immutable = require('immutable'),
-    Map = Immutable.Map,
-    List = Immutable.List,
     Atom = require('../src/atom.js'),
     Cursor = require('../src/cursor.js'),
     async = require('async'),
     helpers = require('../src/helpers.js'),
-    update = require('../src/update.js');
+    update = require('../src/update.js'),
+    types = require('../src/typology.js');
 
 // Helpers
 function assertImmutable(v1, v2) {
@@ -36,6 +35,17 @@ describe('Precursors', function() {
 
   describe('Helpers', function() {
 
+    describe('Typology', function() {
+
+      it('the immutable type should work.', function() {
+        assert(types.check(new Immutable.Map(), 'immutable'));
+        assert(types.check(new Immutable.List(), 'immutable'));
+        assert(types.check('string', 'immutable'));
+        assert(types.check(42, 'immutable'));
+        assert(!types.check({}, 'immutable'));
+      });
+    });
+
     describe('Object path', function() {
 
       it('should be possible to retrieve path objects.', function() {
@@ -45,10 +55,6 @@ describe('Precursors', function() {
     });
 
     describe('Update API', function() {
-
-      // it('should be possible to set primitive values.', function() {
-
-      // });
 
       it('should be possible to set nested values.', function() {
         var o1 = Immutable.fromJS({hello: {world: 'one'}}),
@@ -75,13 +81,13 @@ describe('Precursors', function() {
 
       it('should be possible to retrieve full data.', function() {
         var data = atom.get();
-        assert(data instanceof Map);
+        assert(data instanceof Immutable.Map);
         assertImmutable(data, state);
       });
 
       it('should be possible to retrieve nested data.', function() {
         var colors = atom.get(['one', 'subtwo', 'colors']);
-        assert(colors instanceof List);
+        assert(colors instanceof Immutable.List);
         assertImmutable(colors, state.colors);
 
         // Polymorphism
@@ -147,7 +153,7 @@ describe('Precursors', function() {
       it('should be possible to retrieve data at cursor.', function() {
         var colors = colorCursor.get();
 
-        assert(colors instanceof List);
+        assert(colors instanceof Immutable.List);
         assertImmutable(colors, state.colors);
       });
 
