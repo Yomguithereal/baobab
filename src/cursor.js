@@ -87,7 +87,8 @@ helpers.inherits(Cursor, EventEmitter);
  * Private prototype
  */
 Cursor.prototype._stack = function(spec) {
-  return this.root._stack(helpers.pathObject(this.path, spec));
+  this.root._stack(helpers.pathObject(this.path, spec));
+  return this;
 };
 
 /**
@@ -115,15 +116,27 @@ Cursor.prototype.get = function(path) {
 };
 
 Cursor.prototype.set = function(value) {
-  this.update({$set: value});
+  return this.update({$set: value});
 };
 
 Cursor.prototype.push = function(value) {
-  this.update({$push: value});
+  return this.update({$push: value});
+};
+
+Cursor.prototype.unshift = function(value) {
+  return this.update({$unshift: value});
+};
+
+Cursor.prototype.append = function(value) {
+  return this.update({$append: value});
+};
+
+Cursor.prototype.prepend = function(value) {
+  return this.update({$prepend: value});
 };
 
 Cursor.prototype.update = function(spec) {
-  this._stack(spec);
+  return this._stack(spec);
 };
 
 /**

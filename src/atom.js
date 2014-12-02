@@ -45,6 +45,8 @@ helpers.inherits(Atom, EventEmitter);
  */
 Atom.prototype._stack = function(spec) {
 
+  // TODO: check spec here before messing with it
+
   // TODO: handle conflicts and act on given command
   this._futureUpdate = this._futureUpdate.mergeDeep(spec);
 
@@ -52,6 +54,8 @@ Atom.prototype._stack = function(spec) {
     this._willUpdate = true;
     helpers.later(this._commit.bind(this));
   }
+
+  return this;
 };
 
 Atom.prototype._commit = function() {
@@ -102,13 +106,11 @@ Atom.prototype.set = function(key, val) {
   var spec = {};
   spec[key] = {$set: val};
 
-  this.update(spec);
+  return this.update(spec);
 };
 
 Atom.prototype.update = function(spec) {
-
-  // TODO: type checking
-  this._stack(spec);
+  return this._stack(spec);
 };
 
 /**
