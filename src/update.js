@@ -5,13 +5,16 @@
  * A handy method to mutate an atom according to the given specification.
  * Mostly inspired by http://facebook.github.io/react/docs/update.html
  */
-var Immutable = require('immutable');
+var Immutable = require('immutable'),
+    types = require('./typology.js');
 
 var COMMANDS = {};
 [
   '$set',
   '$push',
   '$unshift',
+  '$append',
+  '$prepend',
   '$merge',
   '$deepMerge',
   '$apply'
@@ -35,7 +38,9 @@ function mutator(log, o, spec, path) {
   var hash = path.join('$$'),
       h,
       k,
-      v;
+      v,
+      i,
+      l;
 
   for (k in spec) {
     if (COMMANDS[k]) {
@@ -48,9 +53,34 @@ function mutator(log, o, spec, path) {
       // Applying
       switch (k) {
         case '$push':
-          if (!(o instanceof Array))
+          if (!types.check(o, 'array'))
             throw makeError(path, 'applying command $push to a non array');
+
           o.push(v);
+          break;
+        case '$unshift':
+          if (!types.check(o, 'array'))
+            throw makeError(path, 'applying command $unshift to a non array');
+
+          o.unshift(v);
+          break;
+        case '$append':
+          if (!types.check(o, 'array'))
+            throw makeError(path, 'applying command $append to a non array');
+
+          if (!types.check(v, 'array'))
+            o.push(v);
+          else
+            o.push.apply(o, v);
+          break;
+        case '$prepend':
+          if (!types.check(o, 'array'))
+            throw makeError(path, 'applying command $prepend to a non array');
+
+          if (!types.check(v, 'array'))
+            o.unshift(v);
+          else
+            o.unshift.apply(o, v);
           break;
       }
     }

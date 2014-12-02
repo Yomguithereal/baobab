@@ -71,6 +71,42 @@ describe('Precursors', function() {
         assert.deepEqual(o1.toJS(), {colors: ['orange']});
         assert.deepEqual(o2.toJS(), {colors: ['orange', 'blue']});
       });
+
+      it('should be possible to unshift to nested values.', function() {
+        var o1 = Immutable.fromJS({colors: ['orange']}),
+            o2 = update(o1, {colors: {$unshift: 'blue'}}).data;
+
+        assert.deepEqual(o1.toJS(), {colors: ['orange']});
+        assert.deepEqual(o2.toJS(), {colors: ['blue', 'orange']});
+      });
+
+      it('should be possible to append to nested values.', function() {
+        var o1 = Immutable.fromJS({colors: ['orange']}),
+            o2 = update(o1, {colors: {$append: ['blue', 'purple']}}).data;
+
+        assert.deepEqual(o1.toJS(), {colors: ['orange']});
+        assert.deepEqual(o2.toJS(), {colors: ['orange', 'blue', 'purple']});
+
+        var o3 = Immutable.fromJS({colors: ['orange']}),
+            o4 = update(o1, {colors: {$append: 'blue'}}).data;
+
+        assert.deepEqual(o3.toJS(), {colors: ['orange']});
+        assert.deepEqual(o4.toJS(), {colors: ['orange', 'blue']});
+      });
+
+      it('should be possible to prepend to nested values.', function() {
+        var o1 = Immutable.fromJS({colors: ['orange']}),
+            o2 = update(o1, {colors: {$prepend: ['blue', 'purple']}}).data;
+
+        assert.deepEqual(o1.toJS(), {colors: ['orange']});
+        assert.deepEqual(o2.toJS(), {colors: ['blue', 'purple', 'orange']});
+
+        var o3 = Immutable.fromJS({colors: ['orange']}),
+            o4 = update(o1, {colors: {$prepend: 'blue'}}).data;
+
+        assert.deepEqual(o3.toJS(), {colors: ['orange']});
+        assert.deepEqual(o4.toJS(), {colors: ['blue', 'orange']});
+      });
     });
   });
 
