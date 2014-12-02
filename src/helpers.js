@@ -8,6 +8,7 @@ var Immutable = require('immutable'),
     types = require('typology');
 
 // Merge objects
+// TODO: optimize obviously...
 function merge() {
   var i,
       k,

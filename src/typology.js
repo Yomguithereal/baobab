@@ -2,7 +2,7 @@
  * Precursors Custom Typology
  * ===========================
  *
- * A custom typology to deal with data validation and types checking.
+ * A custom typology to deal with data validation and type checking.
  */
 var Typology = require('typology'),
     Immutable = require('immutable'),
