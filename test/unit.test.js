@@ -1,6 +1,12 @@
+/**
+ * Baobab Unit Tests
+ * ==================
+ *
+ * Testing the library.
+ */
 var assert = require('assert'),
     Immutable = require('immutable'),
-    Atom = require('../src/atom.js'),
+    Baobab = require('../src/baobab.js'),
     Cursor = require('../src/cursor.js'),
     async = require('async'),
     helpers = require('../src/helpers.js'),
@@ -118,54 +124,54 @@ describe('Precursors', function() {
     });
   });
 
-  describe('Atom API', function() {
+  describe('Baobab API', function() {
 
     describe('Basics', function() {
-      var atom = new Atom(state);
+      var baobab = new Baobab(state);
 
       it('should be possible to retrieve full data.', function() {
-        var data = atom.get();
+        var data = baobab.get();
         assert(data instanceof Immutable.Map);
         assertImmutable(data, state);
       });
 
       it('should be possible to retrieve nested data.', function() {
-        var colors = atom.get(['one', 'subtwo', 'colors']);
+        var colors = baobab.get(['one', 'subtwo', 'colors']);
         assert(colors instanceof Immutable.List);
         assertImmutable(colors, state.colors);
 
         // Polymorphism
-        var primitive = atom.get('primitive');
+        var primitive = baobab.get('primitive');
         assert.strictEqual(primitive, 3);
       });
 
       it('should be possible to get data from both maps and lists.', function() {
-        var yellow = atom.get(['one', 'subtwo', 'colors', 1]);
+        var yellow = baobab.get(['one', 'subtwo', 'colors', 1]);
 
         assert.strictEqual(yellow, 'yellow');
       });
 
       it('should return undefined when data is not to be found through path.', function() {
-        var inexistant = atom.get(['no']);
+        var inexistant = baobab.get(['no']);
         assert.strictEqual(inexistant, undefined);
 
         // Nesting
-        var nestedInexistant = atom.get(['no', 'no']);
+        var nestedInexistant = baobab.get(['no', 'no']);
         assert.strictEqual(nestedInexistant, undefined);
       });
 
-      it('should throw an error when trying to instantiate an atom with incorrect data.', function() {
+      it('should throw an error when trying to instantiate an baobab with incorrect data.', function() {
         assert.throws(function() {
-          new Atom(undefined);
+          new Baobab(undefined);
         }, /invalid data/);
       });
 
-      it('selecting data in the atom should return a cursor.', function() {
-        assert(atom.select(['one']) instanceof Cursor);
+      it('selecting data in the baobab should return a cursor.', function() {
+        assert(baobab.select(['one']) instanceof Cursor);
       });
 
       it('should be possible to listen to update events.', function(done) {
-        atom.on('update', function(e) {
+        baobab.on('update', function(e) {
           var oldData = e.data.oldData,
               newData = e.data.newData,
               c = ['on', 'subtwo', 'colors'];
@@ -175,26 +181,26 @@ describe('Precursors', function() {
           done();
         });
 
-        atom.update({one: {subtwo: {colors: {$push: 'purple'}}}});
+        baobab.update({one: {subtwo: {colors: {$push: 'purple'}}}});
       });
 
       it('should be possible to instantiate without the "new" keyword.', function() {
-        var special = Atom(state);
+        var special = Baobab(state);
 
-        assert(Immutable.is(special.get('two'), atom.get('two')));
+        assert(Immutable.is(special.get('two'), baobab.get('two')));
       });
     });
 
     describe('Options', function() {
       it('should be possible to commit changes immediately.', function() {
-        var atom = new Atom({hello: 'world'}, {delay: false});
-        atom.set('hello', 'you');
-        assert.strictEqual(atom.get('hello'), 'you');
+        var baobab = new Baobab({hello: 'world'}, {delay: false});
+        baobab.set('hello', 'you');
+        assert.strictEqual(baobab.get('hello'), 'you');
       });
 
       it('should be possible to get data as raw JavaScript.', function() {
-        var atom = new Atom({hello: 'world'}, {toJS: true});
-        assert(types.check(atom.get(), 'object'));
+        var baobab = new Baobab({hello: 'world'}, {toJS: true});
+        assert(types.check(baobab.get(), 'object'));
       });
     });
   });
@@ -202,10 +208,10 @@ describe('Precursors', function() {
   describe('Cursor API', function() {
 
     describe('Basics', function() {
-      var atom = new Atom(state);
+      var baobab = new Baobab(state);
 
-      var colorCursor = atom.select(['one', 'subtwo', 'colors']),
-          oneCursor = atom.select('one');
+      var colorCursor = baobab.select(['one', 'subtwo', 'colors']),
+          oneCursor = baobab.select('one');
 
       it('should be possible to retrieve data at cursor.', function() {
         var colors = colorCursor.get();
@@ -230,23 +236,23 @@ describe('Precursors', function() {
       });
 
       it('should be possible to use some polymorphism on the selection.', function() {
-        var altCursor = atom.select('one', 'subtwo', 'colors');
+        var altCursor = baobab.select('one', 'subtwo', 'colors');
 
         assertImmutable(altCursor.get(), colorCursor.get());
       });
 
       it('should be possible to use some polymorphism on the getter.', function() {
-        var altCursor = atom.select('one');
+        var altCursor = baobab.select('one');
 
         assertImmutable(altCursor.get('subtwo', 'colors'), state.colors);
       });
     });
 
     describe('Traversal', function() {
-      var atom = new Atom(state);
+      var baobab = new Baobab(state);
 
-      var colorCursor = atom.select(['one', 'subtwo', 'colors']),
-          oneCursor = atom.select('one');
+      var colorCursor = baobab.select(['one', 'subtwo', 'colors']),
+          oneCursor = baobab.select('one');
 
       it('should be possible to create subcursors.', function() {
         var sub = oneCursor.select(['subtwo', 'colors']);
@@ -259,10 +265,10 @@ describe('Precursors', function() {
       });
 
       it('a cusor going up to root cannot go higher.', function() {
-        var up = atom.select('one').up(),
+        var up = baobab.select('one').up(),
             upper = up.up();
 
-        assertImmutable(up.get(), atom.get());
+        assertImmutable(up.get(), baobab.get());
         assertImmutable(upper.get(), up.get());
       });
     });
@@ -270,9 +276,9 @@ describe('Precursors', function() {
     describe('Events', function() {
 
       it('when a parent updates, so does the child.', function(done) {
-        var atom = new Atom(state),
-            parent = atom.select('two'),
-            child = atom.select(['two', 'firstname']);
+        var baobab = new Baobab(state),
+            parent = baobab.select('two'),
+            child = baobab.select(['two', 'firstname']);
 
         var count = 0;
 
@@ -299,9 +305,9 @@ describe('Precursors', function() {
       });
 
       it('when a child updates, so does the parent.', function(done) {
-        var atom = new Atom(state),
-            parent = atom.select('two'),
-            child = atom.select(['two', 'firstname']);
+        var baobab = new Baobab(state),
+            parent = baobab.select('two'),
+            child = baobab.select(['two', 'firstname']);
 
         var count = 0;
 
@@ -327,14 +333,14 @@ describe('Precursors', function() {
       });
 
       it('when a leave updates, it should not update its siblings.', function(done) {
-        var atom = new Atom({
+        var baobab = new Baobab({
           node: {
             leaf1: 'hey',
             leaf2: 'ho'
           }
         });
 
-        var parent = atom.select('node'),
+        var parent = baobab.select('node'),
             leaf1 = parent.select('leaf1'),
             leaf2 = parent.select('leaf2');
 
@@ -363,13 +369,13 @@ describe('Precursors', function() {
       });
 
       it('should be possible to listen to the cursor\'s relevancy.', function(done) {
-        var atom = new Atom({
+        var baobab = new Baobab({
           one: {
             two: 'hello'
           }
         });
 
-        var cursor = atom.select(['one', 'two']);
+        var cursor = baobab.select(['one', 'two']);
 
         var irrelevant = false,
             relevant = false;
@@ -384,32 +390,32 @@ describe('Precursors', function() {
           done();
         });
 
-        atom.set('one', {other: 'thing'});
+        baobab.set('one', {other: 'thing'});
         setTimeout(function() {
-          atom.set('one', {two: 'hello'});
+          baobab.set('one', {two: 'hello'});
         }, 30);
       });
     });
 
     describe('Advanced', function() {
       it('should be possible to execute several orders within a single stack.', function(done) {
-        var atom = new Atom({
+        var baobab = new Baobab({
           one: 'coco',
           two: 'koko'
         });
 
-        atom.set('one', 'cece');
-        atom.set('two', 'keke');
+        baobab.set('one', 'cece');
+        baobab.set('two', 'keke');
 
         helpers.later(function() {
-          assertImmutable(atom, {one: 'cece', two: 'keke'});
+          assertImmutable(baobab, {one: 'cece', two: 'keke'});
           done();
         });
       });
 
       it('should be possible to merge push-like specifications.', function(done) {
-        var atom = new Atom({list: [1]});
-            cursor = atom.select('list');
+        var baobab = new Baobab({list: [1]});
+            cursor = baobab.select('list');
 
         cursor.push(2).push(3).unshift([-1, 0]).unshift(-2);
 

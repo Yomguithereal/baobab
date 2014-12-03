@@ -1,6 +1,6 @@
 /**
- * Precursors Update
- * ==================
+ * Baobab Update
+ * ==============
  *
  * A handy method to mutate an atom according to the given specification.
  * Mostly inspired by http://facebook.github.io/react/docs/update.html

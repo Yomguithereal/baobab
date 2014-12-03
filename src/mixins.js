@@ -1,47 +1,47 @@
 /**
- * React Mixins
- * =============
+ * Baobab React Mixins
+ * ====================
  *
  * Compilation of react mixins designed to deal with cursors integration.
  */
 var types = require('./typology.js');
 
 module.exports = {
-  atom: function(atom) {
+  baobab: function(baobab) {
     return {
       componentWillMount: function() {
 
-        // Binding atom to instance
-        this.atom = atom;
+        // Binding baobab to instance
+        this.baobab = baobab;
         this.__type = null;
 
         // Is there any cursors to create?
         if (this.cursor && this.cursors)
-          throw Error('precursors.Atom.mixin: you cannot have both ' +
+          throw Error('baobab.mixin: you cannot have both ' +
                       '`component.cursor` and `component.cursors`. Please ' +
                       'make up your mind.');
 
         if (this.cursor) {
           if (!types.check(this.cursor, 'string|array|cursor'))
-            throw Error('precursors.Atom.mixin.cursor: invalid data (string or array).');
+            throw Error('baobab.mixin.cursor: invalid data (cursor, string or array).');
 
-          this.cursor = atom.select(this.cursor);
+          this.cursor = baobab.select(this.cursor);
           this.__type = 'single';
         }
         else if (this.cursors) {
           if (!types.check(this.cursors, 'object|array'))
-            throw Error('precursors.Atom.mixin.cursor: invalid data (object or array).');
+            throw Error('baobab.mixin.cursor: invalid data (cursor, object or array).');
 
           if (types.check(this.cursors, 'array')) {
             this.cursors = this.cursors.map(function(path) {
-              return types.check(path, 'cursor') ? path : atom.select(path);
+              return types.check(path, 'cursor') ? path : baobab.select(path);
             });
             this.__type = 'array';
           }
           else {
             for (var k in this.cursors) {
               if (!types.check(path, 'cursor'))
-                this.cursors[k] = atom.select(this.cursors[k]);
+                this.cursors[k] = baobab.select(this.cursors[k]);
             }
             this.__type = 'object';
           }

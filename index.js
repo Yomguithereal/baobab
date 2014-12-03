@@ -1,15 +1,15 @@
 /**
- * Precursors Public Interface
- * ============================
+ * Baobab Public Interface
+ * ========================
  *
  * Exposes the main library classes.
  */
-var Atom = require('./src/atom.js');
+var Baobab = require('./src/baobab.js');
 
 // Non-writable version
-Object.defineProperty(Atom, 'version', {
+Object.defineProperty(Baobab, 'version', {
   value: '0.0.1'
 });
 
 // Exporting
-module.exports = Atom;
+module.exports = Baobab;

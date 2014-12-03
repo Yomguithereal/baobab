@@ -1,6 +1,6 @@
 /**
- * Atom Data Structure
- * ====================
+ * Baobab Data Structure
+ * ======================
  *
  * Encloses an immutable set of data exposing useful cursors to its user.
  */
@@ -16,14 +16,14 @@ var Immutable = require('immutable'),
 /**
  * Main Class
  */
-function Atom(initialData, opts) {
+function Baobab(initialData, opts) {
 
   // New keyword optional
-  if (!(this instanceof Atom))
-    return new Atom(initialData, opts);
+  if (!(this instanceof Baobab))
+    return new Baobab(initialData, opts);
 
   if (!types.check(initialData, 'maplike'))
-    throw Error('precursors.Atom: invalid data.');
+    throw Error('Baobab: invalid data.');
 
   // Extending
   EventEmitter.call(this);
@@ -40,18 +40,18 @@ function Atom(initialData, opts) {
   this.options = Immutable.fromJS(defaults).merge(opts);
 
   // Mixin
-  this.mixin = mixins.atom(this);
+  this.mixin = mixins.baobab(this);
 }
 
-helpers.inherits(Atom, EventEmitter);
+helpers.inherits(Baobab, EventEmitter);
 
 /**
  * Private prototype
  */
-Atom.prototype._stack = function(spec) {
+Baobab.prototype._stack = function(spec) {
 
   if (!types.check(spec, 'maplike'))
-    throw Error('precursors.Atom.update: wrong specification.');
+    throw Error('Baobab.update: wrong specification.');
 
   this._futureUpdate = helpers.merge(spec, this._futureUpdate);
 
@@ -66,7 +66,7 @@ Atom.prototype._stack = function(spec) {
   return this;
 };
 
-Atom.prototype._commit = function() {
+Baobab.prototype._commit = function() {
   var self = this;
 
   // Applying modification
@@ -76,7 +76,7 @@ Atom.prototype._commit = function() {
   var oldData = this.data;
   this.data = result.data;
 
-  // Atom-level update event
+  // Baobab-level update event
   this.emit('update', {
     oldData: oldData,
     newData: this.data,
@@ -93,19 +93,19 @@ Atom.prototype._commit = function() {
 /**
  * Prototype
  */
-Atom.prototype.select = function(path) {
+Baobab.prototype.select = function(path) {
   if (!path)
-    throw Error('precursors.Atom.select: invalid path.');
+    throw Error('Baobab.select: invalid path.');
 
   if (arguments.length > 1)
     path = Array.prototype.slice.call(arguments);
 
   if (!types.check(path, 'path'))
-    throw Error('precursors.Atom.select: invalid path.');
+    throw Error('Baobab.select: invalid path.');
   return new Cursor(this, path);
 };
 
-Atom.prototype.get = function(path) {
+Baobab.prototype.get = function(path) {
   var data;
 
   if (arguments.length > 1)
@@ -122,10 +122,10 @@ Atom.prototype.get = function(path) {
     return data;
 };
 
-Atom.prototype.set = function(key, val) {
+Baobab.prototype.set = function(key, val) {
 
   if (arguments.length < 2)
-    throw Error('precursors.Atom.set: expects a key and a value.');
+    throw Error('Baobab.set: expects a key and a value.');
 
   var spec = {};
   spec[key] = {$set: val};
@@ -133,24 +133,24 @@ Atom.prototype.set = function(key, val) {
   return this.update(spec);
 };
 
-Atom.prototype.update = function(spec) {
+Baobab.prototype.update = function(spec) {
   return this._stack(spec);
 };
 
 /**
  * Output
  */
-Atom.prototype.toJS = function() {
+Baobab.prototype.toJS = function() {
   return this.data.toJS();
 };
-Atom.prototype.toJSON = Atom.prototype.toJS;
-Atom.prototype.toString = function() {
-  return 'Atom ' + this.data.toString().replace(/^[^{]+\{/, '{');
+Baobab.prototype.toJSON = Baobab.prototype.toJS;
+Baobab.prototype.toString = function() {
+  return 'Baobab ' + this.data.toString().replace(/^[^{]+\{/, '{');
 };
-Atom.prototype.inspect = Atom.prototype.toString;
-Atom.prototype.toSource = Atom.prototype.toString;
+Baobab.prototype.inspect = Baobab.prototype.toString;
+Baobab.prototype.toSource = Baobab.prototype.toString;
 
 /**
  * Export
  */
-module.exports = Atom;
+module.exports = Baobab;

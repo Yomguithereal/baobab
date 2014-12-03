@@ -1,6 +1,6 @@
 /**
- * Precursors Helpers
- * ===================
+ * Baobab Helpers
+ * ===============
  *
  * Miscellaneous helper functions.
  */

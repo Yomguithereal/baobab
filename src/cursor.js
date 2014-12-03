@@ -1,8 +1,8 @@
 /**
- * Cursor Abstraction
- * ===================
+ * Baobab Cursor Abstraction
+ * ==========================
  *
- * Part selection into an immutable data tree.
+ * Nested selection into a baobab tree.
  */
 var EventEmitter = require('emmett'),
     mixins = require('./mixins.js'),
