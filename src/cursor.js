@@ -162,6 +162,13 @@ Cursor.prototype.inspect = Cursor.prototype.toString;
 Cursor.prototype.toSource = Cursor.prototype.toString;
 
 /**
+ * Type definition
+ */
+types.add('cursor', function(v) {
+  return v instanceof Cursor;
+});
+
+/**
  * Export
  */
 module.exports = Cursor;

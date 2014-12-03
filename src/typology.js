@@ -5,17 +5,9 @@
  * A custom typology to deal with data validation and type checking.
  */
 var Typology = require('typology'),
-    Immutable = require('immutable'),
-    Baobab = require('./baobab.js'),
-    Cursor = require('./cursor.js');
+    Immutable = require('immutable');
 
 var typology = new Typology({
-  baobab: function(v) {
-    return v instanceof Baobab;
-  },
-  cursor: function(v) {
-    return v instanceof Cursor;
-  },
   immutable: function(v) {
     return v instanceof Immutable.Iterable || this.check(v, 'primitive');
   },

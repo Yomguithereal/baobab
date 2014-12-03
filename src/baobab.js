@@ -151,6 +151,13 @@ Baobab.prototype.inspect = Baobab.prototype.toString;
 Baobab.prototype.toSource = Baobab.prototype.toString;
 
 /**
+ * Type definition
+ */
+types.add('baobab', function(v) {
+  return v instanceof Baobab;
+});
+
+/**
  * Export
  */
 module.exports = Baobab;
