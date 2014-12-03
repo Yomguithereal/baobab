@@ -117,7 +117,7 @@ Baobab.prototype.get = function(path) {
     data = this.data;
 
   if (this.options.get('toJS'))
-    return data.toJS();
+    return data ? data.toJS() : data;
   else
     return data;
 };
