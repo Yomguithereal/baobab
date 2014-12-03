@@ -48,7 +48,9 @@ module.exports = {
         }
 
         // Making update handler
-        this.__updateHandler = this.forceUpdate.bind(this);
+        this.__updateHandler = (function() {
+          this.forceUpdate();
+        }).bind(this);
       },
       componentDidMount: function() {
         if (this.__type === 'single') {
@@ -88,7 +90,9 @@ module.exports = {
         this.cursor = cursor;
 
         // Making update handler
-        this.__updateHandler = this.forceUpdate.bind(this);
+        this.__updateHandler = (function() {
+          this.forceUpdate();
+        }).bind(this);
       },
       componentDidMount: function() {
 
