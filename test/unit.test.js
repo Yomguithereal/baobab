@@ -202,6 +202,20 @@ describe('Baobab', function() {
         baobab.set('hello', 'you');
         assert.strictEqual(baobab.get('hello'), 'you');
       });
+
+      it('should be possible to let the user commit himself.', function(done) {
+        var baobab = new Baobab({number: 1}, {autoCommit: false});
+        baobab.set('number', 2);
+
+        process.nextTick(function() {
+          assert.strictEqual(baobab.get('number'), 1);
+          baobab.commit();
+          process.nextTick(function() {
+            assert.strictEqual(baobab.get('number'), 2);
+            done();
+          });
+        });
+      });
     });
   });
 
