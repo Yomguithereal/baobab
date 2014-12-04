@@ -52,6 +52,17 @@ describe('Precursors', function() {
       });
     });
 
+    describe('Nested get', function() {
+      it('should be possible to retrieve nested items through the helper.', function() {
+        assert.deepEqual(helpers.getIn(state, ['one', 'subtwo', 'colors']), state.one.subtwo.colors);
+        assert.strictEqual(helpers.getIn(state, ['primitive']), 3);
+        assert.deepEqual(helpers.getIn(state), state);
+        assert.strictEqual(helpers.getIn(state, ['one', 'subtwo', 'colors', 1]), 'yellow');
+        assert.strictEqual(helpers.getIn(state, ['one', 'subtwo', 'colors', '1']), 'yellow');
+        assert.strictEqual(helpers.getIn(state, ['inexistant', 'path']), undefined);
+      });
+    });
+
     describe('Object path', function() {
 
       it('should be possible to retrieve path objects.', function() {

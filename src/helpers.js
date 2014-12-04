@@ -7,6 +7,23 @@
 var Immutable = require('immutable'),
     types = require('typology');
 
+// Retrieve nested objects
+function getIn(object, path) {
+  path = path || [];
+
+  var c = object,
+      i,
+      l;
+
+  for (i = 0, l = path.length; i < l; i++) {
+    if (typeof c[path[i]] === 'undefined')
+      return;
+    c = c[path[i]];
+  }
+
+  return c;
+}
+
 // Merge objects
 // TODO: optimize obviously...
 function merge() {
@@ -78,6 +95,7 @@ var later = (typeof window === 'undefined') ?
     function(fn) {setTimeout(fn, 0);};
 
 module.exports = {
+  getIn: getIn,
   inherits: inherits,
   later: later,
   merge: merge,
