@@ -6,6 +6,7 @@
  */
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
+    clone = require('lodash.clonedeep'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     types = require('./typology.js'),
@@ -28,7 +29,7 @@ function Baobab(initialData, opts) {
   EventEmitter.call(this);
 
   // Properties
-  this.data = initialData;
+  this.data = clone(initialData);
 
   // Privates
   this._futureUpdate = {};
@@ -54,18 +55,24 @@ Baobab.prototype._stack = function(spec) {
 
   this._futureUpdate = helpers.merge(spec, this._futureUpdate);
 
-  if (!this.options.delay)
-    return this._commit();
+  // Should we let the user commit?
+  if (!this.options.autoCommit)
+    return this;
 
+  // Should we update synchronously?
+  if (!this.options.delay)
+    return this.commit();
+
+  // Updating asynchronously
   if (!this._willUpdate) {
     this._willUpdate = true;
-    helpers.later(this._commit.bind(this));
+    helpers.later(this.commit.bind(this));
   }
 
   return this;
 };
 
-Baobab.prototype._commit = function() {
+Baobab.prototype.commit = function() {
   var self = this;
 
   // Applying modification (mutation)
@@ -126,18 +133,6 @@ Baobab.prototype.set = function(key, val) {
 Baobab.prototype.update = function(spec) {
   return this._stack(spec);
 };
-
-/**
- * Output
- */
-Baobab.prototype.toJSON = function() {
-  return this.data;
-};
-Baobab.prototype.toString = function() {
-  return 'Baobab ' + this.data.toString().replace(/^[^{]+\{/, '{');
-};
-Baobab.prototype.inspect = Baobab.prototype.toString;
-Baobab.prototype.toSource = Baobab.prototype.toString;
 
 /**
  * Type definition

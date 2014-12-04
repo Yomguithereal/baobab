@@ -32,7 +32,7 @@ var state = {
 };
 
 // Tests
-describe('Precursors', function() {
+describe('Baobab', function() {
 
   describe('Helpers', function() {
 
@@ -180,19 +180,14 @@ describe('Precursors', function() {
         assert(baobab.select(['one']) instanceof Cursor);
       });
 
-      // it('should be possible to listen to update events.', function(done) {
-      //   baobab.on('update', function(e) {
-      //     var oldData = e.data.oldData,
-      //         newData = e.data.newData,
-      //         c = ['on', 'subtwo', 'colors'];
+      it('should be possible to listen to update events.', function(done) {
+        baobab.on('update', function(e) {
+          assert.deepEqual(e.data.log, [['one', 'subtwo', 'colors']]);
+          done();
+        });
 
-      //     assert.deepEqual(oldData.getIn(c), ['blue', 'yellow']);
-      //     assert.deepEqual(newData.getIn(c), ['blue', 'yellow', 'purple']);
-      //     done();
-      //   });
-
-      //   baobab.update({one: {subtwo: {colors: {$push: 'purple'}}}});
-      // });
+        baobab.update({one: {subtwo: {colors: {$push: 'purple'}}}});
+      });
 
       it('should be possible to instantiate without the "new" keyword.', function() {
         var special = Baobab(state);
@@ -231,15 +226,6 @@ describe('Precursors', function() {
         assert.deepEqual(colors, state.one.subtwo.colors);
       });
 
-      it('should be possible to listen to updates.', function(done) {
-        colorCursor.on('update', function() {
-          assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'purple']);
-          done();
-        });
-
-        colorCursor.push('purple');
-      });
-
       it('should be possible to use some polymorphism on the selection.', function() {
         var altCursor = baobab.select('one', 'subtwo', 'colors');
 
@@ -250,6 +236,15 @@ describe('Precursors', function() {
         var altCursor = baobab.select('one');
 
         assert.deepEqual(altCursor.get('subtwo', 'colors'), state.one.subtwo.colors);
+      });
+
+      it('should be possible to listen to updates.', function(done) {
+        colorCursor.on('update', function() {
+          assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'purple']);
+          done();
+        });
+
+        colorCursor.push('purple');
       });
     });
 
@@ -413,13 +408,13 @@ describe('Precursors', function() {
         baobab.set('two', 'keke');
 
         helpers.later(function() {
-          assert.deepEqual(baobab.toJSON(), {one: 'cece', two: 'keke'});
+          assert.deepEqual(baobab.get(), {one: 'cece', two: 'keke'});
           done();
         });
       });
 
       it('should be possible to merge push-like specifications.', function(done) {
-        var baobab = new Baobab({list: [1]});
+        var baobab = new Baobab({list: [1]}),
             cursor = baobab.select('list');
 
         cursor.push(2).push(3).unshift([-1, 0]).unshift(-2);

@@ -149,18 +149,6 @@ Cursor.prototype.update = function(spec) {
 };
 
 /**
- * Output
- */
-Cursor.prototype.toJSON = function() {
-  return this.get();
-};
-Cursor.prototype.toString = function() {
-  return 'Cursor ' + this.get().toString().replace(/^[^{]+\{/, '{');
-};
-Cursor.prototype.inspect = Cursor.prototype.toString;
-Cursor.prototype.toSource = Cursor.prototype.toString;
-
-/**
  * Type definition
  */
 types.add('cursor', function(v) {

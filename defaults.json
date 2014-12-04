@@ -3,6 +3,5 @@
   "clone": false,
   "freeze": false,
   "delay": true,
-  "toJS": false,
   "maxHistory": 0
 }

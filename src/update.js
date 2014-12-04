@@ -44,6 +44,7 @@ function mutator(log, o, spec, path) {
       v = spec[k];
 
       // Logging update
+      // TODO: index here rather?
       if (!~log.indexOf(hash))
         log.push(hash);
 
@@ -113,7 +114,6 @@ function mutator(log, o, spec, path) {
 }
 
 // Core function
-// NOTE: possible to achieve something better optimized through `asMutable`?
 function update(target, spec) {
   var log = [],
       k;
