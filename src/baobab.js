@@ -4,8 +4,7 @@
  *
  * Encloses an immutable set of data exposing useful cursors to its user.
  */
-var Immutable = require('immutable'),
-    Cursor = require('./cursor.js'),
+var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
@@ -22,14 +21,14 @@ function Baobab(initialData, opts) {
   if (!(this instanceof Baobab))
     return new Baobab(initialData, opts);
 
-  if (!types.check(initialData, 'maplike'))
+  if (!types.check(initialData, 'object'))
     throw Error('Baobab: invalid data.');
 
   // Extending
   EventEmitter.call(this);
 
   // Properties
-  this.data = Immutable.fromJS(initialData);
+  this.data = initialData;
 
   // Privates
   this._futureUpdate = {};
@@ -37,7 +36,7 @@ function Baobab(initialData, opts) {
   this._history = [];
 
   // Merging defaults
-  this.options = Immutable.fromJS(defaults).merge(opts);
+  this.options = helpers.merge(opts, defaults);
 
   // Mixin
   this.mixin = mixins.baobab(this);
@@ -50,12 +49,12 @@ helpers.inherits(Baobab, EventEmitter);
  */
 Baobab.prototype._stack = function(spec) {
 
-  if (!types.check(spec, 'maplike'))
+  if (!types.check(spec, 'object'))
     throw Error('Baobab.update: wrong specification.');
 
   this._futureUpdate = helpers.merge(spec, this._futureUpdate);
 
-  if (!this.options.get('delay'))
+  if (!this.options.delay)
     return this._commit();
 
   if (!this._willUpdate) {
@@ -69,18 +68,12 @@ Baobab.prototype._stack = function(spec) {
 Baobab.prototype._commit = function() {
   var self = this;
 
-  // Applying modification
-  var result = update(this.data, this._futureUpdate);
-
-  // Replacing data
-  var oldData = this.data;
-  this.data = result.data;
+  // Applying modification (mutation)
+  var log = update(this.data, this._futureUpdate);
 
   // Baobab-level update event
   this.emit('update', {
-    oldData: oldData,
-    newData: this.data,
-    log: result.log
+    log: log
   });
 
   // Resetting
@@ -112,14 +105,11 @@ Baobab.prototype.get = function(path) {
     path = Array.prototype.slice.call(arguments);
 
   if (path)
-    data = this.data.getIn(typeof path === 'string' ? [path] : path);
+    data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
   else
     data = this.data;
 
-  if (this.options.get('toJS'))
-    return data ? data.toJS() : data;
-  else
-    return data;
+  return data;
 };
 
 Baobab.prototype.set = function(key, val) {
@@ -140,10 +130,9 @@ Baobab.prototype.update = function(spec) {
 /**
  * Output
  */
-Baobab.prototype.toJS = function() {
-  return this.data.toJS();
+Baobab.prototype.toJSON = function() {
+  return this.data;
 };
-Baobab.prototype.toJSON = Baobab.prototype.toJS;
 Baobab.prototype.toString = function() {
   return 'Baobab ' + this.data.toString().replace(/^[^{]+\{/, '{');
 };

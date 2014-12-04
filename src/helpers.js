@@ -4,8 +4,7 @@
  *
  * Miscellaneous helper functions.
  */
-var Immutable = require('immutable'),
-    types = require('typology');
+var types = require('typology');
 
 // Retrieve nested objects
 function getIn(object, path) {

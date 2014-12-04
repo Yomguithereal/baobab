@@ -151,10 +151,9 @@ Cursor.prototype.update = function(spec) {
 /**
  * Output
  */
-Cursor.prototype.toJS = function() {
-  return this.get().toJS();
+Cursor.prototype.toJSON = function() {
+  return this.get();
 };
-Cursor.prototype.toJSON = Cursor.prototype.toJS;
 Cursor.prototype.toString = function() {
   return 'Cursor ' + this.get().toString().replace(/^[^{]+\{/, '{');
 };

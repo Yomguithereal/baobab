@@ -5,8 +5,7 @@
  * A handy method to mutate an atom according to the given specification.
  * Mostly inspired by http://facebook.github.io/react/docs/update.html
  */
-var Immutable = require('immutable'),
-    types = require('./typology.js');
+var types = require('./typology.js');
 
 var COMMANDS = {};
 [
@@ -116,19 +115,14 @@ function mutator(log, o, spec, path) {
 // Core function
 // NOTE: possible to achieve something better optimized through `asMutable`?
 function update(target, spec) {
-  var o = target.toJS(),
-      d = (spec.toJS) ? spec.toJS() : spec,
-      log = [],
+  var log = [],
       k;
 
-  mutator(log, o, d);
+  mutator(log, target, spec);
 
-  return {
-    log: log.map(function(s) {
-      return s.split('$$');
-    }),
-    data: Immutable.fromJS(o)
-  };
+  return log.map(function(s) {
+    return s.split('$$');
+  });
 }
 
 // Exporting
