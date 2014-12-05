@@ -24,38 +24,46 @@ function getIn(object, path) {
 }
 
 // Merge objects
-// TODO: optimize obviously...
+function conflict(a, b, key) {
+  return (key in (a || {}) && (key in (b || {})));
+}
+
 function merge() {
-  var i,
-      k,
-      res = {},
-      l = arguments.length;
+  var res = {},
+      current,
+      next,
+      l = arguments.length,
+      i,
+      k;
 
-  for (i = l - 1; i >= 0; i--)
-    for (k in arguments[i])
-      if (res[k] && types.check(arguments[i][k], 'object')) {
+  for (i = l - 1; i >= 0; i--) {
+    for (k in arguments[i]) {
+      current = res[k];
+      next = arguments[i][k];
 
-        if (('$push' in (res[k] || {})) &&
-            ('$push' in arguments[i][k])) {
-          if (types.check(res[k].$push, 'array'))
-            res[k].$push = res[k].$push.concat(arguments[i][k].$push);
+      if (current && types.check(next, 'object')) {
+
+        if (conflict(current, next, '$push')) {
+          if (types.check(current.$push, 'array'))
+            current.$push = current.$push.concat(next.$push);
           else
-            res[k].$push = [res[k].$push].concat(arguments[i][k].$push);
+            current.$push = [current.$push].concat(next.$push);
         }
-        else if (('$unshift' in (res[k] || {})) &&
-                 ('$unshift' in arguments[i][k])) {
-          if (types.check(arguments[i][k].$unshift, 'array'))
-            res[k].$unshift = arguments[i][k].$unshift.concat(res[k].$unshift);
+        else if (conflict(current, next, '$unshift')) {
+          if (types.check(next.$unshift, 'array'))
+            current.$unshift = next.$unshift.concat(current.$unshift);
           else
-            res[k].$unshift = [arguments[i][k].$unshift].concat(res[k].$unshift);
+            current.$unshift = [next.$unshift].concat(current.$unshift);
         }
         else {
-          res[k] = merge(arguments[i][k], res[k]);
+          res[k] = merge(next, current);
         }
       }
       else {
-        res[k] = arguments[i][k];
+        res[k] = next;
       }
+    }
+  }
 
   return res;
 }
