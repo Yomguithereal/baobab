@@ -5,6 +5,7 @@
  * Testing the library.
  */
 var assert = require('assert'),
+    Typology = require('typology'),
     Baobab = require('../src/baobab.js'),
     Cursor = require('../src/cursor.js'),
     async = require('async'),
@@ -224,6 +225,30 @@ describe('Baobab', function() {
         assert(baobab1.get() === baobab1.data);
         assert(baobab2.get() !== baobab2.data);
         assert.deepEqual(baobab2.get(), {hello: 'world'});
+      });
+    });
+
+    describe('Custom typology', function() {
+
+      it('a baobab should have an internal typology.', function() {
+        var baobab = new Baobab({hello: 'world'});
+        assert(baobab.typology instanceof Typology);
+      });
+
+      it('should be possible to pass a custom typology at instantiation.', function() {
+        var typology = new Typology({user: '?object'}),
+            baobab = new Baobab({hello: 'world'}, {typology: typology});
+
+        assert(baobab.typology instanceof Typology);
+        assert(baobab.typology.isValid('user'));
+      });
+
+      it('should be possible to pass an object defining custom types at instantiation.', function() {
+        var definitions = {user: '?object'},
+            baobab = new Baobab({hello: 'world'}, {typology: definitions});
+
+        assert(baobab.typology instanceof Typology);
+        assert(baobab.typology.isValid('user'));
       });
     });
   });

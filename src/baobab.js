@@ -6,6 +6,7 @@
  */
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
+    Typology = require('typology'),
     clone = require('lodash.clonedeep'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
@@ -39,6 +40,13 @@ function Baobab(initialData, opts) {
 
   // Merging defaults
   this.options = merge(opts, defaults);
+
+  // Internal typology
+  this.typology = this.options.typology ?
+    (types.check(this.options.typology, 'typology') ?
+      this.options.typology :
+      new Typology(this.options.typology)) :
+    new Typology();
 
   // Mixin
   this.mixin = mixins.baobab(this);
