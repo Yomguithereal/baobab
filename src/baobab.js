@@ -142,6 +142,13 @@ types.add('baobab', function(v) {
 });
 
 /**
+ * Output
+ */
+Baobab.prototype.toJSON = function() {
+  return this.get();
+};
+
+/**
  * Export
  */
 module.exports = Baobab;
