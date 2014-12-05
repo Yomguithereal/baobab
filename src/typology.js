@@ -10,6 +10,9 @@ var typology = new Typology({
   path: function(v) {
     return this.check(v, '?string|number') || this.check(v, ['string']);
   }
+  typology: function(v) {
+    return v instanceof Typology;
+  }
 });
 
 module.exports = typology;
