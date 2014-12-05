@@ -9,6 +9,7 @@ var Cursor = require('./cursor.js'),
     clone = require('lodash.clonedeep'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
+    merge = require('./merge.js'),
     types = require('./typology.js'),
     mixins = require('./mixins.js'),
     defaults = require('../defaults.json');
@@ -37,7 +38,7 @@ function Baobab(initialData, opts) {
   this._history = [];
 
   // Merging defaults
-  this.options = helpers.merge(opts, defaults);
+  this.options = merge(opts, defaults);
 
   // Mixin
   this.mixin = mixins.baobab(this);
@@ -53,7 +54,7 @@ Baobab.prototype._stack = function(spec) {
   if (!types.check(spec, 'object'))
     throw Error('Baobab.update: wrong specification.');
 
-  this._futureUpdate = helpers.merge(spec, this._futureUpdate);
+  this._futureUpdate = merge(spec, this._futureUpdate);
 
   // Should we let the user commit?
   if (!this.options.autoCommit)
