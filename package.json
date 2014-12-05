@@ -1,7 +1,7 @@
 {
   "name": "baobab",
   "version": "0.0.1",
-  "description": "JavaScript cursors for immutable data structures.",
+  "description": "JavaScript data tree with cursors.",
   "main": "index.js",
   "dependencies": {
     "emmett": "^2.1.1",
