@@ -216,6 +216,15 @@ describe('Baobab', function() {
           });
         });
       });
+
+      it('should be possible to serve cloned data.', function() {
+        var baobab1 = new Baobab({hello: 'world'}),
+            baobab2 = new Baobab({hello: 'world'}, {clone: true});
+
+        assert(baobab1.get() === baobab1.data);
+        assert(baobab2.get() !== baobab2.data);
+        assert.deepEqual(baobab2.get(), {hello: 'world'});
+      });
     });
   });
 

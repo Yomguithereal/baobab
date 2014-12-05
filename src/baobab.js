@@ -116,7 +116,7 @@ Baobab.prototype.get = function(path) {
   else
     data = this.data;
 
-  return data;
+  return this.options.clone ? clone(data) : data;
 };
 
 Baobab.prototype.set = function(key, val) {
