@@ -43,9 +43,8 @@ function mutator(log, o, spec, path) {
       v = spec[k];
 
       // Logging update
-      // TODO: index here rather?
-      if (!~log.indexOf(hash))
-        log.push(hash);
+      if (hash && !log[hash])
+        log[hash] = true;
 
       // Applying
       switch (k) {
@@ -76,8 +75,8 @@ function mutator(log, o, spec, path) {
         v = spec[k].$set;
 
         // Logging update
-        if (!~log.indexOf(h))
-          log.push(h);
+        if (h && !log[h])
+          log[h] = true;
         o[k] = v;
       }
       else if ('$apply' in (spec[k] || {})) {
@@ -88,10 +87,8 @@ function mutator(log, o, spec, path) {
           throw makeError(path.concat(k), 'using command $apply with a non function');
 
         // Logging update
-        if (!~log.indexOf(h))
-          log.push(h);
-
-        // NOTE: should we send an immutable variable here?
+        if (h && !log[h])
+          log[h] = true;
         o[k] = fn.call(null, o[k]);
       }
       else {
@@ -114,13 +111,12 @@ function mutator(log, o, spec, path) {
 
 // Core function
 function update(target, spec) {
-  var log = [],
-      k;
+  var log = {};
 
   mutator(log, target, spec);
 
-  return log.map(function(s) {
-    return s.split('$$');
+  return Object.keys(log).map(function(hash) {
+    return hash.split('$$');
   });
 }
 
