@@ -12,7 +12,6 @@ var COMMANDS = {};
   '$set',
   '$push',
   '$unshift',
-  '$merge',
   '$apply'
 ].forEach(function(c) {
   COMMANDS[c] = true;

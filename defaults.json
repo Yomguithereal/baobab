@@ -1,7 +1,6 @@
 {
   "autoCommit": true,
   "clone": false,
-  "freeze": false,
   "delay": true,
   "maxHistory": 0
 }
