@@ -51,7 +51,7 @@ function Baobab(initialData, opts) {
   // Internal validation
   this.validate = this.options.validate || null;
 
-  if (this.validate && !this.typology.check(this.data, this.validate))
+  if (!this.check())
     throw Error('Baobab: invalid data');
 
   // Mixin
@@ -87,11 +87,23 @@ Baobab.prototype._stack = function(spec) {
   return this;
 };
 
+/**
+ * Prototype
+ */
+Baobab.prototype.check = function() {
+  return this.validate ?
+    this.typology.check(this.data, this.validate) :
+    true;
+};
+
 Baobab.prototype.commit = function() {
   var self = this;
 
   // Applying modification (mutation)
   var log = update(this.data, this._futureUpdate);
+
+  if (!this.check())
+    this.emit('invalid');
 
   // Baobab-level update event
   this.emit('update', {
@@ -105,9 +117,6 @@ Baobab.prototype.commit = function() {
   return this;
 };
 
-/**
- * Prototype
- */
 Baobab.prototype.select = function(path) {
   if (!path)
     throw Error('Baobab.select: invalid path.');
