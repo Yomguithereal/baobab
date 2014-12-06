@@ -113,15 +113,23 @@ Baobab.prototype.check = function() {
     true;
 };
 
-Baobab.prototype.commit = function() {
+Baobab.prototype.commit = function(data, log) {
   var self = this;
 
-  // Applying modification (mutation)
-  var record = this._archive();
-  var log = update(this.data, this._futureUpdate);
+  if (data) {
 
-  if (record)
-    record.log = log;
+    // Override
+    this.data = data;
+  }
+  else {
+
+    // Applying modification (mutation)
+    var record = this._archive();
+    var log = update(this.data, this._futureUpdate);
+
+    if (record)
+      record.log = log;
+  }
 
   if (!this.check())
     this.emit('invalid');
@@ -199,6 +207,14 @@ Baobab.prototype.hasHistory = function() {
 
 Baobab.prototype.getHistory = function() {
   return this._history;
+};
+
+Baobab.prototype.undo = function() {
+  if (!this.hasHistory())
+    throw Error('Baobab.undo: no history recorded, cannot undo.');
+
+  var lastRecord = this._history.shift();
+  this.commit(lastRecord.data, lastRecord.log);
 };
 
 /**
