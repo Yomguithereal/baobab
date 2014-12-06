@@ -48,8 +48,15 @@ module.exports = {
         }
 
         // Making update handler
+        var fired = false;
         this.__updateHandler = (function() {
-          this.forceUpdate();
+          if (!fired) {
+            this.forceUpdate();
+            fired = true;
+            setTimeout(function() {
+              fired = false;
+            }, 0);
+          }
         }).bind(this);
       },
       componentDidMount: function() {
