@@ -64,6 +64,7 @@ helpers.inherits(Baobab, EventEmitter);
  * Private prototype
  */
 Baobab.prototype._stack = function(spec) {
+  var self = this;
 
   if (!types.check(spec, 'object'))
     throw Error('Baobab.update: wrong specification.');
@@ -81,7 +82,9 @@ Baobab.prototype._stack = function(spec) {
   // Updating asynchronously
   if (!this._willUpdate) {
     this._willUpdate = true;
-    helpers.later(this.commit.bind(this));
+    helpers.later(function() {
+      self.commit();
+    });
   }
 
   return this;
