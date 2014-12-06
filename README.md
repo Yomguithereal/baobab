@@ -1,5 +1,22 @@
 # Baobab
 
-JavaScript cursors for immutable data structures.
+Description Rather POC and WIP for the moment
 
-**Pre-release 0.0.1**
+## Installation
+Build
+
+## Usage
+
+### Instantiation
+
+### Cursors
+
+### Updates
+
+### Events
+
+## Contribution
+[![Build Status](https://travis-ci.org/Yomguithereal/baobab.svg)](https://travis-ci.org/Yomguithereal/baobab)
+
+## License
+MIT
