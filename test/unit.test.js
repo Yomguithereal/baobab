@@ -506,6 +506,30 @@ describe('Baobab', function() {
           done();
         });
       });
+
+      it('an upper set should correctly resolve.', function(done) {
+        var baobab = new Baobab({hello: {color: 'blue'}});
+
+        baobab.select('hello', 'color').set('yellow');
+        baobab.set('hello', 'purple');
+
+        baobab.on('update', function() {
+          assert.deepEqual(baobab.get(), {hello: 'purple'});
+          done();
+        });
+      });
+
+      it('a $set/$apply conflict should correctly resolve.', function(done) {
+        var baobab = new Baobab({number: 1});
+
+        baobab.set('number', 2);
+        baobab.update({number: {$apply: function(d) { return d + 2; }}});
+
+        baobab.on('update', function() {
+          assert.strictEqual(baobab.get('number'), 3);
+          done();
+        });
+      });
     });
   });
 });
