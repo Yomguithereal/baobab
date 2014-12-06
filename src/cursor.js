@@ -124,8 +124,15 @@ Cursor.prototype.get = function(path) {
     return this.root.get(this.path);
 };
 
-Cursor.prototype.set = function(value) {
-  return this.update({$set: value});
+Cursor.prototype.set = function(key, value) {
+  if (arguments.length < 2) {
+    return this.update({$set: key});
+  }
+  else {
+    var spec = {};
+    spec[key] = {$set: value};
+    return this.update(spec);
+  }
 };
 
 Cursor.prototype.push = function(value) {
