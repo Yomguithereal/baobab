@@ -285,6 +285,21 @@ describe('Baobab', function() {
         baobab.set('hello', 42);
       });
     });
+
+    describe('History', function() {
+
+      it('should be possible to record passed states.', function(done) {
+        var baobab = new Baobab({name: 'Maria'}, {maxHistory: 1});
+
+        baobab.set('name', 'Estelle');
+
+        process.nextTick(function() {
+          assert(baobab.hasHistory());
+          assert.deepEqual(baobab.getHistory(), [{log: [['name']], data: {name: 'Maria'}}]),
+          done();
+        });
+      });
+    });
   });
 
   describe('Cursor API', function() {

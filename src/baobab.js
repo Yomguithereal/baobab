@@ -87,6 +87,23 @@ Baobab.prototype._stack = function(spec) {
   return this;
 };
 
+Baobab.prototype._archive = function() {
+  if (this.options.maxHistory <= 0)
+    return;
+
+  var record = {
+    data: clone(this.data)
+  };
+
+  // Replacing
+  if (this._history.length === this.options.maxHistory) {
+    this._history.pop();
+  }
+  this._history.unshift(record);
+
+  return record;
+};
+
 /**
  * Prototype
  */
@@ -100,7 +117,11 @@ Baobab.prototype.commit = function() {
   var self = this;
 
   // Applying modification (mutation)
+  var record = this._archive();
   var log = update(this.data, this._futureUpdate);
+
+  if (record)
+    record.log = log;
 
   if (!this.check())
     this.emit('invalid');
@@ -170,6 +191,14 @@ Baobab.prototype.set = function(key, val) {
 
 Baobab.prototype.update = function(spec) {
   return this._stack(spec);
+};
+
+Baobab.prototype.hasHistory = function() {
+  return !!this._history.length;
+};
+
+Baobab.prototype.getHistory = function() {
+  return this._history;
 };
 
 /**

@@ -124,6 +124,16 @@ Cursor.prototype.get = function(path) {
     return this.root.get(this.path);
 };
 
+Cursor.prototype.getReference = function(path) {
+  if (arguments.length > 1)
+    path = Array.prototype.slice.call(arguments);
+
+  if (path)
+    return this.root.getReference(this.path.concat(path));
+  else
+    return this.root.getReference(this.path);
+};
+
 Cursor.prototype.set = function(key, value) {
   if (arguments.length < 2) {
     return this.update({$set: key});
