@@ -48,6 +48,12 @@ function Baobab(initialData, opts) {
       new Typology(this.options.typology)) :
     new Typology();
 
+  // Internal validation
+  this.validate = this.options.validate || null;
+
+  if (this.validate && !this.typology.check(this.data, this.validate))
+    throw Error('Baobab: invalid data');
+
   // Mixin
   this.mixin = mixins.baobab(this);
 }

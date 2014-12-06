@@ -250,6 +250,19 @@ describe('Baobab', function() {
         assert(baobab.typology instanceof Typology);
         assert(baobab.typology.isValid('user'));
       });
+
+      it('invalid initial data should throw an error.', function() {
+
+        assert.throws(function() {
+          new Baobab(
+            {hello: 'world'},
+            {
+              validate: {hello: 'word'},
+              typology: {word: 'object'}
+            }
+          );
+        }, /invalid data/);
+      });
     });
   });
 

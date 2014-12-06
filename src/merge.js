@@ -6,7 +6,7 @@
  */
 var types = require('typology');
 
-// Test conflicts
+// Helpers
 function conflict(a, b, key) {
   return (key in (a || {}) && (key in (b || {})));
 }
