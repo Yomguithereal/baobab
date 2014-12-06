@@ -295,7 +295,7 @@ describe('Baobab', function() {
 
         process.nextTick(function() {
           assert(baobab.hasHistory());
-          assert.deepEqual(baobab.getHistory(), [{log: [['name']], data: {name: 'Maria'}}]),
+          assert.deepEqual(baobab.getHistory(), [{log: [['name']], data: {name: 'Maria'}}]);
           done();
         });
       });

@@ -113,19 +113,21 @@ Baobab.prototype.check = function() {
     true;
 };
 
-Baobab.prototype.commit = function(data, log) {
-  var self = this;
+Baobab.prototype.commit = function(referenceRecord) {
+  var self = this,
+      log;
 
-  if (data) {
+  if (referenceRecord) {
 
     // Override
-    this.data = data;
+    this.data = referenceRecord.data;
+    log = referenceRecord.log;
   }
   else {
 
     // Applying modification (mutation)
     var record = this._archive();
-    var log = update(this.data, this._futureUpdate);
+    log = update(this.data, this._futureUpdate);
 
     if (record)
       record.log = log;
@@ -214,7 +216,7 @@ Baobab.prototype.undo = function() {
     throw Error('Baobab.undo: no history recorded, cannot undo.');
 
   var lastRecord = this._history.shift();
-  this.commit(lastRecord.data, lastRecord.log);
+  this.commit(lastRecord);
 };
 
 /**
