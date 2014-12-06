@@ -5,6 +5,11 @@
  * Miscellaneous helper functions.
  */
 
+// Make a real array of an array-like object
+function arrayOf(o) {
+  return Array.prototype.slice.call(o);
+}
+
 // Retrieve nested objects
 function getIn(object, path) {
   path = path || [];
@@ -56,6 +61,7 @@ var later = (typeof window === 'undefined') ?
     function(fn) {setTimeout(fn, 0);};
 
 module.exports = {
+  arrayOf: arrayOf,
   getIn: getIn,
   inherits: inherits,
   later: later,

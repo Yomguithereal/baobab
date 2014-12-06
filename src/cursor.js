@@ -129,11 +129,17 @@ Cursor.prototype.set = function(value) {
 };
 
 Cursor.prototype.push = function(value) {
-  return this.update({$push: value});
+  if (arguments.length > 1)
+    return this.update({$push: helpers.arrayOf(arguments)});
+  else
+    return this.update({$push: value});
 };
 
 Cursor.prototype.unshift = function(value) {
-  return this.update({$unshift: value});
+  if (arguments.length > 1)
+    return this.update({$unshift: helpers.arrayOf(arguments)});
+  else
+    return this.update({$unshift: value});
 };
 
 Cursor.prototype.append = function(value) {

@@ -472,6 +472,18 @@ describe('Baobab', function() {
           done();
         });
       });
+
+      it('should be possible to push several values through polymorphism.', function(done) {
+        var baobab = new Baobab({colors: ['blue']}),
+            colorCursor = baobab.select('colors');
+
+        colorCursor.push('yellow', 'green');
+
+        process.nextTick(function() {
+          assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'green']);
+          done();
+        });
+      });
     });
   });
 });
