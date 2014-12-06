@@ -235,6 +235,7 @@ describe('Baobab', function() {
 
         assert(baobab1.get() === baobab1.data);
         assert(baobab2.get() !== baobab2.data);
+        assert(baobab2.getReference() === baobab2.data);
         assert.deepEqual(baobab2.get(), {hello: 'world'});
       });
     });

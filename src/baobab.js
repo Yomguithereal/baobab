@@ -143,6 +143,20 @@ Baobab.prototype.get = function(path) {
   return this.options.clone ? clone(data) : data;
 };
 
+Baobab.prototype.getReference = function(path) {
+  var data;
+
+  if (arguments.length > 1)
+    path = Array.prototype.slice.call(arguments);
+
+  if (path)
+    data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
+  else
+    data = this.data;
+
+  return data;
+};
+
 Baobab.prototype.set = function(key, val) {
 
   if (arguments.length < 2)

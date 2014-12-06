@@ -114,6 +114,10 @@ Cursor.prototype.up = function() {
     return new Cursor(this.root, []);
 };
 
+Cursor.prototype.down = function() {
+
+};
+
 Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
     path = Array.prototype.slice.call(arguments);
