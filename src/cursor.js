@@ -149,14 +149,6 @@ Cursor.prototype.unshift = function(value) {
     return this.update({$unshift: value});
 };
 
-Cursor.prototype.append = function(value) {
-  return this.update({$append: value});
-};
-
-Cursor.prototype.prepend = function(value) {
-  return this.update({$prepend: value});
-};
-
 Cursor.prototype.update = function(spec) {
   return this._stack(spec);
 };
