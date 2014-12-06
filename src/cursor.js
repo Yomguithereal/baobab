@@ -25,7 +25,7 @@ function Cursor(root, path) {
   // Properties
   this.root = root;
   this.path = path;
-  this.relevant = this.get() !== undefined;
+  this.relevant = this.getReference() !== undefined;
 
   // Root listeners
   this.root.on('update', function(e) {
@@ -58,7 +58,7 @@ function Cursor(root, path) {
     }
 
     // Handling relevancy
-    var data = self.get() !== undefined;
+    var data = self.getReference() !== undefined;
 
     if (self.relevant) {
       if (data && shouldFire) {
@@ -112,10 +112,6 @@ Cursor.prototype.up = function() {
     return new Cursor(this.root, this.path.slice(0, -1));
   else
     return new Cursor(this.root, []);
-};
-
-Cursor.prototype.down = function() {
-
 };
 
 Cursor.prototype.get = function(path) {
