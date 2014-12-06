@@ -135,6 +135,21 @@ Cursor.prototype.set = function(key, value) {
   }
 };
 
+Cursor.prototype.apply = function(fn) {
+  if (typeof fn !== 'function')
+    throw Error('baobab.Cursor.apply: argument is not a function.');
+
+  return this.update({$apply: fn});
+};
+
+// TODO: maybe composing should be done here rather than in the merge
+Cursor.prototype.thread = function(fn) {
+  if (typeof fn !== 'function')
+    throw Error('baobab.Cursor.thread: argument is not a function.');
+
+  return this.update({$thread: fn});
+};
+
 Cursor.prototype.push = function(value) {
   if (arguments.length > 1)
     return this.update({$push: helpers.arrayOf(arguments)});

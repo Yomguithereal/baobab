@@ -10,6 +10,13 @@ function arrayOf(o) {
   return Array.prototype.slice.call(o);
 }
 
+// Simplistic composition
+function compose(fn1, fn2) {
+  return function(arg) {
+    return fn2(fn1(arg));
+  };
+}
+
 // Retrieve nested objects
 function getIn(object, path) {
   path = path || [];
@@ -62,6 +69,7 @@ var later = (typeof window === 'undefined') ?
 
 module.exports = {
   arrayOf: arrayOf,
+  compose: compose,
   getIn: getIn,
   inherits: inherits,
   later: later,

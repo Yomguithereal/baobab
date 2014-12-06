@@ -37,6 +37,17 @@ describe('Baobab', function() {
 
   describe('Helpers', function() {
 
+    describe('Composition', function() {
+
+      it('should be able to compose two simple functions.', function() {
+
+        var inc = function(i) { return i + 1; },
+          add2 = helpers.compose(inc, inc);
+
+        assert.strictEqual(add2(1), 3);
+      });
+    });
+
     describe('Typology', function() {
 
       it('the immutable type should work.', function() {
@@ -524,6 +535,19 @@ describe('Baobab', function() {
 
         baobab.set('number', 2);
         baobab.update({number: {$apply: function(d) { return d + 2; }}});
+
+        baobab.on('update', function() {
+          assert.strictEqual(baobab.get('number'), 3);
+          done();
+        });
+      });
+
+      it('should be possible to thread mutations.', function(done) {
+        var baobab = new Baobab({number: 1}),
+            inc = function(i) { return i + 1; };
+
+        baobab.update({number: {$thread: inc}});
+        baobab.update({number: {$thread: inc}});
 
         baobab.on('update', function() {
           assert.strictEqual(baobab.get('number'), 3);

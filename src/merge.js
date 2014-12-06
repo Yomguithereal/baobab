@@ -4,7 +4,8 @@
  *
  * A function used to merge updates in the stack.
  */
-var types = require('typology');
+var types = require('typology'),
+    helpers = require('./helpers.js');
 
 // Helpers
 function hasKey(o, key) {
@@ -40,10 +41,11 @@ function merge() {
   for (i = l - 1; i >= 0; i--) {
 
     // Upper $set/$apply and conflicts
-    if (hasOneOf(arguments[i], ['$set', '$apply'])) {
-      if (res.$set && arguments[i].$apply) {
+    // TODO: Boooo! Ugly...
+    if (hasOneOf(arguments[i], ['$set', '$apply', '$thread'])) {
+      if (res.$set && (arguments[i].$apply || arguments[i].$thread)) {
         delete res.$set;
-        res.$apply = arguments[i].$apply;
+        res.$apply = arguments[i].$apply || arguments[i].$thread;
       }
       else if (res.$apply && arguments[i].$set) {
         delete res.$apply;
@@ -54,6 +56,12 @@ function merge() {
       }
       else if (arguments[i].$apply) {
         res.$apply = arguments[i].$apply;
+      }
+      else if (arguments[i].$thread) {
+        if (res.$apply)
+          res.$apply = helpers.compose(res.$apply, arguments[i].$thread);
+        else
+          res.$apply = arguments[i].$thread;
       }
 
       continue;
