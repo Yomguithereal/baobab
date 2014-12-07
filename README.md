@@ -46,9 +46,7 @@ tree.get();
 
 ### Cursors
 
-#### Basics
-
-Then you can create cursor to easily access nested data in your tree and be able to listen to changes concerning the part of the tree you selected.
+Then you can create cursors to easily access nested data in your tree and be able to listen to changes concerning the part of the tree you selected.
 
 ```js
 // Considering the following tree
