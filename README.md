@@ -154,8 +154,8 @@ cursor.push(['purple', 'orange']);
 Obviously this will fail if target data is not an array.
 
 ```js
-cursor.unshitf('purple');
-cursor.unshitf(['purple', 'orange']);
+cursor.unshift('purple');
+cursor.unshift(['purple', 'orange']);
 ```
 
 *Apply a function*
@@ -188,9 +188,50 @@ cursor.thread(inc);
 
 #### Update specifications
 
-If you ever need to specify complex updates without resetting the whole subtree you are acting on, for readability and performance reasons, you remain free to use **Baobab**'s internal update specifications.
+If you ever need to specify complex updates without resetting the whole subtree you are acting on, for readability or performance reasons, you remain free to use **Baobab**'s internal update specifications.
 
-Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html).
+Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` and `cursor.update`.
+
+*Example*
+
+```js
+var tree = new Baobab({
+  users: {
+    john: {
+      firstname: 'John',
+      lastname: 'Silver'
+    },
+    jack: {
+      firstname: 'Jack',
+      lastname: 'Gold'
+    }
+  }
+});
+
+// From tree
+tree.update({
+  john: {
+    firstname: {
+      $set: 'John the 3rd'
+    }
+  },
+  jack: {
+    firstname: {
+      $apply: function(firstname) {
+        return firstname + ' the 2nd';
+      }
+    }
+  }
+});
+
+// From cursor
+var cursor = tree.select('john');
+cursor.update({
+  firstname: {
+    $set: 'Little Johnsie'
+  }
+})
+```
 
 ### Events
 
