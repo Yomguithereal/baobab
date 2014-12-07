@@ -4,6 +4,8 @@
 
 It is mainly inspired by functional zippers such as Clojure's [ones](http://clojuredocs.org/clojure.zip/zipper) and by [Om](https://github.com/swannodette/om)'s cursors.
 
+It aims at being a new brick towards the possibility of pure interfaces in JavaScript - pure as in "pure function" - where, given a dataset flowing into your application, the resulting rendered view would always be the exact same.
+
 ## Installation
 
 If you want to use **Baobab** with node.js or browserify, you can use npm.
@@ -365,13 +367,115 @@ var baobab = new Baobab(
 
 ### History
 
+A *baobab* tree, given you pass it correct options, is able to record *n* of its passed states so you can go back in time whenever you want.
+
+*Example*
+
+```js
+var baobab = new Baobab({name: 'Maria'}, {maxHistory: 1});
+
+baobab.set('name', 'Isabella');
+
+// On next frame, when update has been committed
+baobab.get('name')
+>>> 'Isabella'
+baobab.undo();
+baobab.get('name')
+>>> 'Maria'
+```
+
 ### React mixins
 
-componentShouldUpdate
+A *baobab* tree can easily be used as a UI model keeping the whole application state.
+
+It is therefore really simple to bind this centralized model to React components by using the library's built-in mixins. Those will naturally bind components to one or more cursors watching over parts of the main state so they can update only when relevant data has been changed.
+
+This basically makes the `componentShouldUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
 
 #### Tree level
 
+You can bind a React component to the tree itself and register some handy cursors:
+
+```jsx
+var tree = new Baobab({
+  users: ['John', 'Jack'],
+  information: {
+    title: 'My fancy App'
+  }
+});
+
+// Single cursor
+var UserList = React.createClass({
+  mixins: [tree.mixin],
+  cursor: ['users'],
+  render: function() {
+    var renderItem = function(name) {
+      return <li>{name}</li>;
+    };
+
+    return <ul>{this.cursor.get().map(renderItem)}</ul>;
+  }
+});
+
+// Multiple cursors
+var UserList = React.createClass({
+  mixins: [tree.mixin],
+  cursors: [['users'], ['information', 'title']],
+  render: function() {
+    var renderItem = function(name) {
+      return <li>{name}</li>;
+    };
+
+    return (
+      <div>
+        <h1>{this.cursors[1].get()}</h1>
+        <ul>{this.cursor[0].get().map(renderItem)}</ul>
+      </div>
+    );
+  }
+});
+
+// Better multiple cursors
+var UserList = React.createClass({
+  mixins: [tree.mixin],
+  cursors: {
+    users: ['users'],
+    title: ['information', 'title']
+  },
+  render: function() {
+    var renderItem = function(name) {
+      return <li>{name}</li>;
+    };
+
+    return (
+      <div>
+        <h1>{this.cursors.name.get()}</h1>
+        <ul>{this.cursors.users.get().map(renderItem)}</ul>
+      </div>
+    );
+  }
+});
+```
+
 #### Cursor level
+
+Else you can bind a single cursor to a React component
+
+```jsx
+var tree = new Baobab({users: ['John', 'Jack']}),
+    usersCursor = tree.select('users');
+
+var UserList = React.createClass({
+  mixins: [usersCursor.mixin],
+  render: function() {
+    var renderItem = function(name) {
+      return <li>{name}</li>;
+    };
+
+    return <ul>{this.cursor.get().map(renderItem)}</ul>;
+  }
+});
+```
 
 ## Contribution
 [![Build Status](https://travis-ci.org/Yomguithereal/baobab.svg)](https://travis-ci.org/Yomguithereal/baobab)
