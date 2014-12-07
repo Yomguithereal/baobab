@@ -168,7 +168,7 @@ cursor.apply(function(currentData) {
 
 As updates will be committed later, update orders are merged when given and the new order will sometimes override older ones, especially if you set the same key twice to different values.
 
-This is problematic when what you want is to increment a counter for instance. In those case, you need to *thread* functions that will be assembled through composition when the update orders are merged.
+This is problematic when what you want is to increment a counter for instance. In those cases, you need to *thread* functions that will be assembled through composition when the update orders are merged.
 
 ```js
 var inc = function(i) {
@@ -192,7 +192,7 @@ Those are widely inspired by React's immutable [helpers](http://facebook.github.
 
 *Specifications*
 
-Those specifications are described by a JavaScript object that follows the nested structure you are trying to update while you'll be able to use commands prefixed by a dollar.
+Those specifications are described by a JavaScript object that follows the nested structure you are trying to update and applying dollar-prefixed commands at leaf level.
 
 The available commands are the following and are basically the same as the cursor's updating methods:
 
@@ -247,21 +247,91 @@ cursor.update({
 
 Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound element, React components, for instance, can update.
 
-Example with child/parent
+Note however that only relevant cursors will be notified of data change.
+
+Events, can be bound to either the tree or cursors using the `on` method and use the [emmett](https://github.com/jacomyal/emmett) EventEmitter's library.
+
+*Example*
+
+```js
+// Considering the following tree
+var tree = new Baobab({
+  users: {
+    john: {
+      firstname: 'John',
+      lastname: 'Silver'
+    },
+    jack: {
+      firstname: 'Jack',
+      lastname: 'Gold'
+    }
+  }
+});
+
+// And the following cursors
+var usersCusor = tree.select('users'),
+    johnCursor = usersCursor.select('john'),
+    jackCursor = usersCursor.select('jack');
+
+// If we update the users
+usersCursor.update({
+  john: {
+    firstname: {$set: 'John the third'}
+  },
+  jack: {
+    firstname: {$set: 'Jack the second'}
+  }
+});
+// Every cursor above will be notified of the update
+
+// But if we update only john
+johnCursor.set('firstname', 'John the third');
+// Only the users and john cursor will be notified
+```
 
 #### Tree level
 
 *update*
 
+Will fire if the tree is updated.
+
+```js
+tree.on('update', fn);
+```
+
 *invalid*
+
+Will fire if a data-validation specification was passed at instance and if new data does not abide by those specifications.
+
+```js
+tree.on('invalid', fn);
+```
 
 #### Cursor level
 
 *update*
 
+Will fire if data watched by cursor has updated.
+
+```js
+cursor.on('update', fn);
+```
+
 *irrelevant*
 
+Will fire if the cursor has become irrelevant and does not watch over any data anymore.
+
+```js
+cursor.on('irrelevant', fn);
+```
+
 *relevant*
+
+Will fire if the cursor is irrelevant but becomes relevant again.
+
+```js
+cursor.on('relevant', fn);
+```
 
 ### Options
 
@@ -290,6 +360,8 @@ var baobab = new Baobab(
 * **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree.
 * **delay** *boolean* [`true`]: should the tree delay the update to next frame or fire them synchronously?
 * **maxHistory** *number* [`0`]: max number of records the tree is allowed to keep in its history.
+* **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
+* **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
 
 ### History
 
