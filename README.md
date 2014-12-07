@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Yomguithereal/baobab.svg)](https://travis-ci.org/Yomguithereal/baobab)
+
 # Baobab
 
 **Baobab** is a JavaScript data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
@@ -478,7 +480,6 @@ var UserList = React.createClass({
 ```
 
 ## Contribution
-[![Build Status](https://travis-ci.org/Yomguithereal/baobab.svg)](https://travis-ci.org/Yomguithereal/baobab)
 
 Contributions are obviously welcome. This project is nothing but experimental and I would cherish some feedback and advice about the library.
 
