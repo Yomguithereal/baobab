@@ -192,6 +192,18 @@ If you ever need to specify complex updates without resetting the whole subtree 
 
 Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` and `cursor.update`.
 
+*Specifications*
+
+Those specifications are described by a JavaScript object that follows the nested structure you are trying to update while you'll be able to use commands prefixed by a dollar.
+
+The available commands are the following and are basically the same as the cursor's updating methods:
+
+* `$set`
+* `$apply`
+* `$thread`
+* `$push`
+* `$unshift`
+
 *Example*
 
 ```js
