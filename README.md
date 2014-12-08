@@ -160,7 +160,7 @@ cursor.unshift('purple');
 cursor.unshift(['purple', 'orange']);
 ```
 
-*Apply a function*
+*Applying a function*
 
 ```js
 cursor.apply(function(currentData) {
@@ -168,7 +168,7 @@ cursor.apply(function(currentData) {
 });
 ```
 
-*Thread a function*
+*Threading a function*
 
 As updates will be committed later, update orders are merged when given and the new order will sometimes override older ones, especially if you set the same key twice to different values.
 
