@@ -6,7 +6,7 @@
 
 It is mainly inspired by functional zippers such as Clojure's [ones](http://clojuredocs.org/clojure.zip/zipper) and by [Om](https://github.com/swannodette/om)'s cursors.
 
-It aims at being a new brick towards the possibility of pure interfaces in JavaScript - pure as in "pure function" - where, given a dataset flowing into your application, the resulting rendered view would always be the exact same.
+It can be paired with React easily through mixins to provide a centralized model holding your application's state.
 
 ## Installation
 
