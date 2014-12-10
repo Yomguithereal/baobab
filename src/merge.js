@@ -42,10 +42,10 @@ function merge() {
 
     // Upper $set/$apply and conflicts
     // TODO: Boooo! Ugly...
-    if (hasOneOf(arguments[i], ['$set', '$apply', '$thread'])) {
-      if (res.$set && (arguments[i].$apply || arguments[i].$thread)) {
+    if (hasOneOf(arguments[i], ['$set', '$apply', '$chain'])) {
+      if (res.$set && (arguments[i].$apply || arguments[i].$chain)) {
         delete res.$set;
-        res.$apply = arguments[i].$apply || arguments[i].$thread;
+        res.$apply = arguments[i].$apply || arguments[i].$chain;
       }
       else if (res.$apply && arguments[i].$set) {
         delete res.$apply;
@@ -57,11 +57,11 @@ function merge() {
       else if (arguments[i].$apply) {
         res.$apply = arguments[i].$apply;
       }
-      else if (arguments[i].$thread) {
+      else if (arguments[i].$chain) {
         if (res.$apply)
-          res.$apply = helpers.compose(res.$apply, arguments[i].$thread);
+          res.$apply = helpers.compose(res.$apply, arguments[i].$chain);
         else
-          res.$apply = arguments[i].$thread;
+          res.$apply = arguments[i].$chain;
       }
 
       continue;

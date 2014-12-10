@@ -585,12 +585,12 @@ describe('Baobab', function() {
         });
       });
 
-      it('should be possible to thread mutations.', function(done) {
+      it('should be possible to chain mutations.', function(done) {
         var baobab = new Baobab({number: 1}),
             inc = function(i) { return i + 1; };
 
-        baobab.update({number: {$thread: inc}});
-        baobab.update({number: {$thread: inc}});
+        baobab.update({number: {$chain: inc}});
+        baobab.update({number: {$chain: inc}});
 
         baobab.on('update', function() {
           assert.strictEqual(baobab.get('number'), 3);
