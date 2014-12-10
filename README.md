@@ -77,7 +77,7 @@ thirdColorCursor.get()
 >>> 'green'
 
 // Note you can perform subselections if you want to
-var colorCursor = paletteCursor.select('cursor');
+var colorCursor = paletteCursor.select('colors');
 ```
 
 #### Polymorphisms
@@ -392,7 +392,7 @@ A *baobab* tree can easily be used as a UI model keeping the whole application s
 
 It is therefore really simple to bind this centralized model to React components by using the library's built-in mixins. Those will naturally bind components to one or more cursors watching over parts of the main state so they can update only when relevant data has been changed.
 
-This basically makes the `componentShouldUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
+This basically makes the `shouldComponentUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
 
 #### Tree level
 
