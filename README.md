@@ -27,14 +27,24 @@ If you want to use it in the browser, just include the minified script located [
 
 ## Usage
 
-* [Instantiation](#instantiation)
-* [Cursors](#cursors)
-* [Updates](#updates)
-* [Events](#events)
-* [Options](#options)
-* [React mixins](#react-mixins)
+* [Basics](#basics)
+  * [Instantiation](#instantiation)
+  * [Cursors](#cursors)
+  * [Updates](#updates)
+  * [Events](#events)
+  * [React mixins](#react-mixins)
+* [Advanced](#advanced)
+  * [Polymorphisms](#polymorphisms)
+  * [Traversal](#traversal)
+  * [Options](#options)
+  * [History](#history)
+  * [Update specifications](#update-specifications)
+  * [Chaining mutations](#threading-mutations)
+  * [Data validation](#data-validation)
 
-### Instantiation
+### Basics
+
+#### Instantiation
 
 Creating a *baobab* is as simple as instantiating it with an initial data set (note that only objects or array should be given).
 
@@ -43,12 +53,12 @@ var Baobab = require('baobab');
 
 var tree = new Baobab({hello: 'world'});
 
-// Retrieving data
+// Retrieving data from your tree
 tree.get();
 >>> {hello: 'world'}
 ```
 
-### Cursors
+#### Cursors
 
 Then you can create cursors to easily access nested data in your tree and be able to listen to changes concerning the part of the tree you selected.
 
@@ -63,64 +73,32 @@ var tree = new Baobab({
 
 // Creating a cursor on the palette
 var paletteCursor = tree.select('palette');
-paletteCursor.get()
+paletteCursor.get();
 >>> {name: 'fancy', colors: ['blue', 'yellow', 'green']}
 
 // Creating a cursor on the palette's colors
-var colorsCursor = tree.select(['palette', 'colors']);
-colorsCursor.get()
+var colorsCursor = tree.select('palette', 'colors');
+colorsCursor.get();
 >>> ['blue', 'yellow', 'green']
 
 // Creating a cursor on the palette's third color
-var thirdColorCursor = tree.select(['palette', 'colors', 2]);
-thirdColorCursor.get()
+var thirdColorCursor = tree.select('palette', 'colors', 2);
+thirdColorCursor.get();
 >>> 'green'
 
-// Note you can perform subselections if you want to
+// Note you can also perform subselections if needed
 var colorCursor = paletteCursor.select('colors');
 ```
 
-#### Polymorphisms
-
-If you ever need to, know that they are many ways to select and retrieve data within a *baobab*.
-
-```js
-var tree = new Baobab({
-  palette: {
-    name: 'fancy',
-    colors: ['blue', 'yellow', 'green']
-  }
-});
-
-// Selecting
-var colorsCursor = tree.select('palette', 'colors');
-var colorsCursor = tree.select(['palette', 'colors']);
-var colorsCursor = tree.select('palette').select('colors');
-
-// Traversal
-var paletteCursor = colorsCursor.up();
-
-// Retrieving data
-colorsCursor.get(1)
->>> 'yellow'
-
-paletteCursor.get('colors', 2)
->>> 'green'
-
-tree.get('palette', 'colors');
-tree.get(['palette', 'colors']);
->>> ['blue', 'yellow', 'green']
-```
-
-### Updates
+#### Updates
 
 A *baobab* tree can obviously be updated. However, one has to to understand that he won't do it, at least by default, synchronously.
 
 Rather, the tree will stack and merge every update order you give him and will only commit them at the next frame or next tick in node.
 
-This enables the tree to perform efficient mutations and to be able to notify any relevant cursor that the data they are watching over has changed.
+This enables the tree to perform efficient mutations and to be able to notify any relevant cursors that the data they are watching over has changed.
 
-#### Tree level
+##### Tree level
 
 *Setting a key*
 
@@ -128,7 +106,7 @@ This enables the tree to perform efficient mutations and to be able to notify an
 tree.set('hello', 'world');
 ```
 
-#### Cursor level
+##### Cursor level
 
 *Replacing data at cursor*
 
@@ -168,92 +146,13 @@ cursor.apply(function(currentData) {
 });
 ```
 
-*Threading a function*
-
-As updates will be committed later, update orders are merged when given and the new order will sometimes override older ones, especially if you set the same key twice to different values.
-
-This is problematic when what you want is to increment a counter for instance. In those cases, you need to *thread* functions that will be assembled through composition when the update orders are merged.
-
-```js
-var inc = function(i) {
-  return i + 1;
-};
-
-// If cursor.get() >>> 1
-cursor.apply(inc);
-cursor.apply(inc);
-// will produce 2, while
-cursor.thread(inc);
-cursor.thread(inc);
-// will produce 3
-```
-
-#### Update specifications
-
-If you ever need to specify complex updates without resetting the whole subtree you are acting on, for readability or performance reasons, you remain free to use **Baobab**'s internal update specifications.
-
-Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` and `cursor.update`.
-
-*Specifications*
-
-Those specifications are described by a JavaScript object that follows the nested structure you are trying to update and applying dollar-prefixed commands at leaf level.
-
-The available commands are the following and are basically the same as the cursor's updating methods:
-
-* `$set`
-* `$apply`
-* `$thread`
-* `$push`
-* `$unshift`
-
-*Example*
-
-```js
-var tree = new Baobab({
-  users: {
-    john: {
-      firstname: 'John',
-      lastname: 'Silver'
-    },
-    jack: {
-      firstname: 'Jack',
-      lastname: 'Gold'
-    }
-  }
-});
-
-// From tree
-tree.update({
-  john: {
-    firstname: {
-      $set: 'John the 3rd'
-    }
-  },
-  jack: {
-    firstname: {
-      $apply: function(firstname) {
-        return firstname + ' the 2nd';
-      }
-    }
-  }
-});
-
-// From cursor
-var cursor = tree.select('john');
-cursor.update({
-  firstname: {
-    $set: 'Little Johnsie'
-  }
-})
-```
-
-### Events
+#### Events
 
 Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound element, React components, for instance, can update.
 
 Note however that only relevant cursors will be notified of data change.
 
-Events, can be bound to either the tree or cursors using the `on` method and use the [emmett](https://github.com/jacomyal/emmett) EventEmitter's library.
+Events, can be bound to either the tree or cursors using the `on` method.
 
 *Example*
 
@@ -293,7 +192,7 @@ johnCursor.set('firstname', 'John the third');
 // Only the users and john cursor will be notified
 ```
 
-#### Tree level
+##### Tree level
 
 *update*
 
@@ -311,7 +210,7 @@ Will fire if a data-validation specification was passed at instance and if new d
 tree.on('invalid', fn);
 ```
 
-#### Cursor level
+##### Cursor level
 
 *update*
 
@@ -337,56 +236,11 @@ Will fire if the cursor is irrelevant but becomes relevant again.
 cursor.on('relevant', fn);
 ```
 
-### Options
+##### N.B.
 
-You can pass those options at instantiation.
+For more information concerning **Baobab**'s event emitting, see the [emmett](https://github.com/jacomyal/emmett) library.
 
-```js
-var baobab = new Baobab(
-
-  // Initial data
-  {
-    palette: {
-      name: 'fancy',
-      colors: ['blue', 'green']
-    }
-  },
-
-  // Options
-  {
-    maxHistory: 5,
-    clone: true
-  }
-)
-```
-
-* **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
-* **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree.
-* **delay** *boolean* [`true`]: should the tree delay the update to next frame or fire them synchronously?
-* **maxHistory** *number* [`0`]: max number of records the tree is allowed to keep in its history.
-* **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
-* **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
-
-### History
-
-A *baobab* tree, given you pass it correct options, is able to record *n* of its passed states so you can go back in time whenever you want.
-
-*Example*
-
-```js
-var baobab = new Baobab({name: 'Maria'}, {maxHistory: 1});
-
-baobab.set('name', 'Isabella');
-
-// On next frame, when update has been committed
-baobab.get('name')
->>> 'Isabella'
-baobab.undo();
-baobab.get('name')
->>> 'Maria'
-```
-
-### React mixins
+#### React mixins
 
 A *baobab* tree can easily be used as a UI model keeping the whole application state.
 
@@ -394,7 +248,7 @@ It is therefore really simple to bind this centralized model to React components
 
 This basically makes the `shouldComponentUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
 
-#### Tree level
+##### Tree level
 
 You can bind a React component to the tree itself and register some handy cursors:
 
@@ -459,7 +313,7 @@ var UserList = React.createClass({
 });
 ```
 
-#### Cursor level
+##### Cursor level
 
 Else you can bind a single cursor to a React component
 
@@ -478,6 +332,180 @@ var UserList = React.createClass({
   }
 });
 ```
+
+### Advanced
+
+#### Polymorphisms
+
+If you ever need to, know that they are many ways to select and retrieve data within a *baobab*.
+
+```js
+var tree = new Baobab({
+  palette: {
+    name: 'fancy',
+    colors: ['blue', 'yellow', 'green']
+  }
+});
+
+// Selecting
+var colorsCursor = tree.select('palette', 'colors');
+var colorsCursor = tree.select(['palette', 'colors']);
+var colorsCursor = tree.select('palette').select('colors');
+
+// Retrieving data
+colorsCursor.get(1)
+>>> 'yellow'
+
+paletteCursor.get('colors', 2)
+>>> 'green'
+
+tree.get('palette', 'colors');
+tree.get(['palette', 'colors']);
+>>> ['blue', 'yellow', 'green']
+```
+
+#### Traversal
+
+*Going up in the tree*
+
+```js
+var tree = new Baobab({first: {second: 'yeah'}})
+    secondCursor = tree.select('first', 'second');
+
+var firstCursor = secondCursor.up();
+```
+
+#### Options
+
+You can pass those options at instantiation.
+
+```js
+var baobab = new Baobab(
+
+  // Initial data
+  {
+    palette: {
+      name: 'fancy',
+      colors: ['blue', 'green']
+    }
+  },
+
+  // Options
+  {
+    maxHistory: 5,
+    clone: true
+  }
+)
+```
+
+* **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
+* **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree.
+* **delay** *boolean* [`true`]: should the tree delay the update to next frame or fire them synchronously?
+* **maxHistory** *number* [`0`]: max number of records the tree is allowed to keep in its history.
+* **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
+* **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
+
+#### History
+
+A *baobab* tree, given you pass it correct options, is able to record *n* of its passed states so you can go back in time whenever you want.
+
+*Example*
+
+```js
+var baobab = new Baobab({name: 'Maria'}, {maxHistory: 1});
+
+baobab.set('name', 'Isabella');
+
+// On next frame, when update has been committed
+baobab.get('name')
+>>> 'Isabella'
+baobab.undo();
+baobab.get('name')
+>>> 'Maria'
+```
+
+#### Update specifications
+
+If you ever need to specify complex updates without resetting the whole subtree you are acting on, for readability or performance reasons, you remain free to use **Baobab**'s internal update specifications.
+
+Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` and `cursor.update`.
+
+*Specifications*
+
+Those specifications are described by a JavaScript object that follows the nested structure you are trying to update and applying dollar-prefixed commands at leaf level.
+
+The available commands are the following and are basically the same as the cursor's updating methods:
+
+* `$set`
+* `$apply`
+* `$chain`
+* `$push`
+* `$unshift`
+
+*Example*
+
+```js
+var tree = new Baobab({
+  users: {
+    john: {
+      firstname: 'John',
+      lastname: 'Silver'
+    },
+    jack: {
+      firstname: 'Jack',
+      lastname: 'Gold'
+    }
+  }
+});
+
+// From tree
+tree.update({
+  john: {
+    firstname: {
+      $set: 'John the 3rd'
+    }
+  },
+  jack: {
+    firstname: {
+      $apply: function(firstname) {
+        return firstname + ' the 2nd';
+      }
+    }
+  }
+});
+
+// From cursor
+var cursor = tree.select('john');
+cursor.update({
+  firstname: {
+    $set: 'Little Johnsie'
+  }
+})
+```
+
+#### Chaining mutations
+
+Because updates will be committed later, update orders are merged when given and the new order will sometimes override older ones, especially if you set the same key twice to different values.
+
+This is problematic when what you want is to increment a counter for instance. In those cases, you need to *chain* functions that will be assembled through composition when the update orders are merged.
+
+```js
+var inc = function(i) {
+  return i + 1;
+};
+
+// If cursor.get() >>> 1
+cursor.apply(inc);
+cursor.apply(inc);
+// will produce 2, while
+cursor.chain(inc);
+cursor.chain(inc);
+// will produce 3
+```
+
+#### Data validation
+
+WIP
 
 ## Contribution
 
