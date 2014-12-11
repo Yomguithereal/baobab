@@ -39,7 +39,7 @@ If you want to use it in the browser, just include the minified script located [
   * [Options](#options)
   * [History](#history)
   * [Update specifications](#update-specifications)
-  * [Chaining mutations](#threading-mutations)
+  * [Chaining mutations](#chaining-mutations)
   * [Data validation](#data-validation)
 
 ### Basics
