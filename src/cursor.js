@@ -25,7 +25,7 @@ function Cursor(root, path) {
   // Properties
   this.root = root;
   this.path = path;
-  this.relevant = this.getReference() !== undefined;
+  this.relevant = this.reference() !== undefined;
 
   // Root listeners
   this.root.on('update', function(e) {
@@ -58,7 +58,7 @@ function Cursor(root, path) {
     }
 
     // Handling relevancy
-    var data = self.getReference() !== undefined;
+    var data = self.reference() !== undefined;
 
     if (self.relevant) {
       if (data && shouldFire) {
@@ -100,7 +100,7 @@ Cursor.prototype.select = function(path) {
     throw Error('precursors.Cursor.select: invalid path.');
 
   if (arguments.length > 1)
-    path = Array.prototype.slice.call(arguments);
+    path = helpers.arrayOf(arguments);
 
   if (!types.check(path, 'path'))
     throw Error('precursors.Cursor.select: invalid path.');
@@ -116,7 +116,7 @@ Cursor.prototype.up = function() {
 
 Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
-    path = Array.prototype.slice.call(arguments);
+    path = helpers.arrayOf(arguments);
 
   if (path)
     return this.root.get(this.path.concat(path));
@@ -124,14 +124,24 @@ Cursor.prototype.get = function(path) {
     return this.root.get(this.path);
 };
 
-Cursor.prototype.getReference = function(path) {
+Cursor.prototype.reference = function(path) {
   if (arguments.length > 1)
-    path = Array.prototype.slice.call(arguments);
+    path = helpers.arrayOf(arguments);
 
   if (path)
-    return this.root.getReference(this.path.concat(path));
+    return this.root.reference(this.path.concat(path));
   else
-    return this.root.getReference(this.path);
+    return this.root.reference(this.path);
+};
+
+Cursor.prototype.clone = function(path) {
+  if (arguments.length > 1)
+    path = helpers.arrayOf(arguments);
+
+  if (path)
+    return this.root.clone(this.path.concat(path));
+  else
+    return this.root.clone(this.path);
 };
 
 Cursor.prototype.set = function(key, value) {

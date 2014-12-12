@@ -234,8 +234,10 @@ describe('Baobab', function() {
             baobab2 = new Baobab({hello: 'world'}, {clone: true});
 
         assert(baobab1.get() === baobab1.data);
+        assert(baobab1.clone() !== baobab1.data);
+        assert.deepEqual(baobab1.clone(), baobab1.data);
         assert(baobab2.get() !== baobab2.data);
-        assert(baobab2.getReference() === baobab2.data);
+        assert(baobab2.reference() === baobab2.data);
         assert.deepEqual(baobab2.get(), {hello: 'world'});
       });
     });

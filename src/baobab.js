@@ -156,7 +156,7 @@ Baobab.prototype.select = function(path) {
     throw Error('Baobab.select: invalid path.');
 
   if (arguments.length > 1)
-    path = Array.prototype.slice.call(arguments);
+    path = helpers.arrayOf(arguments);
 
   if (!types.check(path, 'path'))
     throw Error('Baobab.select: invalid path.');
@@ -167,7 +167,7 @@ Baobab.prototype.get = function(path) {
   var data;
 
   if (arguments.length > 1)
-    path = Array.prototype.slice.call(arguments);
+    path = helpers.arrayOf(arguments);
 
   if (path)
     data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
@@ -177,11 +177,11 @@ Baobab.prototype.get = function(path) {
   return this.options.clone ? clone(data) : data;
 };
 
-Baobab.prototype.getReference = function(path) {
+Baobab.prototype.reference = function(path) {
   var data;
 
   if (arguments.length > 1)
-    path = Array.prototype.slice.call(arguments);
+    path = helpers.arrayOf(arguments);
 
   if (path)
     data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
@@ -189,6 +189,20 @@ Baobab.prototype.getReference = function(path) {
     data = this.data;
 
   return data;
+};
+
+Baobab.prototype.clone = function(path) {
+  var data;
+
+  if (arguments.length > 1)
+    path = helpers.arrayOf(arguments);
+
+  if (path)
+    data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
+  else
+    data = this.data;
+
+  return clone(data);
 };
 
 Baobab.prototype.set = function(key, val) {
