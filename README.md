@@ -428,7 +428,7 @@ baobab.get('name')
 
 If you ever need to specify complex updates without resetting the whole subtree you are acting on, for readability or performance reasons, you remain free to use **Baobab**'s internal update specifications.
 
-Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` and `cursor.update`.
+Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html), themselves inspired by [MongoDB](http://www.mongodb.org/)'s ones and can be used through `tree.update` and `cursor.update`.
 
 *Specifications*
 
