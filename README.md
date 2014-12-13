@@ -375,6 +375,22 @@ var tree = new Baobab({first: {second: 'yeah'}})
 var firstCursor = secondCursor.up();
 ```
 
+*Going left/right/down in lists*
+
+```js
+var tree = new Baobab({
+  list: [[1, 2], [3, 4]]
+});
+
+var listCursor = tree.select('list');
+
+listCursor.down().right().get();
+>>> [3, 4]
+
+listCursor.select(1).down().left().get();
+>>> 3
+```
+
 #### Options
 
 You can pass those options at instantiation.
