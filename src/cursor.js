@@ -95,22 +95,46 @@ Cursor.prototype._stack = function(spec) {
  * Prototype
  */
 Cursor.prototype.select = function(path) {
-  if (!path)
-    throw Error('precursors.Cursor.select: invalid path.');
-
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
   if (!types.check(path, 'path'))
-    throw Error('precursors.Cursor.select: invalid path.');
-  return new Cursor(this.root, this.path.concat(path));
+    throw Error('baobab.Cursor.select: invalid path.');
+  return this.root.select(this.path.concat(path));
 };
 
 Cursor.prototype.up = function() {
   if (this.path.length)
-    return new Cursor(this.root, this.path.slice(0, -1));
+    return this.root.select(this.path.slice(0, -1));
   else
-    return new Cursor(this.root, []);
+    return this.root.select([]);
+};
+
+Cursor.prototype.left = function() {
+  var last = +this.path[this.path.length - 1];
+
+  if (isNaN(last))
+    throw Error('baobab.Cursor.left: cannot go left on a non-list type.');
+
+  return this.root.select(this.path.slice(0, -1).concat(last - 1));
+};
+
+Cursor.prototype.right = function() {
+  var last = +this.path[this.path.length - 1];
+
+  if (isNaN(last))
+    throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
+
+  return this.root.select(this.path.slice(0, -1).concat(last + 1));
+};
+
+Cursor.prototype.down = function() {
+  var last = +this.path[this.path.length - 1];
+
+  if (!(this.reference() instanceof Array))
+    throw Error('baobab.Cursor.down: cannot descend on a non-list type.');
+
+  return this.root.select(this.path.concat(0));
 };
 
 Cursor.prototype.get = function(path) {

@@ -153,9 +153,6 @@ Baobab.prototype.commit = function(referenceRecord) {
 };
 
 Baobab.prototype.select = function(path) {
-  if (!path)
-    throw Error('Baobab.select: invalid path.');
-
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 

@@ -29,7 +29,8 @@ var state = {
     firstname: 'John',
     lastname: 'Dillinger'
   },
-  setLater: null
+  setLater: null,
+  list: [[1, 2], [3, 4]]
 };
 
 // Tests
@@ -411,6 +412,41 @@ describe('Baobab', function() {
 
         assert.deepEqual(up.get(), baobab.get());
         assert.deepEqual(upper.get(), up.get());
+      });
+
+      it('should be possible to go left.', function() {
+        var left = colorCursor.select(1).left();
+
+        assert.strictEqual(left.get(), 'blue');
+        assert.strictEqual(left.up().select(0).left().get(), undefined);
+
+        assert.throws(function() {
+          colorCursor.left();
+        }, /left/);
+      });
+
+      it('should be possible to go right.', function() {
+        var left = colorCursor.select(0).right();
+
+        assert.strictEqual(left.get(), 'yellow');
+        assert.strictEqual(left.up().select(1).right().get(), undefined);
+
+        assert.throws(function() {
+          colorCursor.right();
+        }, /right/);
+      });
+
+      it('should be possible to descend.', function() {
+        var list = baobab.select('list');
+
+        assert.deepEqual(list.down().get(), [1, 2]);
+        assert.strictEqual(colorCursor.down().get(), 'blue');
+        assert.strictEqual(colorCursor.down().up().up().select('colors').down().get(), 'blue');
+        assert.strictEqual(list.down().right().down().right().get(), 4);
+
+        assert.throws(function() {
+          oneCursor.down();
+        }, /descend/);
       });
     });
 
