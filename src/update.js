@@ -30,7 +30,7 @@ function makeError(path, message) {
 function mutator(log, o, spec, path) {
   path = path || [];
 
-  var hash = path.join('$$'),
+  var hash = path.join('λ'),
       fn,
       h,
       k,
@@ -71,7 +71,7 @@ function mutator(log, o, spec, path) {
     else {
 
       if ('$set' in (spec[k] || {})) {
-        h = hash ? hash + '$$' + k : k;
+        h = hash ? hash + 'λ' + k : k;
         v = spec[k].$set;
 
         // Logging update
@@ -80,7 +80,7 @@ function mutator(log, o, spec, path) {
         o[k] = v;
       }
       else if ('$apply' in (spec[k] || {})) {
-        h = hash ? hash + '$$' + k : k;
+        h = hash ? hash + 'λ' + k : k;
         fn = spec[k].$apply;
 
         if (typeof fn !== 'function')
@@ -116,7 +116,7 @@ function update(target, spec) {
   mutator(log, target, spec);
 
   return Object.keys(log).map(function(hash) {
-    return hash.split('$$');
+    return hash.split('λ');
   });
 }
 

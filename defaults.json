@@ -1,6 +1,7 @@
 {
   "autoCommit": true,
   "clone": false,
+  "cursorSingletons": true,
   "delay": true,
   "maxHistory": 0
 }

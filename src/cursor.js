@@ -20,7 +20,6 @@ function Cursor(root, path) {
 
   // Enforcing array
   path = path || [];
-  path = (typeof path === 'string') ? [path] : path;
 
   // Properties
   this.root = root;

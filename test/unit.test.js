@@ -240,6 +240,14 @@ describe('Baobab', function() {
         assert(baobab2.reference() === baobab2.data);
         assert.deepEqual(baobab2.get(), {hello: 'world'});
       });
+
+      it('should be possible to shunt the singleton cursors.', function() {
+        var baobab1 = new Baobab({hello: 'world'}),
+            baobab2 = new Baobab({hello: 'world'}, {cursorSingletons: false});
+
+        assert(baobab1.select('hello') === baobab1.select('hello'));
+        assert(baobab2.select('hello') !== baobab2.select('hello'));
+      });
     });
 
     describe('Custom typology', function() {

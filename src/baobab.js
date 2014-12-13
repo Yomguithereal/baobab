@@ -37,6 +37,7 @@ function Baobab(initialData, opts) {
   this._futureUpdate = {};
   this._willUpdate = false;
   this._history = [];
+  this._registeredCursors = {};
 
   // Merging defaults
   this.options = merge(opts, defaults);
@@ -160,7 +161,26 @@ Baobab.prototype.select = function(path) {
 
   if (!types.check(path, 'path'))
     throw Error('Baobab.select: invalid path.');
-  return new Cursor(this, path);
+
+  // Casting to array
+  path = (typeof path === 'string') ? [path] : path;
+
+  // Registering a new cursor or giving the already existing one for path
+  if (!this.options.cursorSingletons) {
+    return new Cursor(this, path);
+  }
+  else {
+    var hash = path.join('λ');
+
+    if (!this._registeredCursors[hash]) {
+      var cursor = new Cursor(this, path);
+      this._registeredCursors[hash] = cursor;
+      return cursor;
+    }
+    else {
+      return this._registeredCursors[hash];
+    }
+  }
 };
 
 Baobab.prototype.get = function(path) {

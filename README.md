@@ -400,6 +400,7 @@ var baobab = new Baobab(
 
 * **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
 * **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree.
+* **cursorSingletons** *boolean* [`true`]: by default, a *baobab* tree stashes the created cursor so only one would be created by path. You can override this behaviour by setting `cursorSingletons` to `false`.
 * **delay** *boolean* [`true`]: should the tree delay the update to next frame or fire them synchronously?
 * **maxHistory** *number* [`0`]: max number of records the tree is allowed to keep in its history.
 * **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
