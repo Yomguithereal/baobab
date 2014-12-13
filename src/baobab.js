@@ -7,7 +7,6 @@
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
     Typology = require('typology'),
-    clone = require('lodash.clonedeep'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     merge = require('./merge.js'),
@@ -30,17 +29,18 @@ function Baobab(initialData, opts) {
   // Extending
   EventEmitter.call(this);
 
+  // Merging defaults
+  this.options = merge(opts, defaults);
+  this._cloner = this.options.cloningFunction || helpers.clone;
+
   // Properties
-  this.data = clone(initialData);
+  this.data = this._cloner(initialData);
 
   // Privates
   this._futureUpdate = {};
   this._willUpdate = false;
   this._history = [];
   this._registeredCursors = {};
-
-  // Merging defaults
-  this.options = merge(opts, defaults);
 
   // Internal typology
   this.typology = this.options.typology ?
@@ -96,7 +96,7 @@ Baobab.prototype._archive = function() {
     return;
 
   var record = {
-    data: clone(this.data)
+    data: this._cloner(this.data)
   };
 
   // Replacing
@@ -194,7 +194,7 @@ Baobab.prototype.get = function(path) {
   else
     data = this.data;
 
-  return this.options.clone ? clone(data) : data;
+  return this.options.clone ? this._cloner(data) : data;
 };
 
 Baobab.prototype.reference = function(path) {
@@ -222,7 +222,7 @@ Baobab.prototype.clone = function(path) {
   else
     data = this.data;
 
-  return clone(data);
+  return this._cloner(data);
 };
 
 Baobab.prototype.set = function(key, val) {

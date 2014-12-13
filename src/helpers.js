@@ -4,10 +4,45 @@
  *
  * Miscellaneous helper functions.
  */
+var types = require('typology');
 
 // Make a real array of an array-like object
 function arrayOf(o) {
   return Array.prototype.slice.call(o);
+}
+
+// Deep clone an object
+function clone(item) {
+  if (!item)
+    return item;
+
+  var result,
+      i,
+      k,
+      l;
+
+  if (types.check(item, 'array')) {
+    result = [];
+    for (i = 0, l = item.length; i < l; i++)
+      result.push(clone(item[i]));
+
+  } else if (types.check(item, 'date')) {
+    result = new Date(item.getTime());
+
+  } else if (types.check(item, 'object')) {
+    if (item.nodeType && typeof item.cloneNode === 'function')
+      result = item;
+    else if (!item.prototype) {
+      result = {};
+      for (i in item)
+        result[i] = clone(item[i]);
+    } else
+      result = item;
+  } else {
+    result = item;
+  }
+
+  return result;
 }
 
 // Simplistic composition
@@ -69,6 +104,7 @@ var later = (typeof window === 'undefined') ?
 
 module.exports = {
   arrayOf: arrayOf,
+  clone: clone,
   compose: compose,
   getIn: getIn,
   inherits: inherits,

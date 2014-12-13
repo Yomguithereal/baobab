@@ -1,7 +1,10 @@
 {
   "autoCommit": true,
   "clone": false,
+  "cloningFunction": null,
   "cursorSingletons": true,
   "delay": true,
-  "maxHistory": 0
+  "maxHistory": 0,
+  "typology": null,
+  "validate": null
 }

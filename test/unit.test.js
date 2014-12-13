@@ -248,6 +248,13 @@ describe('Baobab', function() {
         assert(baobab1.select('hello') === baobab1.select('hello'));
         assert(baobab2.select('hello') !== baobab2.select('hello'));
       });
+
+      it('should be possible to provide your own cloning function to the tree.', function() {
+        var baobab = new Baobab({hello: 'world'}, {cloningFunction: clone});
+
+        assert(baobab._cloner === clone);
+        assert.deepEqual(baobab.clone(), baobab.data);
+      });
     });
 
     describe('Custom typology', function() {
