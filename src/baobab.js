@@ -53,7 +53,7 @@ function Baobab(initialData, opts) {
   this.validate = this.options.validate || null;
 
   if (!this.check())
-    throw Error('Baobab: invalid data');
+    throw Error('Baobab: instantiating with invalid data');
 
   // Mixin
   this.mixin = mixins.baobab(this);
