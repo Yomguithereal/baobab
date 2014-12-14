@@ -6,7 +6,7 @@
 
 It is mainly inspired by functional zippers such as Clojure's [ones](http://clojuredocs.org/clojure.zip/zipper) and by [Om](https://github.com/swannodette/om)'s cursors.
 
-It can be paired with React easily through [mixins](#react-mixins) to provide a centralized model holding your application's state.
+It can be paired with **React** easily through [mixins](#react-mixins) to provide a centralized model holding your application's state.
 
 The intention behind this library is to experiment with pure interfaces - "pure" as in *pure function* - where, given a specific dataset flowing into your application, the interface would always be rendered the exact same.
 
