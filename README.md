@@ -148,7 +148,7 @@ cursor.apply(function(currentData) {
 
 #### Events
 
-Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound element, React components, for instance, can update.
+Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound elements, React components, for instance, can update.
 
 Note however that only relevant cursors will be notified of data change.
 
@@ -176,20 +176,14 @@ var usersCusor = tree.select('users'),
     johnCursor = usersCursor.select('john'),
     jackCursor = usersCursor.select('jack');
 
-// If we update the users
-usersCursor.update({
-  john: {
-    firstname: {$set: 'John the third'}
-  },
-  jack: {
-    firstname: {$set: 'Jack the second'}
-  }
-});
+// If we update both users
+johnCursor.set('firstname', 'John the third');
+jackCursor.set('firstname', 'Jack the second');
 // Every cursor above will be notified of the update
 
 // But if we update only john
 johnCursor.set('firstname', 'John the third');
-// Only the users and john cursor will be notified
+// Only the users and john cursors will be notified
 ```
 
 ##### Tree level
