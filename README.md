@@ -8,6 +8,8 @@ It is mainly inspired by functional zippers such as Clojure's [ones](http://cloj
 
 It can be paired with React easily through mixins to provide a centralized model holding your application's state.
 
+The intention behind this library is to experiment with pure interfaces - "pure" as in *pure function* - where, given a specific dataset flowing into your application, the interface would always be rendered the exact same.
+
 ## Installation
 
 If you want to use **Baobab** with node.js or browserify, you can use npm.
@@ -238,7 +240,7 @@ For more information concerning **Baobab**'s event emitting, see the [emmett](ht
 
 A *baobab* tree can easily be used as a UI model keeping the whole application state.
 
-It is therefore really simple to bind this centralized model to React components by using the library's built-in mixins. Those will naturally bind components to one or more cursors watching over parts of the main state so they can update only when relevant data has been changed.
+It is then really simple to bind this centralized model to React components by using the library's built-in mixins. Those will naturally bind components to one or more cursors watching over parts of the main state so they can update only when relevant data has been changed.
 
 This basically makes the `shouldComponentUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
 
@@ -409,17 +411,17 @@ var baobab = new Baobab(
 ```
 
 * **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
-* **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree.
+* **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree if you feel paranoid and know you might mutate the references by accident or need a cloned object to handle.
 * **cloningFunction** *function*: the library's cloning method is minimalist on purpose and won't cover edgy cases. You remain free to pass your own more complex cloning function to the tree if needed.
 * **cursorSingletons** *boolean* [`true`]: by default, a *baobab* tree stashes the created cursor so only one would be created by path. You can override this behaviour by setting `cursorSingletons` to `false`.
-* **delay** *boolean* [`true`]: should the tree delay the update to next frame or fire them synchronously?
-* **maxHistory** *number* [`0`]: max number of records the tree is allowed to keep in its history.
+* **delay** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
+* **maxHistory** *number* [`0`]: max number of records the tree is allowed to store within its internal history.
 * **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
 * **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
 
 #### History
 
-A *baobab* tree, given you pass it correct options, is able to record *n* of its passed states so you can go back in time whenever you want.
+A *baobab* tree, given you instantiate it with the correct option, is able to record *n* of its passed states so you can go back in time whenever you want.
 
 *Example*
 
