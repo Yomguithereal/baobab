@@ -8,7 +8,24 @@ It is mainly inspired by functional zippers such as Clojure's [ones](http://cloj
 
 It can be paired with **React** easily through [mixins](#react-mixins) to provide a centralized model holding your application's state.
 
-The intention behind this library is to experiment with pure interfaces - "pure" as in *pure function* - where, given a specific dataset flowing into your application, the interface would always be rendered the exact same.
+## Summary
+
+* [Basics](#basics)
+  * [Instantiation](#instantiation)
+  * [Cursors](#cursors)
+  * [Updates](#updates)
+  * [Events](#events)
+  * [React mixins](#react-mixins)
+* [Advanced](#advanced)
+  * [Polymorphisms](#polymorphisms)
+  * [Traversal](#traversal)
+  * [Options](#options)
+  * [History](#history)
+  * [Update specifications](#update-specifications)
+  * [Chaining mutations](#chaining-mutations)
+  * [Data validation](#data-validation)
+
+## Example
 
 ```js
 var Baobab = require('baobab');
@@ -47,21 +64,6 @@ If you want to use it in the browser, just include the minified script located [
 ```
 
 ## Usage
-
-* [Basics](#basics)
-  * [Instantiation](#instantiation)
-  * [Cursors](#cursors)
-  * [Updates](#updates)
-  * [Events](#events)
-  * [React mixins](#react-mixins)
-* [Advanced](#advanced)
-  * [Polymorphisms](#polymorphisms)
-  * [Traversal](#traversal)
-  * [Options](#options)
-  * [History](#history)
-  * [Update specifications](#update-specifications)
-  * [Chaining mutations](#chaining-mutations)
-  * [Data validation](#data-validation)
 
 ### Basics
 
