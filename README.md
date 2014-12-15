@@ -4,26 +4,31 @@
 
 **Baobab** is a JavaScript data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
 
-It is mainly inspired by functional zippers such as Clojure's [ones](http://clojuredocs.org/clojure.zip/zipper) and by [Om](https://github.com/swannodette/om)'s cursors.
+It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
 It can be paired with **React** easily through [mixins](#react-mixins) to provide a centralized model holding your application's state.
 
 ## Summary
 
-* [Basics](#basics)
-  * [Instantiation](#instantiation)
-  * [Cursors](#cursors)
-  * [Updates](#updates)
-  * [Events](#events)
-  * [React mixins](#react-mixins)
-* [Advanced](#advanced)
-  * [Polymorphisms](#polymorphisms)
-  * [Traversal](#traversal)
-  * [Options](#options)
-  * [History](#history)
-  * [Update specifications](#update-specifications)
-  * [Chaining mutations](#chaining-mutations)
-  * [Data validation](#data-validation)
+* [Example](#example)
+* [Installation](#installation)
+* [Usage](#usage)
+  * [Basics](#basics)
+    * [Instantiation](#instantiation)
+    * [Cursors](#cursors)
+    * [Updates](#updates)
+    * [Events](#events)
+    * [React mixins](#react-mixins)
+  * [Advanced](#advanced)
+    * [Polymorphisms](#polymorphisms)
+    * [Traversal](#traversal)
+    * [Options](#options)
+    * [History](#history)
+    * [Update specifications](#update-specifications)
+    * [Chaining mutations](#chaining-mutations)
+    * [Data validation](#data-validation)
+* [Contribution](#contribution)
+* [License](#license)
 
 ## Example
 
