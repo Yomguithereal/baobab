@@ -119,6 +119,15 @@ Cursor.prototype.left = function() {
   return this.root.select(this.path.slice(0, -1).concat(last - 1));
 };
 
+Cursor.prototype.leftmost = function() {
+  var last = +this.path[this.path.length - 1];
+
+  if (isNaN(last))
+    throw Error('baobab.Cursor.leftmost: cannot go left on a non-list type.');
+
+  return this.root.select(this.path.slice(0, -1).concat(0));
+};
+
 Cursor.prototype.right = function() {
   var last = +this.path[this.path.length - 1];
 
@@ -126,6 +135,17 @@ Cursor.prototype.right = function() {
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
   return this.root.select(this.path.slice(0, -1).concat(last + 1));
+};
+
+Cursor.prototype.rightmost = function() {
+  var last = +this.path[this.path.length - 1];
+
+  if (isNaN(last))
+    throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
+
+  var list = this.up().reference();
+
+  return this.root.select(this.path.slice(0, -1).concat(list.length - 1));
 };
 
 Cursor.prototype.down = function() {

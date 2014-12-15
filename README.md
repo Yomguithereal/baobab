@@ -394,16 +394,24 @@ var firstCursor = secondCursor.up();
 
 ```js
 var tree = new Baobab({
-  list: [[1, 2], [3, 4]]
+  list: [[1, 2], [3, 4]],
+  longList: ['one', 'two', 'three', 'four']
 });
 
-var listCursor = tree.select('list');
+var listCursor = tree.select('list'),
+    twoCursor = tree.select('longList', 1);
 
 listCursor.down().right().get();
 >>> [3, 4]
 
 listCursor.select(1).down().left().get();
 >>> 3
+
+twoCursor.leftmost().get();
+>>> 'one'
+
+twoCursor.rightmost().get();
+>>> 'four'
 ```
 
 #### Options

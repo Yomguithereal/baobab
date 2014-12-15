@@ -30,7 +30,8 @@ var state = {
     lastname: 'Dillinger'
   },
   setLater: null,
-  list: [[1, 2], [3, 4]]
+  list: [[1, 2], [3, 4]],
+  longList: [1, 2, 3, 4]
 };
 
 // Tests
@@ -447,6 +448,20 @@ describe('Baobab', function() {
         assert.throws(function() {
           oneCursor.down();
         }, /descend/);
+      });
+
+      it('should be possible to get to the leftmost item of a list.', function() {
+        var listItem = baobab.select('longList', 2);
+
+        assert.strictEqual(listItem.get(), 3);
+        assert.strictEqual(listItem.leftmost().get(), 1);
+      });
+
+      it('should be possible to get to the rightmost item of a list.', function() {
+        var listItem = baobab.select('longList', 2);
+
+        assert.strictEqual(listItem.get(), 3);
+        assert.strictEqual(listItem.rightmost().get(), 4);
       });
     });
 
