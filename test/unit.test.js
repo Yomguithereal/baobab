@@ -211,7 +211,7 @@ describe('Baobab', function() {
 
     describe('Options', function() {
       it('should be possible to commit changes immediately.', function() {
-        var baobab = new Baobab({hello: 'world'}, {delay: false});
+        var baobab = new Baobab({hello: 'world'}, {asynchronous: false});
         baobab.set('hello', 'you');
         assert.strictEqual(baobab.get('hello'), 'you');
       });

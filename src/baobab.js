@@ -77,7 +77,7 @@ Baobab.prototype._stack = function(spec) {
     return this;
 
   // Should we update synchronously?
-  if (!this.options.delay)
+  if (!this.options.asynchronous)
     return this.commit();
 
   // Updating asynchronously
