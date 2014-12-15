@@ -10,20 +10,27 @@ It can be paired with **React** easily through [mixins](#react-mixins) to provid
 
 ## Summary
 
-* [Basics](#basics)
-  * [Instantiation](#instantiation)
-  * [Cursors](#cursors)
-  * [Updates](#updates)
-  * [Events](#events)
-  * [React mixins](#react-mixins)
-* [Advanced](#advanced)
-  * [Polymorphisms](#polymorphisms)
-  * [Traversal](#traversal)
-  * [Options](#options)
-  * [History](#history)
-  * [Update specifications](#update-specifications)
-  * [Chaining mutations](#chaining-mutations)
-  * [Data validation](#data-validation)
+* [Example](#example)
+* [Installation](#installation)
+
+* [Usage](#usage)
+  * [Basics](#basics)
+    * [Instantiation](#instantiation)
+    * [Cursors](#cursors)
+    * [Updates](#updates)
+    * [Events](#events)
+    * [React mixins](#react-mixins)
+  * [Advanced](#advanced)
+    * [Polymorphisms](#polymorphisms)
+    * [Traversal](#traversal)
+    * [Options](#options)
+    * [History](#history)
+    * [Update specifications](#update-specifications)
+    * [Chaining mutations](#chaining-mutations)
+    * [Data validation](#data-validation)
+
+* [Contribution](#contribution)
+* [License](#license)
 
 ## Example
 
