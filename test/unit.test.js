@@ -298,7 +298,7 @@ describe('Baobab', function() {
       it('should emit an "invalid" event when data validation fails on commit.', function(done) {
         var baobab = new Baobab({hello: 'world'}, {validate: {hello: 'string'}});
 
-        baobab.on('invalid', function() {
+        baobab.on('invalid', function(e) {
           done();
         });
         baobab.set('hello', 42);

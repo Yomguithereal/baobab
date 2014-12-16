@@ -117,12 +117,6 @@ Baobab.prototype._archive = function() {
 /**
  * Prototype
  */
-Baobab.prototype.check = function() {
-  return this.validate ?
-    this.typology.check(this.data, this.validate) :
-    true;
-};
-
 Baobab.prototype.commit = function(referenceRecord) {
   var self = this,
       log;
@@ -143,8 +137,30 @@ Baobab.prototype.commit = function(referenceRecord) {
       record.log = log;
   }
 
-  if (!this.check())
-    this.emit('invalid');
+  if (this.validate) {
+    var errors = [],
+        l = log.length,
+        d,
+        i;
+
+    for (i = 0; i < l; i++) {
+      d = helpers.getIn(this.validate, log[i]);
+
+      if (!d)
+        continue;
+
+      try {
+        this.typology.check(this.get(log[i]), d, true);
+      }
+      catch (e) {
+        e.path = log[i].concat((e.path || []));
+        errors.push(e);
+      }
+    }
+
+    if (errors.length)
+      this.emit('invalid', {errors: errors});
+  }
 
   // Baobab-level update event
   this.emit('update', {
