@@ -2,7 +2,7 @@
  * Baobab Data Structure
  * ======================
  *
- * Encloses an immutable set of data exposing useful cursors to its user.
+ * A handy data tree with cursors.
  */
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
