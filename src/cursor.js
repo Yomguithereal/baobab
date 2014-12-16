@@ -213,7 +213,11 @@ Cursor.prototype.thread = function(fn) {
   return this.update({$thread: fn});
 };
 
+// TODO: consider dropping the ahead testing
 Cursor.prototype.push = function(value) {
+  if (!(this.reference() instanceof Array))
+    throw Error('baobab.Cursor.push: trying to push to non-array value.');
+
   if (arguments.length > 1)
     return this.update({$push: helpers.arrayOf(arguments)});
   else
@@ -221,6 +225,9 @@ Cursor.prototype.push = function(value) {
 };
 
 Cursor.prototype.unshift = function(value) {
+  if (!(this.reference() instanceof Array))
+    throw Error('baobab.Cursor.push: trying to push to non-array value.');
+
   if (arguments.length > 1)
     return this.update({$unshift: helpers.arrayOf(arguments)});
   else

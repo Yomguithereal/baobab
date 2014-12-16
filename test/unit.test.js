@@ -391,6 +391,24 @@ describe('Baobab', function() {
       });
     });
 
+    describe('Updates', function() {
+      var baobab = new Baobab(state);
+
+      var oneCursor = baobab.select('one');
+
+      it('should throw an error when trying to push to a non-array.', function() {
+        assert.throws(function() {
+          oneCursor.push('test');
+        }, /non-array/);
+      });
+
+      it('should throw an error when trying to unshift to a non-array.', function() {
+        assert.throws(function() {
+          oneCursor.unshift('test');
+        }, /non-array/);
+      });
+    });
+
     describe('Traversal', function() {
       var baobab = new Baobab(state);
 
