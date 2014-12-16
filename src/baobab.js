@@ -33,9 +33,6 @@ function Baobab(initialData, opts) {
   this.options = merge(opts, defaults);
   this._cloner = this.options.cloningFunction || helpers.clone;
 
-  // Properties
-  this.data = this._cloner(initialData);
-
   // Privates
   this._futureUpdate = {};
   this._willUpdate = false;
@@ -52,8 +49,17 @@ function Baobab(initialData, opts) {
   // Internal validation
   this.validate = this.options.validate || null;
 
-  if (!this.check())
-    throw Error('Baobab: instantiating with invalid data');
+  if (this.validate)
+    try {
+      this.typology.check(initialData, this.validate, true);
+    }
+    catch (e) {
+      e.message = '/' + e.path.join('/') + ': ' + e.message;
+      throw e;
+    }
+
+  // Properties
+  this.data = this._cloner(initialData);
 
   // Mixin
   this.mixin = mixins.baobab(this);

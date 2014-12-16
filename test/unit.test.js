@@ -292,7 +292,7 @@ describe('Baobab', function() {
               typology: {word: 'object'}
             }
           );
-        }, /invalid data/);
+        }, /Expected/);
       });
 
       it('should emit an "invalid" event when data validation fails on commit.', function(done) {

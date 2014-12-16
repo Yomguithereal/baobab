@@ -19,8 +19,8 @@ var COMMANDS = {};
 
 // Helpers
 function makeError(path, message) {
-  var e = new Error('precursors.update: ' + message + ' at path "/' +
-                    path.toString() + '"');
+  var e = new Error('precursors.update: ' + message + ' at path /' +
+                    path.toString());
 
   e.path = path;
   return e;
