@@ -472,6 +472,17 @@ baobab.get('name')
 >>> 'Maria'
 ```
 
+*Related Methods*
+
+```js
+// Check whether our tree hold records
+baobab.hasHistory();
+>>> true
+
+// Retrieving history records
+baobab.getHistory();
+```
+
 #### Update specifications
 
 If you ever need to specify complex updates without resetting the whole subtree you are acting on, for readability or performance reasons, you remain free to use **Baobab**'s internal update specifications.
