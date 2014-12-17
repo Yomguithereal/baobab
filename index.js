@@ -8,7 +8,7 @@ var Baobab = require('./src/baobab.js');
 
 // Non-writable version
 Object.defineProperty(Baobab, 'version', {
-  value: '0.1.0'
+  value: '0.2.0'
 });
 
 // Exporting
