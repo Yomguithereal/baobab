@@ -511,7 +511,7 @@ describe('Baobab', function() {
           done();
         });
 
-        parent.set({firstname: 'Napoleon', lastname: 'Bonaparte'});
+        parent.edit({firstname: 'Napoleon', lastname: 'Bonaparte'});
       });
 
       it('when a child updates, so does the parent.', function(done) {
@@ -539,7 +539,7 @@ describe('Baobab', function() {
           done();
         });
 
-        child.set('Napoleon');
+        child.edit('Napoleon');
       });
 
       it('when a leave updates, it should not update its siblings.', function(done) {
@@ -575,7 +575,7 @@ describe('Baobab', function() {
           done();
         });
 
-        leaf1.set('tada');
+        leaf1.edit('tada');
       });
 
       it('should be possible to listen to the cursor\'s relevancy.', function(done) {
@@ -650,7 +650,7 @@ describe('Baobab', function() {
       it('an upper set should correctly resolve.', function(done) {
         var baobab = new Baobab({hello: {color: 'blue'}});
 
-        baobab.select('hello', 'color').set('yellow');
+        baobab.select('hello', 'color').edit('yellow');
         baobab.set('hello', 'purple');
 
         baobab.on('update', function() {

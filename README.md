@@ -139,7 +139,7 @@ tree.set('hello', 'world');
 *Replacing data at cursor*
 
 ```js
-cursor.set({hello: 'world'});
+cursor.edit({hello: 'world'});
 ```
 
 *Setting a key*

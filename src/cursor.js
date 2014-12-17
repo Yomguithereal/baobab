@@ -188,14 +188,16 @@ Cursor.prototype.clone = function(path) {
 };
 
 Cursor.prototype.set = function(key, value) {
-  if (arguments.length < 2) {
-    return this.update({$set: key});
-  }
-  else {
-    var spec = {};
-    spec[key] = {$set: value};
-    return this.update(spec);
-  }
+  if (arguments.length < 2)
+    throw Error('baobab.Cursor.set: expecting at least key/value.');
+
+  var spec = {};
+  spec[key] = {$set: value};
+  return this.update(spec);
+};
+
+Cursor.prototype.edit = function(value) {
+  return this.update({$set: value});
 };
 
 Cursor.prototype.apply = function(fn) {
