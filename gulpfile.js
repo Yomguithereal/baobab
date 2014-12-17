@@ -3,8 +3,10 @@ var gulp = require('gulp'),
     mocha = require('gulp-mocha'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
+    header = require('gulp-header'),
     transform = require('vinyl-transform'),
-    browserify = require('browserify');
+    browserify = require('browserify'),
+    pkg = require('./package.json');
 
 // Files
 var files = ['./index.js', './src/*.js', './test/*.js'];
@@ -31,6 +33,7 @@ gulp.task('build', function() {
   return gulp.src('./index.js')
     .pipe(bundle)
     .pipe(uglify())
+    .pipe(header('/* baobab.js - Version: ' + pkg.version + ' - Author: Yomguithereal (Guillaume Plique) */\n'))
     .pipe(rename('baobab.min.js'))
     .pipe(gulp.dest('./build'));
 });
