@@ -226,7 +226,7 @@ tree.on('update', fn);
 
 *invalid*
 
-Will fire if a data-validation specification was passed at instance and if new data does not abide by those specifications.
+Will fire if a data-validation specification was passed at instance and if new data does not abide by those specifications. For more information about this, see the [data validation](#data-validation) part of the documentation.
 
 ```js
 tree.on('invalid', fn);
@@ -564,7 +564,46 @@ cursor.chain(inc);
 
 #### Data validation
 
-WIP
+Given you pass the correct parameters, a baobab tree is able to check whether its data is valid or not against the supplied specification.
+
+This specification must be written in the [typology](https://github.com/jacomyal/typology) library's style.
+
+*Example*
+
+```js
+var baobab = new Baobab(
+
+  // Initial state
+  {
+    hello: 'world',
+    colors: ['yellow', 'blue'],
+    counters: {
+      users: 3,
+      groups: 1
+    }
+  },
+
+  // Parameters
+  {
+    validate: {
+      hello: '?string',
+      colors: ['string'],
+      counters: {
+        users: 'number',
+        groups: 'number'
+      }
+    }
+  }
+);
+
+// If one updates the tree and does not respect the validation specification
+baobab.set('hello', 42);
+
+// Then the tree will fire an 'invalid' event containing a list of errors
+baobab.on('invalid', function(e) {
+  console.log(e.data.errors);
+});
+```
 
 ## Contribution
 
