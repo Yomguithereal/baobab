@@ -797,6 +797,78 @@ describe('Baobab', function() {
           });
         });
       });
+
+      it('should be possible to pass an array of cursors.', function(done) {
+        var baobab = new Baobab({name:'John', surname: 'Talbot'});
+
+        var Component = React.createClass({
+          mixins: [baobab.mixin],
+          cursors: [['name'], baobab.select('surname')],
+          render: function() {
+            return React.createElement('div', {id: 'treepathcursors'}, this.cursors[0].get() + ' ' + this.cursors[1].get());
+          }
+        });
+
+        React.render(React.createElement(Component, null), document.body, function() {
+          assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'John Talbot');
+
+          baobab.set('name', 'Jack');
+          process.nextTick(function() {
+            assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'Jack Talbot');
+            done();
+          });
+        });
+      });
+
+      it('should be possible to pass an object of paths.', function(done) {
+        var baobab = new Baobab({name:'John', surname: 'Talbot'});
+
+        var Component = React.createClass({
+          mixins: [baobab.mixin],
+          cursors: {
+            name: ['name'],
+            surname: ['surname']
+          },
+          render: function() {
+            return React.createElement('div', {id: 'treepathobject'}, this.cursors.name.get() + ' ' + this.cursors.surname.get());
+          }
+        });
+
+        React.render(React.createElement(Component, null), document.body, function() {
+          assert.strictEqual(document.querySelector('#treepathobject').textContent, 'John Talbot');
+
+          baobab.set('name', 'Jack');
+          process.nextTick(function() {
+            assert.strictEqual(document.querySelector('#treepathobject').textContent, 'Jack Talbot');
+            done();
+          });
+        });
+      });
+
+      it('should be possible to pass an object of cursors.', function(done) {
+        var baobab = new Baobab({name:'John', surname: 'Talbot'});
+
+        var Component = React.createClass({
+          mixins: [baobab.mixin],
+          cursors: {
+            name: ['name'],
+            surname: baobab.select('surname')
+          },
+          render: function() {
+            return React.createElement('div', {id: 'treepathoc'}, this.cursors.name.get() + ' ' + this.cursors.surname.get());
+          }
+        });
+
+        React.render(React.createElement(Component, null), document.body, function() {
+          assert.strictEqual(document.querySelector('#treepathoc').textContent, 'John Talbot');
+
+          baobab.set('name', 'Jack');
+          process.nextTick(function() {
+            assert.strictEqual(document.querySelector('#treepathoc').textContent, 'Jack Talbot');
+            done();
+          });
+        });
+      });
     });
   });
 });

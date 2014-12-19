@@ -22,7 +22,7 @@ module.exports = {
                       'make up your mind.');
 
         if (this.cursor) {
-          if (!types.check(this.cursor, 'string|array|cursor'))
+          if (!types.check(this.cursor, 'string|number|array|cursor'))
             throw Error('baobab.mixin.cursor: invalid data (cursor, string or array).');
 
           if (!types.check(this.cursor, 'cursor'))
