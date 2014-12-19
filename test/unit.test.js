@@ -6,12 +6,11 @@
  */
 var assert = require('assert'),
     React = require('react/addons'),
-    RTU = React.addons.TestUtils,
     Typology = require('typology'),
     Baobab = require('../src/baobab.js'),
     Cursor = require('../src/cursor.js'),
     async = require('async'),
-    // jsdom = require('jsdom'),
+    jsdom = require('jsdom').jsdom,
     helpers = require('../src/helpers.js'),
     update = require('../src/update.js'),
     types = require('../src/typology.js'),
@@ -689,32 +688,93 @@ describe('Baobab', function() {
     });
   });
 
-  // describe('React Mixins', function() {
+  describe('React Mixins', function() {
 
-  //   describe('Cursor Mixin', function() {
+    before(function() {
 
-  //     it('the mixin should work as stated.', function() {
-  //       var baobab = new Baobab({hello:'world'}),
-  //           cursor = baobab.select('hello');
+      // Setting jsdom
+      var dom = jsdom('');
+      global.document = dom;
+      global.window = dom.parentWindow;
 
-  //       var Component = React.createClass({
-  //         mixins: [cursor.mixin],
-  //         render: function() {
-  //           return React.createElement('div', null, this.cursor.get());
-  //         }
-  //       });
+      require('react/lib/ExecutionEnvironment').canUseDOM = true;
+    });
 
-  //       var component = RTU.renderIntoDocument(React.createElement(Component, null));
+    after(function() {
+      delete global.document;
+      delete global.window;
+    });
 
-  //       console.log(component);
-  //       throw 're'
+    describe('Cursor Mixin', function() {
 
-  //       assert.strictEqual($('div').text(), 'hello');
+      it('the mixin should work as stated.', function(done) {
+        var baobab = new Baobab({hello:'world'}),
+            cursor = baobab.select('hello');
 
-  //       cursor.edit('Hey');
+        var Component = React.createClass({
+          mixins: [cursor.mixin],
+          render: function() {
+            return React.createElement('div', {id: 'cursor'}, this.cursor.get());
+          }
+        });
 
-  //       process
-  //     });
-  //   });
-  // });
+        React.render(React.createElement(Component, null), document.body, function() {
+          assert.strictEqual(document.querySelector('#cursor').textContent, 'world');
+
+          baobab.set('hello', 'john');
+          process.nextTick(function() {
+            assert.strictEqual(document.querySelector('#cursor').textContent, 'john');
+            done();
+          });
+        });
+      });
+    });
+
+    describe('Tree mixin', function() {
+
+      it('should be possible to pass a single path.', function(done) {
+        var baobab = new Baobab({hello:'world'});
+
+        var Component = React.createClass({
+          mixins: [baobab.mixin],
+          cursor: ['hello'],
+          render: function() {
+            return React.createElement('div', {id: 'cursor'}, this.cursor.get());
+          }
+        });
+
+        React.render(React.createElement(Component, null), document.body, function() {
+          assert.strictEqual(document.querySelector('#cursor').textContent, 'world');
+
+          baobab.set('hello', 'john');
+          process.nextTick(function() {
+            assert.strictEqual(document.querySelector('#cursor').textContent, 'john');
+            done();
+          });
+        });
+      });
+
+      it('should be possible to pass a single cursor.', function(done) {
+        var baobab = new Baobab({hello:'world'});
+
+        var Component = React.createClass({
+          mixins: [baobab.mixin],
+          cursor: baobab.select('hello'),
+          render: function() {
+            return React.createElement('div', {id: 'cursor'}, this.cursor.get());
+          }
+        });
+
+        React.render(React.createElement(Component, null), document.body, function() {
+          assert.strictEqual(document.querySelector('#cursor').textContent, 'world');
+
+          baobab.set('hello', 'john');
+          process.nextTick(function() {
+            assert.strictEqual(document.querySelector('#cursor').textContent, 'john');
+            done();
+          });
+        });
+      });
+    });
+  });
 });

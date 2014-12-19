@@ -25,7 +25,8 @@ module.exports = {
           if (!types.check(this.cursor, 'string|array|cursor'))
             throw Error('baobab.mixin.cursor: invalid data (cursor, string or array).');
 
-          this.cursor = baobab.select(this.cursor);
+          if (!types.check(this.cursor, 'cursor'))
+            this.cursor = baobab.select(this.cursor);
           this.__type = 'single';
         }
         else if (this.cursors) {
