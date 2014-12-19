@@ -31,7 +31,7 @@ module.exports = {
         }
         else if (this.cursors) {
           if (!types.check(this.cursors, 'object|array'))
-            throw Error('baobab.mixin.cursor: invalid data (cursor, object or array).');
+            throw Error('baobab.mixin.cursor: invalid data (object or array).');
 
           if (types.check(this.cursors, 'array')) {
             this.cursors = this.cursors.map(function(path) {
