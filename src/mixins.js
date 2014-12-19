@@ -60,7 +60,7 @@ module.exports = {
           }
         }).bind(this);
       },
-      componentDidMount: function() {
+      componentDidMount: function() {
         if (this.__type === 'single') {
           this.cursor.on('update', this.__updateHandler);
         }
@@ -71,7 +71,7 @@ module.exports = {
         }
         else if (this.__type === 'object') {
           for (var k in this.cursors)
-            cursors[k].on('update', this.__updateHandler);
+            this.cursors[k].on('update', this.__updateHandler);
         }
       },
       componentWillUnmount: function() {
@@ -85,7 +85,7 @@ module.exports = {
         }
         else if (this.__type === 'object') {
           for (var k in this.cursors)
-            cursors[k].off('update', this.__updateHandler);
+            this.cursors[k].off('update', this.__updateHandler);
         }
       }
     };
