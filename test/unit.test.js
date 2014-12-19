@@ -365,6 +365,12 @@ describe('Baobab', function() {
         assert.deepEqual(colors, state.one.subtwo.colors);
       });
 
+      it('should be possible to retrieve data with a 0 key.', function() {
+        var sub = new Baobab([1, 2]);
+        assert.strictEqual(sub.get(0), 1);
+        assert.strictEqual(colorCursor.get(0), 'blue');
+      });
+
       it('should be possible to retrieve nested data.', function() {
         var colors = oneCursor.get(['subtwo', 'colors']);
 

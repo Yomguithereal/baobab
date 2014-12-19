@@ -23,7 +23,7 @@ function Baobab(initialData, opts) {
   if (!(this instanceof Baobab))
     return new Baobab(initialData, opts);
 
-  if (!types.check(initialData, 'object'))
+  if (!types.check(initialData, 'object|array'))
     throw Error('Baobab: invalid data.');
 
   // Extending
@@ -202,46 +202,28 @@ Baobab.prototype.select = function(path) {
   }
 };
 
-Baobab.prototype.get = function(path) {
-  var data;
-
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (path)
-    data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
-  else
-    data = this.data;
-
-  return this.options.clone ? this._cloner(data) : data;
-};
-
 Baobab.prototype.reference = function(path) {
   var data;
 
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (path)
-    data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
-  else
-    data = this.data;
+  if (!types.check(path, 'path'))
+    throw Error('Baobab.get: invalid path.');
 
-  return data;
+  return helpers.getIn(
+    this.data, types.check(path, 'string|number') ? [path] : path
+  );
+};
+
+Baobab.prototype.get = function() {
+  var ref = this.reference.apply(this, arguments);
+
+  return this.options.clone ? this._cloner(ref) : ref;
 };
 
 Baobab.prototype.clone = function(path) {
-  var data;
-
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (path)
-    data = helpers.getIn(this.data, typeof path === 'string' ? [path] : path);
-  else
-    data = this.data;
-
-  return this._cloner(data);
+  return this._cloner(this.reference.apply(this, arguments));
 };
 
 Baobab.prototype.set = function(key, val) {

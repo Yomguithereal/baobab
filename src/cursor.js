@@ -161,7 +161,7 @@ Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (path)
+  if (types.check(path, 'string|number|array'))
     return this.root.get(this.path.concat(path));
   else
     return this.root.get(this.path);
@@ -171,7 +171,7 @@ Cursor.prototype.reference = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (path)
+  if (types.check(path, 'string|number|array'))
     return this.root.reference(this.path.concat(path));
   else
     return this.root.reference(this.path);
@@ -181,7 +181,7 @@ Cursor.prototype.clone = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (path)
+  if (types.check(path, 'string|number|array'))
     return this.root.clone(this.path.concat(path));
   else
     return this.root.clone(this.path);
