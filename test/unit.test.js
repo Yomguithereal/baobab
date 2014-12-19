@@ -5,10 +5,13 @@
  * Testing the library.
  */
 var assert = require('assert'),
+    React = require('react/addons'),
+    RTU = React.addons.TestUtils,
     Typology = require('typology'),
     Baobab = require('../src/baobab.js'),
     Cursor = require('../src/cursor.js'),
     async = require('async'),
+    cheerio = require('cheerio'),
     helpers = require('../src/helpers.js'),
     update = require('../src/update.js'),
     types = require('../src/typology.js'),
@@ -685,4 +688,33 @@ describe('Baobab', function() {
       });
     });
   });
+
+  // describe('React Mixins', function() {
+
+  //   describe('Cursor Mixin', function() {
+
+  //     it('the mixin should work as stated.', function() {
+  //       var baobab = new Baobab({hello:'world'}),
+  //           cursor = baobab.select('hello');
+
+  //       var Component = React.createClass({
+  //         mixins: [cursor.mixin],
+  //         render: function() {
+  //           return React.createElement('div', null, this.cursor.get());
+  //         }
+  //       });
+
+  //       var component = RTU.renderIntoDocument(React.createElement(Component, null));
+
+  //       console.log(component);
+  //       throw 're'
+
+  //       assert.strictEqual($('div').text(), 'hello');
+
+  //       cursor.edit('Hey');
+
+  //       process
+  //     });
+  //   });
+  // });
 });

@@ -18,6 +18,7 @@
     "gulp-uglify": "^1.0.2",
     "lodash.clonedeep": "^2.4.1",
     "mocha": "^2.0.1",
+    "react": "^0.12.2",
     "vinyl-transform": "^1.0.0"
   },
   "scripts": {

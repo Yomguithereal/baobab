@@ -39,8 +39,9 @@ module.exports = {
             this.__type = 'array';
           }
           else {
+            // TODO: better validation
             for (var k in this.cursors) {
-              if (!types.check(path, 'cursor'))
+              if (!types.check(this.cursors[k], 'cursor'))
                 this.cursors[k] = baobab.select(this.cursors[k]);
             }
             this.__type = 'object';
