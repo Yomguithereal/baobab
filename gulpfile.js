@@ -9,7 +9,7 @@ var gulp = require('gulp'),
     pkg = require('./package.json');
 
 // Files
-var files = ['./index.js', './src/*.js', './test/*.js'];
+var files = ['./index.js', './src/*.js', './test/**/*.js'];
 
 // Linting
 gulp.task('lint', function() {
@@ -20,7 +20,7 @@ gulp.task('lint', function() {
 
 // Testing
 gulp.task('test', function() {
-  return gulp.src('./test/unit.test.js')
+  return gulp.src('./test/endpoint.js')
     .pipe(mocha({reporter: 'spec'}));
 });
 
