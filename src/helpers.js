@@ -61,7 +61,7 @@ function getIn(object, path) {
       l;
 
   for (i = 0, l = path.length; i < l; i++) {
-    if (typeof c[path[i]] === 'undefined')
+    if (!c)
       return;
     c = c[path[i]];
   }

@@ -44,6 +44,14 @@ describe('Baobab API', function() {
       assert.strictEqual(nestedInexistant, undefined);
     });
 
+    it('should not fail when retrieved data is null on the path.', function() {
+      var nullValue = baobab.get('setLater');
+      assert.strictEqual(nullValue, null);
+
+      var inexistant = baobab.get('setLater', 'a');
+      assert.strictEqual(inexistant, undefined);
+    });
+
     it('should throw an error when trying to instantiate an baobab with incorrect data.', function() {
       assert.throws(function() {
         new Baobab(undefined);
