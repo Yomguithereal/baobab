@@ -505,15 +505,13 @@ The available commands are the following and are basically the same as the curso
 
 ```js
 var tree = new Baobab({
-  users: {
-    john: {
-      firstname: 'John',
-      lastname: 'Silver'
-    },
-    jack: {
-      firstname: 'Jack',
-      lastname: 'Gold'
-    }
+  john: {
+    firstname: 'John',
+    lastname: 'Silver'
+  },
+  jack: {
+    firstname: 'Jack',
+    lastname: 'Gold'
   }
 });
 
