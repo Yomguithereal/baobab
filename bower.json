@@ -1,0 +1,25 @@
+{
+  "name": "baobab",
+  "main": "build/baobab.min.js",
+  "version": "0.2.1",
+  "homepage": "https://github.com/Yomguithereal/baobab",
+  "author": {
+    "name": "Guillaume Plique",
+    "url": "http://github.com/Yomguithereal"
+  },
+  "description": "JavaScript data tree with cursors.",
+  "keywords": [
+    "cursors",
+    "atom",
+    "tree",
+    "react"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
