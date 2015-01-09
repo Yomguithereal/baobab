@@ -1,6 +1,6 @@
 {
   "name": "baobab",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "JavaScript data tree with cursors.",
   "main": "index.js",
   "dependencies": {
