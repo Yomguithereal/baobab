@@ -7,6 +7,12 @@ var assert = require('assert'),
     Baobab = require('../../src/baobab.js'),
     jsdom = require('jsdom').jsdom;
 
+var testMixin = {
+  getInitialState: function() {
+    return {greeting: 'Yeah'};
+  }
+};
+
 describe('React Mixins', function() {
 
   before(function() {
@@ -184,6 +190,28 @@ describe('React Mixins', function() {
         baobab.set('name', 'Jack');
         process.nextTick(function() {
           assert.strictEqual(document.querySelector('#treepathoc').textContent, 'Jack Talbot');
+          done();
+        });
+      });
+    });
+
+    it('should be possible to pass custom mixins.', function(done) {
+      var baobab = new Baobab({name:'John', surname: 'Talbot'}, {mixins: [testMixin]});
+
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursor: ['name'],
+        render: function() {
+          return React.createElement('div', {id: 'treepathmixin'}, this.state.greeting + ' ' + this.cursor.get());
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body, function() {
+        assert.strictEqual(document.querySelector('#treepathmixin').textContent, 'Yeah John');
+
+        baobab.set('name', 'Jack');
+        process.nextTick(function() {
+          assert.strictEqual(document.querySelector('#treepathmixin').textContent, 'Yeah Jack');
           done();
         });
       });

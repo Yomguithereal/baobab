@@ -450,6 +450,7 @@ var baobab = new Baobab(
 * **cloningFunction** *function*: the library's cloning method is minimalist on purpose and won't cover edgy cases. You remain free to pass your own more complex cloning function to the tree if needed.
 * **cursorSingletons** *boolean* [`true`]: by default, a *baobab* tree stashes the created cursor so only one would be created by path. You can override this behaviour by setting `cursorSingletons` to `false`.
 * **maxHistory** *number* [`0`]: max number of records the tree is allowed to store within its internal history.
+* **mixins** *array*: optional mixins to merge with baobab's ones. Recommending the [pure render](http://facebook.github.io/react/docs/pure-render-mixin.html) one from react.
 * **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
 * **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
 

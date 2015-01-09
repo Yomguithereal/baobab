@@ -9,6 +9,7 @@ var types = require('./typology.js');
 module.exports = {
   baobab: function(baobab) {
     return {
+      mixins: baobab.options.mixins,
       componentWillMount: function() {
 
         // Binding baobab to instance
@@ -93,6 +94,7 @@ module.exports = {
   },
   cursor: function(cursor) {
     return {
+      mixins: cursor.root.options.mixins,
       componentWillMount: function() {
 
         // Binding cursor to instance

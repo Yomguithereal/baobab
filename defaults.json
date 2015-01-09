@@ -5,6 +5,7 @@
   "cloningFunction": null,
   "cursorSingletons": true,
   "maxHistory": 0,
+  "mixins": [],
   "typology": null,
   "validate": null
 }
