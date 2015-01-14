@@ -512,34 +512,38 @@ The available commands are the following and are basically the same as the curso
 
 ```js
 var tree = new Baobab({
-  john: {
-    firstname: 'John',
-    lastname: 'Silver'
-  },
-  jack: {
-    firstname: 'Jack',
-    lastname: 'Gold'
+  users: {
+    john: {
+      firstname: 'John',
+      lastname: 'Silver'
+    },
+    jack: {
+      firstname: 'Jack',
+      lastname: 'Gold'
+    }
   }
 });
 
 // From tree
 tree.update({
-  john: {
-    firstname: {
-      $set: 'John the 3rd'
-    }
-  },
-  jack: {
-    firstname: {
-      $apply: function(firstname) {
-        return firstname + ' the 2nd';
+  users: {
+    john: {
+      firstname: {
+        $set: 'John the 3rd'
+      }
+    },
+    jack: {
+      firstname: {
+        $apply: function(firstname) {
+          return firstname + ' the 2nd';
+        }
       }
     }
   }
 });
 
 // From cursor
-var cursor = tree.select('john');
+var cursor = tree.select('users', 'john');
 cursor.update({
   firstname: {
     $set: 'Little Johnsie'
