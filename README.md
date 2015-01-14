@@ -68,6 +68,12 @@ If you want to use it in the browser, just include the minified script located [
 <script src="baobab.min.js"></script>
 ```
 
+Or install with bower:
+
+```js
+bower install baobab
+```
+
 ## Usage
 
 ### Basics
