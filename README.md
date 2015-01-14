@@ -27,6 +27,7 @@ It can be paired with **React** easily through [mixins](#react-mixins) to provid
     * [Update specifications](#update-specifications)
     * [Chaining mutations](#chaining-mutations)
     * [Data validation](#data-validation)
+    * [Common pitfalls](#common-pitfalls)
 * [Contribution](#contribution)
 * [License](#license)
 
@@ -611,6 +612,33 @@ baobab.set('hello', 42);
 // Then the tree will fire an 'invalid' event containing a list of errors
 baobab.on('invalid', function(e) {
   console.log(e.data.errors);
+});
+```
+
+#### Common pitfalls
+
+*Controlled input state*
+
+If you need to store a react controlled input's state into a baobab tree, remember you have to commit changes synchronously through the `commit` method if you don't want to observe nasty cursor jumps.
+
+```jsx
+var tree = new Boabab({inputValue: null});
+
+var Input = React.createClass({
+  mixins: [tree.mixin],
+  cursor: ['inputValue'],
+  onChange: function(e) {
+    var newValue = e.target.value;
+
+    // If one edits the tree normally, i.e. asynchronously, the cursor will hop
+    this.cursor.edit(newValue);
+
+    // One has to commit synchronously the update for the input to work correctly
+    this.cursor.edit(newValue).commit();
+  },
+  render: function() {
+    return <input onChange={this.onChange} value={this.cursor.get()} />;
+  }
 });
 ```
 
