@@ -642,6 +642,25 @@ var Input = React.createClass({
 });
 ```
 
+*Immutable behaviour*
+
+TL;DR: Don't mutate things in your *baobab* tree. Let the tree handle its own mutations.
+
+For performance and size reasons *baobab* does not (yet?) use an immutable data structure. However, by producing a one-way data flow for your application state (like **React** would at component level), it must be used like an immutable data structure.
+
+For this reason, don't be surprised if you mutate things and break your tree.
+
+```js
+// This is bad:
+var users = tree.get('users');
+users[0].name = 'Jonathan';
+
+// This is also bad:
+var o = {hello: 'world'};
+tree.set('key', o);
+o.hello = 'other world';
+```
+
 ## Contribution
 
 Contributions are obviously welcome. This project is nothing but experimental and I would cherish some feedback and advice about the library.
