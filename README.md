@@ -646,7 +646,7 @@ var Input = React.createClass({
 
 TL;DR: Don't mutate things in your *baobab* tree. Let the tree handle its own mutations.
 
-For performance and size reasons *baobab* does not (yet?) use an immutable data structure. However, by producing a one-way data flow for your application state (like **React** would at component level), it must be used like an immutable data structure.
+For performance and size reasons *baobab* does not (yet?) use an immutable data structure. However, because it aims at producing a one-way data flow for your application state (like **React** would at component level), it must be used like an immutable data structure.
 
 For this reason, don't be surprised if you mutate things and break your tree.
 
