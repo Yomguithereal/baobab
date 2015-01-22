@@ -28,7 +28,7 @@ It can be paired with **React** easily through [mixins](#react-mixins) to provid
     * [Chaining mutations](#chaining-mutations)
     * [Data validation](#data-validation)
     * [Common pitfalls](#common-pitfalls)
-  * [Using Baobab with React JS](#with-react)
+  * [Using Baobab with React JS](#using-baobab-with-react-js)
 * [Contribution](#contribution)
 * [License](#license)
 
