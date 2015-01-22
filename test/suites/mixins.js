@@ -53,6 +53,31 @@ describe('React Mixins', function() {
         });
       });
     });
+
+    it('should allow mixins in options to access the cursors', function () {
+      var baobab = new Baobab({
+        foo: {
+          bar: []
+        }
+      }, {
+        mixins: [{
+          componentWillMount: function () {
+            assert.strictEqual(this.cursor.get(), baobab.select('foo', 'bar').get());
+          }
+        }]
+      }); 
+    
+      var Component = React.createClass({
+        mixins: [baobab.select('foo', 'bar').mixin],
+        render: function() {
+          return React.createElement('div', {}, null);
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body);
+
+    });
+
   });
 
   describe('Tree mixin', function() {
@@ -216,5 +241,29 @@ describe('React Mixins', function() {
         });
       });
     });
+
+    it('should allow mixins in options to access the tree', function () {
+      var baobab = new Baobab({
+        items: []
+      }, {
+        mixins: [{
+          componentWillMount: function () {
+            assert.strictEqual(this.cursor.get(), baobab.select('items').get());
+          }
+        }]
+      }); 
+    
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursor: ['items'],
+        render: function() {
+          return React.createElement('div', {}, null);
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body);
+
+    });
+
   });
 });
