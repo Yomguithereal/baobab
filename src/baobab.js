@@ -39,6 +39,20 @@ function Baobab(initialData, opts) {
   this._history = [];
   this._registeredCursors = {};
 
+  // Mutation function for cursors, e.g. React.addons.update that
+  // takes the data as first argument and any number of other arguments
+  if (this.options.cursorMutateFunction) {
+    
+    var mutateFunction = this.options.cursorMutateFunction;
+
+    Cursor.prototype.mutate = function () {
+      var args = [].slice.call(arguments, 0);
+      var data = this.get();
+      return this.edit(mutateFunction.apply(null, [data].concat(args)));
+    };
+
+  }
+
   // Internal typology
   this.typology = this.options.typology ?
     (types.check(this.options.typology, 'typology') ?

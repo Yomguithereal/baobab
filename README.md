@@ -28,6 +28,7 @@ It can be paired with **React** easily through [mixins](#react-mixins) to provid
     * [Chaining mutations](#chaining-mutations)
     * [Data validation](#data-validation)
     * [Common pitfalls](#common-pitfalls)
+  * [Using Baobab with React JS](#using-baobab-with-react-js)
 * [Contribution](#contribution)
 * [License](#license)
 
@@ -275,7 +276,9 @@ A *baobab* tree can easily be used as a UI model keeping the whole application s
 
 It is then really simple to bind this centralized model to React components by using the library's built-in mixins. Those will naturally bind components to one or more cursors watching over parts of the main state so they can update only when relevant data has been changed.
 
-This basically makes the `shouldComponentUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
+The mixins transfers the cursors state over to the state of the component itself. This allows you to take advantage of the `shouldComponentUpdate` method or other mixins like the **PureRenderMixin**, to control rendering.
+
+The Baobab mixin will always run first which means that you can access the cursors etc. in the mixin(s) you include.
 
 ##### Tree level
 
@@ -298,7 +301,7 @@ var UserList = React.createClass({
       return <li>{name}</li>;
     };
 
-    return <ul>{this.cursor.get().map(renderItem)}</ul>;
+    return <ul>{this.state.cursor.map(renderItem)}</ul>;
   }
 });
 
@@ -313,8 +316,8 @@ var UserList = React.createClass({
 
     return (
       <div>
-        <h1>{this.cursors[1].get()}</h1>
-        <ul>{this.cursor[0].get().map(renderItem)}</ul>
+        <h1>{this.state.cursors[1]}</h1>
+        <ul>{this.state.cursor[0].map(renderItem)}</ul>
       </div>
     );
   }
@@ -334,8 +337,8 @@ var UserList = React.createClass({
 
     return (
       <div>
-        <h1>{this.cursors.name.get()}</h1>
-        <ul>{this.cursors.users.get().map(renderItem)}</ul>
+        <h1>{this.state.cursors.name}</h1>
+        <ul>{this.state.cursors.users.map(renderItem)}</ul>
       </div>
     );
   }
@@ -357,7 +360,7 @@ var UserList = React.createClass({
       return <li>{name}</li>;
     };
 
-    return <ul>{this.cursor.get().map(renderItem)}</ul>;
+    return <ul>{this.cursor.map(renderItem)}</ul>;
   }
 });
 ```
@@ -455,6 +458,7 @@ var baobab = new Baobab(
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
 * **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree if you feel paranoid and know you might mutate the references by accident or need a cloned object to handle.
 * **cloningFunction** *function*: the library's cloning method is minimalist on purpose and won't cover edgy cases. You remain free to pass your own more complex cloning function to the tree if needed.
+* **cursorMutateFunction** *function*: you might want to handle the mutation of cursors yourself. By passing a function you will expose a **mutate** method on cursors, [see cursor mutate function](#cursormutate).
 * **cursorSingletons** *boolean* [`true`]: by default, a *baobab* tree stashes the created cursor so only one would be created by path. You can override this behaviour by setting `cursorSingletons` to `false`.
 * **maxHistory** *number* [`0`]: max number of records the tree is allowed to store within its internal history.
 * **mixins** *array*: optional mixins to merge with baobab's ones. Recommending the [pure render](http://facebook.github.io/react/docs/pure-render-mixin.html) one from react.
@@ -550,6 +554,35 @@ cursor.update({
     $set: 'Little Johnsie'
   }
 })
+```
+
+#### Cursor mutate function
+
+If you passed a function to the **cursorMutateFunction** option you expose a **mutate** method on cursors that allows you to handle the mutation yourself. This is especially useful with React JS immutability helper in combination with the PureRenderMixin.
+
+```javascript
+var tree = new Baobab({
+  item: []
+}, {
+
+  // A function that allows a function to mutate the value. If it is an array
+  // it is returned as a clone
+  cursorMutateFunction: function (value, cb) {
+    var newValue = cb(value);
+    if (Array.isArray(newValue)) {
+      return newValue.splice(0); // Clones arrays
+    }
+    return newValue;
+  }
+});
+
+tree.select('items').mutate(function (value) {
+  value.push('foo');
+  return value;
+});
+  
+});
+
 ```
 
 #### Chaining mutations
@@ -660,6 +693,22 @@ var o = {hello: 'world'};
 tree.set('key', o);
 o.hello = 'other world';
 ```
+
+## Using Baobab with React JS
+```javascript
+var tree = new Baobab({
+  items: []
+}, {
+  mixins: [React.addon.PureRenderMixin],
+  cursorMutateFunction: React.addon.update
+});
+
+tree.select('items').mutate({
+  $push: ['foo']
+});
+```
+
+This setup will ensure that by using cursors and the **mutate** method your components will only do a render when the state of a component changes, that being internal state or state collected from the Baobab tree.
 
 ## Contribution
 
