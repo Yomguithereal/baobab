@@ -265,5 +265,82 @@ describe('React Mixins', function() {
 
     });
 
+    it('should move state from CURSOR to state object of component', function () {
+
+      var baobab = new Baobab({
+        items: []
+      }); 
+    
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursor: ['items'],
+        render: function() {
+          assert.strictEqual(this.state.cursor, this.cursor.get());
+          return React.createElement('div', {}, null);
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body);
+
+    });
+
+    it('should move state from CURSORS array to state object of component', function () {
+
+      var baobab = new Baobab({
+        items: []
+      }); 
+    
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursors: [['items']],
+        render: function() {
+          assert.strictEqual(this.state.cursors[0], this.cursors[0].get());
+          return React.createElement('div', {}, null);
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body);
+
+    });
+
+    it('should move state from CURSORS map to state object of component', function () {
+
+      var baobab = new Baobab({
+        items: []
+      }); 
+    
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursors: {
+          items: ['items']
+        },
+        render: function() {
+          assert.strictEqual(this.state.cursors.items, this.cursors.items.get());
+          return React.createElement('div', {}, null);
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body);
+
+    });
+
+    it('should move state from a single CURSOR to state object of component', function () {
+
+      var baobab = new Baobab({
+        items: []
+      }); 
+    
+      var Component = React.createClass({
+        mixins: [baobab.select('items').mixin],
+        render: function() {
+          assert.strictEqual(this.state.cursor, this.cursor.get());
+          return React.createElement('div', {}, null);
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body);
+
+    });
+
   });
 });

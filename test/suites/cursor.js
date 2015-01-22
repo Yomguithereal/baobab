@@ -350,5 +350,26 @@ describe('Cursor API', function() {
         done();
       });
     });
+
+    it('should allow for a mutate function that takes a data argument as first argument', function () {
+      
+      var baobab = new Baobab({
+        items: []
+      }, {
+        cursorMutateFunction: function (data) {
+          return data.splice(0); // clone the array
+        },
+        asynchronous: false
+      });
+
+      var array = baobab.select('items').get();
+      baobab.select('items').mutate({
+        $push: ['foo']
+      });
+      var array2 = baobab.select('items').get();
+
+      assert.notStrictEqual(array, array2);
+      
+    });
   });
 });

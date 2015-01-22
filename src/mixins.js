@@ -52,15 +52,55 @@ module.exports = {
             }
           }
 
+          // A factory that creates the function to update the state of cursors to the
+          // component state. This is needed due to Reacts PureRenderMixin check of 
+          // equality. 
+          var getState = (function (component) {
+
+            var state = {};
+
+            // Prepare reference for state values. This will ensure that
+            // the state holders (array|object) will never change reference.
+            // This is important for predictability using the PureRenderMixin
+            if (component.__type === 'single') {
+              state.cursor = null;
+            } else {
+              state.cursors = component.__type === 'array' ? [] : {};
+            }
+
+            return function () {
+
+              switch(component.__type) {
+                case 'single':
+                  state.cursor = component.cursor.get();
+                  break;
+                case 'array':
+                  component.cursors.forEach(function (cursor, index) {
+                    state.cursors[index] = cursor.get();
+                  }.bind(this));
+                  break;
+                case 'object':
+                  Object.keys(component.cursors).forEach(function (cursorKey) {
+                    state.cursors[cursorKey] = component.cursors[cursorKey].get();
+                  }.bind(this));
+                  break;
+              }
+
+              return state;
+
+            };
+          }(this));
+          
+          this.setState(getState());
+
           // Making update handler
           var fired = false;
           this.__updateHandler = (function() {
             if (!fired) {
-              this.forceUpdate();
-              fired = true;
-              setTimeout(function() {
+              this.setState(getState(), function () {
                 fired = false;
-              }, 0);
+              });
+              fired = true;
             }
           }).bind(this);
         },
@@ -105,9 +145,16 @@ module.exports = {
           // Binding cursor to instance
           this.cursor = cursor;
 
+          // Set the initial state
+          this.setState({
+            cursor: cursor.get()
+          });
+
           // Making update handler
           this.__updateHandler = (function() {
-            this.forceUpdate();
+            this.setState({
+              cursor: cursor.get()
+            });
           }).bind(this);
         },
         componentDidMount: function() {
