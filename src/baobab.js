@@ -248,7 +248,7 @@ Baobab.prototype.set = function(key, val) {
   var spec = {};
   spec[key] = {$set: val};
 
-  return this._stack(spec);
+  return this.update(spec);
 };
 
 Baobab.prototype.update = function(spec) {
