@@ -577,7 +577,8 @@ var tree = new Baobab({
 });
 
 tree.select('items').mutate(function (value) {
-  return value.push('foo');
+  value.push('foo');
+  return value;
 });
   
 });
