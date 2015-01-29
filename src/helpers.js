@@ -70,6 +70,43 @@ function compose(fn1, fn2) {
   };
 }
 
+// Get first item matching predicate in list
+function first(a, fn) {
+  var i, l;
+  for (i = 0, l = a.length; i < l; i++) {
+    if (fn(a[i]))
+      return a[i];
+  }
+  return;
+}
+
+// Compare object to spec
+function compare(object, spec) {
+  var ok = true,
+      k;
+
+  for (k in spec) {
+    if (types.get(spec[k]) === 'object') {
+      ok *= compare(object[k]);
+    }
+    else if (types.get(spec[k]) === 'array') {
+      ok *= !!~spec[k].indexOf(object[k]);
+    }
+    else {
+      if (object[k] !== spec[k])
+        return false;
+    }
+  }
+
+  return !!ok;
+}
+
+function firstByComparison(object, spec) {
+  return first(object, function(e) {
+    return compare(e, spec);
+  });
+}
+
 // Retrieve nested objects
 function getIn(object, path) {
   path = path || [];
@@ -81,7 +118,22 @@ function getIn(object, path) {
   for (i = 0, l = path.length; i < l; i++) {
     if (!c)
       return;
-    c = c[path[i]];
+
+    if (typeof path[i] === 'function') {
+      if (types.get(c) !== 'array')
+        return;
+
+      c = first(c, path[i]);
+    }
+    else if (typeof path[i] === 'object') {
+      if (types.get(c) !== 'array')
+        return;
+
+      c = firstByComparison(c, path[i]);
+    }
+    else {
+      c = c[path[i]];
+    }
   }
 
   return c;

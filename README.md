@@ -372,7 +372,8 @@ If you ever need to, know that they are many ways to select and retrieve data wi
 var tree = new Baobab({
   palette: {
     name: 'fancy',
-    colors: ['blue', 'yellow', 'green']
+    colors: ['blue', 'yellow', 'green'],
+    items: [{id: 'one', value: 'Hey'}, {id: 'two', value: 'Ho'}]
   }
 });
 
@@ -391,6 +392,16 @@ paletteCursor.get('colors', 2)
 tree.get('palette', 'colors');
 tree.get(['palette', 'colors']);
 >>> ['blue', 'yellow', 'green']
+
+// Retrieving data by passing a function in the path
+tree.get('palette', 'colors', function(color) {
+  return color === 'green';
+});
+>>> 'green'
+
+// Retrieving data by passing a descriptor object in the path
+tree.get('items', {id: 'one'}, 'value');
+>>> 'Hey'
 ```
 
 #### Traversal

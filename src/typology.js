@@ -7,8 +7,10 @@
 var Typology = require('typology');
 
 var typology = new Typology({
+  step: 'string|number|array|function|object',
   path: function(v) {
-    return this.check(v, '?string|number') || this.check(v, ['string|number']);
+    return this.check(v, '?string|number|function|object') ||
+           this.check(v, ['string|number|function|object']);
   },
   typology: function(v) {
     return v instanceof Typology;

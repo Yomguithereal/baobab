@@ -44,6 +44,22 @@ describe('Baobab API', function() {
       assert.strictEqual(nestedInexistant, undefined);
     });
 
+    it('should be possible to retrieve items with a function in path.', function() {
+      var yellow = baobab.get('one', 'subtwo', 'colors', function(i) { return i === 'yellow'; });
+
+      assert.strictEqual(yellow, 'yellow');
+    });
+
+    it('should be possible to retrieve items with a descriptor object.', function() {
+      var firstItem = baobab.get('items', {id: 'one'}),
+          secondItem = baobab.get('items', {id: 'two', user: {name: 'John'}}),
+          thirdItem = baobab.get('items', {id: ['one', 'two']});
+
+      assert.deepEqual(firstItem, {id: 'one'});
+      assert.deepEqual(secondItem, {id: 'two', user: {name: 'John', surname: 'Talbot'}});
+      assert.deepEqual(firstItem, {id: 'one'});
+    });
+
     it('should not fail when retrieved data is null on the path.', function() {
       var nullValue = baobab.get('setLater');
       assert.strictEqual(nullValue, null);
