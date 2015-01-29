@@ -171,6 +171,8 @@ describe('Combination', function() {
   });
 
   it('should be possible to use some polymorphism.', function() {
+
+    // First case
     var combination = new Combination('or', [cursor, othercursor]),
         count = 0;
 
@@ -194,8 +196,9 @@ describe('Combination', function() {
     assert.strictEqual(count, 3);
     combination.release();
 
-    var combination = new Combination('or', cursor, othercursor),
-        count = 0;
+    // Second case
+    combination = new Combination('or', cursor, othercursor);
+    count = 0;
 
     combination.on('update', function() {
       count++;

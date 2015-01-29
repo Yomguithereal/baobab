@@ -4,7 +4,8 @@
  *
  * Compilation of react mixins designed to deal with cursors integration.
  */
-var types = require('./typology.js');
+var types = require('./typology.js'),
+    Combination = require('./combination.js');
 
 module.exports = {
   baobab: function(baobab) {
@@ -53,15 +54,8 @@ module.exports = {
           }
 
           // Making update handler
-          var fired = false;
           this.__updateHandler = (function() {
-            if (!fired) {
-              this.forceUpdate();
-              fired = true;
-              setTimeout(function() {
-                fired = false;
-              }, 0);
-            }
+            this.forceUpdate();
           }).bind(this);
         },
         componentDidMount: function() {
@@ -69,27 +63,25 @@ module.exports = {
             this.cursor.on('update', this.__updateHandler);
           }
           else if (this.__type === 'array') {
-            this.cursors.forEach(function(cursor) {
-              cursor.on('update', this.__updateHandler);
-            }, this);
+            this.__combination = new Combination('or', this.cursors);
+            this.__combination.on('update', this.__updateHandler);
           }
           else if (this.__type === 'object') {
-            for (var k in this.cursors)
-              this.cursors[k].on('update', this.__updateHandler);
+            this.__combination = new Combination(
+              'or',
+              Object.keys(this.cursors).map(function(k) {
+                return this.cursors[k];
+              }, this)
+            );
+            this.__combination.on('update', this.__updateHandler);
           }
         },
         componentWillUnmount: function() {
           if (this.__type === 'single') {
             this.cursor.off('update', this.__updateHandler);
           }
-          else if (this.__type === 'array') {
-            this.cursors.forEach(function(cursor) {
-              cursor.off('update', this.__updateHandler);
-            }, this);
-          }
-          else if (this.__type === 'object') {
-            for (var k in this.cursors)
-              this.cursors[k].off('update', this.__updateHandler);
+          else {
+            this.__combination.release();
           }
         }
       }].concat(baobab.options.mixins)
