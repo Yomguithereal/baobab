@@ -15,7 +15,7 @@ module.exports = {
          componentWillMount: function() {
 
           // Binding baobab to instance
-          this.baobab = baobab;
+          this.tree = baobab;
           this.__type = null;
 
           // Is there any cursors to create?
