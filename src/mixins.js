@@ -13,7 +13,7 @@ module.exports = {
 
       // Run Baobab mixin first to allow mixins to access cursors
       mixins: [{
-         componentWillMount: function() {
+        getInitialState: function() {
 
           // Binding baobab to instance
           this.tree = baobab;
@@ -25,12 +25,21 @@ module.exports = {
                         '`component.cursor` and `component.cursors`. Please ' +
                         'make up your mind.');
 
+          // Making update handler
+          this.__updateHandler = (function() {
+            this.setState(this.__getCursorData());
+          }).bind(this);
+
           if (this.cursor) {
             if (!types.check(this.cursor, 'string|number|array|cursor'))
               throw Error('baobab.mixin.cursor: invalid data (cursor, string or array).');
 
             if (!types.check(this.cursor, 'cursor'))
               this.cursor = baobab.select(this.cursor);
+
+            this.__getCursorData = (function() {
+              return {cursor: this.cursor.get()};
+            }).bind(this);
             this.__type = 'single';
           }
           else if (this.cursors) {
@@ -41,22 +50,31 @@ module.exports = {
               this.cursors = this.cursors.map(function(path) {
                 return types.check(path, 'cursor') ? path : baobab.select(path);
               });
+
+              this.__getCursorData = (function() {
+                return {cursors: this.cursors.map(function(cursor) {
+                  return cursor.get();
+                })};
+              }).bind(this);
               this.__type = 'array';
             }
             else {
-              // TODO: better validation
               for (var k in this.cursors) {
                 if (!types.check(this.cursors[k], 'cursor'))
                   this.cursors[k] = baobab.select(this.cursors[k]);
               }
+
+              this.__getCursorData = (function() {
+                var d = {};
+                for (k in this.cursors)
+                  d[k] = this.cursors[k].get();
+                return {cursors: d};
+              }).bind(this);
               this.__type = 'object';
             }
           }
 
-          // Making update handler
-          this.__updateHandler = (function() {
-            this.forceUpdate();
-          }).bind(this);
+          return this.__getCursorData();
         },
         componentDidMount: function() {
           if (this.__type === 'single') {
@@ -92,15 +110,17 @@ module.exports = {
 
       // Run cursor mixin first to allow mixins to access cursors
       mixins: [{
-        componentWillMount: function() {
+        getInitialState: function() {
 
           // Binding cursor to instance
           this.cursor = cursor;
 
           // Making update handler
           this.__updateHandler = (function() {
-            this.forceUpdate();
+            this.setState({cursor: this.cursor.get()});
           }).bind(this);
+
+          return {cursor: this.cursor.get()};
         },
         componentDidMount: function() {
 

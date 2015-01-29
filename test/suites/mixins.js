@@ -34,11 +34,14 @@ describe('React Mixins', function() {
 
     it('the mixin should work as stated.', function(done) {
       var baobab = new Baobab({hello:'world'}),
-          cursor = baobab.select('hello');
+          cursor = baobab.select('hello'),
+          i = 0;
 
       var Component = React.createClass({
         mixins: [cursor.mixin],
         render: function() {
+          assert.strictEqual(this.state.cursor, i ? 'john' : 'world');
+          i++;
           return React.createElement('div', {id: 'cursor'}, this.cursor.get());
         }
       });
@@ -65,8 +68,8 @@ describe('React Mixins', function() {
             assert.strictEqual(this.cursor.get(), baobab.select('foo', 'bar').get());
           }
         }]
-      }); 
-    
+      });
+
       var Component = React.createClass({
         mixins: [baobab.select('foo', 'bar').mixin],
         render: function() {
@@ -105,12 +108,15 @@ describe('React Mixins', function() {
     });
 
     it('should be possible to pass a single cursor.', function(done) {
-      var baobab = new Baobab({hello:'world'});
+      var baobab = new Baobab({hello:'world'}),
+          i = 0;
 
       var Component = React.createClass({
         mixins: [baobab.mixin],
         cursor: baobab.select('hello'),
         render: function() {
+          assert.strictEqual(this.state.cursor, i ? 'john' : 'world');
+          i++;
           return React.createElement('div', {id: 'treecursor'}, this.cursor.get());
         }
       });
@@ -127,12 +133,16 @@ describe('React Mixins', function() {
     });
 
     it('should be possible to pass an array of paths.', function(done) {
-      var baobab = new Baobab({name:'John', surname: 'Talbot'});
+      var baobab = new Baobab({name:'John', surname: 'Talbot'}),
+          i = 0;
 
       var Component = React.createClass({
         mixins: [baobab.mixin],
         cursors: [['name'], ['surname']],
         render: function() {
+          assert.strictEqual(this.state.cursors[0], i ? 'Jack' : 'John');
+          assert.strictEqual(this.state.cursors[1], 'Talbot');
+          i++;
           return React.createElement('div', {id: 'treepathlist'}, this.cursors[0].get() + ' ' + this.cursors[1].get());
         }
       });
@@ -171,7 +181,8 @@ describe('React Mixins', function() {
     });
 
     it('should be possible to pass an object of paths.', function(done) {
-      var baobab = new Baobab({name:'John', surname: 'Talbot'});
+      var baobab = new Baobab({name:'John', surname: 'Talbot'}),
+          i = 0;
 
       var Component = React.createClass({
         mixins: [baobab.mixin],
@@ -180,6 +191,9 @@ describe('React Mixins', function() {
           surname: ['surname']
         },
         render: function() {
+          assert.strictEqual(this.state.cursors.name, i ? 'Jack' : 'John');
+          assert.strictEqual(this.state.cursors.surname, 'Talbot');
+          i++;
           return React.createElement('div', {id: 'treepathobject'}, this.cursors.name.get() + ' ' + this.cursors.surname.get());
         }
       });
@@ -251,8 +265,8 @@ describe('React Mixins', function() {
             assert.strictEqual(this.cursor.get(), baobab.select('items').get());
           }
         }]
-      }); 
-    
+      });
+
       var Component = React.createClass({
         mixins: [baobab.mixin],
         cursor: ['items'],
