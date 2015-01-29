@@ -634,7 +634,8 @@ var Input = React.createClass({
     this.cursor.edit(newValue);
 
     // One has to commit synchronously the update for the input to work correctly
-    this.cursor.edit(newValue).commit();
+    this.cursor.edit(newValue);
+    this.tree.commit();
   },
   render: function() {
     return <input onChange={this.onChange} value={this.cursor.get()} />;
