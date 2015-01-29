@@ -11,38 +11,56 @@ function arrayOf(o) {
   return Array.prototype.slice.call(o);
 }
 
-// Deep clone an object
-function clone(item) {
-  if (!item)
+// Shallow clone
+function shallowClone(item) {
+  if (!item || !(item instanceof Object))
     return item;
 
-  var result,
-      i,
-      k,
-      l;
+  // Array
+  if (types.get(item) === 'array')
+    return item.slice(0);
 
-  if (types.check(item, 'array')) {
-    result = [];
-    for (i = 0, l = item.length; i < l; i++)
-      result.push(clone(item[i]));
+  // Date
+  if (types.get(item) === 'date')
+    return new Date(item.getTime());
 
-  } else if (types.check(item, 'date')) {
-    result = new Date(item.getTime());
-
-  } else if (types.check(item, 'object')) {
-    if (item.nodeType && typeof item.cloneNode === 'function')
-      result = item;
-    else if (!item.prototype) {
-      result = {};
-      for (i in item)
-        result[i] = clone(item[i]);
-    } else
-      result = item;
-  } else {
-    result = item;
+  // Object
+  if (types.get(item) === 'object') {
+    var k, o = {};
+    for (k in item)
+      o[k] = item[k];
+    return o;
   }
 
-  return result;
+  return item;
+}
+
+// Deep clone
+function deepClone(item) {
+  if (!item || !(item instanceof Object))
+    return item;
+
+  // Array
+  if (types.get(item) === 'array') {
+    var i, l, a = [];
+    for (i = 0, l = item.length; i < l; i++)
+      a.push(deepClone(item[i]));
+    return a;
+  }
+
+  // Date
+  if (types.get(item) === 'date')
+    return new Date(item.getTime());
+
+  // Object
+  if (types.get(item) === 'object') {
+    var k, o = {};
+    for (k in item)
+      o[k] = deepClone(item[k]);
+    return o;
+  }
+
+  return item;
 }
 
 // Simplistic composition
@@ -104,7 +122,8 @@ var later = (typeof window === 'undefined') ?
 
 module.exports = {
   arrayOf: arrayOf,
-  clone: clone,
+  deepClone: deepClone,
+  shallowClone: shallowClone,
   compose: compose,
   getIn: getIn,
   inherits: inherits,

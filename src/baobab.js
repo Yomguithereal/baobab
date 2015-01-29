@@ -31,7 +31,7 @@ function Baobab(initialData, opts) {
 
   // Merging defaults
   this.options = merge(opts, defaults);
-  this._cloner = this.options.cloningFunction || helpers.clone;
+  this._cloner = this.options.cloningFunction || helpers.deepClone;
 
   // Privates
   this._futureUpdate = {};
