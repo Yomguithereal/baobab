@@ -131,7 +131,7 @@ Baobab.prototype.commit = function(referenceRecord) {
 
     // Applying modification (mutation)
     var record = this._archive();
-    log = update(this.data, this._futureUpdate);
+    log = update(this.data, this._futureUpdate, this.options);
 
     if (record)
       record.log = log;

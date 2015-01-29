@@ -26,94 +26,91 @@ function makeError(path, message) {
   return e;
 }
 
-// Function mutating the object for performance reasons
-function mutator(log, o, spec, path) {
-  path = path || [];
+// Core function
+function update(target, spec, opts) {
+  var log = {};
 
-  var hash = path.join('λ'),
-      fn,
-      h,
-      k,
-      v,
-      i,
-      l;
+  // Closure mutating the internal object
+  (function mutator(o, spec, path) {
+    path = path || [];
 
-  for (k in spec) {
-    if (COMMANDS[k]) {
-      v = spec[k];
+    var hash = path.join('λ'),
+        fn,
+        h,
+        k,
+        v,
+        i,
+        l;
 
-      // Logging update
-      if (hash && !log[hash])
-        log[hash] = true;
-
-      // Applying
-      switch (k) {
-        case '$push':
-          if (!types.check(o, 'array'))
-            throw makeError(path, 'using command $push to a non array');
-
-          if (!types.check(v, 'array'))
-            o.push(v);
-          else
-            o.push.apply(o, v);
-          break;
-        case '$unshift':
-          if (!types.check(o, 'array'))
-            throw makeError(path, 'using command $unshift to a non array');
-
-          if (!types.check(v, 'array'))
-            o.unshift(v);
-          else
-            o.unshift.apply(o, v);
-          break;
-      }
-    }
-    else {
-
-      if ('$set' in (spec[k] || {})) {
-        h = hash ? hash + 'λ' + k : k;
-        v = spec[k].$set;
+    for (k in spec) {
+      if (COMMANDS[k]) {
+        v = spec[k];
 
         // Logging update
-        if (h && !log[h])
-          log[h] = true;
-        o[k] = v;
-      }
-      else if ('$apply' in (spec[k] || {})) {
-        h = hash ? hash + 'λ' + k : k;
-        fn = spec[k].$apply;
+        if (hash && !log[hash])
+          log[hash] = true;
 
-        if (typeof fn !== 'function')
-          throw makeError(path.concat(k), 'using command $apply with a non function');
+        // Applying
+        switch (k) {
+          case '$push':
+            if (!types.check(o, 'array'))
+              throw makeError(path, 'using command $push to a non array');
 
-        // Logging update
-        if (h && !log[h])
-          log[h] = true;
-        o[k] = fn.call(null, o[k]);
+            if (!types.check(v, 'array'))
+              o.push(v);
+            else
+              o.push.apply(o, v);
+            break;
+          case '$unshift':
+            if (!types.check(o, 'array'))
+              throw makeError(path, 'using command $unshift to a non array');
+
+            if (!types.check(v, 'array'))
+              o.unshift(v);
+            else
+              o.unshift.apply(o, v);
+            break;
+        }
       }
       else {
 
-        // If nested object does not exist, we create it
-        if (typeof o[k] === 'undefined')
-          o[k] = {};
+        if ('$set' in (spec[k] || {})) {
+          h = hash ? hash + 'λ' + k : k;
+          v = spec[k].$set;
 
-        // Recur
-        mutator(
-          log,
-          o[k],
-          spec[k],
-          path.concat(k)
-        );
+          // Logging update
+          if (h && !log[h])
+            log[h] = true;
+          o[k] = v;
+        }
+        else if ('$apply' in (spec[k] || {})) {
+          h = hash ? hash + 'λ' + k : k;
+          fn = spec[k].$apply;
+
+          if (typeof fn !== 'function')
+            throw makeError(path.concat(k), 'using command $apply with a non function');
+
+          // Logging update
+          if (h && !log[h])
+            log[h] = true;
+          o[k] = fn.call(null, o[k]);
+        }
+        else {
+
+          // If nested object does not exist, we create it
+          if (typeof o[k] === 'undefined')
+            o[k] = {};
+
+          // Recur
+          mutator(
+            o[k],
+            spec[k],
+            path.concat(k)
+          );
+        }
       }
     }
-  }
-}
-
-// Core function
-function update(target, spec) {
-  var log = {};
-
-  mutator(log, target, spec);
+  })(target, spec);
 
   return Object.keys(log).map(function(hash) {
     return hash.split('λ');
