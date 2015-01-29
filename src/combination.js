@@ -18,14 +18,22 @@ function bindCursor(c, cursor) {
 /**
  * Main Class
  */
-function Combination(first, second, operator) {
+function Combination(operator /*, &cursors */) {
   var self = this;
 
   // Safeguard
-  if (first === second)
-    throw Error('baobab.combination: first cursor is identical to second.');
+  if (arguments.length < 2)
+    throw Error('baobab.Combination: not enough arguments.');
 
-  if (!types.check([first, second], ['cursor']))
+  var first = arguments[1],
+      rest = helpers.arrayOf(arguments).slice(2);
+
+  if (first instanceof Array) {
+    rest = first.slice(1);
+    first = first[0];
+  }
+
+  if (!types.check(first, 'cursor'))
     throw Error('baobab.Combination: argument should be a cursor.');
 
   if (operator !== 'or' && operator !== 'and')
@@ -35,8 +43,8 @@ function Combination(first, second, operator) {
   EventEmitter.call(this);
 
   // Properties
-  this.cursors = [first, second];
-  this.operators = [operator];
+  this.cursors = [first];
+  this.operators = [];
   this.root = first.root;
 
   // State
@@ -68,7 +76,11 @@ function Combination(first, second, operator) {
   // Initial bindings
   this.root.on('update', this.treeListener);
   bindCursor(this, first);
-  bindCursor(this, second);
+
+  // Attaching any other passed cursors
+  rest.forEach(function(cursor) {
+    this[operator](cursor);
+  }, this);
 }
 
 helpers.inherits(Combination, EventEmitter);

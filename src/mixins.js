@@ -92,7 +92,7 @@ module.exports = {
               this.cursors[k].off('update', this.__updateHandler);
           }
         }
-      }].concat(baobab.options.mixins) 
+      }].concat(baobab.options.mixins)
     };
   },
   cursor: function(cursor) {

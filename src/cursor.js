@@ -251,11 +251,11 @@ Cursor.prototype.update = function(spec) {
  * Combination
  */
 Cursor.prototype.or = function(otherCursor) {
-  return new Combination(this, otherCursor, 'or');
+  return new Combination('or', this, otherCursor);
 };
 
 Cursor.prototype.and = function(otherCursor) {
-  return new Combination(this, otherCursor, 'and');
+  return new Combination('and', this, otherCursor);
 };
 
 /**

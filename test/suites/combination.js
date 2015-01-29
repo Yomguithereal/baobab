@@ -27,7 +27,7 @@ describe('Combination', function() {
   it('should fail when using combination wrongly.', function() {
     assert.throws(function() {
       cursor.or(cursor);
-    }, /identical/);
+    }, /already/);
   });
 
   it('should be possible to listen to "or" combinations.', function() {
