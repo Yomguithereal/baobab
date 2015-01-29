@@ -4,10 +4,8 @@
  *
  * Gathering and requiring test suites.
  */
-
-var test = {
-  helpers: require('./suites/helpers.js'),
-  baobab: require('./suites/baobab.js'),
-  cursor: require('./suites/cursor.js'),
-  mixins: require('./suites/mixins.js')
-};
+require('./suites/helpers.js');
+require('./suites/baobab.js');
+require('./suites/cursor.js');
+require('./suites/combination.js');
+require('./suites/mixins.js');

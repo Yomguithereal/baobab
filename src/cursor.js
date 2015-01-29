@@ -5,6 +5,7 @@
  * Nested selection into a baobab tree.
  */
 var EventEmitter = require('emmett'),
+    Combination = require('./combination.js'),
     mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
     types = require('./typology.js');
@@ -92,7 +93,7 @@ Cursor.prototype._stack = function(spec) {
 };
 
 /**
- * Prototype
+ * Traversal
  */
 Cursor.prototype.select = function(path) {
   if (arguments.length > 1)
@@ -157,6 +158,9 @@ Cursor.prototype.down = function() {
   return this.root.select(this.path.concat(0));
 };
 
+/**
+ * Access
+ */
 Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
@@ -187,6 +191,9 @@ Cursor.prototype.clone = function(path) {
     return this.root.clone(this.path);
 };
 
+/**
+ * Update
+ */
 Cursor.prototype.set = function(key, value) {
   if (arguments.length < 2)
     throw Error('baobab.Cursor.set: expecting at least key/value.');
@@ -238,6 +245,17 @@ Cursor.prototype.unshift = function(value) {
 
 Cursor.prototype.update = function(spec) {
   return this._stack(spec);
+};
+
+/**
+ * Combination
+ */
+Cursor.prototype.or = function(otherCursor) {
+  return new Combination(this, otherCursor, 'or');
+};
+
+Cursor.prototype.and = function(otherCursor) {
+  return new Combination(this, otherCursor, 'and');
 };
 
 /**
