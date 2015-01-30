@@ -26,6 +26,7 @@ It can be paired with **React** easily through [mixins](#react-mixins) to provid
     * [History](#history)
     * [Update specifications](#update-specifications)
     * [Chaining mutations](#chaining-mutations)
+    * [Cursor combinations](#cursor-combinations)
     * [Data validation](#data-validation)
     * [Common pitfalls](#common-pitfalls)
 * [Contribution](#contribution)
@@ -597,6 +598,29 @@ cursor.apply(inc);
 cursor.chain(inc);
 cursor.chain(inc);
 // will produce 3
+```
+
+#### Cursor combinations
+
+At times, you might want to listen to updates concerning a logical combination of cursors. For instance, you might want to know when two cursors both updated or when either one or the other did.
+
+You can build cursor combination likewise:
+
+```js
+// Simple "or" combination
+var combination = cursor1.or(cursor2);
+
+// Simple "and" combination
+var combination = cursor1.and(cursor2);
+
+// Complex combination
+var combination = cursor1.or(cursor2).or(cursor3).and(cursor4);
+
+// Listening to events
+combination.on('update', handler);
+
+// Releasing a combination to avoid leaks
+combination.release();
 ```
 
 #### Data validation
