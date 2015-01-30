@@ -484,7 +484,7 @@ var baobab = new Baobab(
 * **cursorSingletons** *boolean* [`true`]: by default, a *baobab* tree stashes the created cursor so only one would be created by path. You can override this behaviour by setting `cursorSingletons` to `false`.
 * **maxHistory** *number* [`0`]: max number of records the tree is allowed to store within its internal history.
 * **mixins** *array*: optional mixins to merge with baobab's ones. Recommending the [pure render](http://facebook.github.io/react/docs/pure-render-mixin.html) one from react.
-* **shiftReferences** *boolean* [`false`]: tell the tree to shift references of the objects it updates so that functions performing shallow comparisons (such as the one use by the `PureRenderMixin`, for instance), can assess that data changed.
+* **shiftReferences** *boolean* [`false`]: tell the tree to shift references of the objects it updates so that functions performing shallow comparisons (such as the one used by the `PureRenderMixin`, for instance), can assess that data changed.
 * **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
 * **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
 

@@ -108,9 +108,10 @@ Cursor.prototype.up = function() {
   if (this.path.length)
     return this.root.select(this.path.slice(0, -1));
   else
-    return this.root.select([]);
+    return null;
 };
 
+// TODO: change array traversal methods when shifting to selectBy behaviours
 Cursor.prototype.left = function() {
   var last = +this.path[this.path.length - 1];
 

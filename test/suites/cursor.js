@@ -92,12 +92,11 @@ describe('Cursor API', function() {
       assert.deepEqual(parent.get(), state.one.subtwo);
     });
 
-    it('a cusor going up to root cannot go higher.', function() {
+    it('a cusor going up to root cannot go higher and returns null.', function() {
       var up = baobab.select('one').up(),
           upper = up.up();
 
-      assert.deepEqual(up.get(), baobab.get());
-      assert.deepEqual(upper.get(), up.get());
+      assert.strictEqual(upper, null);
     });
 
     it('should be possible to go left.', function() {
