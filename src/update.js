@@ -28,6 +28,7 @@ function makeError(path, message) {
 
 // Core function
 function update(target, spec, opts) {
+  opts = opts || {};
   var log = {};
 
   // Closure mutating the internal object
@@ -47,8 +48,7 @@ function update(target, spec, opts) {
         v = spec[k];
 
         // Logging update
-        if (hash && !log[hash])
-          log[hash] = true;
+        log[hash] = true;
 
         // Applying
         switch (k) {
@@ -73,27 +73,46 @@ function update(target, spec, opts) {
         }
       }
       else {
+        h = hash ? hash + 'λ' + k : k;
 
         if ('$set' in (spec[k] || {})) {
-          h = hash ? hash + 'λ' + k : k;
           v = spec[k].$set;
 
           // Logging update
-          if (h && !log[h])
-            log[h] = true;
+          log[h] = true;
           o[k] = v;
         }
         else if ('$apply' in (spec[k] || {})) {
-          h = hash ? hash + 'λ' + k : k;
           fn = spec[k].$apply;
 
           if (typeof fn !== 'function')
             throw makeError(path.concat(k), 'using command $apply with a non function');
 
           // Logging update
-          if (h && !log[h])
-            log[h] = true;
+          log[h] = true;
           o[k] = fn.call(null, o[k]);
+        }
+        else if (opts.shiftReferences &&
+                 ('$push' in (spec[k] || {}) ||
+                  '$unshift' in (spec[k] || {}))) {
+
+          if ('$push' in (spec[k] || {})) {
+            v = spec[k].$push;
+
+            if (!types.check(o[k], 'array'))
+              throw makeError(path.concat(k), 'using command $push to a non array');
+            o[k] = o[k].concat(v);
+          }
+          if ('$unshift' in (spec[k] || {})) {
+            v = spec[k].$unshift;
+
+            if (!types.check(o[k], 'array'))
+              throw makeError(path.concat(k), 'using command $unshift to a non array');
+            o[k] = (v instanceof Array ? v : [v]).concat(o[k]);
+          }
+
+          // Logging update
+          log[h] = true;
         }
         else {
 

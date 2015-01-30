@@ -141,6 +141,15 @@ describe('Baobab API', function() {
       assert(baobab._cloner === clone);
       assert.deepEqual(baobab.clone(), baobab.data);
     });
+
+    it('should be possible to tell the tree to shift references on updates.', function() {
+      var list = [1],
+          baobab = new Baobab({list: list}, {shiftReferences: true, asynchronous: false});
+
+      baobab.select('list').push(2);
+      assert.deepEqual(baobab.get('list'), [1, 2]);
+      assert(list !== baobab.get('list'));
+    });
   });
 
   describe('Custom typology', function() {
