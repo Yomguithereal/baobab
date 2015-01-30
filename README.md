@@ -298,6 +298,11 @@ var UserList = React.createClass({
       return <li>{name}</li>;
     };
 
+    // Cursor data is then available either through:
+    var data = this.cursor.get();
+    // Or
+    var data = this.state.cursor;
+
     return <ul>{this.cursor.get().map(renderItem)}</ul>;
   }
 });
@@ -310,6 +315,11 @@ var UserList = React.createClass({
     var renderItem = function(name) {
       return <li>{name}</li>;
     };
+
+    // Cursor data is then available either through:
+    var data = this.cursors[0].get();
+    // Or
+    var data = this.state.cursors[0];
 
     return (
       <div>
@@ -331,6 +341,11 @@ var UserList = React.createClass({
     var renderItem = function(name) {
       return <li>{name}</li>;
     };
+
+    // Cursor data is then available either through:
+    var data = this.cursors.name.get();
+    // Or
+    var data = this.state.cursors.name;
 
     return (
       <div>
