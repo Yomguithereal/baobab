@@ -87,10 +87,10 @@ function compare(object, spec) {
 
   for (k in spec) {
     if (types.get(spec[k]) === 'object') {
-      ok *= compare(object[k]);
+      ok = ok && compare(object[k]);
     }
     else if (types.get(spec[k]) === 'array') {
-      ok *= !!~spec[k].indexOf(object[k]);
+      ok = ok && !!~spec[k].indexOf(object[k]);
     }
     else {
       if (object[k] !== spec[k])
@@ -98,7 +98,7 @@ function compare(object, spec) {
     }
   }
 
-  return !!ok;
+  return ok;
 }
 
 function firstByComparison(object, spec) {
