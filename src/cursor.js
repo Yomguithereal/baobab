@@ -33,6 +33,10 @@ function Cursor(root, path) {
         shouldFire = false,
         c, p, l, m, i, j;
 
+    // If no handlers are attached, we stop
+    if (!this._handlers['update'].length && !this._handlersAll.length)
+      return;
+
     // If selector listens at root, we fire
     if (!self.path.length)
       return self.emit('update');

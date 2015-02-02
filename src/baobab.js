@@ -182,7 +182,7 @@ Baobab.prototype.select = function(path) {
     throw Error('Baobab.select: invalid path.');
 
   // Casting to array
-  path = (typeof path === 'string') ? [path] : path;
+  path = (types.get(path) !== 'array') ? [path] : path;
 
   // Registering a new cursor or giving the already existing one for path
   if (!this.options.cursorSingletons) {
