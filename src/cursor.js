@@ -105,6 +105,21 @@ Cursor.prototype._stack = function(spec) {
 };
 
 /**
+ * Predicates
+ */
+Cursor.prototype.isRoot = function() {
+  return !this.path.length;
+};
+
+Cursor.prototype.isLeaf = function() {
+  return types.check(this.reference(), 'primitive');
+};
+
+Cursor.prototype.isBranch = function() {
+  return !this.isLeaf() && !this.isRoot();
+};
+
+/**
  * Traversal
  */
 Cursor.prototype.select = function(path) {

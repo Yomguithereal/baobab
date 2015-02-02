@@ -58,6 +58,26 @@ describe('Cursor API', function() {
     });
   });
 
+  describe('Predicates', function() {
+    var baobab = new Baobab(state);
+
+    it('should be possible to tell whether cursor is root.', function() {
+      assert(baobab.select('one').up().isRoot());
+      assert(!baobab.select('one').isRoot());
+    });
+
+    it('should be possible to tell whether cursor is leaf.', function() {
+      assert(baobab.select('primitive').isLeaf());
+      assert(!baobab.select('one').isLeaf());
+    });
+
+    it('should be possible to tell whether cursor is branch.', function() {
+      assert(baobab.select('one').isBranch());
+      assert(!baobab.select('one').up().isBranch());
+      assert(!baobab.select('primitive').isBranch());
+    });
+  });
+
   describe('Updates', function() {
     var baobab = new Baobab(state);
 

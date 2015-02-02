@@ -460,6 +460,14 @@ twoCursor.rightmost().get();
 >>> 'four'
 ```
 
+*Check information about the cursor's location in the tree*
+
+```js
+cursor.isRoot();
+cursor.isBranch();
+cursor.isLeaf();
+```
+
 #### Options
 
 You can pass those options at instantiation.
