@@ -117,20 +117,21 @@ Cursor.prototype.select = function(path) {
 };
 
 Cursor.prototype.up = function() {
-  if (this.solvedPath.length)
+  if (this.solvedPath && this.solvedPath.length)
     return this.root.select(this.path.slice(0, -1));
   else
     return null;
 };
 
-// TODO: change array traversal methods when shifting to selectBy behaviours
 Cursor.prototype.left = function() {
   var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (isNaN(last))
     throw Error('baobab.Cursor.left: cannot go left on a non-list type.');
 
-  return this.root.select(this.solvedPath.slice(0, -1).concat(last - 1));
+  return last ?
+    this.root.select(this.solvedPath.slice(0, -1).concat(last - 1)) :
+    null;
 };
 
 Cursor.prototype.leftmost = function() {
@@ -147,6 +148,9 @@ Cursor.prototype.right = function() {
 
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
+
+  if (last + 1 === this.up().reference().length)
+    return null;
 
   return this.root.select(this.solvedPath.slice(0, -1).concat(last + 1));
 };
@@ -166,7 +170,7 @@ Cursor.prototype.down = function() {
   var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (!(this.reference() instanceof Array))
-    throw Error('baobab.Cursor.down: cannot descend on a non-list type.');
+    return null;
 
   return this.root.select(this.solvedPath.concat(0));
 };

@@ -103,7 +103,7 @@ describe('Cursor API', function() {
       var left = colorCursor.select(1).left();
 
       assert.strictEqual(left.get(), 'blue');
-      assert.strictEqual(left.up().select(0).left().get(), undefined);
+      assert.strictEqual(left.left(), null);
 
       assert.throws(function() {
         colorCursor.left();
@@ -111,10 +111,10 @@ describe('Cursor API', function() {
     });
 
     it('should be possible to go right.', function() {
-      var left = colorCursor.select(0).right();
+      var right = colorCursor.select(0).right();
 
-      assert.strictEqual(left.get(), 'yellow');
-      assert.strictEqual(left.up().select(1).right().get(), undefined);
+      assert.strictEqual(right.get(), 'yellow');
+      assert.strictEqual(right.right(), null);
 
       assert.throws(function() {
         colorCursor.right();
@@ -128,10 +128,7 @@ describe('Cursor API', function() {
       assert.strictEqual(colorCursor.down().get(), 'blue');
       assert.strictEqual(colorCursor.down().up().up().select('colors').down().get(), 'blue');
       assert.strictEqual(list.down().right().down().right().get(), 4);
-
-      assert.throws(function() {
-        oneCursor.down();
-      }, /descend/);
+      assert.strictEqual(oneCursor.down(), null);
     });
 
     it('should be possible to get to the leftmost item of a list.', function() {
