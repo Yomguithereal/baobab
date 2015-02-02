@@ -184,6 +184,16 @@ Baobab.prototype.select = function(path) {
   // Casting to array
   path = (types.get(path) !== 'array') ? [path] : path;
 
+  // Complex path?
+  var complex = path.some(function(step) {
+    return types.check(step, 'complexStep');
+  });
+
+  var solvedPath;
+
+  if (complex)
+    solvedPath = helpers.solvePath(this.data, path);
+
   // Registering a new cursor or giving the already existing one for path
   if (!this.options.cursorSingletons) {
     return new Cursor(this, path);
@@ -192,7 +202,7 @@ Baobab.prototype.select = function(path) {
     var hash = path.join('λ');
 
     if (!this._registeredCursors[hash]) {
-      var cursor = new Cursor(this, path);
+      var cursor = new Cursor(this, path, solvedPath);
       this._registeredCursors[hash] = cursor;
       return cursor;
     }

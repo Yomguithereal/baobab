@@ -13,7 +13,7 @@ var EventEmitter = require('emmett'),
 /**
  * Main Class
  */
-function Cursor(root, path) {
+function Cursor(root, path, solvedPath) {
   var self = this;
 
   // Extending event emitter
@@ -27,11 +27,19 @@ function Cursor(root, path) {
   this.path = path;
   this.relevant = this.reference() !== undefined;
 
+  // Complex path?
+  this.complexPath = !!solvedPath;
+  this.solvedPath = this.complexPath ? solvedPath : this.path;
+
   // Root listeners
   this.root.on('update', function(e) {
     var log = e.data.log,
         shouldFire = false,
         c, p, l, m, i, j;
+
+    // Solving path if needed
+    if (self.complexPath)
+      self.solvedPath = helpers.solvePath(self.root.data, self.path);
 
     // If no handlers are attached, we stop
     if (!this._handlers.update.length && !this._handlersAll.length)
@@ -50,11 +58,11 @@ function Cursor(root, path) {
         p = c[j];
 
         // If path is not relevant to us, we break
-        if (p !== self.path[j])
+        if (p !== self.solvedPath[j])
           break;
 
         // If we reached last item and we are relevant, we fire
-        if (j + 1 === m || j + 1 === self.path.length) {
+        if (j + 1 === m || j + 1 === self.solvedPath.length) {
           shouldFire = true;
           break root;
         }
@@ -92,7 +100,7 @@ helpers.inherits(Cursor, EventEmitter);
  * Private prototype
  */
 Cursor.prototype._stack = function(spec) {
-  this.root._stack(helpers.pathObject(this.path, spec));
+  this.root._stack(helpers.pathObject(this.solvedPath, spec));
   return this;
 };
 
@@ -109,7 +117,7 @@ Cursor.prototype.select = function(path) {
 };
 
 Cursor.prototype.up = function() {
-  if (this.path.length)
+  if (this.solvedPath.length)
     return this.root.select(this.path.slice(0, -1));
   else
     return null;
@@ -117,50 +125,50 @@ Cursor.prototype.up = function() {
 
 // TODO: change array traversal methods when shifting to selectBy behaviours
 Cursor.prototype.left = function() {
-  var last = +this.path[this.path.length - 1];
+  var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (isNaN(last))
     throw Error('baobab.Cursor.left: cannot go left on a non-list type.');
 
-  return this.root.select(this.path.slice(0, -1).concat(last - 1));
+  return this.root.select(this.solvedPath.slice(0, -1).concat(last - 1));
 };
 
 Cursor.prototype.leftmost = function() {
-  var last = +this.path[this.path.length - 1];
+  var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (isNaN(last))
     throw Error('baobab.Cursor.leftmost: cannot go left on a non-list type.');
 
-  return this.root.select(this.path.slice(0, -1).concat(0));
+  return this.root.select(this.solvedPath.slice(0, -1).concat(0));
 };
 
 Cursor.prototype.right = function() {
-  var last = +this.path[this.path.length - 1];
+  var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  return this.root.select(this.path.slice(0, -1).concat(last + 1));
+  return this.root.select(this.solvedPath.slice(0, -1).concat(last + 1));
 };
 
 Cursor.prototype.rightmost = function() {
-  var last = +this.path[this.path.length - 1];
+  var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
   var list = this.up().reference();
 
-  return this.root.select(this.path.slice(0, -1).concat(list.length - 1));
+  return this.root.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
 };
 
 Cursor.prototype.down = function() {
-  var last = +this.path[this.path.length - 1];
+  var last = +this.solvedPath[this.solvedPath.length - 1];
 
   if (!(this.reference() instanceof Array))
     throw Error('baobab.Cursor.down: cannot descend on a non-list type.');
 
-  return this.root.select(this.path.concat(0));
+  return this.root.select(this.solvedPath.concat(0));
 };
 
 /**
@@ -171,9 +179,9 @@ Cursor.prototype.get = function(path) {
     path = helpers.arrayOf(arguments);
 
   if (types.check(path, 'step'))
-    return this.root.get(this.path.concat(path));
+    return this.root.get(this.solvedPath.concat(path));
   else
-    return this.root.get(this.path);
+    return this.root.get(this.solvedPath);
 };
 
 Cursor.prototype.reference = function(path) {
@@ -181,9 +189,9 @@ Cursor.prototype.reference = function(path) {
     path = helpers.arrayOf(arguments);
 
   if (types.check(path, 'step'))
-    return this.root.reference(this.path.concat(path));
+    return this.root.reference(this.solvedPath.concat(path));
   else
-    return this.root.reference(this.path);
+    return this.root.reference(this.solvedPath);
 };
 
 Cursor.prototype.clone = function(path) {
@@ -191,9 +199,9 @@ Cursor.prototype.clone = function(path) {
     path = helpers.arrayOf(arguments);
 
   if (types.check(path, 'step'))
-    return this.root.clone(this.path.concat(path));
+    return this.root.clone(this.solvedPath.concat(path));
   else
-    return this.root.clone(this.path);
+    return this.root.clone(this.solvedPath);
 };
 
 /**

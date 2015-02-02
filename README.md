@@ -409,13 +409,18 @@ tree.get('palette', 'colors');
 tree.get(['palette', 'colors']);
 >>> ['blue', 'yellow', 'green']
 
-// Retrieving data by passing a function in the path
+// Retrieving or selecting data by passing a function in the path
+var complexCursor = tree.select('palette', 'colors', function(color) {
+  return color === 'green';
+});
+
 tree.get('palette', 'colors', function(color) {
   return color === 'green';
 });
 >>> 'green'
 
-// Retrieving data by passing a descriptor object in the path
+// Retrieving or selecting data by passing a descriptor object in the path
+var complexCursor = tree.select('items', {id: 'one'}, 'value');
 tree.get('items', {id: 'one'}, 'value');
 >>> 'Hey'
 ```

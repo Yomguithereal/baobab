@@ -80,6 +80,15 @@ function first(a, fn) {
   return;
 }
 
+function index(a, fn) {
+  var i, l;
+  for (i = 0, l = a.length; i < l; i++) {
+    if (fn(a[i]))
+      return i;
+  }
+  return -1;
+}
+
 // Compare object to spec
 function compare(object, spec) {
   var ok = true,
@@ -103,6 +112,12 @@ function compare(object, spec) {
 
 function firstByComparison(object, spec) {
   return first(object, function(e) {
+    return compare(e, spec);
+  });
+}
+
+function indexByComparison(object, spec) {
+  return indexOf(object, function(e) {
     return compare(e, spec);
   });
 }
@@ -137,6 +152,43 @@ function getIn(object, path) {
   }
 
   return c;
+}
+
+// Solve a complex path
+function solvePath(object, path) {
+  var solvedPath = [],
+      c = object,
+      idx,
+      i,
+      l;
+
+  for (i = 0, l = path.length; i < l; i++) {
+    if (!c)
+      return null;
+
+    if (typeof path[i] === 'function') {
+      if (types.get(c) !== 'array')
+        return;
+
+      idx = index(c, path[i]);
+      solvedPath.push(idx);
+      c = c[idx];
+    }
+    else if (typeof path[i] === 'object') {
+      if (types.get(c) !== 'array')
+        return;
+
+      idx = index(indexByComparison(c, path[i]));
+      solvedPath.push(idx);
+      c = c[idx];
+    }
+    else {
+      solvedPath.push(path[i]);
+      c = c[path[i]];
+    }
+  }
+
+  return solvedPath;
 }
 
 // Return a fake object relative to the given path
@@ -180,5 +232,6 @@ module.exports = {
   getIn: getIn,
   inherits: inherits,
   later: later,
-  pathObject: pathObject
+  pathObject: pathObject,
+  solvePath: solvePath
 };

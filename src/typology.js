@@ -7,6 +7,7 @@
 var Typology = require('typology');
 
 var typology = new Typology({
+  complexStep: 'function|object',
   step: 'string|number|array|function|object',
   path: function(v) {
     return this.check(v, '?string|number|function|object') ||
