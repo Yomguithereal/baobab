@@ -30,7 +30,7 @@ function Baobab(initialData, opts) {
   EventEmitter.call(this);
 
   // Merging defaults
-  this.options = merge(opts, defaults);
+  this.options = helpers.shallowMerge(defaults, opts);
   this._cloner = this.options.cloningFunction || helpers.deepClone;
 
   // Privates

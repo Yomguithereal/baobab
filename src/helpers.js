@@ -11,6 +11,17 @@ function arrayOf(o) {
   return Array.prototype.slice.call(o);
 }
 
+// Shallow merge
+function shallowMerge(o1, o2) {
+  var o = {},
+      k;
+
+  for (k in o1) o[k] = o1[k];
+  for (k in o2) o[k] = o2[k];
+
+  return o;
+}
+
 // Shallow clone
 function shallowClone(item) {
   if (!item || !(item instanceof Object))
@@ -228,6 +239,7 @@ module.exports = {
   arrayOf: arrayOf,
   deepClone: deepClone,
   shallowClone: shallowClone,
+  shallowMerge: shallowMerge,
   compose: compose,
   getIn: getIn,
   inherits: inherits,

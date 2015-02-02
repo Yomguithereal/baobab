@@ -5,14 +5,16 @@
  * A handy method to mutate an atom according to the given specification.
  * Mostly inspired by http://facebook.github.io/react/docs/update.html
  */
-var types = require('./typology.js');
+var types = require('./typology.js'),
+    helpers = require('./helpers.js');
 
 var COMMANDS = {};
 [
   '$set',
   '$push',
   '$unshift',
-  '$apply'
+  '$apply',
+  '$merge'
 ].forEach(function(c) {
   COMMANDS[c] = true;
 });
@@ -91,6 +93,16 @@ function update(target, spec, opts) {
           // Logging update
           log[h] = true;
           o[k] = fn.call(null, o[k]);
+        }
+        else if ('$merge' in (spec[k] || {})) {
+          v = spec[k].$merge;
+
+          if (!types.check(o[k], 'object'))
+            throw makeError(path.concat(k), 'using command $merge on a non-object');
+
+          // Logging update
+          log[h] = true;
+          o[k] = helpers.shallowMerge(o[k], v);
         }
         else if (opts.shiftReferences &&
                  ('$push' in (spec[k] || {}) ||

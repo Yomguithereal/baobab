@@ -51,6 +51,16 @@ describe('Helpers', function() {
     });
   });
 
+  describe('Shallow merge', function() {
+
+    it('should be possible to merge objects shallowly.', function() {
+      assert.deepEqual(
+        helpers.shallowMerge({hello: 'world', other: 'mate'}, {hello: 'Jack', one: 'two'}),
+        {hello: 'Jack', one: 'two', other: 'mate'}
+      );
+    });
+  });
+
   describe('Update API', function() {
 
     it('should be possible to set nested values.', function() {

@@ -40,30 +40,38 @@ function merge() {
 
   for (i = l - 1; i >= 0; i--) {
 
-    // Upper $set/$apply and conflicts
-    // TODO: Boooo! Ugly...
-    if (hasOneOf(arguments[i], ['$set', '$apply', '$chain'])) {
-      if (res.$set && (arguments[i].$apply || arguments[i].$chain)) {
-        delete res.$set;
-        res.$apply = arguments[i].$apply || arguments[i].$chain;
-      }
-      else if (res.$apply && arguments[i].$set) {
-        delete res.$apply;
-        res.$set = arguments[i].$set;
-      }
-      else if (arguments[i].$set) {
-        res.$set = arguments[i].$set;
-      }
-      else if (arguments[i].$apply) {
-        res.$apply = arguments[i].$apply;
-      }
-      else if (arguments[i].$chain) {
-        if (res.$apply)
-          res.$apply = helpers.compose(res.$apply, arguments[i].$chain);
-        else
-          res.$apply = arguments[i].$chain;
-      }
+    // Upper $set/$apply... and conflicts
+    // When solving conflicts, here is the priority to apply:
+    // -- 1) $set
+    // -- 2) $merge
+    // -- 3) $apply
+    // -- 4) $chain
+    if (arguments[i].$set) {
+      delete res.$apply;
+      delete res.$merge;
+      res.$set = arguments[i].$set;
+      continue;
+    }
+    else if (arguments[i].$merge) {
+      delete res.$set;
+      delete res.$apply;
+      res.$merge = arguments[i].$merge;
+      continue;
+    }
+    else if (arguments[i].$apply){
+      delete res.$set;
+      delete res.$merge;
+      res.$apply = arguments[i].$apply;
+      continue;
+    }
+    else if (arguments[i].$chain) {
+      delete res.$set;
+      delete res.$merge;
 
+      if (res.$apply)
+        res.$apply = helpers.compose(res.$apply, arguments[i].$chain);
+      else
+        res.$apply = arguments[i].$chain;
       continue;
     }
 

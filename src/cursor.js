@@ -275,6 +275,16 @@ Cursor.prototype.unshift = function(value) {
     return this.update({$unshift: value});
 };
 
+Cursor.prototype.merge = function(o) {
+  if (!types.check(o, 'object'))
+    throw Error('baobab.Cursor.merge: trying to merge a non-object.');
+
+  if (!types.check(this.reference(), 'object'))
+    throw Error('baobab.Cursor.merge: trying to merge into a non-object.');
+
+  this.update({$merge: o});
+};
+
 Cursor.prototype.update = function(spec) {
   return this._stack(spec);
 };

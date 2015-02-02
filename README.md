@@ -182,6 +182,12 @@ cursor.apply(function(currentData) {
 });
 ```
 
+*Merging objects*
+
+```js
+cursor.merge({hello: 'world'});
+```
+
 #### Events
 
 Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound elements, React components, for instance, can update.
@@ -549,6 +555,7 @@ The available commands are the following and are basically the same as the curso
 * `$chain`
 * `$push`
 * `$unshift`
+* `$merge`
 
 *Example*
 

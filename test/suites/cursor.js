@@ -366,5 +366,21 @@ describe('Cursor API', function() {
         done();
       });
     });
+
+    it('should be possible to shallow merge two objects.', function(done) {
+      var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
+
+      assert.throws(function() {
+        baobab.select('test').merge({hello: 'moto'});
+      }, /merge/);
+
+      var cursor = baobab.select('o');
+      cursor.merge({hello: 'jarl'});
+
+      baobab.on('update', function() {
+        assert.deepEqual(baobab.get('o'), {hello: 'jarl'});
+        done();
+      });
+    });
   });
 });
