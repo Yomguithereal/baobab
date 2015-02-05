@@ -32,7 +32,7 @@ function Cursor(root, path, solvedPath) {
   this.solvedPath = this.complexPath ? solvedPath : this.path;
 
   // Root listeners
-  this.root.on('update', function(e) {
+  this.updateHandler = function(e) {
     var log = e.data.log,
         shouldFire = false,
         c, p, l, m, i, j;
@@ -88,7 +88,10 @@ function Cursor(root, path, solvedPath) {
         self.relevant = true;
       }
     }
-  });
+  };
+
+  // Listening
+  this.root.on('update', this.updateHandler);
 
   // Making mixin
   this.mixin = mixins.cursor(this);
@@ -301,11 +304,13 @@ Cursor.prototype.and = function(otherCursor) {
 };
 
 /**
- * Type definition
+ * Releasing
  */
-types.add('cursor', function(v) {
-  return v instanceof Cursor;
-});
+Cursor.prototype.release = function() {
+  this.root.off('update', this.updateHandler);
+  this.root = null;
+  this.unbindAll();
+};
 
 /**
  * Output
@@ -313,6 +318,13 @@ types.add('cursor', function(v) {
 Cursor.prototype.toJSON = function() {
   return this.reference();
 };
+
+/**
+ * Type definition
+ */
+types.add('cursor', function(v) {
+  return v instanceof Cursor;
+});
 
 /**
  * Export
