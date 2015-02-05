@@ -150,6 +150,31 @@ describe('Baobab API', function() {
       assert.deepEqual(baobab.get('list'), [1, 2]);
       assert(list !== baobab.get('list'));
     });
+
+    it('should also shift parent references.', function() {
+      var tree = new Baobab({root: {admin: {items: [1]}}}, {asynchronous: false}),
+          shiftingTree = new Baobab({root: {admin: {items: [1]}}}, {shiftReferences: true, asynchronous: false});
+
+      var original = tree.reference(),
+          shiftingOriginal = shiftingTree.reference();
+
+      tree.select('root', 'admin', 'items').push(2);
+      shiftingTree.select('root', 'admin', 'items').push(2);
+
+      assert.deepEqual(tree.reference('root', 'admin', 'items'), [1, 2]);
+      assert.deepEqual(shiftingTree.reference('root', 'admin', 'items'), [1, 2]);
+
+      // TODO: solve and check that other children references are left untouched
+      assert(tree.reference() === original);
+      assert(tree.reference().root === original.root);
+      assert(tree.reference().root.admin === original.root.admin);
+      assert(tree.reference().root.admin.items === original.root.admin.items);
+
+      assert(shiftingTree.reference() !== shiftingOriginal);
+      assert(shiftingTree.reference().root !== shiftingOriginal.root);
+      assert(shiftingTree.reference().root.admin !== shiftingOriginal.root.admin);
+      assert(shiftingTree.reference().root.admin.items !== shiftingOriginal.root.admin.items);
+    });
   });
 
   describe('Custom typology', function() {

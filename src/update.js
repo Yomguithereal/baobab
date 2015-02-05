@@ -41,9 +41,7 @@ function update(target, spec, opts) {
         fn,
         h,
         k,
-        v,
-        i,
-        l;
+        v;
 
     for (k in spec) {
       if (COMMANDS[k]) {
@@ -107,7 +105,6 @@ function update(target, spec, opts) {
         else if (opts.shiftReferences &&
                  ('$push' in (spec[k] || {}) ||
                   '$unshift' in (spec[k] || {}))) {
-
           if ('$push' in (spec[k] || {})) {
             v = spec[k].$push;
 
@@ -131,6 +128,10 @@ function update(target, spec, opts) {
           // If nested object does not exist, we create it
           if (typeof o[k] === 'undefined')
             o[k] = {};
+
+          // Shifting reference
+          if (opts.shiftReferences)
+            o[k] = helpers.shallowClone(o[k]);
 
           // Recur
           mutator(

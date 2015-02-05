@@ -61,6 +61,26 @@ describe('Helpers', function() {
     });
   });
 
+  describe('Shallow clone', function() {
+
+    it('should change references at first level.', function() {
+      var o = {
+        a: 1,
+        b: {
+          c: {
+            d: 2
+          }
+        }
+      };
+
+      var clone = helpers.shallowClone(o);
+
+      assert(o !== clone);
+      assert(o.b !== clone.b);
+      assert(o.b.c === clone.b.c);
+    });
+  });
+
   describe('Update API', function() {
 
     it('should be possible to set nested values.', function() {

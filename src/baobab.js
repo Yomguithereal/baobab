@@ -129,6 +129,10 @@ Baobab.prototype.commit = function(referenceRecord) {
   }
   else {
 
+    // Shifting root reference
+    if (this.options.shiftReferences)
+      this.data = helpers.shallowClone(this.data);
+
     // Applying modification (mutation)
     var record = this._archive();
     log = update(this.data, this._futureUpdate, this.options);

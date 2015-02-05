@@ -6,7 +6,7 @@
   "cursorSingletons": true,
   "maxHistory": 0,
   "mixins": [],
-  "shiftReferences": true,
+  "shiftReferences": false,
   "typology": null,
   "validate": null
 }
