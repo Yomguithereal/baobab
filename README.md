@@ -214,7 +214,7 @@ var tree = new Baobab({
 });
 
 // And the following cursors
-var usersCusor = tree.select('users'),
+var usersCursor = tree.select('users'),
     johnCursor = usersCursor.select('john'),
     jackCursor = usersCursor.select('jack');
 
