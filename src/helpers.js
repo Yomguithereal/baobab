@@ -23,7 +23,7 @@ function shallowMerge(o1, o2) {
 }
 
 // Shallow clone
-function shallowClone(item, dontRecur) {
+function shallowClone(item) {
   if (!item || !(item instanceof Object))
     return item;
 
@@ -39,7 +39,7 @@ function shallowClone(item, dontRecur) {
   if (types.get(item) === 'object') {
     var k, o = {};
     for (k in item)
-      o[k] = dontRecur ? item[k] : shallowClone(item[k], true);
+      o[k] = item[k];
     return o;
   }
 

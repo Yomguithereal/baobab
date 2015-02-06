@@ -152,8 +152,8 @@ describe('Baobab API', function() {
     });
 
     it('should also shift parent references.', function() {
-      var tree = new Baobab({root: {admin: {items: [1]}}}, {asynchronous: false}),
-          shiftingTree = new Baobab({root: {admin: {items: [1]}}}, {shiftReferences: true, asynchronous: false});
+      var tree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {asynchronous: false}),
+          shiftingTree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {shiftReferences: true, asynchronous: false});
 
       var original = tree.reference(),
           shiftingOriginal = shiftingTree.reference();
@@ -164,16 +164,17 @@ describe('Baobab API', function() {
       assert.deepEqual(tree.reference('root', 'admin', 'items'), [1, 2]);
       assert.deepEqual(shiftingTree.reference('root', 'admin', 'items'), [1, 2]);
 
-      // TODO: solve and check that other children references are left untouched
       assert(tree.reference() === original);
       assert(tree.reference().root === original.root);
       assert(tree.reference().root.admin === original.root.admin);
       assert(tree.reference().root.admin.items === original.root.admin.items);
+      assert(tree.reference().root.admin.other === original.root.admin.other);
 
       assert(shiftingTree.reference() !== shiftingOriginal);
       assert(shiftingTree.reference().root !== shiftingOriginal.root);
       assert(shiftingTree.reference().root.admin !== shiftingOriginal.root.admin);
       assert(shiftingTree.reference().root.admin.items !== shiftingOriginal.root.admin.items);
+      assert(shiftingTree.reference().root.admin.other === shiftingOriginal.root.admin.other);
     });
   });
 

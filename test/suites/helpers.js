@@ -67,16 +67,14 @@ describe('Helpers', function() {
       var o = {
         a: 1,
         b: {
-          c: {
-            d: 2
-          }
+          c: 2
         }
       };
 
       var clone = helpers.shallowClone(o);
 
       assert(o !== clone);
-      assert(o.b !== clone.b);
+      assert(o.b === clone.b);
       assert(o.b.c === clone.b.c);
     });
   });
