@@ -182,7 +182,7 @@ cursor.apply(function(currentData) {
 });
 ```
 
-*Merging objects*
+*Shallowly merging objects*
 
 ```js
 cursor.merge({hello: 'world'});
