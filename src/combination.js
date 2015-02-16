@@ -88,39 +88,27 @@ helpers.inherits(Combination, EventEmitter);
 /**
  * Prototype
  */
-Combination.prototype.or = function(cursor) {
+function makeOperator(operator) {
+  Combination.prototype[operator] = function(cursor) {
 
-  // Safeguard
-  if (!types.check(cursor, 'cursor'))
-    throw Error('baobab.Combination.or: argument should be a cursor.');
+    // Safeguard
+    if (!types.check(cursor, 'cursor'))
+      throw Error('baobab.Combination.' + operator + ': argument should be a cursor.');
 
-  if (~this.cursors.indexOf(cursor))
-    throw Error('baobab.Combination.or: cursor already in combination.');
+    if (~this.cursors.indexOf(cursor))
+      throw Error('baobab.Combination.' + operator + ': cursor already in combination.');
 
-  this.cursors.push(cursor);
-  this.operators.push('or');
-  this.updates.length++;
-  bindCursor(this, cursor);
+    this.cursors.push(cursor);
+    this.operators.push(operator);
+    this.updates.length++;
+    bindCursor(this, cursor);
 
-  return this;
-};
+    return this;
+  };
+}
 
-Combination.prototype.and = function(cursor) {
-
-  // Safeguard
-  if (!types.check(cursor, 'cursor'))
-    throw Error('baobab.Combination.and: argument should be a cursor.');
-
-  if (~this.cursors.indexOf(cursor))
-    throw Error('baobab.Combination.and: cursor already in combination.');
-
-  this.cursors.push(cursor);
-  this.operators.push('and');
-  this.updates.length++;
-  bindCursor(this, cursor);
-
-  return this;
-};
+makeOperator('or');
+makeOperator('and');
 
 Combination.prototype.release = function() {
 
