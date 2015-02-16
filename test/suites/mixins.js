@@ -78,12 +78,26 @@ describe('React Mixins', function() {
       });
 
       React.render(React.createElement(Component, null), document.body);
-
     });
-
   });
 
   describe('Tree mixin', function() {
+
+    it('should not break if no cursor is passed to the mixin.', function(done) {
+      var baobab = new Baobab({hello:'world'});
+
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        render: function() {
+          return React.createElement('div', {id: 'nocursor'}, 'world');
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body, function() {
+        assert.strictEqual(document.querySelector('#nocursor').textContent, 'world');
+        done();
+      });
+    });
 
     it('should be possible to pass a single path.', function(done) {
       var baobab = new Baobab({hello:'world'});

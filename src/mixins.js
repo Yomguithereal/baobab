@@ -17,13 +17,19 @@ module.exports = {
 
           // Binding baobab to instance
           this.tree = baobab;
-          this.__type = null;
 
           // Is there any cursors to create?
+          if (!this.cursor && !this.cursors)
+            return {};
+
+          // Is there conflicting definitions?
           if (this.cursor && this.cursors)
             throw Error('baobab.mixin: you cannot have both ' +
                         '`component.cursor` and `component.cursors`. Please ' +
                         'make up your mind.');
+
+          // Type
+          this.__type = null;
 
           // Making update handler
           this.__updateHandler = (function() {
@@ -78,7 +84,8 @@ module.exports = {
         },
         componentDidMount: function() {
           if (this.__type === 'single') {
-            this.cursor.on('update', this.__updateHandler);
+            this.__combination = new Combination('or', [this.cursor]);
+            this.__combination.on('update', this.__updateHandler);
           }
           else if (this.__type === 'array') {
             this.__combination = new Combination('or', this.cursors);
@@ -95,12 +102,8 @@ module.exports = {
           }
         },
         componentWillUnmount: function() {
-          if (this.__type === 'single') {
-            this.cursor.off('update', this.__updateHandler);
-          }
-          else {
+          if (this.__combination)
             this.__combination.release();
-          }
         }
       }].concat(baobab.options.mixins)
     };
