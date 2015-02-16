@@ -12,19 +12,6 @@ function hasKey(o, key) {
   return key in (o || {});
 }
 
-function hasOneOf(o, keys) {
-  for (var i = 0, l = keys.length; i < l; i++)
-    if (hasKey(o, keys[i]))
-      return true;
-  return false;
-}
-
-function hasCommand(o) {
-  return Object.keys(o).some(function(k) {
-    return k.charAt(0) === '$';
-  });
-}
-
 function conflict(a, b, key) {
   return hasKey(a, key) && hasKey(b, key);
 }
