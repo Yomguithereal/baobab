@@ -113,7 +113,7 @@ function compare(object, spec) {
       ok = ok && !!~spec[k].indexOf(object[k]);
     }
     else {
-      if (object[k] !== spec[k])
+      if (object[k] != spec[k])
         return false;
     }
   }
@@ -128,7 +128,7 @@ function firstByComparison(object, spec) {
 }
 
 function indexByComparison(object, spec) {
-  return indexOf(object, function(e) {
+  return index(object, function(e) {
     return compare(e, spec);
   });
 }
@@ -189,7 +189,7 @@ function solvePath(object, path) {
       if (types.get(c) !== 'array')
         return;
 
-      idx = index(indexByComparison(c, path[i]));
+      idx = indexByComparison(c, path[i]);
       solvedPath.push(idx);
       c = c[idx];
     }
