@@ -54,7 +54,7 @@ describe('Helpers', function() {
   describe('Solve path', function() {
 
     it('should be able to solve a complex path', function() {
-      o = {
+      var o = {
         things: [
           {
             name: 'foo'
