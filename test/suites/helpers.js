@@ -51,6 +51,24 @@ describe('Helpers', function() {
     });
   });
 
+  describe('Solve path', function() {
+
+    it('should be able to solve a complex path', function() {
+      var o = {
+        things: [
+          {
+            name: 'foo'
+          },
+          {
+            name: 'bar'
+          }
+        ]
+      };
+      var res = helpers.solvePath(o, ['things', { name: 'bar' } ]);
+      assert.deepEqual(res, ['things', 1]);
+    });
+  });
+
   describe('Shallow merge', function() {
 
     it('should be possible to merge objects shallowly.', function() {
