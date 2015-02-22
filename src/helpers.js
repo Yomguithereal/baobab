@@ -113,7 +113,7 @@ function compare(object, spec) {
       ok = ok && !!~spec[k].indexOf(object[k]);
     }
     else {
-      if (object[k] != spec[k])
+      if (object[k] !== spec[k])
         return false;
     }
   }
