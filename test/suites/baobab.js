@@ -87,6 +87,23 @@ describe('Baobab API', function() {
       baobab.update({one: {subtwo: {colors: {$push: 'purple'}}}});
     });
 
+    it('should only fire updates once when committing synchronously but when not in synchronous mode.', function(done) {
+      var tree = new Baobab({hello: 'world'}),
+          count = 0;
+
+      tree.on('update', function() {
+        count++;
+      });
+
+      tree.set('hello', 'tada').commit();
+
+      setTimeout(function() {
+        assert.strictEqual(count, 1);
+        assert.strictEqual(tree.get('hello'), 'tada');
+        done();
+      }, 30);
+    });
+
     it('should be possible to instantiate without the "new" keyword.', function() {
       var special = Baobab(state);
 

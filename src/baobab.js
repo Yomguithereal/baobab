@@ -90,7 +90,8 @@ Baobab.prototype._stack = function(spec) {
   if (!this._willUpdate) {
     this._willUpdate = true;
     helpers.later(function() {
-      self.commit();
+      if (self._willUpdate)
+        self.commit();
     });
   }
 
