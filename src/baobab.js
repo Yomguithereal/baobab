@@ -270,6 +270,14 @@ Baobab.prototype.undo = function() {
   this.commit(lastRecord);
 };
 
+Baobab.prototype.release = function() {
+  this.unbindAll();
+  delete this.data;
+  delete this._futureUpdate;
+  delete this._history;
+  delete this._registeredCursors;
+};
+
 /**
  * Output
  */
