@@ -4,7 +4,6 @@
  *
  * Miscellaneous helper functions.
  */
-var types = require('typology');
 var type = require('./type.js');
 
 // Make a real array of an array-like object

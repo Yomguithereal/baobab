@@ -8,7 +8,6 @@ var EventEmitter = require('emmett'),
     Combination = require('./combination.js'),
     mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
-    types = require('./typology.js'),
     type = require('./type.js');
 
 /**
@@ -319,13 +318,6 @@ Cursor.prototype.release = function() {
 Cursor.prototype.toJSON = function() {
   return this.reference();
 };
-
-/**
- * Type definition
- */
-types.add('cursor', function(v) {
-  return v instanceof Cursor;
-});
 
 type.Cursor = function (value) {
   return value instanceof Cursor;

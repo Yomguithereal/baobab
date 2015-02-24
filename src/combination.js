@@ -5,7 +5,6 @@
  * A useful abstraction dealing with cursor's update logical combinations.
  */
 var EventEmitter = require('emmett'),
-    types = require('./typology.js'),
     helpers = require('./helpers.js'),
     type = require('./type.js');
 

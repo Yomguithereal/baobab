@@ -7,7 +7,6 @@ var assert = require('assert'),
     Baobab = require('../../src/baobab.js'),
     helpers = require('../../src/helpers.js'),
     update = require('../../src/update.js'),
-    types = require('../../src/typology.js'),
     clone = require('lodash.clonedeep');
 
 describe('Helpers', function() {
@@ -20,15 +19,6 @@ describe('Helpers', function() {
         add2 = helpers.compose(inc, inc);
 
       assert.strictEqual(add2(1), 3);
-    });
-  });
-
-  describe('Typology', function() {
-
-    it('specific types should work.', function() {
-      var baobab = new Baobab({hello: 'world'});
-      assert(types.check(baobab, 'baobab'));
-      assert(types.check(baobab.select('hello'), 'cursor'));
     });
   });
 

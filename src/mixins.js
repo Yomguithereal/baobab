@@ -4,8 +4,7 @@
  *
  * Compilation of react mixins designed to deal with cursors integration.
  */
-var types = require('./typology.js'),
-    Combination = require('./combination.js'),
+var Combination = require('./combination.js'),
     type = require('./type.js');
 
 module.exports = {

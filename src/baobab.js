@@ -10,7 +10,6 @@ var Cursor = require('./cursor.js'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     merge = require('./merge.js'),
-    types = require('./typology.js'),
     mixins = require('./mixins.js'),
     defaults = require('../defaults.json'),
     type = require('./type.js');
@@ -42,7 +41,7 @@ function Baobab(initialData, opts) {
 
   // Internal typology
   this.typology = this.options.typology ?
-    (types.check(this.options.typology, 'typology') ?
+    (this.options.typology instanceof Typology ?
       this.options.typology :
       new Typology(this.options.typology)) :
     new Typology();
@@ -188,7 +187,7 @@ Baobab.prototype.select = function(path) {
     throw Error('Baobab.select: invalid path.');
 
   // Casting to array
-  path = (types.get(path) !== 'array') ? [path] : path;
+  path = !type.Array(path) ? [path] : path;
 
   // Complex path?
   var complex = type.ComplexPath(path);
@@ -269,17 +268,6 @@ Baobab.prototype.undo = function() {
 
   var lastRecord = this._history.shift();
   this.commit(lastRecord);
-};
-
-/**
- * Type definition
- */
-types.add('baobab', function(v) {
-  return v instanceof Baobab;
-});
-
-type.Baobab = function (value) {
-  return value instanceof Baobab;
 };
 
 /**

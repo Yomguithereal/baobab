@@ -4,8 +4,7 @@
  *
  * A function used to merge updates in the stack.
  */
-var types = require('typology'),
-    helpers = require('./helpers.js'),
+var helpers = require('./helpers.js'),
     type = require('./type.js');
 
 // Helpers
