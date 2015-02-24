@@ -5,7 +5,8 @@
  * Compilation of react mixins designed to deal with cursors integration.
  */
 var types = require('./typology.js'),
-    Combination = require('./combination.js');
+    Combination = require('./combination.js'),
+    type = require('./type.js');
 
 module.exports = {
   baobab: function(baobab) {
@@ -37,10 +38,10 @@ module.exports = {
           }).bind(this);
 
           if (this.cursor) {
-            if (!types.check(this.cursor, 'string|number|array|cursor'))
+            if (!type.MixinCursor(this.cursor))
               throw Error('baobab.mixin.cursor: invalid data (cursor, string or array).');
 
-            if (!types.check(this.cursor, 'cursor'))
+            if (!type.Cursor(this.cursor))
               this.cursor = baobab.select(this.cursor);
 
             this.__getCursorData = (function() {
@@ -49,12 +50,12 @@ module.exports = {
             this.__type = 'single';
           }
           else if (this.cursors) {
-            if (!types.check(this.cursors, 'object|array'))
+            if (['object', 'array'].indexOf(type(this.cursors)) === -1)
               throw Error('baobab.mixin.cursor: invalid data (object or array).');
 
-            if (types.check(this.cursors, 'array')) {
+            if (type.Array(this.cursors)) {
               this.cursors = this.cursors.map(function(path) {
-                return types.check(path, 'cursor') ? path : baobab.select(path);
+                return type.Cursor(path) ? path : baobab.select(path);
               });
 
               this.__getCursorData = (function() {
@@ -66,7 +67,7 @@ module.exports = {
             }
             else {
               for (var k in this.cursors) {
-                if (!types.check(this.cursors[k], 'cursor'))
+                if (!type.Cursor(this.cursors[k]))
                   this.cursors[k] = baobab.select(this.cursors[k]);
               }
 

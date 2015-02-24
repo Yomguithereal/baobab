@@ -6,7 +6,8 @@
  * Mostly inspired by http://facebook.github.io/react/docs/update.html
  */
 var types = require('./typology.js'),
-    helpers = require('./helpers.js');
+    helpers = require('./helpers.js'),
+    type = require('./type.js');
 
 var COMMANDS = {};
 [
@@ -53,19 +54,19 @@ function update(target, spec, opts) {
         // Applying
         switch (k) {
           case '$push':
-            if (!types.check(o, 'array'))
+            if (!type.Array(o))
               throw makeError(path, 'using command $push to a non array');
 
-            if (!types.check(v, 'array'))
+            if (!type.Array(v))
               o.push(v);
             else
               o.push.apply(o, v);
             break;
           case '$unshift':
-            if (!types.check(o, 'array'))
+            if (!type.Array(o))
               throw makeError(path, 'using command $unshift to a non array');
 
-            if (!types.check(v, 'array'))
+            if (!type.Array(v))
               o.unshift(v);
             else
               o.unshift.apply(o, v);
@@ -95,7 +96,7 @@ function update(target, spec, opts) {
         else if ('$merge' in (spec[k] || {})) {
           v = spec[k].$merge;
 
-          if (!types.check(o[k], 'object'))
+          if (!type.Object(o[k]))
             throw makeError(path.concat(k), 'using command $merge on a non-object');
 
           // Logging update
@@ -108,14 +109,14 @@ function update(target, spec, opts) {
           if ('$push' in (spec[k] || {})) {
             v = spec[k].$push;
 
-            if (!types.check(o[k], 'array'))
+            if (!type.Array(o[k]))
               throw makeError(path.concat(k), 'using command $push to a non array');
             o[k] = o[k].concat(v);
           }
           if ('$unshift' in (spec[k] || {})) {
             v = spec[k].$unshift;
 
-            if (!types.check(o[k], 'array'))
+            if (!type.Array(o[k]))
               throw makeError(path.concat(k), 'using command $unshift to a non array');
             o[k] = (v instanceof Array ? v : [v]).concat(o[k]);
           }
