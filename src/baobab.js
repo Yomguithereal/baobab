@@ -12,7 +12,8 @@ var Cursor = require('./cursor.js'),
     merge = require('./merge.js'),
     types = require('./typology.js'),
     mixins = require('./mixins.js'),
-    defaults = require('../defaults.json');
+    defaults = require('../defaults.json'),
+    type = require('./type.js');
 
 /**
  * Main Class
@@ -23,7 +24,7 @@ function Baobab(initialData, opts) {
   if (!(this instanceof Baobab))
     return new Baobab(initialData, opts);
 
-  if (!types.check(initialData, 'object|array'))
+  if (!type.Object(initialData) && !type.Array(initialData))
     throw Error('Baobab: invalid data.');
 
   // Extending
@@ -73,7 +74,7 @@ helpers.inherits(Baobab, EventEmitter);
 Baobab.prototype._stack = function(spec) {
   var self = this;
 
-  if (!types.check(spec, 'object'))
+  if (!type.Object(spec))
     throw Error('Baobab.update: wrong specification.');
 
   this._futureUpdate = merge(spec, this._futureUpdate);
@@ -183,16 +184,14 @@ Baobab.prototype.select = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (!types.check(path, 'path'))
+  if (!type.Path(path))
     throw Error('Baobab.select: invalid path.');
 
   // Casting to array
   path = (types.get(path) !== 'array') ? [path] : path;
 
   // Complex path?
-  var complex = path.some(function(step) {
-    return types.check(step, 'complexStep');
-  });
+  var complex = type.ComplexPath(path);
 
   var solvedPath;
 
@@ -223,11 +222,11 @@ Baobab.prototype.reference = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (!types.check(path, 'path'))
+  if (!type.Path(path))
     throw Error('Baobab.get: invalid path.');
 
   return helpers.getIn(
-    this.data, types.check(path, 'string|number') ? [path] : path
+    this.data, type.String(path) || type.Number(path) ? [path] : path
   );
 };
 
@@ -278,6 +277,10 @@ Baobab.prototype.undo = function() {
 types.add('baobab', function(v) {
   return v instanceof Baobab;
 });
+
+type.Baobab = function (value) {
+  return value instanceof Baobab;
+};
 
 /**
  * Output

@@ -6,7 +6,8 @@
  */
 var EventEmitter = require('emmett'),
     types = require('./typology.js'),
-    helpers = require('./helpers.js');
+    helpers = require('./helpers.js'),
+    type = require('./type.js');
 
 /**
  * Utilities
@@ -33,7 +34,7 @@ function Combination(operator /*, &cursors */) {
     first = first[0];
   }
 
-  if (!types.check(first, 'cursor'))
+  if (!type.Cursor(first))
     throw Error('baobab.Combination: argument should be a cursor.');
 
   if (operator !== 'or' && operator !== 'and')
@@ -92,7 +93,7 @@ function makeOperator(operator) {
   Combination.prototype[operator] = function(cursor) {
 
     // Safeguard
-    if (!types.check(cursor, 'cursor'))
+    if (!type.Cursor(cursor))
       throw Error('baobab.Combination.' + operator + ': argument should be a cursor.');
 
     if (~this.cursors.indexOf(cursor))

@@ -5,6 +5,7 @@
  * Miscellaneous helper functions.
  */
 var types = require('typology');
+var type = require('./type.js');
 
 // Make a real array of an array-like object
 function arrayOf(o) {
@@ -28,15 +29,15 @@ function shallowClone(item) {
     return item;
 
   // Array
-  if (types.get(item) === 'array')
+  if (type.Array(item))
     return item.slice(0);
 
   // Date
-  if (types.get(item) === 'date')
+  if (type.Date(item))
     return new Date(item.getTime());
 
   // Object
-  if (types.get(item) === 'object') {
+  if (type.Object(item)) {
     var k, o = {};
     for (k in item)
       o[k] = item[k];
@@ -52,7 +53,7 @@ function deepClone(item) {
     return item;
 
   // Array
-  if (types.get(item) === 'array') {
+  if (type.Array(item)) {
     var i, l, a = [];
     for (i = 0, l = item.length; i < l; i++)
       a.push(deepClone(item[i]));
@@ -60,11 +61,11 @@ function deepClone(item) {
   }
 
   // Date
-  if (types.get(item) === 'date')
+  if (type.Date(item))
     return new Date(item.getTime());
 
   // Object
-  if (types.get(item) === 'object') {
+  if (type.Object(item)) {
     var k, o = {};
     for (k in item)
       o[k] = deepClone(item[k]);
@@ -106,10 +107,10 @@ function compare(object, spec) {
       k;
 
   for (k in spec) {
-    if (types.get(spec[k]) === 'object') {
+    if (type.Object(spec[k])) {
       ok = ok && compare(object[k]);
     }
-    else if (types.get(spec[k]) === 'array') {
+    else if (type.Array(spec[k])) {
       ok = ok && !!~spec[k].indexOf(object[k]);
     }
     else {
@@ -146,13 +147,13 @@ function getIn(object, path) {
       return;
 
     if (typeof path[i] === 'function') {
-      if (types.get(c) !== 'array')
+      if (!type.Array(c))
         return;
 
       c = first(c, path[i]);
     }
     else if (typeof path[i] === 'object') {
-      if (types.get(c) !== 'array')
+      if (!type.Array(c))
         return;
 
       c = firstByComparison(c, path[i]);
@@ -178,7 +179,7 @@ function solvePath(object, path) {
       return null;
 
     if (typeof path[i] === 'function') {
-      if (types.get(c) !== 'array')
+      if (!type.Array(c))
         return;
 
       idx = index(c, path[i]);
@@ -186,7 +187,7 @@ function solvePath(object, path) {
       c = c[idx];
     }
     else if (typeof path[i] === 'object') {
-      if (types.get(c) !== 'array')
+      if (!type.Array(c))
         return;
 
       idx = indexByComparison(c, path[i]);
