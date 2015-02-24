@@ -1,3 +1,11 @@
+/**
+ * Baobab Type Checking
+ * =====================
+ *
+ * Misc helpers functions used throughout the library to perform some type
+ * tests at runtime.
+ */
+
 // Not reusing methods as it will just be an extra
 // call on the stack
 var type = function (value) {
@@ -77,6 +85,7 @@ type.Path = function (value) {
   return true;
 
 };
+
 // string|number|array|cursor
 type.MixinCursor = function (value) {
   var allowedValues = ['string', 'number', 'array'];
