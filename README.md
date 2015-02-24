@@ -749,8 +749,8 @@ npm install
 npm test
 
 # Linting, building
-gulp lint
-gulp build
+npm run lint
+npm run build
 ```
 
 ## License

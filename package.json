@@ -24,7 +24,8 @@
   },
   "scripts": {
     "test": "gulp test",
-    "build": "gulp build"
+    "build": "gulp build",
+    "lint": "gulp lint"
   },
   "repository": {
     "type": "git",

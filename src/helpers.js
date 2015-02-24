@@ -228,13 +228,6 @@ function inherits(ctor, superCtor) {
   ctor.prototype.constructor = ctor;
 }
 
-// Delay execution until next tick or frame
-var later = (typeof window === 'undefined') ?
-  process.nextTick :
-  ('requestAnimationFrame' in window) ?
-    window.requestAnimationFrame.bind(window) :
-    function(fn) {setTimeout(fn, 0);};
-
 module.exports = {
   arrayOf: arrayOf,
   deepClone: deepClone,
@@ -243,7 +236,6 @@ module.exports = {
   compose: compose,
   getIn: getIn,
   inherits: inherits,
-  later: later,
   pathObject: pathObject,
   solvePath: solvePath
 };

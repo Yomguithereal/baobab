@@ -314,7 +314,7 @@ describe('Cursor API', function() {
       baobab.set('one', 'cece');
       baobab.set('two', 'keke');
 
-      helpers.later(function() {
+      process.nextTick(function() {
         assert.deepEqual(baobab.get(), {one: 'cece', two: 'keke'});
         done();
       });
@@ -326,7 +326,7 @@ describe('Cursor API', function() {
 
       cursor.push(2).push(3).unshift([-1, 0]).unshift(-2);
 
-      helpers.later(function() {
+      process.nextTick(function() {
         assert.deepEqual(cursor.get(), [-2, -1, 0, 1, 2, 3]);
         done();
       });

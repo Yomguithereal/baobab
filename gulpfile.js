@@ -27,7 +27,11 @@ gulp.task('test', function() {
 // Building
 gulp.task('build', function() {
   var bundle = transform(function(filename) {
-    return browserify({entries: filename, standalone: 'Baobab'}).bundle();
+    return browserify({
+      entries: filename,
+      standalone: 'Baobab',
+      fullPaths: false
+    }).bundle();
   });
 
   return gulp.src('./index.js')
