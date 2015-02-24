@@ -58,7 +58,7 @@ function Cursor(root, path, solvedPath) {
         p = c[j];
 
         // If path is not relevant to us, we break
-        if (p !== self.solvedPath[j])
+        if (p !== '' + self.solvedPath[j])
           break;
 
         // If we reached last item and we are relevant, we fire

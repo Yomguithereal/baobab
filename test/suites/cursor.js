@@ -288,6 +288,20 @@ describe('Cursor API', function() {
         baobab.set('one', {two: 'hello'});
       }, 30);
     });
+
+    it('should be possible to listen to changes in an array.', function(done) {
+      var baobab = new Baobab({list: ['hello', 'world']}),
+          cursor = baobab.select('list', 1);
+
+      assert.strictEqual(cursor.get(), 'world');
+
+      cursor.on('update', function() {
+        assert.strictEqual(cursor.get(), 'jacky');
+        done();
+      });
+
+      cursor.edit('jacky');
+    });
   });
 
   describe('Advanced', function() {
