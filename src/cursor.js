@@ -8,7 +8,8 @@ var EventEmitter = require('emmett'),
     Combination = require('./combination.js'),
     mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
-    types = require('./typology.js');
+    types = require('./typology.js'),
+    type = require('./type.js');
 
 /**
  * Main Class
@@ -115,7 +116,7 @@ Cursor.prototype.isRoot = function() {
 };
 
 Cursor.prototype.isLeaf = function() {
-  return types.check(this.reference(), 'primitive');
+  return type.Primitive(this.reference());
 };
 
 Cursor.prototype.isBranch = function() {
@@ -129,7 +130,7 @@ Cursor.prototype.select = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (!types.check(path, 'path'))
+  if (!type.Path(path))
     throw Error('baobab.Cursor.select: invalid path.');
   return this.root.select(this.path.concat(path));
 };
@@ -200,7 +201,7 @@ Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (types.check(path, 'step'))
+  if (type.Step(path))
     return this.root.get(this.solvedPath.concat(path));
   else
     return this.root.get(this.solvedPath);
@@ -210,7 +211,7 @@ Cursor.prototype.reference = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (types.check(path, 'step'))
+  if (type.Step(path))
     return this.root.reference(this.solvedPath.concat(path));
   else
     return this.root.reference(this.solvedPath);
@@ -220,7 +221,7 @@ Cursor.prototype.clone = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (types.check(path, 'step'))
+  if (type.Step(path))
     return this.root.clone(this.solvedPath.concat(path));
   else
     return this.root.clone(this.solvedPath);
@@ -279,10 +280,10 @@ Cursor.prototype.unshift = function(value) {
 };
 
 Cursor.prototype.merge = function(o) {
-  if (!types.check(o, 'object'))
+  if (!type.Object(o))
     throw Error('baobab.Cursor.merge: trying to merge a non-object.');
 
-  if (!types.check(this.reference(), 'object'))
+  if (!type.Object(this.reference()))
     throw Error('baobab.Cursor.merge: trying to merge into a non-object.');
 
   this.update({$merge: o});
@@ -325,6 +326,10 @@ Cursor.prototype.toJSON = function() {
 types.add('cursor', function(v) {
   return v instanceof Cursor;
 });
+
+type.Cursor = function (value) {
+  return value instanceof Cursor;
+};
 
 /**
  * Export

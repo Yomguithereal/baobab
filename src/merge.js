@@ -5,7 +5,8 @@
  * A function used to merge updates in the stack.
  */
 var types = require('typology'),
-    helpers = require('./helpers.js');
+    helpers = require('./helpers.js'),
+    type = require('./type.js');
 
 // Helpers
 function hasKey(o, key) {
@@ -66,11 +67,11 @@ function merge() {
       current = res[k];
       next = arguments[i][k];
 
-      if (current && types.check(next, 'object')) {
+      if (current && type.Object(next)) {
 
         // $push conflict
         if (conflict(current, next, '$push')) {
-          if (types.check(current.$push, 'array'))
+          if (type.Array(current.$push))
             current.$push = current.$push.concat(next.$push);
           else
             current.$push = [current.$push].concat(next.$push);
@@ -78,7 +79,7 @@ function merge() {
 
         // $unshift conflict
         else if (conflict(current, next, '$unshift')) {
-          if (types.check(next.$unshift, 'array'))
+          if (type.Array(next.$unshift))
             current.$unshift = next.$unshift.concat(current.$unshift);
           else
             current.$unshift = [next.$unshift].concat(current.$unshift);
