@@ -76,7 +76,7 @@ function Cursor(root, path, solvedPath) {
       if (data && shouldFire) {
         self.emit('update');
       }
-      else {
+      else if (!data) {
         self.emit('irrelevant');
         self.relevant = false;
       }
