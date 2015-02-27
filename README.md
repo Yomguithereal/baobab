@@ -331,7 +331,7 @@ var UserList = React.createClass({
     return (
       <div>
         <h1>{this.cursors[1].get()}</h1>
-        <ul>{this.cursor[0].get().map(renderItem)}</ul>
+        <ul>{this.cursors[0].get().map(renderItem)}</ul>
       </div>
     );
   }
@@ -350,13 +350,13 @@ var UserList = React.createClass({
     };
 
     // Cursor data is then available either through:
-    var data = this.cursors.name.get();
+    var data = this.cursors.users.get();
     // Or
-    var data = this.state.cursors.name;
+    var data = this.state.cursors.users;
 
     return (
       <div>
-        <h1>{this.cursors.name.get()}</h1>
+        <h1>{this.cursors.title.get()}</h1>
         <ul>{this.cursors.users.get().map(renderItem)}</ul>
       </div>
     );
