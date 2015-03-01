@@ -11,7 +11,7 @@ var Cursor = require('./cursor.js'),
     update = require('./update.js'),
     merge = require('./merge.js'),
     mixins = require('./mixins.js'),
-    defaults = require('../defaults.json'),
+    defaults = require('../defaults.js'),
     type = require('./type.js');
 
 /**
