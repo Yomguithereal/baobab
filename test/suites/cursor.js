@@ -42,6 +42,20 @@ describe('Cursor API', function() {
       assert.deepEqual(altCursor.get(), colorCursor.get());
     });
 
+    it('should be possible to select data using a function.', function() {
+      var cursor = baobab.select('one', 'subtwo', 'colors', function(v) {
+        return v === 'yellow';
+      });
+
+      assert.strictEqual(cursor.get(), 'yellow');
+    });
+
+    it('should be possible to select data using a descriptor object.', function() {
+      var cursor = baobab.select('items', {id: 'one'});
+
+      assert.deepEqual(cursor.get(), {id: 'one'});
+    });
+
     it('should be possible to use some polymorphism on the getter.', function() {
       var altCursor = baobab.select('one');
 

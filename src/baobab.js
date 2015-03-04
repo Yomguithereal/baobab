@@ -14,6 +14,11 @@ var Cursor = require('./cursor.js'),
     defaults = require('../defaults.js'),
     type = require('./type.js');
 
+function complexHash(type) {
+  return type + '$' +
+    (new Date()).getTime() + (''  + Math.random()).replace('0.', '');
+}
+
 /**
  * Main Class
  */
@@ -204,7 +209,14 @@ Baobab.prototype.select = function(path) {
     return new Cursor(this, path);
   }
   else {
-    var hash = path.join('λ');
+    var hash = path.map(function(step) {
+      if (type.Function(step))
+        return complexHash('fn');
+      else if (type.Object(step))
+        return complexHash('ob');
+      else
+        return step;
+    }).join('λ');
 
     if (!this._cursors[hash]) {
       var cursor = new Cursor(this, path, solvedPath);
