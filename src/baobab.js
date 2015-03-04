@@ -37,7 +37,7 @@ function Baobab(initialData, opts) {
   this._futureUpdate = {};
   this._willUpdate = false;
   this._history = [];
-  this._registeredCursors = {};
+  this._cursors = {};
 
   // Internal typology
   this.typology = this.options.typology ?
@@ -204,13 +204,13 @@ Baobab.prototype.select = function(path) {
   else {
     var hash = path.join('λ');
 
-    if (!this._registeredCursors[hash]) {
+    if (!this._cursors[hash]) {
       var cursor = new Cursor(this, path, solvedPath);
-      this._registeredCursors[hash] = cursor;
+      this._cursors[hash] = cursor;
       return cursor;
     }
     else {
-      return this._registeredCursors[hash];
+      return this._cursors[hash];
     }
   }
 };
@@ -275,7 +275,11 @@ Baobab.prototype.release = function() {
   delete this.data;
   delete this._futureUpdate;
   delete this._history;
-  delete this._registeredCursors;
+
+  // Releasing cursors
+  for (var k in this._cursors)
+    this._cursors[k].release();
+  delete this._cursors;
 };
 
 /**
