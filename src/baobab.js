@@ -271,7 +271,7 @@ Baobab.prototype.undo = function() {
 };
 
 Baobab.prototype.release = function() {
-  this.unbindAll();
+  this.kill();
   delete this.data;
   delete this._futureUpdate;
   delete this._history;

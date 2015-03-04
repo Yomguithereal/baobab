@@ -309,7 +309,7 @@ Cursor.prototype.and = function(otherCursor) {
 Cursor.prototype.release = function() {
   this.root.off('update', this.updateHandler);
   this.root = null;
-  this.unbindAll();
+  this.kill();
 };
 
 /**

@@ -113,7 +113,7 @@ makeOperator('and');
 Combination.prototype.release = function() {
 
   // Dropping own listeners
-  this.unbindAll();
+  this.kill();
 
   // Dropping cursors listeners
   this.cursors.forEach(function(cursor) {
