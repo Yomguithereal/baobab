@@ -37,7 +37,7 @@ function Baobab(initialData, opts) {
 
   // Privates
   this._futureUpdate = {};
-  this._willUpdate = false;
+  this._shouldUpdate = false;
   this._history = [];
   this._cursors = {};
 
@@ -89,10 +89,10 @@ Baobab.prototype._stack = function(spec) {
     return this.commit();
 
   // Updating asynchronously
-  if (!this._willUpdate) {
-    this._willUpdate = true;
+  if (!this._shouldUpdate) {
+    this._shouldUpdate = true;
     process.nextTick(function() {
-      if (self._willUpdate)
+      if (self._shouldUpdate)
         self.commit();
     });
   }
@@ -176,7 +176,7 @@ Baobab.prototype.commit = function(referenceRecord) {
 
   // Resetting
   this._futureUpdate = {};
-  this._willUpdate = false;
+  this._shouldUpdate = false;
 
   return this;
 };
