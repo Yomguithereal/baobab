@@ -4,6 +4,8 @@
  *
  * Misc helpers functions used throughout the library to perform some type
  * tests at runtime.
+ *
+ * @christianalfoni
  */
 
 // Not reusing methods as it will just be an extra
@@ -95,13 +97,12 @@ type.MixinCursor = function (value) {
 // Already know this is an array
 type.ComplexPath = function (value) {
   var complexTypes = ['object', 'function'];
-  var hasComplexTypes = false;
   for (var x = 0; x < value.length; x++) {
     if (complexTypes.indexOf(type(value[x])) >= 0) {
-      hasComplexTypes = true;
+      return true;
     }
   }
-  return hasComplexTypes;
+  return false;
 };
 
 module.exports = type;
