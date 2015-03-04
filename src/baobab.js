@@ -18,6 +18,8 @@ var Cursor = require('./cursor.js'),
  * Main Class
  */
 function Baobab(initialData, opts) {
+  if (arguments.length < 1)
+    initialData = {};
 
   // New keyword optional
   if (!(this instanceof Baobab))
