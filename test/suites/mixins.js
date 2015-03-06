@@ -81,7 +81,7 @@ describe('React Mixins', function() {
     });
   });
 
-  describe('Tree mixin', function() {
+  describe('Tree mixin', function() {
 
     it('should not break if no cursor is passed to the mixin.', function(done) {
       var baobab = new Baobab({hello:'world'});

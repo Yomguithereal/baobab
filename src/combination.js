@@ -62,7 +62,7 @@ function Combination(operator /*, &cursors */) {
 
     for (i = 1, l = self.cursors.length; i < l; i++) {
       shouldFire = self.operators[i - 1] === 'or' ?
-        shouldFire || self.updates[i] :
+        shouldFire || self.updates[i] :
         shouldFire && self.updates[i];
     }
 

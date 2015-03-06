@@ -54,7 +54,7 @@ function Baobab(initialData, opts) {
     new Typology();
 
   // Internal validation
-  this.validate = this.options.validate || null;
+  this.validate = this.options.validate || null;
 
   if (this.validate)
     try {

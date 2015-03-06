@@ -30,7 +30,7 @@ function makeError(path, message) {
 
 // Core function
 function update(target, spec, opts) {
-  opts = opts || {};
+  opts = opts || {};
   var log = {};
 
   // Closure mutating the internal object
@@ -75,7 +75,7 @@ function update(target, spec, opts) {
       else {
         h = hash ? hash + 'λ' + k : k;
 
-        if ('$set' in (spec[k] || {})) {
+        if ('$set' in (spec[k] || {})) {
           v = spec[k].$set;
 
           // Logging update

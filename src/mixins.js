@@ -70,7 +70,7 @@ module.exports = {
                   this.cursors[k] = baobab.select(this.cursors[k]);
               }
 
-              this.__getCursorData = (function() {
+              this.__getCursorData = (function() {
                 var d = {};
                 for (k in this.cursors)
                   d[k] = this.cursors[k].get();

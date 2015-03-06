@@ -20,7 +20,7 @@ function Cursor(root, path, solvedPath) {
   EventEmitter.call(this);
 
   // Enforcing array
-  path = path || [];
+  path = path || [];
 
   // Properties
   this.root = root;
