@@ -21,7 +21,7 @@ var COMMANDS = {};
 
 // Helpers
 function makeError(path, message) {
-  var e = new Error('precursors.update: ' + message + ' at path /' +
+  var e = new Error('baobab.update: ' + message + ' at path /' +
                     path.toString());
 
   e.path = path;
@@ -75,7 +75,13 @@ function update(target, spec, opts) {
       else {
         h = hash ? hash + 'λ' + k : k;
 
-        if ('$set' in (spec[k] || {})) {
+        if ('$unset' in (spec[k] || {})) {
+
+          // Logging update
+          log[h] = true;
+          delete o[k];
+        }
+        else if ('$set' in (spec[k] || {})) {
           v = spec[k].$set;
 
           // Logging update

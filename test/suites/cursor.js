@@ -93,20 +93,77 @@ describe('Cursor API', function() {
   });
 
   describe('Updates', function() {
-    var baobab = new Baobab(state);
-
-    var oneCursor = baobab.select('one');
-
     it('should throw an error when trying to push to a non-array.', function() {
+      var baobab = new Baobab(state),
+          oneCursor = baobab.select('one');
+
       assert.throws(function() {
         oneCursor.push('test');
       }, /non-array/);
     });
 
     it('should throw an error when trying to unshift to a non-array.', function() {
+      var baobab = new Baobab(state),
+          oneCursor = baobab.select('one');
+
       assert.throws(function() {
         oneCursor.unshift('test');
       }, /non-array/);
+    });
+
+    it('should be possible to chain mutations.', function(done) {
+      var baobab = new Baobab({number: 1}),
+          inc = function(i) { return i + 1; };
+
+      baobab.update({number: {$chain: inc}});
+      baobab.update({number: {$chain: inc}});
+
+      baobab.on('update', function() {
+        assert.strictEqual(baobab.get('number'), 3);
+        done();
+      });
+    });
+
+    it('should be possible to shallow merge two objects.', function(done) {
+      var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
+
+      assert.throws(function() {
+        baobab.select('test').merge({hello: 'moto'});
+      }, /merge/);
+
+      var cursor = baobab.select('o');
+      cursor.merge({hello: 'jarl'});
+
+      baobab.on('update', function() {
+        assert.deepEqual(baobab.get('o'), {hello: 'jarl'});
+        done();
+      });
+    });
+
+    it('should be possible to remove keys from the tree.', function() {
+      var tree = new Baobab({one: 1, two: 2}, {asynchronous: false});
+
+      assert.deepEqual(tree.get(), {one: 1, two: 2});
+      tree.unset('one');
+      assert.deepEqual(tree.get(), {two: 2});
+    });
+
+    it('should be possible to remove keys from a cursor.', function() {
+      var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+          cursor = tree.select('two');
+
+      assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
+      cursor.unset('subone');
+      assert.deepEqual(cursor.get(), {subtwo: 2});
+    });
+
+    it('should be possible to remove data at cursor.', function() {
+      var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+          cursor = tree.select('two');
+
+      assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
+      cursor.remove();
+      assert.strictEqual(cursor.get(), undefined);
     });
   });
 
@@ -378,35 +435,6 @@ describe('Cursor API', function() {
 
       baobab.on('update', function() {
         assert.strictEqual(baobab.get('number'), 3);
-        done();
-      });
-    });
-
-    it('should be possible to chain mutations.', function(done) {
-      var baobab = new Baobab({number: 1}),
-          inc = function(i) { return i + 1; };
-
-      baobab.update({number: {$chain: inc}});
-      baobab.update({number: {$chain: inc}});
-
-      baobab.on('update', function() {
-        assert.strictEqual(baobab.get('number'), 3);
-        done();
-      });
-    });
-
-    it('should be possible to shallow merge two objects.', function(done) {
-      var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
-
-      assert.throws(function() {
-        baobab.select('test').merge({hello: 'moto'});
-      }, /merge/);
-
-      var cursor = baobab.select('o');
-      cursor.merge({hello: 'jarl'});
-
-      baobab.on('update', function() {
-        assert.deepEqual(baobab.get('o'), {hello: 'jarl'});
         done();
       });
     });

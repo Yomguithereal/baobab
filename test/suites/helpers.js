@@ -165,5 +165,21 @@ describe('Helpers', function() {
       assert.deepEqual(o1, {number: 10});
       assert.deepEqual(o2, {number: 20});
     });
+
+    it('should be possible to shallowly merge objects.', function() {
+      var o = {hey: {one: 1, two: 2}};
+      update(o, {hey: {$merge: {three: 3, two: 4}}});
+
+      assert.deepEqual(o, {hey: {one: 1, two: 4, three: 3}});
+    });
+
+    it('should be possible to unset values.', function() {
+      var o1 = {one: 1, two: 2},
+          o2 = clone(o1);
+      update(o2, {one: {$unset: true}});
+
+      assert.deepEqual(o1, {one: 1, two: 2});
+      assert.deepEqual(o2, {two: 2});
+    });
   });
 });

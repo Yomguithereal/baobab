@@ -101,14 +101,6 @@ function Cursor(root, path, solvedPath, hash) {
 helpers.inherits(Cursor, EventEmitter);
 
 /**
- * Private prototype
- */
-Cursor.prototype._stack = function(spec) {
-  this.root._stack(helpers.pathObject(this.solvedPath, spec));
-  return this;
-};
-
-/**
  * Predicates
  */
 Cursor.prototype.isRoot = function() {
@@ -243,6 +235,19 @@ Cursor.prototype.edit = function(value) {
   return this.update({$set: value});
 };
 
+Cursor.prototype.unset = function(key) {
+  if (!key && key !== 0)
+    throw Error('baobab.Cursor.unset: expects a valid key to unset.');
+
+  var spec = {};
+  spec[key] = {$unset: true};
+  return this.update(spec);
+};
+
+Cursor.prototype.remove = function() {
+  return this.update({$unset: true});
+};
+
 Cursor.prototype.apply = function(fn) {
   if (typeof fn !== 'function')
     throw Error('baobab.Cursor.apply: argument is not a function.');
@@ -290,7 +295,8 @@ Cursor.prototype.merge = function(o) {
 };
 
 Cursor.prototype.update = function(spec) {
-  return this._stack(spec);
+  this.root.update(helpers.pathObject(this.solvedPath, spec));
+  return this;
 };
 
 /**

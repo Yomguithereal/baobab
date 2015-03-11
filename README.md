@@ -8,7 +8,7 @@ It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip
 
 It can be paired with **React** easily through [mixins](#react-mixins) to provide a centralized model holding your application's state.
 
-For a concise introduction about the library and how it can be used by a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) article on the subject.
+For a concise introduction about the library and how it can be used by a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) on the subject.
 
 ## Summary
 
@@ -144,6 +144,12 @@ This enables the tree to perform efficient mutations and to be able to notify an
 tree.set('hello', 'world');
 ```
 
+*Unsetting a key*
+
+```js
+tree.unset('hello');
+```
+
 ##### Cursor level
 
 *Replacing data at cursor*
@@ -156,6 +162,18 @@ cursor.edit({hello: 'world'});
 
 ```js
 cursor.set('hello', 'world');
+```
+
+*Removing data at cursor*
+
+```js
+cursor.remove();
+```
+
+*Unsetting a key*
+
+```js
+cursor.unset('hello');
 ```
 
 *Pushing values*
@@ -558,6 +576,7 @@ The available commands are the following and are basically the same as the curso
 * `$push`
 * `$unshift`
 * `$merge`
+* `$unset`
 
 *Example*
 

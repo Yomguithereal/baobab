@@ -77,29 +77,6 @@ helpers.inherits(Baobab, EventEmitter);
 /**
  * Private prototype
  */
-Baobab.prototype._stack = function(spec) {
-  var self = this;
-
-  if (!type.Object(spec))
-    throw Error('Baobab.update: wrong specification.');
-
-  this._transaction = merge(spec, this._transaction);
-
-  // Should we let the user commit?
-  if (!this.options.autoCommit)
-    return this;
-
-  // Should we update synchronously?
-  if (!this.options.asynchronous)
-    return this.commit();
-
-  // Updating asynchronously
-  if (!this._future)
-    this._future = setTimeout(self.commit.bind(self, null), 0);
-
-  return this;
-};
-
 Baobab.prototype._archive = function() {
   if (this.options.maxHistory <= 0)
     return;
@@ -261,8 +238,37 @@ Baobab.prototype.set = function(key, val) {
   return this.update(spec);
 };
 
+Baobab.prototype.unset = function(key) {
+  if (!key && key !== 0)
+    throw Error('Baobab.unset: expects a valid key to unset.');
+
+  var spec = {};
+  spec[key] = {$unset: true};
+
+  return this.update(spec);
+};
+
 Baobab.prototype.update = function(spec) {
-  return this._stack(spec);
+  var self = this;
+
+  if (!type.Object(spec))
+    throw Error('Baobab.update: wrong specification.');
+
+  this._transaction = merge(spec, this._transaction);
+
+  // Should we let the user commit?
+  if (!this.options.autoCommit)
+    return this;
+
+  // Should we update synchronously?
+  if (!this.options.asynchronous)
+    return this.commit();
+
+  // Updating asynchronously
+  if (!this._future)
+    this._future = setTimeout(self.commit.bind(self, null), 0);
+
+  return this;
 };
 
 Baobab.prototype.hasHistory = function() {

@@ -29,31 +29,42 @@ function merge() {
 
     // Upper $set/$apply... and conflicts
     // When solving conflicts, here is the priority to apply:
+    // -- 0) $unset
     // -- 1) $set
     // -- 2) $merge
     // -- 3) $apply
     // -- 4) $chain
-    if (arguments[i].$set) {
+    if (arguments[i].$unset) {
+      delete res.$set;
       delete res.$apply;
       delete res.$merge;
+      res.$unset = arguments[i].$unset;
+    }
+    else if (arguments[i].$set) {
+      delete res.$apply;
+      delete res.$merge;
+      delete res.$unset;
       res.$set = arguments[i].$set;
       continue;
     }
     else if (arguments[i].$merge) {
       delete res.$set;
       delete res.$apply;
+      delete res.$unset;
       res.$merge = arguments[i].$merge;
       continue;
     }
     else if (arguments[i].$apply){
       delete res.$set;
       delete res.$merge;
+      delete res.$unset;
       res.$apply = arguments[i].$apply;
       continue;
     }
     else if (arguments[i].$chain) {
       delete res.$set;
       delete res.$merge;
+      delete res.$unset;
 
       if (res.$apply)
         res.$apply = helpers.compose(res.$apply, arguments[i].$chain);
