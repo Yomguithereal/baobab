@@ -214,7 +214,7 @@ Whenever an update is committed, events are fired to notify relevant parts of th
 
 Note however that only relevant cursors will be notified of data change.
 
-Events, can be bound to either the tree or cursors using the `on` method.
+Events can be bound to either the tree or cursors using the `on` method.
 
 *Example*
 
