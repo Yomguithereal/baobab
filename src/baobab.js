@@ -216,7 +216,7 @@ Baobab.prototype.select = function(path) {
     }).join('λ');
 
     if (!this._cursors[hash]) {
-      var cursor = new Cursor(this, path, solvedPath);
+      var cursor = new Cursor(this, path, solvedPath, hash);
       this._cursors[hash] = cursor;
       return cursor;
     }

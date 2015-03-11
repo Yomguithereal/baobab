@@ -13,7 +13,7 @@ var EventEmitter = require('emmett'),
 /**
  * Main Class
  */
-function Cursor(root, path, solvedPath) {
+function Cursor(root, path, solvedPath, hash) {
   var self = this;
 
   // Extending event emitter
@@ -25,6 +25,7 @@ function Cursor(root, path, solvedPath) {
   // Properties
   this.root = root;
   this.path = path;
+  this.hash = hash;
   this.relevant = this.reference() !== undefined;
 
   // Complex path?
@@ -308,6 +309,8 @@ Cursor.prototype.and = function(otherCursor) {
  */
 Cursor.prototype.release = function() {
   this.root.off('update', this.updateHandler);
+  if (this.hash)
+    delete this.root._cursors[this.hash];
   this.root = null;
   this.kill();
 };
