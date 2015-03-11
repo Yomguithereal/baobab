@@ -22,57 +22,68 @@ function shallowMerge(o1, o2) {
   return o;
 }
 
-// Shallow clone
-function shallowClone(item) {
-  if (!item || !(item instanceof Object))
-    return item;
+// Clone a regexp
+function cloneRegexp(re) {
+  var pattern = re.source,
+      flags = '';
 
-  // Array
-  if (type.Array(item))
-    return item.slice(0);
+  if (re.global) flags += 'g';
+  if (re.multiline) flags += 'm';
+  if (re.ignoreCase) flags += 'i';
+  if (re.sticky) flags += 'y';
+  if (re.unicode) flags += 'u';
 
-  // Date
-  if (type.Date(item))
-    return new Date(item.getTime());
-
-  // Object
-  if (type.Object(item)) {
-    var k, o = {};
-    for (k in item)
-      o[k] = item[k];
-    return o;
-  }
-
-  return item;
+  return new RegExp(pattern, flags);
 }
 
-// Deep clone
-function deepClone(item) {
-  if (!item || !(item instanceof Object))
+// Cloning function
+function clone(deep, item) {
+  if (!item ||
+      typeof item !== 'object' ||
+      item instanceof Error ||
+      item instanceof ArrayBuffer)
     return item;
 
   // Array
   if (type.Array(item)) {
-    var i, l, a = [];
-    for (i = 0, l = item.length; i < l; i++)
-      a.push(deepClone(item[i]));
-    return a;
+    if (deep) {
+      var i, l, a = [];
+      for (i = 0, l = item.length; i < l; i++)
+        a.push(deepClone(item[i]));
+      return a;
+    }
+    else {
+      return item.slice(0);
+    }
   }
 
   // Date
   if (type.Date(item))
     return new Date(item.getTime());
 
+  // RegExp
+  if (item instanceof RegExp)
+    return cloneRegexp(item);
+
   // Object
   if (type.Object(item)) {
     var k, o = {};
+
+    if (item.constructor && item.constructor !== Object)
+      o = Object.create(item.constructor.prototype);
+
     for (k in item)
-      o[k] = deepClone(item[k]);
+      if (item.hasOwnProperty(k))
+        o[k] = deep ? deepClone(item[k]) : item[k];
     return o;
   }
 
   return item;
 }
+
+// Shallow & deep cloning functions
+var shallowClone = clone.bind(null, false),
+    deepClone = clone.bind(null, true);
 
 // Simplistic composition
 function compose(fn1, fn2) {

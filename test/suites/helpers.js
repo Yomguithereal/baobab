@@ -85,6 +85,15 @@ describe('Helpers', function() {
       assert(o.b === clone.b);
       assert(o.b.c === clone.b.c);
     });
+
+    it('should clone regexes correctly.', function() {
+      var regex = /abc/i,
+          clone = helpers.shallowClone(regex);
+
+      assert(regex !== clone);
+      assert.strictEqual(regex.source, clone.source);
+      assert(regex.ignoreCase, clone.ignoreCase);
+    });
   });
 
   describe('Update API', function() {
