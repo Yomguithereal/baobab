@@ -41,8 +41,8 @@ function Baobab(initialData, opts) {
   this._cloner = this.options.cloningFunction || helpers.deepClone;
 
   // Privates
-  this._futureUpdate = {};
-  this._shouldUpdate = false;
+  this._transaction = {};
+  this._future = undefined;
   this._history = [];
   this._cursors = {};
 
@@ -83,7 +83,7 @@ Baobab.prototype._stack = function(spec) {
   if (!type.Object(spec))
     throw Error('Baobab.update: wrong specification.');
 
-  this._futureUpdate = merge(spec, this._futureUpdate);
+  this._transaction = merge(spec, this._transaction);
 
   // Should we let the user commit?
   if (!this.options.autoCommit)
@@ -94,13 +94,8 @@ Baobab.prototype._stack = function(spec) {
     return this.commit();
 
   // Updating asynchronously
-  if (!this._shouldUpdate) {
-    this._shouldUpdate = true;
-    process.nextTick(function() {
-      if (self._shouldUpdate)
-        self.commit();
-    });
-  }
+  if (!this._future)
+    this._future = setTimeout(self.commit.bind(self, null), 0);
 
   return this;
 };
@@ -143,7 +138,7 @@ Baobab.prototype.commit = function(referenceRecord) {
 
     // Applying modification (mutation)
     var record = this._archive();
-    log = update(this.data, this._futureUpdate, this.options);
+    log = update(this.data, this._transaction, this.options);
 
     if (record)
       record.log = log;
@@ -180,8 +175,10 @@ Baobab.prototype.commit = function(referenceRecord) {
   });
 
   // Resetting
-  this._futureUpdate = {};
-  this._shouldUpdate = false;
+  this._transaction = {};
+
+  if (this._future)
+    this._future = clearTimeout(this._future);
 
   return this;
 };
@@ -287,7 +284,7 @@ Baobab.prototype.undo = function() {
 Baobab.prototype.release = function() {
   this.kill();
   delete this.data;
-  delete this._futureUpdate;
+  delete this._transaction;
   delete this._history;
 
   // Releasing cursors

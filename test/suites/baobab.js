@@ -122,14 +122,14 @@ describe('Baobab API', function() {
       var baobab = new Baobab({number: 1}, {autoCommit: false});
       baobab.set('number', 2);
 
-      process.nextTick(function() {
+      setTimeout(function() {
         assert.strictEqual(baobab.get('number'), 1);
         baobab.commit();
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(baobab.get('number'), 2);
           done();
-        });
-      });
+        }, 0);
+      }, 0);
     });
 
     it('should be possible to serve cloned data.', function() {
@@ -248,11 +248,11 @@ describe('Baobab API', function() {
 
       baobab.set('name', 'Estelle');
 
-      process.nextTick(function() {
+      setTimeout(function() {
         assert(baobab.hasHistory());
         assert.deepEqual(baobab.getHistory(), [{log: [['name']], data: {name: 'Maria'}}]);
         done();
-      });
+      }, 0);
     });
 
     it('should throw an error if trying to undo without history.', function() {
@@ -269,7 +269,7 @@ describe('Baobab API', function() {
       async.series([
         function(next) {
           baobab.set('name', 'Estelle');
-          process.nextTick(next);
+          setTimeout(next);
         },
         function(next) {
           assert(baobab.hasHistory());

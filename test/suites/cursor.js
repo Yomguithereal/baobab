@@ -328,10 +328,10 @@ describe('Cursor API', function() {
       baobab.set('one', 'cece');
       baobab.set('two', 'keke');
 
-      process.nextTick(function() {
+      setTimeout(function() {
         assert.deepEqual(baobab.get(), {one: 'cece', two: 'keke'});
         done();
-      });
+      }, 0);
     });
 
     it('should be possible to merge push-like specifications.', function(done) {
@@ -340,10 +340,10 @@ describe('Cursor API', function() {
 
       cursor.push(2).push(3).unshift([-1, 0]).unshift(-2);
 
-      process.nextTick(function() {
+      setTimeout(function() {
         assert.deepEqual(cursor.get(), [-2, -1, 0, 1, 2, 3]);
         done();
-      });
+      }, 0);
     });
 
     it('should be possible to push several values through polymorphism.', function(done) {
@@ -352,10 +352,10 @@ describe('Cursor API', function() {
 
       colorCursor.push('yellow', 'green');
 
-      process.nextTick(function() {
+      setTimeout(function() {
         assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'green']);
         done();
-      });
+      }, 0);
     });
 
     it('an upper set should correctly resolve.', function(done) {

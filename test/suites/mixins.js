@@ -50,10 +50,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#cursor').textContent, 'world');
 
         baobab.set('hello', 'john');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#cursor').textContent, 'john');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -114,10 +114,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treepath').textContent, 'world');
 
         baobab.set('hello', 'john');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treepath').textContent, 'john');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -139,10 +139,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treecursor').textContent, 'world');
 
         baobab.set('hello', 'john');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treecursor').textContent, 'john');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -165,10 +165,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treepathlist').textContent, 'John Talbot');
 
         baobab.set('name', 'Jack');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treepathlist').textContent, 'Jack Talbot');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -187,10 +187,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'John Talbot');
 
         baobab.set('name', 'Jack');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'Jack Talbot');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -216,10 +216,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treepathobject').textContent, 'John Talbot');
 
         baobab.set('name', 'Jack');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treepathobject').textContent, 'Jack Talbot');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -241,10 +241,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treepathoc').textContent, 'John Talbot');
 
         baobab.set('name', 'Jack');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treepathoc').textContent, 'Jack Talbot');
           done();
-        });
+        }, 0);
       });
     });
 
@@ -263,10 +263,10 @@ describe('React Mixins', function() {
         assert.strictEqual(document.querySelector('#treepathmixin').textContent, 'Yeah John');
 
         baobab.set('name', 'Jack');
-        process.nextTick(function() {
+        setTimeout(function() {
           assert.strictEqual(document.querySelector('#treepathmixin').textContent, 'Yeah Jack');
           done();
-        });
+        }, 0);
       });
     });
 
