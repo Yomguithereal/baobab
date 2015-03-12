@@ -226,6 +226,9 @@ Cursor.prototype.set = function(key, value) {
   if (arguments.length < 2)
     throw Error('baobab.Cursor.set: expecting at least key/value.');
 
+  if (typeof this.reference() !== 'object')
+    throw Error('baobab.Cursor.set: trying to set key to a non-object.');
+
   var spec = {};
   spec[key] = {$set: value};
   return this.update(spec);
@@ -238,6 +241,9 @@ Cursor.prototype.edit = function(value) {
 Cursor.prototype.unset = function(key) {
   if (!key && key !== 0)
     throw Error('baobab.Cursor.unset: expects a valid key to unset.');
+
+  if (typeof this.reference() !== 'object')
+    throw Error('baobab.Cursor.set: trying to set key to a non-object.');
 
   var spec = {};
   spec[key] = {$unset: true};
@@ -263,7 +269,6 @@ Cursor.prototype.thread = function(fn) {
   return this.update({$thread: fn});
 };
 
-// TODO: consider dropping the ahead testing
 Cursor.prototype.push = function(value) {
   if (!(this.reference() instanceof Array))
     throw Error('baobab.Cursor.push: trying to push to non-array value.');
