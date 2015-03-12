@@ -261,12 +261,11 @@ Cursor.prototype.apply = function(fn) {
   return this.update({$apply: fn});
 };
 
-// TODO: maybe composing should be done here rather than in the merge
-Cursor.prototype.thread = function(fn) {
+Cursor.prototype.chain = function(fn) {
   if (typeof fn !== 'function')
-    throw Error('baobab.Cursor.thread: argument is not a function.');
+    throw Error('baobab.Cursor.chain: argument is not a function.');
 
-  return this.update({$thread: fn});
+  return this.update({$chain: fn});
 };
 
 Cursor.prototype.push = function(value) {
