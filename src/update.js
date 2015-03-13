@@ -30,11 +30,11 @@ function makeError(path, message) {
 
 // Core function
 function update(target, spec, opts) {
-  opts = opts || {};
+  opts = opts || {shiftReferences: false};
   var log = {};
 
   // Closure mutating the internal object
-  (function mutator(o, spec, path) {
+  (function mutator(o, spec, path, parent) {
     path = path || [];
 
     var hash = path.join('λ'),
@@ -50,6 +50,7 @@ function update(target, spec, opts) {
         // Logging update
         log[hash] = true;
 
+        // TODO: this could be before in the recursion
         // Applying
         switch (k) {
           case '$push':
@@ -79,7 +80,16 @@ function update(target, spec, opts) {
 
           // Logging update
           log[h] = true;
-          delete o[k];
+
+          if (type.Array(o)) {
+            if (!opts.shiftReferences)
+              o.splice(k, 1);
+            else
+              parent[path[path.length - 1]] = o.slice(0, +k).concat(o.slice(+k + 1));
+          }
+          else {
+            delete o[k];
+          }
         }
         else if ('$set' in (spec[k] || {})) {
           v = spec[k].$set;
@@ -140,10 +150,12 @@ function update(target, spec, opts) {
             o[k] = helpers.shallowClone(o[k]);
 
           // Recur
+          // TODO: fix this horrendous behaviour.
           mutator(
             o[k],
             spec[k],
-            path.concat(k)
+            path.concat(k),
+            o
           );
         }
       }

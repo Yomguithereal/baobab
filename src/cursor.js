@@ -251,6 +251,9 @@ Cursor.prototype.unset = function(key) {
 };
 
 Cursor.prototype.remove = function() {
+  if (this.isRoot())
+    throw Error('baobab.Cursor.remove: cannot remove root node.');
+
   return this.update({$unset: true});
 };
 

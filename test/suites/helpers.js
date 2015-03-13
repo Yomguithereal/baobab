@@ -181,5 +181,17 @@ describe('Helpers', function() {
       assert.deepEqual(o1, {one: 1, two: 2});
       assert.deepEqual(o2, {two: 2});
     });
+
+    it('should be possible to unset values in an array', function() {
+      var o1 = {list: [1, 2, 3]},
+          o2 = clone(o1);
+      update(o2, {list: {1: {$unset: true}}});
+
+      assert.deepEqual(o1, {list: [1, 2, 3]});
+      assert.deepEqual(o2, {list: [1, 3]});
+
+      assert.strictEqual(o1.list.length, 3);
+      assert.strictEqual(o2.list.length, 2);
+    });
   });
 });
