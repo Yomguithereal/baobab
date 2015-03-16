@@ -321,10 +321,20 @@ Cursor.prototype.and = function(otherCursor) {
  * Releasing
  */
 Cursor.prototype.release = function() {
+
+  // Removing listener on parent
   this.root.off('update', this.updateHandler);
+
+  // If the cursor is hashed, we unsubscribe from the parent
   if (this.hash)
     delete this.root._cursors[this.hash];
-  this.root = null;
+
+  // Dereferencing
+  delete this.root;
+  delete this.path;
+  delete this.solvePath;
+
+  // Killing emitter
   this.kill();
 };
 

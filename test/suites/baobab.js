@@ -111,6 +111,24 @@ describe('Baobab API', function() {
     });
   });
 
+  describe('Advanced', function() {
+
+    it('should be possible to release a tree.', function() {
+      var baobab = new Baobab(state),
+          one = baobab.select('one'),
+          two = baobab.select('two');
+
+      baobab.on('update', Function.prototype);
+      one.on('update', Function.prototype);
+      two.on('update', Function.prototype);
+
+      one.release();
+      baobab.release();
+
+      assert(baobab.data === undefined);
+    });
+  });
+
   describe('Options', function() {
     it('should be possible to commit changes immediately.', function() {
       var baobab = new Baobab({hello: 'world'}, {asynchronous: false});

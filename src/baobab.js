@@ -288,7 +288,7 @@ Baobab.prototype.undo = function() {
 };
 
 Baobab.prototype.release = function() {
-  this.kill();
+
   delete this.data;
   delete this._transaction;
   delete this._history;
@@ -297,6 +297,9 @@ Baobab.prototype.release = function() {
   for (var k in this._cursors)
     this._cursors[k].release();
   delete this._cursors;
+
+  // Killing event emitter
+  this.kill();
 };
 
 /**
