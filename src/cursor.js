@@ -222,20 +222,34 @@ Cursor.prototype.clone = function(path) {
 /**
  * Update
  */
-Cursor.prototype.set = function(key, value) {
+Cursor.prototype.set = function(key, val) {
   if (arguments.length < 2)
     throw Error('baobab.Cursor.set: expecting at least key/value.');
 
-  if (typeof this.reference() !== 'object')
+  var data = this.reference();
+
+  if (typeof data !== 'object')
     throw Error('baobab.Cursor.set: trying to set key to a non-object.');
 
   var spec = {};
-  spec[key] = {$set: value};
+
+  if (type.Array(key)) {
+    var path = helpers.solvePath(data, key);
+
+    if (!path)
+      throw Error('baobab.Cursor.set: could not solve dynamic path.');
+
+    spec = helpers.pathObject(path, {$set: val});
+  }
+  else {
+    spec[key] = {$set: val};
+  }
+
   return this.update(spec);
 };
 
-Cursor.prototype.edit = function(value) {
-  return this.update({$set: value});
+Cursor.prototype.edit = function(val) {
+  return this.update({$set: val});
 };
 
 Cursor.prototype.unset = function(key) {

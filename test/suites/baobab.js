@@ -111,6 +111,38 @@ describe('Baobab API', function() {
     });
   });
 
+  describe('Updates', function() {
+
+    it('should be possible to set a key using a path rather than a key.', function() {
+      var baobab = new Baobab(state, {asynchronous: false});
+
+      baobab.set(['two', 'age'], 34);
+      assert.strictEqual(baobab.get().two.age, 34);
+    });
+
+    it('should be possible to set a key at an nonexistent path.', function() {
+      var baobab = new Baobab(state, {asynchronous: false});
+
+      baobab.set(['nonexistent', 'key'], 'hello');
+      assert.strictEqual(baobab.get().nonexistent.key, 'hello');
+    });
+
+    it('should be possible to set a key using a dynamic path.', function() {
+      var baobab = new Baobab(state, {asynchronous: false});
+
+      baobab.set(['items', {id: 'two'}, 'user', 'age'], 34);
+      assert.strictEqual(baobab.get().items[1].user.age, 34);
+    });
+
+    it('should fail when setting a nonexistent dynamic path.', function() {
+      var baobab = new Baobab(state, {asynchronous: false});
+
+      assert.throws(function() {
+        baobab.set(['items', {id: 'four'}, 'user', 'age'], 34);
+      }, /solve/);
+    });
+  });
+
   describe('Advanced', function() {
 
     it('should be possible to release a tree.', function() {

@@ -206,7 +206,7 @@ function solvePath(object, path) {
     }
     else {
       solvedPath.push(path[i]);
-      c = c[path[i]];
+      c = c[path[i]] || {};
     }
   }
 

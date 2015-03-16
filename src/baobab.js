@@ -233,7 +233,18 @@ Baobab.prototype.set = function(key, val) {
     throw Error('Baobab.set: expects a key and a value.');
 
   var spec = {};
-  spec[key] = {$set: val};
+
+  if (type.Array(key)) {
+    var path = helpers.solvePath(this.data, key);
+
+    if (!path)
+      throw Error('Baobab.set: could not solve dynamic path.');
+
+    spec = helpers.pathObject(path, {$set: val});
+  }
+  else {
+    spec[key] = {$set: val};
+  }
 
   return this.update(spec);
 };
