@@ -109,6 +109,27 @@ describe('Baobab API', function() {
 
       assert(special.get('two'), baobab.get('two'));
     });
+
+    it('should be possible to release and reuse a Baobab tree', function () {
+      var tree = Baobab({
+        items: []
+      });
+      var counter = 0;
+      tree.on('update', function () {
+        counter++;
+      });
+      tree.release();
+      assert(tree.select('items').get() === undefined);
+
+      var array = [];
+      tree.set('items', array);
+      tree.on('update', function () {
+        assert(tree.select('items').get() === array);
+        assert(counter === 0);
+      });
+      tree.commit();
+    });
+
   });
 
   describe('Options', function() {

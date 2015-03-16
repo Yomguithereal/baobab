@@ -325,7 +325,7 @@ Cursor.prototype.release = function() {
   if (this.hash)
     delete this.root._cursors[this.hash];
   this.root = null;
-  this.kill();
+  this.unbindAll();
 };
 
 /**
