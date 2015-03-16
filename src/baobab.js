@@ -288,15 +288,15 @@ Baobab.prototype.undo = function() {
 };
 
 Baobab.prototype.release = function() {
-  this.kill();
-  delete this.data;
-  delete this._transaction;
-  delete this._history;
+  this.unbindAll();
+  this.data = {};
+  this._transaction = {};
+  this._history = [];
 
   // Releasing cursors
   for (var k in this._cursors)
     this._cursors[k].release();
-  delete this._cursors;
+  this._cursors = {};
 };
 
 /**
