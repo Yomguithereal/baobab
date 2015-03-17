@@ -13,6 +13,8 @@ var EventEmitter = require('emmett'),
  */
 function bindCursor(c, cursor) {
   cursor.on('update', c.cursorListener);
+  c.tree.off('update', c.treeListener);
+  c.tree.on('update', c.treeListener);
 }
 
 /**
@@ -73,9 +75,30 @@ function Combination(operator /*, &cursors */) {
     self.updates = new Array(self.cursors.length);
   };
 
-  // Initial bindings
-  this.tree.on('update', this.treeListener);
-  bindCursor(this, first);
+  // Lazy binding
+  this.bound = false;
+
+  var regularOn = this.on,
+      regularOnce = this.once;
+
+  var lazyBind = function() {
+    if (self.bound)
+      return;
+    self.bound = true;
+    self.cursors.forEach(function(cursor) {
+      bindCursor(self, cursor);
+    });
+  };
+
+  this.on = function() {
+    lazyBind();
+    return regularOn.apply(this, arguments);
+  };
+
+  this.once = function() {
+    lazyBind();
+    return regularOnce.apply(this, arguments);
+  };
 
   // Attaching any other passed cursors
   rest.forEach(function(cursor) {
@@ -92,16 +115,22 @@ function makeOperator(operator) {
   Combination.prototype[operator] = function(cursor) {
 
     // Safeguard
-    if (!type.Cursor(cursor))
+    if (!type.Cursor(cursor)) {
+      this.release();
       throw Error('baobab.Combination.' + operator + ': argument should be a cursor.');
+    }
 
-    if (~this.cursors.indexOf(cursor))
+    if (~this.cursors.indexOf(cursor)) {
+      this.release();
       throw Error('baobab.Combination.' + operator + ': cursor already in combination.');
+    }
 
     this.cursors.push(cursor);
     this.operators.push(operator);
     this.updates.length++;
-    bindCursor(this, cursor);
+
+    if (this.bound)
+      bindCursor(this, cursor);
 
     return this;
   };
@@ -111,9 +140,6 @@ makeOperator('or');
 makeOperator('and');
 
 Combination.prototype.release = function() {
-
-  // Dropping own listeners
-  this.kill();
 
   // Dropping cursors listeners
   this.cursors.forEach(function(cursor) {
@@ -128,6 +154,9 @@ Combination.prototype.release = function() {
   this.operators = null;
   this.tree = null;
   this.updates = null;
+
+  // Dropping own listeners
+  this.kill();
 };
 
 /**

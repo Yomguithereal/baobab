@@ -42,10 +42,6 @@ function Cursor(tree, path, solvedPath, hash) {
     if (self.complexPath)
       self.solvedPath = helpers.solvePath(self.tree.data, self.path);
 
-    // If no handlers are attached, we stop
-    if (!this._handlers.update.length && !this._handlersAll.length)
-      return;
-
     // If selector listens at tree, we fire
     if (!self.path.length)
       return self.emit('update');
@@ -91,11 +87,30 @@ function Cursor(tree, path, solvedPath, hash) {
     }
   };
 
-  // Listening
-  this.tree.on('update', this.updateHandler);
-
   // Making mixin
   this.mixin = mixins.cursor(this);
+
+  // Lazy binding
+  var bound = false,
+      regularOn = this.on,
+      regularOnce = this.once;
+
+  var lazyBind = function() {
+    if (bound)
+      return;
+    bound = true;
+    self.tree.on('update', self.updateHandler);
+  };
+
+  this.on = function() {
+    lazyBind();
+    return regularOn.apply(this, arguments);
+  };
+
+  this.once = function() {
+    lazyBind();
+    return regularOnce.apply(this, arguments);
+  };
 }
 
 helpers.inherits(Cursor, EventEmitter);

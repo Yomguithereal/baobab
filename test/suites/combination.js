@@ -105,8 +105,8 @@ describe('Combination', function() {
     againCursor.edit([7]);
     baobab.commit();
 
-    assert.strictEqual(count, 4);
     combination.release();
+    assert.strictEqual(count, 4);
   });
 
   it('should be possible to make complex "and" combinations.', function() {
