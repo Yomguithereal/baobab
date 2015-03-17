@@ -9,7 +9,7 @@ var Baobab = require('./src/baobab.js'),
 
 // Non-writable version
 Object.defineProperty(Baobab, 'version', {
-  value: '0.4.0'
+  value: '0.4.1'
 });
 
 // Exposing helpers
