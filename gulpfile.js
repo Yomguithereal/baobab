@@ -4,12 +4,20 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     rename = require('gulp-rename'),
     header = require('gulp-header'),
+    replace = require('gulp-replace'),
     transform = require('vinyl-transform'),
     browserify = require('browserify'),
     pkg = require('./package.json');
 
 // Files
 var files = ['./index.js', './src/*.js', './test/**/*.js'];
+
+// Gremlins
+gulp.task('gremlins', function() {
+  return gulp.src(files[1])
+    .pipe(replace(' ', ' '))
+    .pipe(gulp.dest('./src'));
+});
 
 // Linting
 gulp.task('lint', function() {
@@ -19,7 +27,7 @@ gulp.task('lint', function() {
 });
 
 // Testing
-gulp.task('test', function() {
+gulp.task('test', ['gremlins'], function() {
   return gulp.src('./test/endpoint.js')
     .pipe(mocha({reporter: 'spec'}));
 });
