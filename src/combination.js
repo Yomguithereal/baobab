@@ -45,7 +45,7 @@ function Combination(operator /*, &cursors */) {
   // Properties
   this.cursors = [first];
   this.operators = [];
-  this.root = first.root;
+  this.tree = first.tree;
 
   // State
   this.updates = new Array(this.cursors.length);
@@ -74,7 +74,7 @@ function Combination(operator /*, &cursors */) {
   };
 
   // Initial bindings
-  this.root.on('update', this.treeListener);
+  this.tree.on('update', this.treeListener);
   bindCursor(this, first);
 
   // Attaching any other passed cursors
@@ -121,12 +121,12 @@ Combination.prototype.release = function() {
   }, this);
 
   // Dropping tree listener
-  this.root.off('update', this.treeListener);
+  this.tree.off('update', this.treeListener);
 
   // Cleaning
   this.cursors = null;
   this.operators = null;
-  this.root = null;
+  this.tree = null;
   this.updates = null;
 };
 

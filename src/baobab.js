@@ -203,6 +203,10 @@ Baobab.prototype.select = function(path) {
   }
 };
 
+Baobab.prototype.root = function() {
+  return this.select();
+};
+
 Baobab.prototype.reference = function(path) {
   var data;
 

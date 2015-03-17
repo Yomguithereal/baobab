@@ -13,7 +13,7 @@ var EventEmitter = require('emmett'),
 /**
  * Main Class
  */
-function Cursor(root, path, solvedPath, hash) {
+function Cursor(tree, path, solvedPath, hash) {
   var self = this;
 
   // Extending event emitter
@@ -23,7 +23,7 @@ function Cursor(root, path, solvedPath, hash) {
   path = path || [];
 
   // Properties
-  this.root = root;
+  this.tree = tree;
   this.path = path;
   this.hash = hash;
   this.relevant = this.reference() !== undefined;
@@ -40,18 +40,18 @@ function Cursor(root, path, solvedPath, hash) {
 
     // Solving path if needed
     if (self.complexPath)
-      self.solvedPath = helpers.solvePath(self.root.data, self.path);
+      self.solvedPath = helpers.solvePath(self.tree.data, self.path);
 
     // If no handlers are attached, we stop
     if (!this._handlers.update.length && !this._handlersAll.length)
       return;
 
-    // If selector listens at root, we fire
+    // If selector listens at tree, we fire
     if (!self.path.length)
       return self.emit('update');
 
     // Checking update log to see whether the cursor should update.
-    root:
+    outer:
     for (i = 0, l = log.length; i < l; i++) {
       c = log[i];
 
@@ -65,7 +65,7 @@ function Cursor(root, path, solvedPath, hash) {
         // If we reached last item and we are relevant, we fire
         if (j + 1 === m || j + 1 === self.solvedPath.length) {
           shouldFire = true;
-          break root;
+          break outer;
         }
       }
     }
@@ -92,7 +92,7 @@ function Cursor(root, path, solvedPath, hash) {
   };
 
   // Listening
-  this.root.on('update', this.updateHandler);
+  this.tree.on('update', this.updateHandler);
 
   // Making mixin
   this.mixin = mixins.cursor(this);
@@ -118,18 +118,22 @@ Cursor.prototype.isBranch = function() {
 /**
  * Traversal
  */
+Cursor.prototype.root = function() {
+  return this.tree.root();
+};
+
 Cursor.prototype.select = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
   if (!type.Path(path))
     throw Error('baobab.Cursor.select: invalid path.');
-  return this.root.select(this.path.concat(path));
+  return this.tree.select(this.path.concat(path));
 };
 
 Cursor.prototype.up = function() {
   if (this.solvedPath && this.solvedPath.length)
-    return this.root.select(this.path.slice(0, -1));
+    return this.tree.select(this.path.slice(0, -1));
   else
     return null;
 };
@@ -141,7 +145,7 @@ Cursor.prototype.left = function() {
     throw Error('baobab.Cursor.left: cannot go left on a non-list type.');
 
   return last ?
-    this.root.select(this.solvedPath.slice(0, -1).concat(last - 1)) :
+    this.tree.select(this.solvedPath.slice(0, -1).concat(last - 1)) :
     null;
 };
 
@@ -151,7 +155,7 @@ Cursor.prototype.leftmost = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.leftmost: cannot go left on a non-list type.');
 
-  return this.root.select(this.solvedPath.slice(0, -1).concat(0));
+  return this.tree.select(this.solvedPath.slice(0, -1).concat(0));
 };
 
 Cursor.prototype.right = function() {
@@ -163,7 +167,7 @@ Cursor.prototype.right = function() {
   if (last + 1 === this.up().reference().length)
     return null;
 
-  return this.root.select(this.solvedPath.slice(0, -1).concat(last + 1));
+  return this.tree.select(this.solvedPath.slice(0, -1).concat(last + 1));
 };
 
 Cursor.prototype.rightmost = function() {
@@ -174,7 +178,7 @@ Cursor.prototype.rightmost = function() {
 
   var list = this.up().reference();
 
-  return this.root.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
+  return this.tree.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
 };
 
 Cursor.prototype.down = function() {
@@ -183,7 +187,7 @@ Cursor.prototype.down = function() {
   if (!(this.reference() instanceof Array))
     return null;
 
-  return this.root.select(this.solvedPath.concat(0));
+  return this.tree.select(this.solvedPath.concat(0));
 };
 
 /**
@@ -194,9 +198,9 @@ Cursor.prototype.get = function(path) {
     path = helpers.arrayOf(arguments);
 
   if (type.Step(path))
-    return this.root.get(this.solvedPath.concat(path));
+    return this.tree.get(this.solvedPath.concat(path));
   else
-    return this.root.get(this.solvedPath);
+    return this.tree.get(this.solvedPath);
 };
 
 Cursor.prototype.reference = function(path) {
@@ -204,9 +208,9 @@ Cursor.prototype.reference = function(path) {
     path = helpers.arrayOf(arguments);
 
   if (type.Step(path))
-    return this.root.reference(this.solvedPath.concat(path));
+    return this.tree.reference(this.solvedPath.concat(path));
   else
-    return this.root.reference(this.solvedPath);
+    return this.tree.reference(this.solvedPath);
 };
 
 Cursor.prototype.clone = function(path) {
@@ -214,9 +218,9 @@ Cursor.prototype.clone = function(path) {
     path = helpers.arrayOf(arguments);
 
   if (type.Step(path))
-    return this.root.clone(this.solvedPath.concat(path));
+    return this.tree.clone(this.solvedPath.concat(path));
   else
-    return this.root.clone(this.solvedPath);
+    return this.tree.clone(this.solvedPath);
 };
 
 /**
@@ -316,7 +320,7 @@ Cursor.prototype.merge = function(o) {
 };
 
 Cursor.prototype.update = function(spec) {
-  this.root.update(helpers.pathObject(this.solvedPath, spec));
+  this.tree.update(helpers.pathObject(this.solvedPath, spec));
   return this;
 };
 
@@ -337,14 +341,14 @@ Cursor.prototype.and = function(otherCursor) {
 Cursor.prototype.release = function() {
 
   // Removing listener on parent
-  this.root.off('update', this.updateHandler);
+  this.tree.off('update', this.updateHandler);
 
   // If the cursor is hashed, we unsubscribe from the parent
   if (this.hash)
-    delete this.root._cursors[this.hash];
+    delete this.tree._cursors[this.hash];
 
   // Dereferencing
-  delete this.root;
+  delete this.tree;
   delete this.path;
   delete this.solvePath;
 

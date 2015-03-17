@@ -486,6 +486,17 @@ twoCursor.rightmost().get();
 >>> 'four'
 ```
 
+*Getting root cursor*
+
+```js
+var tree = new Baobab({first: {second: 'yeah'}}),
+    cursor = tree.select('first');
+
+var rootCursor = tree.root();
+// or
+var rootCursor = cursor.root();
+```
+
 *Check information about the cursor's location in the tree*
 
 ```js

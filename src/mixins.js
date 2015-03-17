@@ -135,7 +135,7 @@ module.exports = {
           // Unbinding handler
           this.cursor.off('update', this.__updateHandler);
         }
-      }].concat(cursor.root.options.mixins)
+      }].concat(cursor.tree.options.mixins)
     };
   }
 };
