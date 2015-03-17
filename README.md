@@ -130,9 +130,9 @@ var colorCursor = paletteCursor.select('colors');
 
 #### Updates
 
-A *baobab* tree can obviously be updated. However, one has to to understand that he won't do it, at least by default, synchronously.
+A *baobab* tree can obviously be updated. However, one has to understand that he won't do it, at least by default, synchronously.
 
-Rather, the tree will stack and merge every update order you give him and will only commit them at the next frame or next tick in node.
+Rather, the tree will stack and merge every update order you give it and will only commit them at the next frame or next tick in node.
 
 This enables the tree to perform efficient mutations and to be able to notify any relevant cursors that the data they are watching over has changed.
 
