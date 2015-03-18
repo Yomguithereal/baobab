@@ -30,6 +30,15 @@ describe('Helpers', function() {
       assert.strictEqual(helpers.getIn(state, ['one', 'subtwo', 'colors', 1]), 'yellow');
       assert.strictEqual(helpers.getIn(state, ['one', 'subtwo', 'colors', '1']), 'yellow');
       assert.strictEqual(helpers.getIn(state, ['inexistant', 'path']), undefined);
+      assert.strictEqual(helpers.getIn(state, ['items', {id: 'two'}]), state.items[1]);
+      assert.strictEqual(
+        helpers.getIn(state, ['items', {user: {surname: 'Talbot'}}]),
+        state.items[1]
+      );
+      assert.strictEqual(
+        helpers.getIn(state, ['sameStructureItems', {user: {name: 'John'}}]),
+        state.sameStructureItems[1]
+      );
     });
   });
 
