@@ -116,9 +116,15 @@ function compare(object, spec) {
   var ok = true,
       k;
 
+  // If we reached here via a recursive call, object may be undefined because
+  // not all items in a collection will have the same deep nesting structure
+  if (!object) {
+    return false;
+  }
+
   for (k in spec) {
     if (type.Object(spec[k])) {
-      ok = ok && compare(object[k]);
+      ok = ok && compare(object[k], spec[k]);
     }
     else if (type.Array(spec[k])) {
       ok = ok && !!~spec[k].indexOf(object[k]);
