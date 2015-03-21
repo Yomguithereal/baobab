@@ -146,6 +146,54 @@ describe('React Mixins', function() {
       });
     });
 
+    it('should be possible to pass a function returning a path.', function(done) {
+      var baobab = new Baobab({hello:'world'});
+
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursor: function() {
+          return ['hello'];
+        },
+        render: function() {
+          return React.createElement('div', {id: 'treepath'}, this.cursor.get());
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body, function() {
+        assert.strictEqual(document.querySelector('#treepath').textContent, 'world');
+
+        baobab.set('hello', 'john');
+        setTimeout(function() {
+          assert.strictEqual(document.querySelector('#treepath').textContent, 'john');
+          done();
+        }, 0);
+      });
+    });
+
+    it('should be possible to pass a function returning a single cursor.', function(done) {
+      var baobab = new Baobab({hello:'world'});
+
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursor: function() {
+          return baobab.select('hello');
+        },
+        render: function() {
+          return React.createElement('div', {id: 'treepath'}, this.cursor.get());
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body, function() {
+        assert.strictEqual(document.querySelector('#treepath').textContent, 'world');
+
+        baobab.set('hello', 'john');
+        setTimeout(function() {
+          assert.strictEqual(document.querySelector('#treepath').textContent, 'john');
+          done();
+        }, 0);
+      });
+    });
+
     it('should be possible to pass an array of paths.', function(done) {
       var baobab = new Baobab({name:'John', surname: 'Talbot'}),
           i = 0;
@@ -231,6 +279,57 @@ describe('React Mixins', function() {
         cursors: {
           name: ['name'],
           surname: baobab.select('surname')
+        },
+        render: function() {
+          return React.createElement('div', {id: 'treepathoc'}, this.cursors.name.get() + ' ' + this.cursors.surname.get());
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body, function() {
+        assert.strictEqual(document.querySelector('#treepathoc').textContent, 'John Talbot');
+
+        baobab.set('name', 'Jack');
+        setTimeout(function() {
+          assert.strictEqual(document.querySelector('#treepathoc').textContent, 'Jack Talbot');
+          done();
+        }, 0);
+      });
+    });
+
+    it('should be possible to pass a function returning an array of cursors.', function(done) {
+      var baobab = new Baobab({name:'John', surname: 'Talbot'});
+
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursors: function() {
+          return [['name'], baobab.select('surname')];
+        },
+        render: function() {
+          return React.createElement('div', {id: 'treepathcursors'}, this.cursors[0].get() + ' ' + this.cursors[1].get());
+        }
+      });
+
+      React.render(React.createElement(Component, null), document.body, function() {
+        assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'John Talbot');
+
+        baobab.set('name', 'Jack');
+        setTimeout(function() {
+          assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'Jack Talbot');
+          done();
+        }, 0);
+      });
+    });
+
+    it('should be possible to pass function returning an object of cursors.', function(done) {
+      var baobab = new Baobab({name:'John', surname: 'Talbot'});
+
+      var Component = React.createClass({
+        mixins: [baobab.mixin],
+        cursors: function() {
+          return {
+            name: ['name'],
+            surname: baobab.select('surname')
+          };
         },
         render: function() {
           return React.createElement('div', {id: 'treepathoc'}, this.cursors.name.get() + ' ' + this.cursors.surname.get());

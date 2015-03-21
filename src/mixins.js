@@ -38,7 +38,11 @@ module.exports = {
 
           if (this.cursor) {
             if (!type.MixinCursor(this.cursor))
-              throw Error('baobab.mixin.cursor: invalid data (cursor, string or array).');
+              throw Error('baobab.mixin.cursor: invalid data (cursor, ' +
+                          'string, array or function).');
+
+            if (type.Function(this.cursor))
+              this.cursor = this.cursor();
 
             if (!type.Cursor(this.cursor))
               this.cursor = baobab.select(this.cursor);
@@ -49,8 +53,11 @@ module.exports = {
             this.__type = 'single';
           }
           else if (this.cursors) {
-            if (['object', 'array'].indexOf(type(this.cursors)) === -1)
-              throw Error('baobab.mixin.cursor: invalid data (object or array).');
+            if (!type.MixinCursors(this.cursors))
+              throw Error('baobab.mixin.cursor: invalid data (object, array or function).');
+
+            if (type.Function(this.cursors))
+              this.cursors = this.cursors();
 
             if (type.Array(this.cursors)) {
               this.cursors = this.cursors.map(function(path) {
