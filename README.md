@@ -382,6 +382,18 @@ var UserList = React.createClass({
     );
   }
 });
+
+// cursor(s) can be specified using a function
+var UserListItem = React.createClass({
+  mixins: [tree.mixin],
+  cursor: function() {
+    return ['users', this.props.index];
+  },
+  render: function() {
+    var name = this.cursor.get();
+    return <li>{name}</li>;
+  }
+});
 ```
 
 ##### Cursor level
