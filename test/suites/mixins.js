@@ -152,14 +152,14 @@ describe('React Mixins', function() {
       var Component = React.createClass({
         mixins: [baobab.mixin],
         cursor: function() {
-          return ['hello'];
+          return [this.props.pathKey];
         },
         render: function() {
           return React.createElement('div', {id: 'treepath'}, this.cursor.get());
         }
       });
 
-      React.render(React.createElement(Component, null), document.body, function() {
+      React.render(React.createElement(Component, {pathKey: 'hello'}), document.body, function() {
         assert.strictEqual(document.querySelector('#treepath').textContent, 'world');
 
         baobab.set('hello', 'john');
@@ -176,14 +176,14 @@ describe('React Mixins', function() {
       var Component = React.createClass({
         mixins: [baobab.mixin],
         cursor: function() {
-          return baobab.select('hello');
+          return baobab.select(this.props.pathKey);
         },
         render: function() {
           return React.createElement('div', {id: 'treepath'}, this.cursor.get());
         }
       });
 
-      React.render(React.createElement(Component, null), document.body, function() {
+      React.render(React.createElement(Component, {pathKey: 'hello'}), document.body, function() {
         assert.strictEqual(document.querySelector('#treepath').textContent, 'world');
 
         baobab.set('hello', 'john');
@@ -302,14 +302,14 @@ describe('React Mixins', function() {
       var Component = React.createClass({
         mixins: [baobab.mixin],
         cursors: function() {
-          return [['name'], baobab.select('surname')];
+          return [[this.props.pathKey1], baobab.select(this.props.pathKey2)];
         },
         render: function() {
           return React.createElement('div', {id: 'treepathcursors'}, this.cursors[0].get() + ' ' + this.cursors[1].get());
         }
       });
 
-      React.render(React.createElement(Component, null), document.body, function() {
+      React.render(React.createElement(Component, {pathKey1: 'name', pathKey2: 'surname'}), document.body, function() {
         assert.strictEqual(document.querySelector('#treepathcursors').textContent, 'John Talbot');
 
         baobab.set('name', 'Jack');
@@ -327,8 +327,8 @@ describe('React Mixins', function() {
         mixins: [baobab.mixin],
         cursors: function() {
           return {
-            name: ['name'],
-            surname: baobab.select('surname')
+            name: [this.props.pathKey1],
+            surname: baobab.select(this.props.pathKey2)
           };
         },
         render: function() {
@@ -336,7 +336,7 @@ describe('React Mixins', function() {
         }
       });
 
-      React.render(React.createElement(Component, null), document.body, function() {
+      React.render(React.createElement(Component, {pathKey1: 'name', pathKey2: 'surname'}), document.body, function() {
         assert.strictEqual(document.querySelector('#treepathoc').textContent, 'John Talbot');
 
         baobab.set('name', 'Jack');
