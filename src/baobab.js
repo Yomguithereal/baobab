@@ -146,16 +146,16 @@ Baobab.prototype.commit = function(referenceRecord) {
       this.emit('invalid', {errors: errors});
   }
 
-  // Baobab-level update event
-  this.emit('update', {
-    log: log
-  });
-
   // Resetting
   this._transaction = {};
 
   if (this._future)
     this._future = clearTimeout(this._future);
+
+  // Baobab-level update event
+  this.emit('update', {
+    log: log
+  });
 
   return this;
 };
