@@ -383,7 +383,8 @@ var UserList = React.createClass({
   }
 });
 
-// cursor(s) can be specified using a function
+// Cursor(s) can also be specified using a function
+// (if you need props, for instance)
 var UserListItem = React.createClass({
   mixins: [tree.mixin],
   cursor: function() {
