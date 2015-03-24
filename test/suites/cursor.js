@@ -157,6 +157,16 @@ describe('Cursor API', function() {
       });
     });
 
+    it('a single $chain command should work like an $apply.', function() {
+      var baobab = new Baobab({number: 1}, {asynchronous: false}),
+          cursor = baobab.select('number'),
+          inc = function(i) { return i + 1; };
+
+      assert.strictEqual(cursor.get(), 1);
+      cursor.chain(inc);
+      assert.strictEqual(cursor.get(), 2);
+    });
+
     it('should be possible to shallow merge two objects.', function(done) {
       var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
 

@@ -98,8 +98,10 @@ function update(target, spec, opts) {
           log[h] = true;
           o[k] = v;
         }
-        else if ('$apply' in (spec[k] || {})) {
-          fn = spec[k].$apply;
+        else if ('$apply' in (spec[k] || {}) || '$chain' in (spec[k] || {})) {
+
+          // TODO: this should not happen likewise.
+          fn = spec[k].$apply || spec[k].$chain;
 
           if (typeof fn !== 'function')
             throw makeError(path.concat(k), 'using command $apply with a non function');
