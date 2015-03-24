@@ -88,10 +88,16 @@ type.Path = function (value) {
 
 };
 
-// string|number|array|cursor
+// string|number|array|cursor|function
 type.MixinCursor = function (value) {
-  var allowedValues = ['string', 'number', 'array'];
+  var allowedValues = ['string', 'number', 'array', 'function'];
   return allowedValues.indexOf(type(value)) >= 0 || type.Cursor(value);
+};
+
+// array|object|function
+type.MixinCursors = function (value) {
+  var allowedValues = ['array', 'object', 'function'];
+  return allowedValues.indexOf(type(value)) >= 0;
 };
 
 // Already know this is an array
