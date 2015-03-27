@@ -43,7 +43,6 @@ function Baobab(initialData, opts) {
   // Privates
   this._transaction = {};
   this._future = undefined;
-  this._history = [];
   this._cursors = {};
 
   // Internal typology
@@ -75,51 +74,17 @@ function Baobab(initialData, opts) {
 helpers.inherits(Baobab, EventEmitter);
 
 /**
- * Private prototype
- */
-Baobab.prototype._archive = function() {
-  if (this.options.maxHistory <= 0)
-    return;
-
-  var record = {
-    data: this._cloner(this.data)
-  };
-
-  // Replacing
-  if (this._history.length === this.options.maxHistory) {
-    this._history.pop();
-  }
-  this._history.unshift(record);
-
-  return record;
-};
-
-/**
  * Prototype
  */
-Baobab.prototype.commit = function(referenceRecord) {
-  var self = this,
-      log;
+Baobab.prototype.commit = function() {
+  var self = this;
 
-  if (referenceRecord) {
+  // Shifting root reference
+  if (this.options.shiftReferences)
+    this.data = helpers.shallowClone(this.data);
 
-    // Override
-    this.data = referenceRecord.data;
-    log = referenceRecord.log;
-  }
-  else {
-
-    // Shifting root reference
-    if (this.options.shiftReferences)
-      this.data = helpers.shallowClone(this.data);
-
-    // Applying modification (mutation)
-    var record = this._archive();
-    log = update(this.data, this._transaction, this.options);
-
-    if (record)
-      record.log = log;
-  }
+  // Applying modification (mutation)
+  var log = update(this.data, this._transaction, this.options);
 
   if (this.validate) {
     var errors = [],
@@ -287,22 +252,6 @@ Baobab.prototype.update = function(spec) {
     this._future = setTimeout(self.commit.bind(self, null), 0);
 
   return this;
-};
-
-Baobab.prototype.hasHistory = function() {
-  return !!this._history.length;
-};
-
-Baobab.prototype.getHistory = function() {
-  return this._history;
-};
-
-Baobab.prototype.undo = function() {
-  if (!this.hasHistory())
-    throw Error('Baobab.undo: no history recorded, cannot undo.');
-
-  var lastRecord = this._history.shift();
-  this.commit(lastRecord);
 };
 
 Baobab.prototype.release = function() {

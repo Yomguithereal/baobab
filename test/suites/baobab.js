@@ -290,46 +290,4 @@ describe('Baobab API', function() {
       baobab.set('hello', 42);
     });
   });
-
-  describe('History', function() {
-
-    it('should be possible to record passed states.', function(done) {
-      var baobab = new Baobab({name: 'Maria'}, {maxHistory: 1});
-
-      baobab.set('name', 'Estelle');
-
-      setTimeout(function() {
-        assert(baobab.hasHistory());
-        assert.deepEqual(baobab.getHistory(), [{log: [['name']], data: {name: 'Maria'}}]);
-        done();
-      }, 0);
-    });
-
-    it('should throw an error if trying to undo without history.', function() {
-      var baobab = new Baobab({hello: 'world'});
-
-      assert.throws(function() {
-        baobab.undo();
-      }, /no history/);
-    });
-
-    it('should be possible to go back in time.', function(done) {
-      var baobab = new Baobab({name: 'Maria'}, {maxHistory: 2});
-
-      async.series([
-        function(next) {
-          baobab.set('name', 'Estelle');
-          setTimeout(next);
-        },
-        function(next) {
-          assert(baobab.hasHistory());
-          baobab.undo();
-          assert.deepEqual(baobab.get(), {name: 'Maria'});
-          done();
-        }
-      ], function() {
-        done();
-      });
-    });
-  });
 });
