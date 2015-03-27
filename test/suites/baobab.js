@@ -4,7 +4,6 @@
  */
 var assert = require('assert'),
     state = require('../state.js'),
-    Typology = require('typology'),
     Baobab = require('../../src/baobab.js'),
     Cursor = require('../../src/cursor.js'),
     async = require('async'),
