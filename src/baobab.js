@@ -6,7 +6,6 @@
  */
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
-    Typology = require('typology'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     merge = require('./merge.js'),
@@ -45,25 +44,6 @@ function Baobab(initialData, opts) {
   this._future = undefined;
   this._cursors = {};
 
-  // Internal typology
-  this.typology = this.options.typology ?
-    (this.options.typology instanceof Typology ?
-      this.options.typology :
-      new Typology(this.options.typology)) :
-    new Typology();
-
-  // Internal validation
-  this.validate = this.options.validate || null;
-
-  if (this.validate)
-    try {
-      this.typology.check(initialData, this.validate, true);
-    }
-    catch (e) {
-      e.message = '/' + e.path.join('/') + ': ' + e.message;
-      throw e;
-    }
-
   // Properties
   this.data = this._cloner(initialData);
 
@@ -85,31 +65,6 @@ Baobab.prototype.commit = function() {
 
   // Applying modification (mutation)
   var log = update(this.data, this._transaction, this.options);
-
-  if (this.validate) {
-    var errors = [],
-        l = log.length,
-        d,
-        i;
-
-    for (i = 0; i < l; i++) {
-      d = helpers.getIn(this.validate, log[i]);
-
-      if (!d)
-        continue;
-
-      try {
-        this.typology.check(this.get(log[i]), d, true);
-      }
-      catch (e) {
-        e.path = log[i].concat((e.path || []));
-        errors.push(e);
-      }
-    }
-
-    if (errors.length)
-      this.emit('invalid', {errors: errors});
-  }
 
   // Resetting
   this._transaction = {};
