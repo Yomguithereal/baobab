@@ -22,6 +22,18 @@ describe('Helpers', function() {
     });
   });
 
+  describe('Decoration', function() {
+
+    it('should be possible to produce a before decoration.', function() {
+      var count = 0,
+          inc = function(i) { count++; },
+          decorated = helpers.before(inc, inc);
+
+      decorated();
+      assert.strictEqual(count, 2);
+    });
+  });
+
   describe('Nested get', function() {
     it('should be possible to retrieve nested items through the helper.', function() {
       assert.deepEqual(helpers.getIn(state, ['one', 'subtwo', 'colors']), state.one.subtwo.colors);

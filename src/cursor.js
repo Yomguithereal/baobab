@@ -93,9 +93,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.mixin = mixins.cursor(this);
 
   // Lazy binding
-  var bound = false,
-      regularOn = this.on,
-      regularOnce = this.once;
+  var bound = false;
 
   var lazyBind = function() {
     if (bound)
@@ -104,15 +102,8 @@ function Cursor(tree, path, solvedPath, hash) {
     self.tree.on('update', self.updateHandler);
   };
 
-  this.on = function() {
-    lazyBind();
-    return regularOn.apply(this, arguments);
-  };
-
-  this.once = function() {
-    lazyBind();
-    return regularOnce.apply(this, arguments);
-  };
+  this.on = helpers.before(lazyBind, this.on.bind(this));
+  this.once = helpers.before(lazyBind, this.once.bind(this));
 }
 
 helpers.inherits(Cursor, EventEmitter);

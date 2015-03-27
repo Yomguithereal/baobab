@@ -11,6 +11,14 @@ function arrayOf(o) {
   return Array.prototype.slice.call(o);
 }
 
+// Decorate a function by applying something before it
+function before(decorator, fn) {
+  return function() {
+    decorator();
+    fn.apply(null, arguments);
+  };
+}
+
 // Shallow merge
 function shallowMerge(o1, o2) {
   var o = {},
@@ -247,6 +255,7 @@ function inherits(ctor, superCtor) {
 
 module.exports = {
   arrayOf: arrayOf,
+  before: before,
   deepClone: deepClone,
   shallowClone: shallowClone,
   shallowMerge: shallowMerge,

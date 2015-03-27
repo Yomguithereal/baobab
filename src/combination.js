@@ -90,15 +90,8 @@ function Combination(operator /*, &cursors */) {
     });
   };
 
-  this.on = function() {
-    lazyBind();
-    return regularOn.apply(this, arguments);
-  };
-
-  this.once = function() {
-    lazyBind();
-    return regularOnce.apply(this, arguments);
-  };
+  this.on = helpers.before(lazyBind, this.on.bind(this));
+  this.once = helpers.before(lazyBind, this.once.bind(this));
 
   // Attaching any other passed cursors
   rest.forEach(function(cursor) {
