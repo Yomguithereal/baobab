@@ -37,7 +37,6 @@ function Baobab(initialData, opts) {
 
   // Merging defaults
   this.options = helpers.shallowMerge(defaults, opts);
-  this._cloner = this.options.cloningFunction || helpers.deepClone;
 
   // Privates
   this._transaction = {};
@@ -45,7 +44,7 @@ function Baobab(initialData, opts) {
   this._cursors = {};
 
   // Properties
-  this.data = this._cloner(initialData);
+  this.data = helpers.deepClone(initialData);
 
   // Mixin
   this.mixin = mixins.baobab(this);
@@ -130,7 +129,7 @@ Baobab.prototype.root = function() {
   return this.select([]);
 };
 
-Baobab.prototype.reference = function(path) {
+Baobab.prototype.get = function(path) {
   var data;
 
   if (arguments.length > 1)
@@ -142,16 +141,6 @@ Baobab.prototype.reference = function(path) {
   return helpers.getIn(
     this.data, type.String(path) || type.Number(path) ? [path] : path
   );
-};
-
-Baobab.prototype.get = function() {
-  var ref = this.reference.apply(this, arguments);
-
-  return this.options.clone ? this._cloner(ref) : ref;
-};
-
-Baobab.prototype.clone = function(path) {
-  return this._cloner(this.reference.apply(this, arguments));
 };
 
 Baobab.prototype.set = function(key, val) {
@@ -227,7 +216,7 @@ Baobab.prototype.release = function() {
  * Output
  */
 Baobab.prototype.toJSON = function() {
-  return this.reference();
+  return this.get();
 };
 
 /**

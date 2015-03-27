@@ -26,7 +26,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.tree = tree;
   this.path = path;
   this.hash = hash;
-  this.relevant = this.reference() !== undefined;
+  this.relevant = this.get() !== undefined;
 
   // Complex path?
   this.complexPath = !!solvedPath;
@@ -67,7 +67,7 @@ function Cursor(tree, path, solvedPath, hash) {
     }
 
     // Handling relevancy
-    var data = self.reference() !== undefined;
+    var data = self.get() !== undefined;
 
     if (self.relevant) {
       if (data && shouldFire) {
@@ -123,7 +123,7 @@ Cursor.prototype.isRoot = function() {
 };
 
 Cursor.prototype.isLeaf = function() {
-  return type.Primitive(this.reference());
+  return type.Primitive(this.get());
 };
 
 Cursor.prototype.isBranch = function() {
@@ -179,7 +179,7 @@ Cursor.prototype.right = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  if (last + 1 === this.up().reference().length)
+  if (last + 1 === this.up().get().length)
     return null;
 
   return this.tree.select(this.solvedPath.slice(0, -1).concat(last + 1));
@@ -191,7 +191,7 @@ Cursor.prototype.rightmost = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  var list = this.up().reference();
+  var list = this.up().get();
 
   return this.tree.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
 };
@@ -199,7 +199,7 @@ Cursor.prototype.rightmost = function() {
 Cursor.prototype.down = function() {
   var last = +this.solvedPath[this.solvedPath.length - 1];
 
-  if (!(this.reference() instanceof Array))
+  if (!(this.get() instanceof Array))
     return null;
 
   return this.tree.select(this.solvedPath.concat(0));
@@ -218,26 +218,6 @@ Cursor.prototype.get = function(path) {
     return this.tree.get(this.solvedPath);
 };
 
-Cursor.prototype.reference = function(path) {
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (type.Step(path))
-    return this.tree.reference(this.solvedPath.concat(path));
-  else
-    return this.tree.reference(this.solvedPath);
-};
-
-Cursor.prototype.clone = function(path) {
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (type.Step(path))
-    return this.tree.clone(this.solvedPath.concat(path));
-  else
-    return this.tree.clone(this.solvedPath);
-};
-
 /**
  * Update
  */
@@ -245,7 +225,7 @@ Cursor.prototype.set = function(key, val) {
   if (arguments.length < 2)
     throw Error('baobab.Cursor.set: expecting at least key/value.');
 
-  var data = this.reference();
+  var data = this.get();
 
   if (typeof data !== 'object')
     throw Error('baobab.Cursor.set: trying to set key to a non-object.');
@@ -275,7 +255,7 @@ Cursor.prototype.unset = function(key) {
   if (!key && key !== 0)
     throw Error('baobab.Cursor.unset: expects a valid key to unset.');
 
-  if (typeof this.reference() !== 'object')
+  if (typeof this.get() !== 'object')
     throw Error('baobab.Cursor.set: trying to set key to a non-object.');
 
   var spec = {};
@@ -305,7 +285,7 @@ Cursor.prototype.chain = function(fn) {
 };
 
 Cursor.prototype.push = function(value) {
-  if (!(this.reference() instanceof Array))
+  if (!(this.get() instanceof Array))
     throw Error('baobab.Cursor.push: trying to push to non-array value.');
 
   if (arguments.length > 1)
@@ -315,7 +295,7 @@ Cursor.prototype.push = function(value) {
 };
 
 Cursor.prototype.unshift = function(value) {
-  if (!(this.reference() instanceof Array))
+  if (!(this.get() instanceof Array))
     throw Error('baobab.Cursor.push: trying to push to non-array value.');
 
   if (arguments.length > 1)
@@ -328,7 +308,7 @@ Cursor.prototype.merge = function(o) {
   if (!type.Object(o))
     throw Error('baobab.Cursor.merge: trying to merge a non-object.');
 
-  if (!type.Object(this.reference()))
+  if (!type.Object(this.get()))
     throw Error('baobab.Cursor.merge: trying to merge into a non-object.');
 
   this.update({$merge: o});
@@ -375,7 +355,7 @@ Cursor.prototype.release = function() {
  * Output
  */
 Cursor.prototype.toJSON = function() {
-  return this.reference();
+  return this.get();
 };
 
 type.Cursor = function (value) {
