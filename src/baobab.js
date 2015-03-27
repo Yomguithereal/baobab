@@ -101,27 +101,22 @@ Baobab.prototype.select = function(path) {
     solvedPath = helpers.solvePath(this.data, path);
 
   // Registering a new cursor or giving the already existing one for path
-  if (!this.options.cursorSingletons) {
-    return new Cursor(this, path);
+  var hash = path.map(function(step) {
+    if (type.Function(step))
+      return complexHash('fn');
+    else if (type.Object(step))
+      return complexHash('ob');
+    else
+      return step;
+  }).join('λ');
+
+  if (!this._cursors[hash]) {
+    var cursor = new Cursor(this, path, solvedPath, hash);
+    this._cursors[hash] = cursor;
+    return cursor;
   }
   else {
-    var hash = path.map(function(step) {
-      if (type.Function(step))
-        return complexHash('fn');
-      else if (type.Object(step))
-        return complexHash('ob');
-      else
-        return step;
-    }).join('λ');
-
-    if (!this._cursors[hash]) {
-      var cursor = new Cursor(this, path, solvedPath, hash);
-      this._cursors[hash] = cursor;
-      return cursor;
-    }
-    else {
-      return this._cursors[hash];
-    }
+    return this._cursors[hash];
   }
 };
 
