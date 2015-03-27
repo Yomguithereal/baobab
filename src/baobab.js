@@ -45,6 +45,17 @@ function Baobab(initialData, opts) {
 
   // Properties
   this.data = helpers.deepClone(initialData);
+  this.root = this.select([]);
+
+  // Boostrapping root cursor's methods
+  function bootstrap(name) {
+    this[name] = function() {
+      var r = this.root[name].apply(this.root, arguments);
+      return r instanceof Cursor ? this : r;
+    };
+  }
+
+  ['get', 'set', 'unset', 'update'].forEach(bootstrap.bind(this));
 
   // Mixin
   this.mixin = mixins.baobab(this);
@@ -55,30 +66,6 @@ helpers.inherits(Baobab, EventEmitter);
 /**
  * Prototype
  */
-Baobab.prototype.commit = function() {
-  var self = this;
-
-  // Shifting root reference
-  if (this.options.shiftReferences)
-    this.data = helpers.shallowClone(this.data);
-
-  // Applying modification (mutation)
-  var log = update(this.data, this._transaction, this.options);
-
-  // Resetting
-  this._transaction = {};
-
-  if (this._future)
-    this._future = clearTimeout(this._future);
-
-  // Baobab-level update event
-  this.emit('update', {
-    log: log
-  });
-
-  return this;
-};
-
 Baobab.prototype.select = function(path) {
   if (!path)
     throw Error('Baobab.select: invalid path.');
@@ -120,57 +107,7 @@ Baobab.prototype.select = function(path) {
   }
 };
 
-Baobab.prototype.root = function() {
-  return this.select([]);
-};
-
-Baobab.prototype.get = function(path) {
-  var data;
-
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (!type.Path(path))
-    throw Error('Baobab.get: invalid path.');
-
-  return helpers.getIn(
-    this.data, type.String(path) || type.Number(path) ? [path] : path
-  );
-};
-
-Baobab.prototype.set = function(key, val) {
-
-  if (arguments.length < 2)
-    throw Error('Baobab.set: expects a key and a value.');
-
-  var spec = {};
-
-  if (type.Array(key)) {
-    var path = helpers.solvePath(this.data, key);
-
-    if (!path)
-      throw Error('Baobab.set: could not solve dynamic path.');
-
-    spec = helpers.pathObject(path, {$set: val});
-  }
-  else {
-    spec[key] = {$set: val};
-  }
-
-  return this.update(spec);
-};
-
-Baobab.prototype.unset = function(key) {
-  if (!key && key !== 0)
-    throw Error('Baobab.unset: expects a valid key to unset.');
-
-  var spec = {};
-  spec[key] = {$unset: true};
-
-  return this.update(spec);
-};
-
-Baobab.prototype.update = function(spec) {
+Baobab.prototype.stack = function(spec) {
   var self = this;
 
   if (!type.Object(spec))
@@ -189,6 +126,30 @@ Baobab.prototype.update = function(spec) {
   // Updating asynchronously
   if (!this._future)
     this._future = setTimeout(self.commit.bind(self, null), 0);
+
+  return this;
+};
+
+Baobab.prototype.commit = function() {
+  var self = this;
+
+  // Shifting root reference
+  if (this.options.shiftReferences)
+    this.data = helpers.shallowClone(this.data);
+
+  // Applying modification (mutation)
+  var log = update(this.data, this._transaction, this.options);
+
+  // Resetting
+  this._transaction = {};
+
+  if (this._future)
+    this._future = clearTimeout(this._future);
+
+  // Baobab-level update event
+  this.emit('update', {
+    log: log
+  });
 
   return this;
 };

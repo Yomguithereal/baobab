@@ -26,11 +26,13 @@ function Cursor(tree, path, solvedPath, hash) {
   this.tree = tree;
   this.path = path;
   this.hash = hash;
-  this.relevant = this.get() !== undefined;
 
   // Complex path?
   this.complexPath = !!solvedPath;
   this.solvedPath = this.complexPath ? solvedPath : this.path;
+
+  // Relevant?
+  this.relevant = this.get() !== undefined;
 
   // Root listeners
   this.updateHandler = function(e) {
@@ -212,10 +214,11 @@ Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (type.Step(path))
-    return this.tree.get(this.solvedPath.concat(path));
-  else
-    return this.tree.get(this.solvedPath);
+  var fullPath = this.solvedPath.concat(
+    (type.String(path) || type.Number(path) ? [path] : path) || []
+  );
+
+  return helpers.getIn(this.tree.data, fullPath);
 };
 
 /**
@@ -315,7 +318,7 @@ Cursor.prototype.merge = function(o) {
 };
 
 Cursor.prototype.update = function(spec) {
-  this.tree.update(helpers.pathObject(this.solvedPath, spec));
+  this.tree.stack(helpers.pathObject(this.solvedPath, spec));
   return this;
 };
 
