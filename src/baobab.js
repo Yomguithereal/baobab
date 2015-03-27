@@ -213,7 +213,6 @@ Baobab.prototype.release = function() {
 
   delete this.data;
   delete this._transaction;
-  delete this._history;
 
   // Releasing cursors
   for (var k in this._cursors)
