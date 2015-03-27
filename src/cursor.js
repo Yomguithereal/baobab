@@ -365,7 +365,7 @@ Cursor.prototype.release = function() {
   // Dereferencing
   delete this.tree;
   delete this.path;
-  delete this.solvePath;
+  delete this.solvedPath;
 
   // Killing emitter
   this.kill();
