@@ -8,105 +8,68 @@ var helpers = require('./helpers.js'),
     type = require('./type.js');
 
 // Helpers
-function hasKey(o, key) {
-  return key in (o || {});
-}
+var COMMANDS = ['$unset', '$set', '$merge', '$apply'];
 
-function conflict(a, b, key) {
-  return hasKey(a, key) && hasKey(b, key);
+function only(o, n, keep) {
+  COMMANDS.forEach(function(c) {
+    if (keep !== c)
+      delete o[c];
+  });
+
+  o[keep] = n[keep];
 }
 
 // Main function
-function merge() {
-  var res = {},
-      current,
-      next,
-      l = arguments.length,
-      i,
-      k;
+function merge(a, b) {
+  var o = helpers.shallowClone(b || {}),
+      k,
+      i;
 
-  for (i = l - 1; i >= 0; i--) {
+  COMMANDS.forEach(function(c) {
+    if (a[c])
+      only(o, a, c);
+  });
 
-    // Upper $set/$apply... and conflicts
-    // When solving conflicts, here is the priority to apply:
-    // -- 0) $unset
-    // -- 1) $set
-    // -- 2) $merge
-    // -- 3) $apply
-    // -- 4) $chain
-    if (arguments[i].$unset) {
-      delete res.$set;
-      delete res.$apply;
-      delete res.$merge;
-      res.$unset = arguments[i].$unset;
-    }
-    else if (arguments[i].$set) {
-      delete res.$apply;
-      delete res.$merge;
-      delete res.$unset;
-      res.$set = arguments[i].$set;
-      continue;
-    }
-    else if (arguments[i].$merge) {
-      delete res.$set;
-      delete res.$apply;
-      delete res.$unset;
-      res.$merge = arguments[i].$merge;
-      continue;
-    }
-    else if (arguments[i].$apply){
-      delete res.$set;
-      delete res.$merge;
-      delete res.$unset;
-      res.$apply = arguments[i].$apply;
-      continue;
-    }
-    else if (arguments[i].$chain) {
-      delete res.$set;
-      delete res.$merge;
-      delete res.$unset;
+  if (a.$chain) {
+    COMMANDS.slice(0, -1).forEach(function(c) {
+      delete o[c];
+    });
 
-      if (res.$apply)
-        res.$apply = helpers.compose(res.$apply, arguments[i].$chain);
-      else
-        res.$apply = arguments[i].$chain;
-      continue;
-    }
-
-    for (k in arguments[i]) {
-      current = res[k];
-      next = arguments[i][k];
-
-      if (current && type.Object(next)) {
-
-        // $push conflict
-        if (conflict(current, next, '$push')) {
-          if (type.Array(current.$push))
-            current.$push = current.$push.concat(next.$push);
-          else
-            current.$push = [current.$push].concat(next.$push);
-        }
-
-        // $unshift conflict
-        else if (conflict(current, next, '$unshift')) {
-          if (type.Array(next.$unshift))
-            current.$unshift = next.$unshift.concat(current.$unshift);
-          else
-            current.$unshift = [next.$unshift].concat(current.$unshift);
-        }
-
-        // No conflict
-        else {
-          res[k] = merge(next, current);
-        }
-      }
-      else {
-        res[k] = next;
-      }
-    }
+    if (o.$apply)
+      o.$apply = helpers.compose(o.$apply, a.$chain);
+    else
+      o.$apply = a.$chain;
   }
 
-  return res;
+  if (a.$push && o.$push) {
+    if (type.Array(o.$push))
+      o.$push = o.$push.concat(a.$push);
+    else
+      o.$push = [o.$push].concat(a.$push);
+  }
+  else if (a.$push) {
+    o.$push = a.$push;
+  }
+
+  if (a.$unshift && o.$unshift) {
+    if (type.Array(a.$unshift))
+      o.$unshift = a.$unshift.concat(o.$unshift);
+    else
+      o.$unshift = [a.$unshift].concat(o.$unshift);
+  }
+  else if (a.$unshift) {
+    o.$unshift = a.$unshift;
+  }
+
+  for (k in a) {
+
+    if (type.Object(a[k]))
+      o[k] = merge(a[k], o[k]);
+    else if (k[0] !== '$')
+      o[k] = a[k];
+  }
+
+  return o;
 }
 
 module.exports = merge;
