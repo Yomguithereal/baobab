@@ -77,7 +77,7 @@ Baobab.prototype.select = function(path) {
     throw Error('Baobab.select: invalid path.');
 
   // Casting to array
-  path = !type.Array(path) ? [path] : path;
+  path = [].concat(path);
 
   // Complex path?
   var complex = type.ComplexPath(path);
