@@ -1,7 +1,7 @@
 {
   "name": "baobab",
   "main": "build/baobab.min.js",
-  "version": "0.4.3",
+  "version": "1.0.0-rc1",
   "homepage": "https://github.com/Yomguithereal/baobab",
   "author": {
     "name": "Guillaume Plique",
