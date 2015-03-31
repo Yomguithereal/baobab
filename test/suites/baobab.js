@@ -158,6 +158,31 @@ describe('Baobab API', function() {
 
       assert(baobab.data === undefined);
     });
+
+    it('the tree should shift references on updates.', function() {
+      var list = [1],
+          baobab = new Baobab({list: list}, {asynchronous: false});
+
+      baobab.select('list').push(2);
+      assert.deepEqual(baobab.get('list'), [1, 2]);
+      assert(list !== baobab.get('list'));
+    });
+
+    it('the tree should also shift parent references.', function() {
+      var shiftingTree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {asynchronous: false});
+
+      var shiftingOriginal = shiftingTree.get();
+
+      shiftingTree.select('root', 'admin', 'items').push(2);
+
+      assert.deepEqual(shiftingTree.get('root', 'admin', 'items'), [1, 2]);
+
+      assert(shiftingTree.get() !== shiftingOriginal);
+      assert(shiftingTree.get().root !== shiftingOriginal.root);
+      assert(shiftingTree.get().root.admin !== shiftingOriginal.root.admin);
+      assert(shiftingTree.get().root.admin.items !== shiftingOriginal.root.admin.items);
+      assert(shiftingTree.get().root.admin.other === shiftingOriginal.root.admin.other);
+    });
   });
 
   describe('Options', function() {
@@ -180,41 +205,5 @@ describe('Baobab API', function() {
         }, 0);
       }, 0);
     });
-
-    it('should be possible to tell the tree to shift references on updates.', function() {
-      var list = [1],
-          baobab = new Baobab({list: list}, {shiftReferences: true, asynchronous: false});
-
-      baobab.select('list').push(2);
-      assert.deepEqual(baobab.get('list'), [1, 2]);
-      assert(list !== baobab.get('list'));
-    });
-
-    // TODO: rehabilitate this test when further updates are made
-    // it('should also shift parent references.', function() {
-    //   var tree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {asynchronous: false}),
-    //       shiftingTree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {shiftReferences: true, asynchronous: false});
-
-    //   var original = tree.reference(),
-    //       shiftingOriginal = shiftingTree.reference();
-
-    //   tree.select('root', 'admin', 'items').push(2);
-    //   shiftingTree.select('root', 'admin', 'items').push(2);
-
-    //   assert.deepEqual(tree.reference('root', 'admin', 'items'), [1, 2]);
-    //   assert.deepEqual(shiftingTree.reference('root', 'admin', 'items'), [1, 2]);
-
-    //   assert(tree.reference() === original);
-    //   assert(tree.reference().root === original.root);
-    //   assert(tree.reference().root.admin === original.root.admin);
-    //   assert(tree.reference().root.admin.items === original.root.admin.items);
-    //   assert(tree.reference().root.admin.other === original.root.admin.other);
-
-    //   assert(shiftingTree.reference() !== shiftingOriginal);
-    //   assert(shiftingTree.reference().root !== shiftingOriginal.root);
-    //   assert(shiftingTree.reference().root.admin !== shiftingOriginal.root.admin);
-    //   assert(shiftingTree.reference().root.admin.items !== shiftingOriginal.root.admin.items);
-    //   assert(shiftingTree.reference().root.admin.other === shiftingOriginal.root.admin.other);
-    // });
   });
 });

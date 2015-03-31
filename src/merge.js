@@ -10,6 +10,7 @@ var helpers = require('./helpers.js'),
 // Helpers
 var COMMANDS = ['$unset', '$set', '$merge', '$apply'];
 
+// TODO: delete every keys
 function only(o, n, keep) {
   COMMANDS.forEach(function(c) {
     if (keep !== c)
@@ -20,6 +21,7 @@ function only(o, n, keep) {
 }
 
 // Main function
+// TODO: use a better way than shallow cloning b?
 function merge(a, b) {
   var o = helpers.shallowClone(b || {}),
       k,

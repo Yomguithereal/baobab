@@ -133,12 +133,9 @@ Baobab.prototype.stack = function(spec) {
 Baobab.prototype.commit = function() {
   var self = this;
 
-  // Shifting root reference
-  if (this.options.shiftReferences)
-    this.data = helpers.shallowClone(this.data);
-
   // Applying modification (mutation)
-  var log = update(this.data, this._transaction, this.options);
+  var result = update(this.data, this._transaction, this.options);
+  this.data = result.data;
 
   // Resetting
   this._transaction = {};
@@ -148,7 +145,7 @@ Baobab.prototype.commit = function() {
 
   // Baobab-level update event
   this.emit('update', {
-    log: log
+    log: result.log
   });
 
   return this;

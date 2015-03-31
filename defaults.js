@@ -14,9 +14,6 @@ module.exports = {
   // Collection of react mixins to merge with the tree's ones
   mixins: [],
 
-  // Should the tree shift its internal reference when applying mutations?
-  shiftReferences: false,
-
   // Validation specifications
   validate: null
 };

@@ -121,8 +121,7 @@ describe('Helpers', function() {
 
     it('should be possible to set nested values.', function() {
       var o1 = {hello: {world: 'one'}},
-          o2 = clone(o1);
-      update(o2, {hello: {world: {$set: 'two'}}});
+          o2 = update(o1, {hello: {world: {$set: 'two'}}}).data;
 
       assert.deepEqual(o1, {hello: {world: 'one'}});
       assert.deepEqual(o2, {hello: {world: 'two'}});
@@ -130,8 +129,7 @@ describe('Helpers', function() {
 
     it('should be possible to push to nested values.', function() {
       var o1 = {colors: ['orange']},
-          o2 = clone(o1);
-      update(o2, {colors: {$push: 'blue'}});
+          o2 = update(o1, {colors: {$push: 'blue'}}).data;
 
       assert.deepEqual(o1, {colors: ['orange']});
       assert.deepEqual(o2, {colors: ['orange', 'blue']});
@@ -139,8 +137,7 @@ describe('Helpers', function() {
 
     it('should be possible to unshift to nested values.', function() {
       var o1 = {colors: ['orange']},
-          o2 = clone(o1);
-      update(o2, {colors: {$unshift: 'blue'}});
+          o2 = update(o1, {colors: {$unshift: 'blue'}}).data;
 
       assert.deepEqual(o1, {colors: ['orange']});
       assert.deepEqual(o2, {colors: ['blue', 'orange']});
@@ -148,15 +145,13 @@ describe('Helpers', function() {
 
     it('should be possible to append to nested values.', function() {
       var o1 = {colors: ['orange']},
-          o2 = clone(o1);
-      update(o2, {colors: {$push: ['blue', 'purple']}});
+          o2 = update(o1, {colors: {$push: ['blue', 'purple']}}).data;
 
       assert.deepEqual(o1, {colors: ['orange']});
       assert.deepEqual(o2, {colors: ['orange', 'blue', 'purple']});
 
       var o3 = {colors: ['orange']},
-          o4 = clone(o1);
-      update(o4, {colors: {$push: 'blue'}});
+          o4 = update(o3, {colors: {$push: 'blue'}}).data;
 
       assert.deepEqual(o3, {colors: ['orange']});
       assert.deepEqual(o4, {colors: ['orange', 'blue']});
@@ -164,15 +159,13 @@ describe('Helpers', function() {
 
     it('should be possible to prepend to nested values.', function() {
       var o1 = {colors: ['orange']},
-          o2 = clone(o1);
-      update(o2, {colors: {$unshift: ['blue', 'purple']}});
+          o2 = update(o1, {colors: {$unshift: ['blue', 'purple']}}).data;
 
       assert.deepEqual(o1, {colors: ['orange']});
       assert.deepEqual(o2, {colors: ['blue', 'purple', 'orange']});
 
       var o3 = {colors: ['orange']},
-          o4 = clone(o1);
-      update(o4, {colors: {$unshift: 'blue'}});
+          o4 = update(o3, {colors: {$unshift: 'blue'}}).data;
 
       assert.deepEqual(o3, {colors: ['orange']});
       assert.deepEqual(o4, {colors: ['blue', 'orange']});
@@ -180,24 +173,22 @@ describe('Helpers', function() {
 
     it('should be possible to apply a function to nested values.', function() {
       var o1 = {number: 10},
-          o2 = clone(o1);
-      update(o2, {number: {$apply: function(n) { return n * 2; }}});
+          o2 = update(o1, {number: {$apply: function(n) { return n * 2; }}}).data;
 
       assert.deepEqual(o1, {number: 10});
       assert.deepEqual(o2, {number: 20});
     });
 
     it('should be possible to shallowly merge objects.', function() {
-      var o = {hey: {one: 1, two: 2}};
-      update(o, {hey: {$merge: {three: 3, two: 4}}});
+      var o1 = {hey: {one: 1, two: 2}},
+          o2 = update(o1, {hey: {$merge: {three: 3, two: 4}}}).data;
 
-      assert.deepEqual(o, {hey: {one: 1, two: 4, three: 3}});
+      assert.deepEqual(o2, {hey: {one: 1, two: 4, three: 3}});
     });
 
     it('should be possible to unset values.', function() {
       var o1 = {one: 1, two: 2},
-          o2 = clone(o1);
-      update(o2, {one: {$unset: true}});
+          o2 = update(o1, {one: {$unset: true}}).data;
 
       assert.deepEqual(o1, {one: 1, two: 2});
       assert.deepEqual(o2, {two: 2});
@@ -205,8 +196,7 @@ describe('Helpers', function() {
 
     it('should be possible to unset values in an array', function() {
       var o1 = {list: [1, 2, 3]},
-          o2 = clone(o1);
-      update(o2, {list: {1: {$unset: true}}});
+          o2 = update(o1, {list: {1: {$unset: true}}}).data;
 
       assert.deepEqual(o1, {list: [1, 2, 3]});
       assert.deepEqual(o2, {list: [1, 3]});
