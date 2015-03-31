@@ -369,7 +369,7 @@ describe('React Mixins', function() {
       });
     });
 
-    it('should allow mixins in options to access the tree', function () {
+    it('should allow mixins in options to access the tree.', function () {
       var baobab = new Baobab({
         items: []
       }, {

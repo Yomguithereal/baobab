@@ -35,7 +35,7 @@ describe('Helpers', function() {
   });
 
   describe('Nested get', function() {
-    it('should be possible to retrieve nested items through the helper.', function() {
+    it('should be possible to retrieve nested items.', function() {
       assert.deepEqual(helpers.getIn(state, ['one', 'subtwo', 'colors']), state.one.subtwo.colors);
       assert.strictEqual(helpers.getIn(state, ['primitive']), 3);
       assert.deepEqual(helpers.getIn(state), state);
@@ -64,7 +64,7 @@ describe('Helpers', function() {
 
   describe('Solve path', function() {
 
-    it('should be able to solve a complex path', function() {
+    it('should be able to solve a complex path.', function() {
       var o = {
         things: [
           {
