@@ -37,10 +37,6 @@ type.Number = function (value) {
   return typeof value === 'number';
 };
 
-type.Boolean = function (value) {
-  return typeof value === 'boolean';
-};
-
 type.Function = function (value) {
   return typeof value === 'function';
 };
