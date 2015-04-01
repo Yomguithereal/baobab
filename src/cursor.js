@@ -215,43 +215,41 @@ Cursor.prototype.get = function(path) {
 /**
  * Update
  */
-Cursor.prototype.set = function(key, val) {
-  if (arguments.length < 2) {
+function pathPolymorphism(method, key, val) {
+  if (arguments.length < 3) {
     val = key;
     key = [];
   }
 
-  // Solving path
+  key = key || [];
+
   var path = [].concat(key),
       solvedPath = helpers.solvePath(this.get(), path);
 
   if (!solvedPath)
-    throw Error('baobab.Cursor.set: could not solve dynamic path.');
+    throw Error('baobab.Cursor.' + method + ': could not solve dynamic path.');
 
-  var spec = helpers.pathObject(solvedPath, {$set: val});
+  var leaf = {};
+  leaf['$' + method] = val;
+
+  var spec = helpers.pathObject(solvedPath, leaf);
+
+  return spec;
+}
+
+Cursor.prototype.set = function(key, val) {
+  var spec = pathPolymorphism.bind(this, 'set').apply(this, arguments);
 
   return this.update(spec);
 };
 
 Cursor.prototype.unset = function(key) {
-  if (key === undefined) {
+  if (key === undefined && this.isRoot())
+    throw Error('baobab.Cursor.unset: cannot remove root node.');
 
-    if (this.isRoot())
-      throw Error('baobab.Cursor.unset: cannot remove root node.');
+  var spec = pathPolymorphism.bind(this, 'unset').apply(this, [key, true]);
 
-    return this.update({$unset: true});
-  }
-  else {
-    var path = [].concat(key),
-        solvedPath = helpers.solvePath(this.get(), path);
-
-    if (!solvedPath)
-      throw Error('baobab.Cursor.unset: could not solve dynamic path.');
-
-    var spec = helpers.pathObject(solvedPath, {$unset: true});
-
-    return this.update(spec);
-  }
+  return this.update(spec);
 };
 
 Cursor.prototype.apply = function(fn) {
@@ -298,8 +296,21 @@ Cursor.prototype.merge = function(o) {
   this.update({$merge: o});
 };
 
-Cursor.prototype.update = function(spec) {
-  this.tree.stack(helpers.pathObject(this.solvedPath, spec));
+// TODO: lazy bitch
+Cursor.prototype.update = function(key, spec) {
+  if (arguments.length < 2) {
+    this.tree.stack(helpers.pathObject(this.solvedPath, key));
+    return this;
+  }
+
+  // Solving path
+  var path = [].concat(key),
+      solvedPath = helpers.solvePath(this.get(), path);
+
+  if (!solvedPath)
+    throw Error('baobab.Cursor.update: could not solve dynamic path.');
+
+  this.tree.stack(helpers.pathObject(this.solvedPath.concat(solvedPath), spec));
   return this;
 };
 
