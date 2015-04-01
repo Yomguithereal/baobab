@@ -216,27 +216,19 @@ Cursor.prototype.get = function(path) {
  * Update
  */
 Cursor.prototype.set = function(key, val) {
-  if (arguments.length < 2)
-    throw Error('baobab.Cursor.set: expecting at least key/value.');
-
-  var data = this.get();
-
-  if (typeof data !== 'object')
-    throw Error('baobab.Cursor.set: trying to set key to a non-object.');
-
-  var spec = {};
-
-  if (type.Array(key)) {
-    var path = helpers.solvePath(data, key);
-
-    if (!path)
-      throw Error('baobab.Cursor.set: could not solve dynamic path.');
-
-    spec = helpers.pathObject(path, {$set: val});
+  if (arguments.length < 2) {
+    val = key;
+    key = [];
   }
-  else {
-    spec[key] = {$set: val};
-  }
+
+  // Solving path
+  var path = [].concat(key),
+      solvedPath = helpers.solvePath(this.get(), path);
+
+  if (!solvedPath)
+    throw Error('baobab.Cursor.set: could not solve dynamic path.');
+
+  var spec = helpers.pathObject(solvedPath, {$set: val});
 
   return this.update(spec);
 };
