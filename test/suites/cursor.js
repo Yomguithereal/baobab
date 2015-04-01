@@ -291,7 +291,7 @@ describe('Cursor API', function() {
         done();
       });
 
-      parent.edit({firstname: 'Napoleon', lastname: 'Bonaparte'});
+      parent.set({firstname: 'Napoleon', lastname: 'Bonaparte'});
     });
 
     it('when a child updates, so does the parent.', function(done) {
@@ -319,7 +319,7 @@ describe('Cursor API', function() {
         done();
       });
 
-      child.edit('Napoleon');
+      child.set('Napoleon');
     });
 
     it('when a leave updates, it should not update its siblings.', function(done) {
@@ -355,7 +355,7 @@ describe('Cursor API', function() {
         done();
       });
 
-      leaf1.edit('tada');
+      leaf1.set('tada');
     });
 
     it('should be possible to listen to the cursor\'s relevancy.', function(done) {
@@ -397,7 +397,7 @@ describe('Cursor API', function() {
         done();
       });
 
-      cursor.edit('jacky');
+      cursor.set('jacky');
     });
   });
 
@@ -534,7 +534,7 @@ describe('Cursor API', function() {
     it('an upper set should correctly resolve.', function(done) {
       var baobab = new Baobab({hello: {color: 'blue'}});
 
-      baobab.select('hello', 'color').edit('yellow');
+      baobab.select('hello', 'color').set('yellow');
       baobab.set('hello', 'purple');
 
       baobab.on('update', function() {

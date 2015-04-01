@@ -47,8 +47,8 @@ describe('Combination', function() {
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     assert.strictEqual(count, 3);
@@ -72,8 +72,8 @@ describe('Combination', function() {
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     assert.strictEqual(count, 1);
@@ -97,12 +97,12 @@ describe('Combination', function() {
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     // 4
-    againCursor.edit([7]);
+    againCursor.set([7]);
     baobab.commit();
 
     combination.release();
@@ -126,18 +126,18 @@ describe('Combination', function() {
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     // 4
-    againCursor.edit([7]);
+    againCursor.set([7]);
     baobab.commit();
 
     // 5
-    cursor.edit([1]);
-    othercursor.edit([4]);
-    againCursor.edit([7]);
+    cursor.set([1]);
+    othercursor.set([4]);
+    againCursor.set([7]);
     baobab.commit();
 
     assert.strictEqual(count, 1);
@@ -153,17 +153,17 @@ describe('Combination', function() {
     });
 
     // 1
-    cursor.edit([1]);
-    againCursor.edit([7]);
+    cursor.set([1]);
+    againCursor.set([7]);
     baobab.commit();
 
     // 2
-    againCursor.edit([7]);
+    againCursor.set([7]);
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     assert.strictEqual(count, 1);
@@ -189,8 +189,8 @@ describe('Combination', function() {
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     assert.strictEqual(count, 3);
@@ -213,8 +213,8 @@ describe('Combination', function() {
     baobab.commit();
 
     // 3
-    cursor.edit([1]);
-    othercursor.edit([4]);
+    cursor.set([1]);
+    othercursor.set([4]);
     baobab.commit();
 
     assert.strictEqual(count, 3);

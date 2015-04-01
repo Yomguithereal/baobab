@@ -233,10 +233,6 @@ Cursor.prototype.set = function(key, val) {
   return this.update(spec);
 };
 
-Cursor.prototype.edit = function(val) {
-  return this.update({$set: val});
-};
-
 Cursor.prototype.unset = function(key) {
   if (!key && key !== 0)
     throw Error('baobab.Cursor.unset: expects a valid key to unset.');
