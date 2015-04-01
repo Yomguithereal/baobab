@@ -7,33 +7,20 @@
  *
  * @christianalfoni
  */
+var type = {};
 
-// Not reusing methods as it will just be an extra
-// call on the stack
-var type = function (value) {
-  if (Array.isArray(value)) {
-    return 'array';
-  } else if (typeof value === 'object' && value !== null) {
-    return 'object';
-  } else if (typeof value === 'string') {
-    return 'string';
-  } else if (typeof value === 'number') {
-    return 'number';
-  } else if (typeof value === 'boolean') {
-    return 'boolean';
-  } else if (typeof value === 'function') {
-    return 'function';
-  } else if (value === null) {
-    return 'null';
-  } else if (value === undefined) {
-    return 'undefined';
-  } else if (value instanceof Date) {
-    return 'date';
-  } else {
-    return 'invalid';
-  }
-};
+/**
+ * Helpers
+ */
+function anyOf(value, allowed) {
+  return allowed.some(function(t) {
+    return type[t](value);
+  })
+}
 
+/**
+ * Simple types
+ */
 type.Array = function (value) {
   return Array.isArray(value);
 };
@@ -66,49 +53,32 @@ type.Date = function (value) {
   return value instanceof Date;
 };
 
-type.Step = function (value) {
-  var valueType = type(value);
-  var notValid = ['null', 'undefined', 'invalid', 'date'];
-  return notValid.indexOf(valueType) === -1;
-};
-
-// Should undefined be allowed?
+/**
+ * Complex types
+ */
 type.Path = function (value) {
-  var types = ['object', 'string', 'number', 'function', 'undefined'];
+  var allowed = ['String', 'Number', 'Function', 'Object'];
+
   if (type.Array(value)) {
-    for (var x = 0; x < value.length; x++) {
-      if (types.indexOf(type(value[x])) === -1) {
-        return false;
-      }
-    }
-  } else {
-    return types.indexOf(type(value)) >= 0;
+    return value.every(function(step) {
+      return anyOf(step, allowed);
+    });
   }
-  return true;
-
+  else {
+    return anyOf(value, allowed);
+  }
 };
 
-// string|number|array|cursor|function
 type.MixinCursor = function (value) {
-  var allowedValues = ['string', 'number', 'array', 'function'];
-  return allowedValues.indexOf(type(value)) >= 0 || type.Cursor(value);
+  return anyOf(value, ['String', 'Number', 'Array', 'Function', 'Cursor']);
 };
 
-// array|object|function
 type.MixinCursors = function (value) {
-  var allowedValues = ['array', 'object', 'function'];
-  return allowedValues.indexOf(type(value)) >= 0;
+  return anyOf(value, ['Object', 'Array', 'Function']);
 };
 
-// Already know this is an array
 type.ComplexPath = function (value) {
-  var complexTypes = ['object', 'function'];
-  for (var x = 0; x < value.length; x++) {
-    if (complexTypes.indexOf(type(value[x])) >= 0) {
-      return true;
-    }
-  }
-  return false;
+  return anyOf(value, ['Object', 'Function']);
 };
 
 module.exports = type;
