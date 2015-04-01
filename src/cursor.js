@@ -215,8 +215,8 @@ Cursor.prototype.get = function(path) {
 /**
  * Update
  */
-function pathPolymorphism(method, key, val) {
-  if (arguments.length < 3) {
+function pathPolymorphism(method, allowedType, key, val) {
+  if (arguments.length < 4) {
     val = key;
     key = [];
   }
@@ -229,6 +229,13 @@ function pathPolymorphism(method, key, val) {
   if (!solvedPath)
     throw Error('baobab.Cursor.' + method + ': could not solve dynamic path.');
 
+  if (allowedType) {
+    var data = this.get(solvedPath);
+
+    if (!type[allowedType](data))
+      throw Error('baobab.Cursor.' + method + ': invalid target.');
+  }
+
   var leaf = {};
   leaf['$' + method] = val;
 
@@ -237,8 +244,25 @@ function pathPolymorphism(method, key, val) {
   return spec;
 }
 
-Cursor.prototype.set = function(key, val) {
-  var spec = pathPolymorphism.bind(this, 'set').apply(this, arguments);
+function makeUpdateMethod(command, type) {
+  Cursor.prototype[command] = function() {
+    var spec = pathPolymorphism.bind(this, command, type).apply(this, arguments);
+
+    return this.update(spec);
+  };
+}
+
+makeUpdateMethod('set');
+makeUpdateMethod('apply');
+makeUpdateMethod('chain');
+makeUpdateMethod('push', 'Array');
+makeUpdateMethod('unshift', 'Array');
+
+Cursor.prototype.merge = function(o) {
+  if (!type.Object(o))
+    throw Error('baobab.Cursor.merge: trying to merge a non-object.');
+
+  var spec = pathPolymorphism.bind(this, 'merge', 'Object').apply(this, arguments);
 
   return this.update(spec);
 };
@@ -247,56 +271,11 @@ Cursor.prototype.unset = function(key) {
   if (key === undefined && this.isRoot())
     throw Error('baobab.Cursor.unset: cannot remove root node.');
 
-  var spec = pathPolymorphism.bind(this, 'unset').apply(this, [key, true]);
+  var spec = pathPolymorphism.bind(this, 'unset', null).apply(this, [key, true]);
 
   return this.update(spec);
 };
 
-Cursor.prototype.apply = function(fn) {
-  if (typeof fn !== 'function')
-    throw Error('baobab.Cursor.apply: argument is not a function.');
-
-  return this.update({$apply: fn});
-};
-
-Cursor.prototype.chain = function(fn) {
-  if (typeof fn !== 'function')
-    throw Error('baobab.Cursor.chain: argument is not a function.');
-
-  return this.update({$chain: fn});
-};
-
-Cursor.prototype.push = function(value) {
-  if (!(this.get() instanceof Array))
-    throw Error('baobab.Cursor.push: trying to push to non-array value.');
-
-  if (arguments.length > 1)
-    return this.update({$push: helpers.arrayOf(arguments)});
-  else
-    return this.update({$push: value});
-};
-
-Cursor.prototype.unshift = function(value) {
-  if (!(this.get() instanceof Array))
-    throw Error('baobab.Cursor.push: trying to push to non-array value.');
-
-  if (arguments.length > 1)
-    return this.update({$unshift: helpers.arrayOf(arguments)});
-  else
-    return this.update({$unshift: value});
-};
-
-Cursor.prototype.merge = function(o) {
-  if (!type.Object(o))
-    throw Error('baobab.Cursor.merge: trying to merge a non-object.');
-
-  if (!type.Object(this.get()))
-    throw Error('baobab.Cursor.merge: trying to merge into a non-object.');
-
-  this.update({$merge: o});
-};
-
-// TODO: lazy bitch
 Cursor.prototype.update = function(key, spec) {
   if (arguments.length < 2) {
     this.tree.stack(helpers.pathObject(this.solvedPath, key));

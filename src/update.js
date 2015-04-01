@@ -11,7 +11,7 @@ var helpers = require('./helpers.js'),
 // Helpers
 function makeError(path, message) {
   var e = new Error('baobab.update: ' + message + ' at path /' +
-                    path.slice(1).toString());
+                    path.slice(1).join('/'));
 
   e.path = path;
   return e;

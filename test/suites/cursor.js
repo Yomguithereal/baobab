@@ -172,7 +172,7 @@ describe('Cursor API', function() {
 
         assert.throws(function() {
           oneCursor.push('test');
-        }, /non-array/);
+        }, /target/);
       });
 
       it('should throw an error when trying to unshift to a non-array.', function() {
@@ -181,7 +181,7 @@ describe('Cursor API', function() {
 
         assert.throws(function() {
           oneCursor.unshift('test');
-        }, /non-array/);
+        }, /target/);
       });
 
       it('should be possible to chain mutations.', function(done) {
@@ -507,18 +507,6 @@ describe('Cursor API', function() {
 
       setTimeout(function() {
         assert.deepEqual(cursor.get(), [-2, -1, 0, 1, 2, 3]);
-        done();
-      }, 0);
-    });
-
-    it('should be possible to push several values through polymorphism.', function(done) {
-      var baobab = new Baobab({colors: ['blue']}),
-          colorCursor = baobab.select('colors');
-
-      colorCursor.push('yellow', 'green');
-
-      setTimeout(function() {
-        assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'green']);
         done();
       }, 0);
     });
