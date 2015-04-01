@@ -209,7 +209,7 @@ Cursor.prototype.get = function(path) {
     (type.String(path) || type.Number(path) ? [path] : path) || []
   );
 
-  return helpers.getIn(this.tree.data, fullPath);
+  return helpers.getIn(this.tree.data, fullPath, this.tree);
 };
 
 /**

@@ -66,6 +66,18 @@ describe('Cursor API', function() {
         var inexistant = baobab.get('setLater', 'a');
         assert.strictEqual(inexistant, undefined);
       });
+
+      it('should be able to resolve a cursor pointer.', function() {
+        var color = baobab.get('one', 'subtwo', 'colors', {$cursor: ['pointer']});
+
+        assert.strictEqual(color, 'yellow');
+      });
+
+      it('should fail when providing a wrong path to the $cursor command.', function() {
+        assert.throws(function() {
+          var color = baobab.get('one', 'subtwo', 'colors', {$cursor: null});
+        }, /\$cursor/);
+      });
     });
 
     describe('Standard cursors', function() {

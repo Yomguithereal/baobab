@@ -159,10 +159,11 @@ function indexByComparison(object, spec) {
 }
 
 // Retrieve nested objects
-function getIn(object, path) {
+function getIn(object, path, tree) {
   path = path || [];
 
   var c = object,
+      p,
       i,
       l;
 
@@ -177,10 +178,21 @@ function getIn(object, path) {
       c = first(c, path[i]);
     }
     else if (typeof path[i] === 'object') {
-      if (!type.Array(c))
-        return;
+      if ('$cursor' in path[i]) {
+        if (!type.Path(path[i].$cursor))
+          throw Error('baobab.getIn: $cursor path must be an array.');
 
-      c = firstByComparison(c, path[i]);
+        p = tree.get(path[i].$cursor);
+        c = c[p];
+      }
+
+      else if (!type.Array(c)) {
+        return;
+      }
+
+      else {
+        c = firstByComparison(c, path[i]);
+      }
     }
     else {
       c = c[path[i]];
