@@ -52,6 +52,10 @@ type.Date = function (value) {
 /**
  * Complex types
  */
+type.NonScalar = function(value) {
+  return type.Object(value) || type.Array(value);
+};
+
 type.Path = function (value) {
   var allowed = ['String', 'Number', 'Function', 'Object'];
 

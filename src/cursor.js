@@ -234,22 +234,24 @@ Cursor.prototype.set = function(key, val) {
 };
 
 Cursor.prototype.unset = function(key) {
-  if (!key && key !== 0)
-    throw Error('baobab.Cursor.unset: expects a valid key to unset.');
+  if (key === undefined) {
 
-  if (typeof this.get() !== 'object')
-    throw Error('baobab.Cursor.set: trying to set key to a non-object.');
+    if (this.isRoot())
+      throw Error('baobab.Cursor.unset: cannot remove root node.');
 
-  var spec = {};
-  spec[key] = {$unset: true};
-  return this.update(spec);
-};
+    return this.update({$unset: true});
+  }
+  else {
+    var path = [].concat(key),
+        solvedPath = helpers.solvePath(this.get(), path);
 
-Cursor.prototype.remove = function() {
-  if (this.isRoot())
-    throw Error('baobab.Cursor.remove: cannot remove root node.');
+    if (!solvedPath)
+      throw Error('baobab.Cursor.unset: could not solve dynamic path.');
 
-  return this.update({$unset: true});
+    var spec = helpers.pathObject(solvedPath, {$unset: true});
+
+    return this.update(spec);
+  }
 };
 
 Cursor.prototype.apply = function(fn) {

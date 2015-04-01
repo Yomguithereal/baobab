@@ -223,14 +223,6 @@ describe('Cursor API', function() {
         });
       });
 
-      it('should be possible to remove keys from the tree.', function() {
-        var tree = new Baobab({one: 1, two: 2}, {asynchronous: false});
-
-        assert.deepEqual(tree.get(), {one: 1, two: 2});
-        tree.unset('one');
-        assert.deepEqual(tree.get(), {two: 2});
-      });
-
       it('should be possible to remove keys from a cursor.', function() {
         var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
             cursor = tree.select('two');
@@ -245,7 +237,7 @@ describe('Cursor API', function() {
             cursor = tree.select('two');
 
         assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
-        cursor.remove();
+        cursor.unset();
         assert.strictEqual(cursor.get(), undefined);
       });
     });
