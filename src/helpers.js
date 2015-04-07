@@ -41,7 +41,7 @@ function clone(deep, item) {
   if (!item ||
       typeof item !== 'object' ||
       item instanceof Error ||
-      item instanceof ArrayBuffer)
+      ('ArrayBuffer' in global && item instanceof ArrayBuffer))
     return item;
 
   // Array
