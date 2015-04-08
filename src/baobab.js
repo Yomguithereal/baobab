@@ -85,7 +85,7 @@ Baobab.prototype.select = function(path) {
   var solvedPath;
 
   if (complex)
-    solvedPath = helpers.solvePath(this.data, path);
+    solvedPath = helpers.solvePath(this.data, path, this);
 
   // Registering a new cursor or giving the already existing one for path
   var hash = path.map(function(step) {

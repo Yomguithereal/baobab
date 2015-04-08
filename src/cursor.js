@@ -43,7 +43,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
     // Solving path if needed
     if (self.complexPath)
-      self.solvedPath = helpers.solvePath(self.tree.data, self.path);
+      self.solvedPath = helpers.solvePath(self.tree.data, self.path, self.tree);
 
     // If selector listens at tree, we fire
     if (!self.path.length)
@@ -225,7 +225,7 @@ function pathPolymorphism(method, allowedType, key, val) {
   key = key || [];
 
   var path = [].concat(key),
-      solvedPath = helpers.solvePath(this.get(), path);
+      solvedPath = helpers.solvePath(this.get(), path, this.tree);
 
   if (!solvedPath)
     throw Error('baobab.Cursor.' + method + ': could not solve dynamic path.');
@@ -285,7 +285,7 @@ Cursor.prototype.update = function(key, spec) {
 
   // Solving path
   var path = [].concat(key),
-      solvedPath = helpers.solvePath(this.get(), path);
+      solvedPath = helpers.solvePath(this.get(), path, this.tree);
 
   if (!solvedPath)
     throw Error('baobab.Cursor.update: could not solve dynamic path.');
@@ -328,8 +328,12 @@ Cursor.prototype.redo = function() {
   // TODO...
 };
 
+Cursor.prototype.isRecording = function() {
+  return !!this.archive;
+};
+
 Cursor.prototype.hasHistory = function() {
-  return this.archive && this.archive.records.length;
+  return !!(this.archive && this.archive.records.length);
 };
 
 Cursor.prototype.getHistory = function() {

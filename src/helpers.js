@@ -178,7 +178,7 @@ function getIn(object, path, tree) {
       c = first(c, path[i]);
     }
     else if (typeof path[i] === 'object') {
-      if ('$cursor' in path[i]) {
+      if (tree && '$cursor' in path[i]) {
         if (!type.Path(path[i].$cursor))
           throw Error('baobab.getIn: $cursor path must be an array.');
 
@@ -223,20 +223,24 @@ function solvePath(object, path, tree) {
       c = c[idx];
     }
     else if (typeof path[i] === 'object') {
-      if ('$cursor' in path[i]) {
+      if (tree && '$cursor' in path[i]) {
         if (!type.Path(path[i].$cursor))
           throw Error('baobab.getIn: $cursor path must be an array.');
 
         p = tree.get(path[i].$cursor);
+        solvedPath.push(p);
         c = c[p];
       }
 
-      if (!type.Array(c))
+      else if (!type.Array(c)) {
         return;
+      }
 
-      idx = indexByComparison(c, path[i]);
-      solvedPath.push(idx);
-      c = c[idx];
+      else {
+        idx = indexByComparison(c, path[i]);
+        solvedPath.push(idx);
+        c = c[idx];
+      }
     }
     else {
       solvedPath.push(path[i]);

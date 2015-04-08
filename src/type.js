@@ -78,7 +78,9 @@ type.MixinCursors = function (value) {
 };
 
 type.ComplexPath = function (value) {
-  return anyOf(value, ['Object', 'Function']);
+  return value.some(function(v) {
+    return anyOf(v, ['Object', 'Function']);
+  });
 };
 
 module.exports = type;
