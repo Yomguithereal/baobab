@@ -53,6 +53,18 @@ describe('Baobab API', function() {
 
       assert.deepEqual(cursor.get(), {id: 'one'});
     });
+
+    it('should be possible to select data using a cursor pointer.', function() {
+      var cursor = baobab.select('one', 'subtwo', 'colors', {$cursor: ['pointer']});
+
+      assert.strictEqual(cursor.get(), 'yellow');
+    });
+
+    it('should fail when providing a wrong path to the $cursor command.', function() {
+        assert.throws(function() {
+          var color = baobab.select('one', 'subtwo', 'colors', {$cursor: null});
+        }, /\$cursor/);
+      });
   });
 
   describe('Events', function() {

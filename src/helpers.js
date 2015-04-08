@@ -203,7 +203,7 @@ function getIn(object, path, tree) {
 }
 
 // Solve a complex path
-function solvePath(object, path) {
+function solvePath(object, path, tree) {
   var solvedPath = [],
       c = object,
       idx,
@@ -223,6 +223,14 @@ function solvePath(object, path) {
       c = c[idx];
     }
     else if (typeof path[i] === 'object') {
+      if ('$cursor' in path[i]) {
+        if (!type.Path(path[i].$cursor))
+          throw Error('baobab.getIn: $cursor path must be an array.');
+
+        p = tree.get(path[i].$cursor);
+        c = c[p];
+      }
+
       if (!type.Array(c))
         return;
 
