@@ -72,7 +72,7 @@ describe('Baobab API', function() {
 
     it('should be possible to listen to update events.', function(done) {
       baobab.on('update', function(e) {
-        assert.deepEqual(e.data.log, [['one', 'subtwo', 'colors']]);
+        assert.deepEqual(e.data.log, [{path: ['one', 'subtwo', 'colors'], oldValue: ['blue', 'yellow']}]);
         done();
       });
 
