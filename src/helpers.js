@@ -265,6 +265,7 @@ function pathObject(path, spec) {
   return o;
 }
 
+// Shim used for cross-compatible event emitting extension
 function inherits(ctor, superCtor) {
   ctor.super_ = superCtor;
   var TempCtor = function () {};
@@ -273,7 +274,28 @@ function inherits(ctor, superCtor) {
   ctor.prototype.constructor = ctor;
 }
 
+// Archive
+function archive(size) {
+  this.size = size;
+  this.records = []
+
+  // Adding a record
+  this.add = function(record) {
+    this.records.unshift(record);
+
+    while (this.records.length > size)
+      this.records.pop();
+    return this;
+  };
+
+  // Getting record data
+  this.get = function() {
+    return this.records;
+  };
+}
+
 module.exports = {
+  archive: archive,
   arrayOf: arrayOf,
   before: before,
   deepClone: deepClone,

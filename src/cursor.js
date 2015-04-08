@@ -26,6 +26,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.tree = tree;
   this.path = path;
   this.hash = hash;
+  this.archive = null;
 
   // Complex path?
   this.complexPath = !!solvedPath;
@@ -302,6 +303,37 @@ Cursor.prototype.or = function(otherCursor) {
 
 Cursor.prototype.and = function(otherCursor) {
   return new Combination('and', this, otherCursor);
+};
+
+/**
+ * History
+ */
+Cursor.prototype.startRecording = function(maxRecords) {
+  if (this.archive)
+    return this;
+  this.archive = helpers.archive(maxRecords);
+  return this;
+};
+
+Cursor.prototype.stopRecording = function() {
+  this.archive = null;
+  return this;
+};
+
+Cursor.prototype.undo = function() {
+  // TODO...
+};
+
+Cursor.prototype.redo = function() {
+  // TODO...
+};
+
+Cursor.prototype.hasHistory = function() {
+  return this.archive && this.archive.records.length;
+};
+
+Cursor.prototype.getHistory = function() {
+  return this.archive.records;
 };
 
 /**
