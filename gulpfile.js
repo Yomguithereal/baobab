@@ -2,10 +2,10 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     mocha = require('gulp-mocha'),
     uglify = require('gulp-uglify'),
-    rename = require('gulp-rename'),
     header = require('gulp-header'),
     replace = require('gulp-replace'),
-    transform = require('vinyl-transform'),
+    source = require('vinyl-source-stream'),
+    buffer = require('vinyl-buffer'),
     browserify = require('browserify'),
     pkg = require('./package.json');
 
@@ -34,19 +34,15 @@ gulp.task('test', ['gremlins'], function() {
 
 // Building
 gulp.task('build', function() {
-  var bundle = transform(function(filename) {
-    return browserify({
-      entries: filename,
-      standalone: 'Baobab',
-      fullPaths: false
-    }).bundle();
-  });
-
-  return gulp.src('./index.js')
-    .pipe(bundle)
+  return browserify({
+    entries: './index.js',
+    standalone: 'Baobab',
+    fullPaths: false
+  }).bundle()
+    .pipe(source('baobab.min.js'))
+    .pipe(buffer())
     .pipe(uglify())
     .pipe(header('/* baobab.js - Version: ' + pkg.version + ' - Author: Yomguithereal (Guillaume Plique) */\n'))
-    .pipe(rename('baobab.min.js'))
     .pipe(gulp.dest('./build'));
 });
 
