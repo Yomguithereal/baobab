@@ -281,7 +281,7 @@ function inherits(ctor, superCtor) {
 // Archive
 function archive(size) {
   this.size = size;
-  this.records = []
+  this.records = [];
 
   // Adding a record
   this.add = function(record) {

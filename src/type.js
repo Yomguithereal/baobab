@@ -15,7 +15,7 @@ var type = {};
 function anyOf(value, allowed) {
   return allowed.some(function(t) {
     return type[t](value);
-  })
+  });
 }
 
 /**
