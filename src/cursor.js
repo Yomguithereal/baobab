@@ -50,24 +50,25 @@ function Cursor(tree, path, solvedPath, hash) {
       return self.emit('update');
 
     // Checking update log to see whether the cursor should update.
-    outer:
-    for (i = 0, l = log.length; i < l; i++) {
-      c = log[i];
+    if (self.solvedPath)
+      outer:
+      for (i = 0, l = log.length; i < l; i++) {
+        c = log[i];
 
-      for (j = 0, m = c.length; j < m; j++) {
-        p = c[j];
+        for (j = 0, m = c.length; j < m; j++) {
+          p = c[j];
 
-        // If path is not relevant to us, we break
-        if (p !== '' + self.solvedPath[j])
-          break;
+          // If path is not relevant to us, we break
+          if (p !== '' + self.solvedPath[j])
+            break;
 
-        // If we reached last item and we are relevant, we fire
-        if (j + 1 === m || j + 1 === self.solvedPath.length) {
-          shouldFire = true;
-          break outer;
+          // If we reached last item and we are relevant, we fire
+          if (j + 1 === m || j + 1 === self.solvedPath.length) {
+            shouldFire = true;
+            break outer;
+          }
         }
       }
-    }
 
     // Handling relevancy
     var data = self.get() !== undefined;
