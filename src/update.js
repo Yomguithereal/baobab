@@ -32,7 +32,7 @@ module.exports = function(data, spec, opts) {
   var mutator = function(o, spec, path, parent) {
     path = path || ['root'];
 
-    var hash = path.join('λ'),
+    var hash = path.join('|λ|'),
         lastKey = path[path.length - 1],
         fn,
         k,
@@ -141,7 +141,7 @@ module.exports = function(data, spec, opts) {
 
     // SHIFT LOG
     log: Object.keys(log).map(function(hash) {
-      return hash.split('λ').slice(1);
+      return hash.split('|λ|').slice(1);
     })
   };
 };

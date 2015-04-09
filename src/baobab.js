@@ -95,7 +95,7 @@ Baobab.prototype.select = function(path) {
       return complexHash('ob');
     else
       return step;
-  }).join('λ');
+  }).join('|λ|');
 
   if (!this._cursors[hash]) {
     var cursor = new Cursor(this, path, solvedPath, hash);
