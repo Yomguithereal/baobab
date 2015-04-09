@@ -238,6 +238,9 @@ Cursor.prototype.get = function(path) {
  * Update
  */
 function pathPolymorphism(method, allowedType, key, val) {
+  if (arguments.length > 5)
+    throw Error('baobab.Cursor.' + method + ': too many arguments.')
+
   if (arguments.length < 4) {
     val = key;
     key = [];

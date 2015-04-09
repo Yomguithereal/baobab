@@ -145,6 +145,15 @@ describe('Cursor API', function() {
     });
 
     describe('Standard cursors', function() {
+      it('should warn the user when too many arguments are applied to a setter.', function() {
+        var baobab = new Baobab(state),
+            cursor = baobab.select('items');
+
+        assert.throws(function() {
+          cursor.set('this', 'is', 'my', 'destiny!');
+        }, /too many/);
+      });
+
       it('should be possible to set a key using a path rather than a key.', function() {
         var baobab = new Baobab(state, {asynchronous: false}),
             cursor = baobab.select('items');
