@@ -5,7 +5,6 @@
  * Nested selection into a baobab tree.
  */
 var EventEmitter = require('emmett'),
-    Combination = require('./combination.js'),
     mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
     defaults = require('../defaults.js'),
@@ -299,17 +298,6 @@ Cursor.prototype.update = function(key, spec) {
 
   this.tree.stack(helpers.pathObject(this.solvedPath.concat(solvedPath), spec));
   return this;
-};
-
-/**
- * Combination
- */
-Cursor.prototype.or = function(otherCursor) {
-  return new Combination('or', this, otherCursor);
-};
-
-Cursor.prototype.and = function(otherCursor) {
-  return new Combination('and', this, otherCursor);
 };
 
 /**

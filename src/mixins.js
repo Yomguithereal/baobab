@@ -4,8 +4,7 @@
  *
  * Compilation of react mixins designed to deal with cursors integration.
  */
-var Combination = require('./combination.js'),
-    type = require('./type.js');
+var type = require('./type.js');
 
 module.exports = {
   baobab: function(baobab) {
@@ -91,26 +90,25 @@ module.exports = {
         },
         componentDidMount: function() {
           if (this.__type === 'single') {
-            this.__combination = new Combination('or', [this.cursor]);
-            this.__combination.on('update', this.__updateHandler);
+            this.__watcher = this.tree.watch([this.cursor.path]);
+            this.__watcher.on('update', this.__updateHandler);
           }
           else if (this.__type === 'array') {
-            this.__combination = new Combination('or', this.cursors);
-            this.__combination.on('update', this.__updateHandler);
+            this.__watcher = this.tree.watch(this.cursors.map(function(c) {
+              return c.path;
+            }));
+            this.__watcher.on('update', this.__updateHandler);
           }
           else if (this.__type === 'object') {
-            this.__combination = new Combination(
-              'or',
-              Object.keys(this.cursors).map(function(k) {
-                return this.cursors[k];
-              }, this)
-            );
-            this.__combination.on('update', this.__updateHandler);
+            this.__watcher = this.tree.watch(Object.keys(this.cursors).map(function(k) {
+              return this.cursors[k].path;
+            }, this));
+            this.__watcher.on('update', this.__updateHandler);
           }
         },
         componentWillUnmount: function() {
-          if (this.__combination)
-            this.__combination.release();
+          if (this.__watcher)
+            this.__watcher.release();
         }
       }].concat(baobab.options.mixins)
     };

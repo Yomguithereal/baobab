@@ -82,8 +82,8 @@ type.MixinCursors = function (value) {
 };
 
 type.ComplexPath = function (value) {
-  return value.some(function(v) {
-    return anyOf(v, ['Object', 'Function']);
+  return value.some(function(step) {
+    return anyOf(step, ['Object', 'Function']);
   });
 };
 
