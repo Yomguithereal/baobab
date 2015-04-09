@@ -251,6 +251,40 @@ function solvePath(object, path, tree) {
   return solvedPath;
 }
 
+// Determine whether an update should fire for the given paths
+// NOTES: 1) if performance becomes an issue, the threefold loop can be
+//           simplified to become a complex twofold one.
+//        2) a regex version could also work but I am not confident it would be
+//           faster.
+function solveUpdate(log, paths) {
+  var i, j, k, l, m, n, p, c, s;
+
+  // Looping through possible paths
+  for (i = 0, l = paths.length; i < l; i++) {
+    p = paths[i];
+
+    // Looping through logged paths
+    for (j = 0, m = log.length; j < m; j++) {
+      c = log[j];
+
+      // Looping through steps
+      for (k = 0, n = c.length; k < n; k++) {
+        s = c[k];
+
+        // If path is not relevant, we break
+        if (s != p[k])
+          break;
+
+        // If we reached last item and we are relevant
+        if (k + 1 === n || k + 1 === p.length)
+          return true;
+      }
+    }
+  }
+
+  return false;
+}
+
 // Return a fake object relative to the given path
 function pathObject(path, spec) {
   var l = path.length,
@@ -313,5 +347,6 @@ module.exports = {
   getIn: getIn,
   inherits: inherits,
   pathObject: pathObject,
-  solvePath: solvePath
+  solvePath: solvePath,
+  solveUpdate: solveUpdate
 };
