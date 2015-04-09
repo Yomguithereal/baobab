@@ -6,3 +6,4 @@ node_modules
 test/
 build/
 gulpfile.js
+*.log

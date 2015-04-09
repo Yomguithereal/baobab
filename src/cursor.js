@@ -28,6 +28,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.path = path;
   this.hash = hash;
   this.archive = null;
+  this.undoing = false;
 
   // Complex path?
   this.complexPath = !!solvedPath;
@@ -38,7 +39,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
   // Root listeners
   function update(previousState) {
-    if (self.isRecording()) {
+    if (self.isRecording() && !self.undoing) {
 
       // Handle archive
       var data = helpers.getIn(previousState, self.solvedPath, self.tree),
@@ -47,6 +48,7 @@ function Cursor(tree, path, solvedPath, hash) {
       self.archive.add(record);
     }
 
+    self.undoing = false;
     return self.emit('update');
   }
 
@@ -348,12 +350,22 @@ Cursor.prototype.stopRecording = function() {
   return this;
 };
 
-Cursor.prototype.undo = function() {
-  // TODO...
-};
+Cursor.prototype.undo = function(steps) {
+  steps = steps || 1;
 
-Cursor.prototype.redo = function() {
-  // TODO...
+  if (!this.isRecording())
+    throw Error('baobab.Cursor.undo: cursor is not recording.');
+
+  if (!type.PositiveInteger(steps))
+    throw Error('baobab.Cursor.undo: expecting a positive integer.');
+
+  var record = this.archive.back(steps);
+
+  if (!record)
+    throw Error('boabab.Cursor.undo: cannot find a relevant record (' + steps + ' back).');
+
+  this.undoing = true;
+  return this.set(record);
 };
 
 Cursor.prototype.isRecording = function() {
@@ -384,6 +396,7 @@ Cursor.prototype.release = function() {
   delete this.tree;
   delete this.path;
   delete this.solvedPath;
+  delete this.archive;
 
   // Killing emitter
   this.kill();

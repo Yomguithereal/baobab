@@ -289,6 +289,13 @@ function archive(size) {
       while(records.length > size)
         records.pop();
     },
+    back: function(steps) {
+      var record = records[steps - 1];
+
+      if (record)
+        records = records.slice(steps);
+      return record;
+    },
     get: function() {
       return records;
     }

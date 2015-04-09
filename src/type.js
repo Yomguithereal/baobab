@@ -37,6 +37,10 @@ type.Number = function (value) {
   return typeof value === 'number';
 };
 
+type.PositiveInteger = function(value) {
+  return typeof value === 'number' && value > 0 && !(value % 1);
+};
+
 type.Function = function (value) {
   return typeof value === 'function';
 };

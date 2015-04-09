@@ -523,6 +523,52 @@ describe('Cursor API', function() {
       assert(!cursor.hasHistory());
       assert.deepEqual(cursor.getHistory(), []);
     });
+
+    it('should throw an error if trying to undo a recordless cursor.', function() {
+      var baobab = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = baobab.select('item');
+
+      assert.throws(function() {
+        cursor.undo();
+      }, /recording/);
+    });
+
+    it('should be possible to go back in time.', function() {
+      var baobab = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = baobab.select('item');
+
+      cursor.startRecording();
+
+      [1, 2, 3, 4, 5, 6].forEach(function() {
+        cursor.apply(function(e) { return e + 1; });
+      });
+
+      assert.strictEqual(cursor.get(), 7);
+
+      cursor.undo();
+      assert.strictEqual(cursor.get(), 6);
+      assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5].reverse());
+
+      cursor.undo().undo();
+
+      assert.strictEqual(cursor.get(), 4);
+      assert.deepEqual(cursor.getHistory(), [2, 3].reverse());
+
+      cursor.set(4).set(5);
+
+      cursor.undo(3);
+
+      assert.strictEqual(cursor.get(), 3);
+      assert.deepEqual(cursor.getHistory(), [2]);
+
+      assert.throws(function() {
+        cursor.undo(5);
+      }, /relevant/);
+
+      assert.throws(function() {
+        cursor.undo(-5);
+      }, /positive/);
+    });
   });
 
   describe('Advanced', function() {
