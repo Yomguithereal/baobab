@@ -52,7 +52,7 @@ function Cursor(tree, path, solvedPath, hash) {
     // Checking update log to see whether the cursor should update.
     outer:
     for (i = 0, l = log.length; i < l; i++) {
-      c = log[i].path;
+      c = log[i];
 
       for (j = 0, m = c.length; j < m; j++) {
         p = c[j];

@@ -43,7 +43,7 @@ module.exports = function(data, spec, opts) {
     });
 
     if (leafLevel) {
-      log[hash] = o[lastKey];
+      log[hash] = true;
 
       for (k in spec) {
 
@@ -141,10 +141,7 @@ module.exports = function(data, spec, opts) {
 
     // SHIFT LOG
     log: Object.keys(log).map(function(hash) {
-      return {
-        path: hash.split('λ').slice(1),
-        oldValue: log[hash]
-      };
+      return hash.split('λ').slice(1);
     })
   };
 };
