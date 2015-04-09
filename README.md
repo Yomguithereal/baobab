@@ -306,10 +306,12 @@ This basically makes the `shouldComponentUpdate` method useless in most of cases
 
 ##### Tree level
 
-You can bind a React component to a Baobab tree and register one or more cursors. Cursors registered to a component will have their contents bound to the `this.state.cursor` (or `this.state.cursors` if registering multiple cursors).
+You can bind a React component to a Baoba tree cursors. Cursors bound to a component will have their values attached to `this.state.cursor` (or `this.state.cursors` if registering multiple cursors).
 
 ###### Single cursor binding:
+
 Registering a cursor is as simple as defining a path.
+
 ```jsx
 var tree = new Baobab({
   users: ['John', 'Jack'],
@@ -322,19 +324,21 @@ var UserList = React.createClass({
   mixins: [tree.mixin],
   cursor: ['users'],
   render: function() {
+
     // Cursor data is then available either through:
     var data = this.cursor.get();
     // Or
     var data = this.state.cursor;
 
     return <ul>{data.map(function(username) {
-        return <li>{username}</li>;
+      return <li>{username}</li>;
     })}</ul>;
   }
 });
 ```
 
-You can also use a function returning a Cursor. This allows the component to be bound to a cursor passed through `this.props`.
+You can also use a function returning a cursor. This allows the component to be bound to a cursor passed through `this.props`, for instance.
+
 ```jsx
 var tree = new Baobab({
   users: ['John', 'Jack'],
@@ -344,22 +348,28 @@ var tree = new Baobab({
 });
 
 var UserGroupList = React.createClass({
-    mixins: [tree.mixin],
-    cursor: function(){
-        return this.props.usersCursor;
-    },
-    render: function() {
-        return <ul>{this.cursor.get().map(function(username) {
-            return <li>{username}</li>;
-        })}</ul>;
-    }
+  mixins: [tree.mixin],
+  cursor: function() {
+    return this.props.usersCursor;
+  },
+  render: function() {
+    return <ul>{this.cursor.get().map(function(username) {
+        return <li>{username}</li>;
+    })}</ul>;
+  }
 }
 
-var users = tree.select('users'); 
-React.render(<UserGroupList usersCursor={users}/>, document.getElementById('mount-point'));
+var users = tree.select('users');
+React.render(
+  <UserGroupList usersCursor={users}/>,
+  document.getElementById('mount-point')
+);
 ```
-###### Multiple cursor binding:
-Similarly, to bind several Cursors to a component, you can return a list of paths to `cursors`. 
+
+###### Multiple cursors binding:
+
+Similarly, to bind several cursors to a component, you can bind your component to a list of cursors.
+
 ```jsx
 var tree = new Baobab({
   users: ['John', 'Jack'],
@@ -369,21 +379,23 @@ var tree = new Baobab({
 });
 
 var UserList = React.createClass({
-    mixins: [tree.mixin],
-    cursors: [['users'], ['information', 'title']],
-    render: function() {
-        return (
-            <div>
-                <h1>{this.cursors[1].get()}</h1>
-                <ul>{this.cursors[0].get().map(function(name) {
-                    return <li>{name}</li>;
-                })}</ul>
-            </div>
-        );
-    }
+  mixins: [tree.mixin],
+  cursors: [['users'], ['information', 'title']],
+  render: function() {
+    return (
+      <div>
+        <h1>{this.cursors[1].get()}</h1>
+        <ul>{this.cursors[0].get().map(function(name) {
+          return <li>{name}</li>;
+        })}</ul>
+      </div>
+    );
+  }
 });
 ```
-To access Cursors easily you can return a Cursor "map".
+
+To access cursors in an easier way, you can also bind your component to a map of cursors.
+
 ```jsx
 var tree = new Baobab({
   users: ['John', 'Jack'],
@@ -393,24 +405,26 @@ var tree = new Baobab({
 });
 
 var UserList = React.createClass({
-    mixins: [tree.mixin],
-    cursors: {
-        users: ['users'],
-        title: ['information', 'title']
-    },
-    render: function() {
-        return (
-            <div>
-                <h1>{this.cursors.title.get()}</h1>
-                <ul>{this.cursors.users.get().map(function(name) {
-                    return <li>{name}</li>;
-                })}</ul>
-            </div>
-        );
-    }
+  mixins: [tree.mixin],
+  cursors: {
+    users: ['users'],
+    title: ['information', 'title']
+  },
+  render: function() {
+    return (
+      <div>
+        <h1>{this.cursors.title.get()}</h1>
+        <ul>{this.cursors.users.get().map(function(name) {
+          return <li>{name}</li>;
+        })}</ul>
+      </div>
+    );
+  }
 });
 ```
-With a function:
+
+Same with a function:
+
 ```jsx
 var tree = new Baobab({
   users: ['John', 'Jack'],
@@ -420,29 +434,31 @@ var tree = new Baobab({
 });
 
 var UserList = React.createClass({
-    mixins: [tree.mixin],
-    cursors: function() {
-        return {
-            users: this.props.usersCursor,
-            title: ['information', 'title']
-        }
-    },
-    render: function() {
-        return (
-            <div>
-                <h1>{this.cursors.title.get()}</h1>
-                <ul>{this.cursors.users.get().map(function(name) {
-                    return <li>{name}</li>;
-                })}</ul>
-            </div>
-        );
+  mixins: [tree.mixin],
+  cursors: function() {
+    return {
+      users: this.props.usersCursor,
+      title: ['information', 'title']
     }
+  },
+  render: function() {
+    return (
+      <div>
+        <h1>{this.cursors.title.get()}</h1>
+        <ul>{this.cursors.users.get().map(function(name) {
+          return <li>{name}</li>;
+        })}</ul>
+      </div>
+    );
+  }
 });
 
-var users = tree.select('users'); 
-React.render(<UserList usersCursor={users}/>, document.getElementById('mount-point'));
+var users = tree.select('users');
+React.render(
+  <UserList usersCursor={users}/>,
+  document.getElementById('mount-point')
+);
 ```
-
 
 ### Advanced
 
