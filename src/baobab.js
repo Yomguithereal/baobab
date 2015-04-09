@@ -133,8 +133,10 @@ Baobab.prototype.stack = function(spec) {
 Baobab.prototype.commit = function() {
   var self = this;
 
-  // Applying modification (mutation)
+  // Applying modifications
   var result = update(this.data, this._transaction, this.options);
+
+  var oldData = this.data;
   this.data = result.data;
 
   // Resetting
@@ -145,7 +147,8 @@ Baobab.prototype.commit = function() {
 
   // Baobab-level update event
   this.emit('update', {
-    log: result.log
+    log: result.log,
+    previousState: oldData
   });
 
   return this;
