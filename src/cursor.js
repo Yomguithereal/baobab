@@ -8,6 +8,7 @@ var EventEmitter = require('emmett'),
     Combination = require('./combination.js'),
     mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
+    defaults = require('../defaults.js'),
     type = require('./type.js');
 
 /**
@@ -36,8 +37,22 @@ function Cursor(tree, path, solvedPath, hash) {
   this.relevant = this.get() !== undefined;
 
   // Root listeners
+  function update(previousState) {
+    if (self.isRecording()) {
+
+      // Handle archive
+      var data = helpers.getIn(previousState, self.solvedPath, self.tree),
+          record = helpers.deepClone(data);
+
+      self.archive.add(record);
+    }
+
+    return self.emit('update');
+  }
+
   this.updateHandler = function(e) {
     var log = e.data.log,
+        previousState = e.data.previousState,
         shouldFire = false,
         c, p, l, m, i, j;
 
@@ -47,7 +62,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
     // If selector listens at tree, we fire
     if (!self.path.length)
-      return self.emit('update');
+      return update(previousState);
 
     // Checking update log to see whether the cursor should update.
     if (self.solvedPath)
@@ -75,7 +90,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
     if (self.relevant) {
       if (data && shouldFire) {
-        self.emit('update');
+        update(previousState);
       }
       else if (!data) {
         self.emit('irrelevant');
@@ -85,7 +100,7 @@ function Cursor(tree, path, solvedPath, hash) {
     else {
       if (data && shouldFire) {
         self.emit('relevant');
-        self.emit('update');
+        update(previousState);
         self.relevant = true;
       }
     }
@@ -97,15 +112,18 @@ function Cursor(tree, path, solvedPath, hash) {
   // Lazy binding
   var bound = false;
 
-  var lazyBind = function() {
+  this._lazyBind = function() {
     if (bound)
       return;
     bound = true;
     self.tree.on('update', self.updateHandler);
   };
 
-  this.on = helpers.before(lazyBind, this.on.bind(this));
-  this.once = helpers.before(lazyBind, this.once.bind(this));
+  this.on = helpers.before(this._lazyBind, this.on.bind(this));
+  this.once = helpers.before(this._lazyBind, this.once.bind(this));
+
+  if (this.complexPath)
+    this._lazyBind();
 }
 
 helpers.inherits(Cursor, EventEmitter);
@@ -310,8 +328,17 @@ Cursor.prototype.and = function(otherCursor) {
  * History
  */
 Cursor.prototype.startRecording = function(maxRecords) {
+  maxRecords = maxRecords || 5;
+
+  if (maxRecords < 1)
+    throw Error('baobab.Cursor.startRecording: invalid maximum number of records.');
+
   if (this.archive)
     return this;
+
+  // Lazy bind
+  this._lazyBind();
+
   this.archive = helpers.archive(maxRecords);
   return this;
 };
@@ -334,11 +361,11 @@ Cursor.prototype.isRecording = function() {
 };
 
 Cursor.prototype.hasHistory = function() {
-  return !!(this.archive && this.archive.records.length);
+  return !!(this.archive && this.archive.get().length);
 };
 
 Cursor.prototype.getHistory = function() {
-  return this.archive.records;
+  return this.archive ? this.archive.get() : [];
 };
 
 /**

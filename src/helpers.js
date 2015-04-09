@@ -280,21 +280,18 @@ function inherits(ctor, superCtor) {
 
 // Archive
 function archive(size) {
-  this.size = size;
-  this.records = [];
+  var records = [];
 
-  // Adding a record
-  this.add = function(record) {
-    this.records.unshift(record);
+  return {
+    add: function(record) {
+      records.unshift(record);
 
-    while (this.records.length > size)
-      this.records.pop();
-    return this;
-  };
-
-  // Getting record data
-  this.get = function() {
-    return this.records;
+      while(records.length > size)
+        records.pop();
+    },
+    get: function() {
+      return records;
+    }
   };
 }
 

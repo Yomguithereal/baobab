@@ -6,7 +6,8 @@ var assert = require('assert'),
     state = require('../state.js'),
     helpers = require('../../src/helpers.js'),
     Baobab = require('../../src/baobab.js'),
-    async = require('async');
+    async = require('async'),
+    _ = require('lodash');
 
 describe('Cursor API', function() {
 
@@ -492,6 +493,36 @@ describe('Cursor API', function() {
 
       assert.strictEqual(listItem.get(), 3);
       assert.strictEqual(listItem.rightmost().get(), 4);
+    });
+  });
+
+  describe('History', function() {
+
+    it('should be possible to record updates.', function() {
+      var baobab = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = baobab.select('item');
+
+      assert(!cursor.isRecording());
+      assert(!cursor.hasHistory());
+      assert.deepEqual(cursor.getHistory(), []);
+
+      cursor.startRecording();
+
+      assert(cursor.isRecording());
+
+      _.range(6).forEach(function() {
+        cursor.apply(function(e) { return e + 1; });
+      });
+
+      assert(cursor.hasHistory());
+      assert.strictEqual(cursor.get(), 7);
+      assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5, 6].reverse());
+
+      cursor.stopRecording();
+
+      assert(!cursor.isRecording());
+      assert(!cursor.hasHistory());
+      assert.deepEqual(cursor.getHistory(), []);
     });
   });
 
