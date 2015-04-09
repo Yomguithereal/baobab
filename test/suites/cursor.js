@@ -6,8 +6,7 @@ var assert = require('assert'),
     state = require('../state.js'),
     helpers = require('../../src/helpers.js'),
     Baobab = require('../../src/baobab.js'),
-    async = require('async'),
-    _ = require('lodash');
+    async = require('async');
 
 describe('Cursor API', function() {
 
@@ -510,7 +509,7 @@ describe('Cursor API', function() {
 
       assert(cursor.isRecording());
 
-      _.range(6).forEach(function() {
+      [1, 2, 3, 4, 5, 6].forEach(function() {
         cursor.apply(function(e) { return e + 1; });
       });
 
