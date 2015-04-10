@@ -26,7 +26,10 @@ type.Array = function(value) {
 };
 
 type.Object = function(value) {
-  return !Array.isArray(value) && typeof value === 'object' && value !== null;
+  return value &&
+         typeof value === 'object' &&
+         !Array.isArray(value) &&
+         !(value instanceof Function);
 };
 
 type.String = function(value) {
