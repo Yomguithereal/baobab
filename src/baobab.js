@@ -77,7 +77,7 @@ helpers.inherits(Baobab, EventEmitter);
  * Prototype
  */
 Baobab.prototype.addFacet = function(name, definition) {
-  this.facets[name] = new Facet(tree, definition);
+  this.facets[name] = new Facet(this, definition);
   return this;
 };
 
@@ -180,14 +180,20 @@ Baobab.prototype.watch = function(paths) {
 };
 
 Baobab.prototype.release = function() {
+  var k;
 
   delete this.data;
   delete this._transaction;
 
   // Releasing cursors
-  for (var k in this._cursors)
+  for (k in this._cursors)
     this._cursors[k].release();
   delete this._cursors;
+
+  // Releasing facets
+  for (k in this.facets)
+    this.facets[k].release();
+  delete this.facets;
 
   // Killing event emitter
   this.kill();

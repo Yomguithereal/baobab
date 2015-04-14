@@ -210,7 +210,7 @@ Cursor.prototype.get = function(path) {
     path = helpers.arrayOf(arguments);
 
   var fullPath = this.solvedPath.concat(
-    (type.String(path) || type.Number(path) ? [path] : path) || []
+    [].concat(path || path === 0 ? path : [])
   );
 
   return helpers.getIn(this.tree.data, fullPath, this.tree);

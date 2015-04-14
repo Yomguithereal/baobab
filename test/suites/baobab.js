@@ -7,7 +7,7 @@ var assert = require('assert'),
     Baobab = require('../../src/baobab.js'),
     Cursor = require('../../src/cursor.js'),
     async = require('async'),
-    clone = require('lodash.clonedeep');
+    _ = require('lodash');
 
 describe('Baobab API', function() {
 
@@ -137,6 +137,137 @@ describe('Baobab API', function() {
       assert(shiftingTree.get().root.admin !== shiftingOriginal.root.admin);
       assert(shiftingTree.get().root.admin.items !== shiftingOriginal.root.admin.items);
       assert(shiftingTree.get().root.admin.other === shiftingOriginal.root.admin.other);
+    });
+  });
+
+  describe('Facets', function() {
+    var baobab = new Baobab(
+
+      // Data
+      {
+        projects: [
+          {
+            id: 1,
+            name: 'Tezcatlipoca',
+            user: 'John'
+          },
+          {
+            id: 2,
+            name: 'Huitzilopochtli',
+            user: 'John'
+          },
+          {
+            id: 3,
+            name: 'Tlaloc',
+            user: 'Jack'
+          }
+        ],
+        currentProjectId: 1
+      },
+
+      // Options
+      {
+        asynchronous: false,
+        facets: {
+          filtered: {
+            cursors: {
+              projects: ['projects']
+            },
+            get: function(data) {
+              return data.projects.filter(function(p) {
+                return p.user === 'John';
+              });
+            }
+          },
+          current: {
+            cursors: {
+              id: ['currentProjectId'],
+              projects: ['projects']
+            },
+            get: function(data) {
+              return _.find(data.projects, {id: data.id});
+            }
+          }
+        }
+      }
+    );
+
+    var filtered = baobab.facets.filtered,
+        current = baobab.facets.current;
+
+    it('should be possible to get data from facets.', function() {
+      assert.deepEqual(filtered.get(), [
+        {
+          id: 1,
+          name: 'Tezcatlipoca',
+          user: 'John'
+        },
+        {
+          id: 2,
+          name: 'Huitzilopochtli',
+          user: 'John'
+        }
+      ]);
+
+      assert.deepEqual(current.get(), {
+        id: 1,
+        name: 'Tezcatlipoca',
+        user: 'John'
+      });
+
+      baobab.update({
+        projects: {
+          $push: {
+            id: 4,
+            name: 'Coatlicue',
+            user: 'John'
+          }
+        },
+        currentProjectId: {
+          $set: 2
+        }
+      });
+
+      assert.deepEqual(filtered.get(), [
+        {
+          id: 1,
+          name: 'Tezcatlipoca',
+          user: 'John'
+        },
+        {
+          id: 2,
+          name: 'Huitzilopochtli',
+          user: 'John'
+        },
+        {
+          id: 4,
+          name: 'Coatlicue',
+          user: 'John'
+        }
+      ]);
+
+      assert.deepEqual(current.get(), {
+        id: 2,
+        name: 'Huitzilopochtli',
+        user: 'John'
+      });
+    });
+
+    it('should be possible to listen to facets.', function() {
+      var countF = 0,
+          countC = 0;
+
+      var incF = function() {countF++;},
+          incC = function() {countC++;};
+
+      filtered.on('update', incF);
+      current.on('update', incC);
+
+      baobab.select('projects').push({id: 4, name: 'Coatlicue', user: 'John'});
+      baobab.set('currentProjectId', 2);
+
+      assert.strictEqual(countF, 1);
+      assert.strictEqual(countC, 2);
     });
   });
 

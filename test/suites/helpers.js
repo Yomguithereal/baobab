@@ -6,8 +6,7 @@ var assert = require('assert'),
     state = require('../state.js'),
     Baobab = require('../../src/baobab.js'),
     helpers = require('../../src/helpers.js'),
-    update = require('../../src/update.js'),
-    clone = require('lodash.clonedeep');
+    update = require('../../src/update.js');
 
 describe('Helpers', function() {
 
