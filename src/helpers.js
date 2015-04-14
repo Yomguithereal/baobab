@@ -345,8 +345,8 @@ function archive(size) {
     add: function(record) {
       records.unshift(record);
 
-      while(records.length > size)
-        records.pop();
+      if (records.length > size)
+        records.length = size;
     },
     back: function(steps) {
       var record = records[steps - 1];
