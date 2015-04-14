@@ -5,7 +5,6 @@
  * Nested selection into a baobab tree.
  */
 var EventEmitter = require('emmett'),
-    mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
     defaults = require('../defaults.js'),
     type = require('./type.js');
@@ -89,9 +88,6 @@ function Cursor(tree, path, solvedPath, hash) {
       }
     }
   };
-
-  // Making mixin
-  this.mixin = mixins.cursor(this);
 
   // Lazy binding
   var bound = false;

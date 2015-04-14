@@ -11,7 +11,6 @@ var Cursor = require('./cursor.js'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     merge = require('./merge.js'),
-    mixins = require('./mixins.js'),
     defaults = require('../defaults.js'),
     type = require('./type.js');
 
@@ -67,9 +66,6 @@ function Baobab(initialData, opts) {
 
   for (var k in this.options.facets)
     this.addFacet(k, this.options.facets[k]);
-
-  // Mixin
-  this.mixin = mixins.baobab(this);
 }
 
 helpers.inherits(Baobab, EventEmitter);
