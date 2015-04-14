@@ -44,6 +44,7 @@ function Baobab(initialData, opts) {
   this._transaction = {};
   this._future = undefined;
   this._cursors = {};
+  this._identity = '[object Baobab]';
 
   // Properties
   this.data = helpers.deepClone(initialData);
@@ -77,8 +78,12 @@ helpers.inherits(Baobab, EventEmitter);
  * Prototype
  */
 Baobab.prototype.addFacet = function(name, definition) {
-  this.facets[name] = new Facet(this, definition);
+  this.facets[name] = this.createFacet(definition);
   return this;
+};
+
+Baobab.prototype.createFacet = function(definition) {
+  return new Facet(this, definition);
 };
 
 Baobab.prototype.select = function(path) {
@@ -204,6 +209,10 @@ Baobab.prototype.release = function() {
  */
 Baobab.prototype.toJSON = function() {
   return this.get();
+};
+
+Baobab.prototype.toString = function() {
+  return this._identity;
 };
 
 /**
