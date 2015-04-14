@@ -7,6 +7,7 @@
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
     Watcher = require('./watcher.js'),
+    Facet = require('./facet.js'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
     merge = require('./merge.js'),
@@ -47,6 +48,7 @@ function Baobab(initialData, opts) {
   // Properties
   this.data = helpers.deepClone(initialData);
   this.root = this.select([]);
+  this.facets = {};
 
   // Boostrapping root cursor's methods
   function bootstrap(name) {
@@ -58,6 +60,13 @@ function Baobab(initialData, opts) {
 
   ['get', 'set', 'unset', 'update'].forEach(bootstrap.bind(this));
 
+  // Facets
+  if (!type.Object(this.options.facets))
+    throw Error('Baobab: invalid facets.');
+
+  for (var k in this.options.facets)
+    this.addFacet(k, this.options.facets[k]);
+
   // Mixin
   this.mixin = mixins.baobab(this);
 }
@@ -67,6 +76,11 @@ helpers.inherits(Baobab, EventEmitter);
 /**
  * Prototype
  */
+Baobab.prototype.addFacet = function(name, definition) {
+  this.facets[name] = new Facet(tree, definition);
+  return this;
+};
+
 Baobab.prototype.select = function(path) {
   if (!path)
     throw Error('Baobab.select: invalid path.');
