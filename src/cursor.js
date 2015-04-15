@@ -28,6 +28,9 @@ function Cursor(tree, path, solvedPath, hash) {
   this.archive = null;
   this.undoing = false;
 
+  // Privates
+  this._identity = '[object Cursor]';
+
   // Complex path?
   this.complexPath = !!solvedPath;
   this.solvedPath = this.complexPath ? solvedPath : this.path;
@@ -377,6 +380,10 @@ Cursor.prototype.release = function() {
  */
 Cursor.prototype.toJSON = function() {
   return this.get();
+};
+
+Cursor.prototype.toString = function() {
+  return this._identity;
 };
 
 type.Cursor = function (value) {
