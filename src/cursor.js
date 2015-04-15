@@ -386,10 +386,6 @@ Cursor.prototype.toString = function() {
   return this._identity;
 };
 
-type.Cursor = function (value) {
-  return value instanceof Cursor;
-};
-
 /**
  * Export
  */
