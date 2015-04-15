@@ -30,31 +30,6 @@ function shallowMerge(o1, o2) {
   return o;
 }
 
-// Shallow equality
-function shallowEqual(o1, o2) {
-  if (o1 === o2)
-    return true;
-
-  if (typeof o1 !== 'object' || typeof o2 !== 'object' ||
-      o1 === null || o2 === null)
-    return false;
-
-  var k1 = Object.keys(o1),
-      k2 = Object.keys(o2);
-
-  if (k1.length !== k2.length)
-    return false;
-
-  var i, l;
-
-  for (i = 0, l = k1.length; i < l; i++) {
-    if (o1[k1[i]] !== o2[k1[i]])
-      return false;
-  }
-
-  return true;
-}
-
 // Clone a regexp
 function cloneRegexp(re) {
   var pattern = re.source,
@@ -367,7 +342,6 @@ module.exports = {
   before: before,
   deepClone: deepClone,
   shallowClone: shallowClone,
-  shallowEqual: shallowEqual,
   shallowMerge: shallowMerge,
   compose: compose,
   getIn: getIn,

@@ -116,17 +116,6 @@ describe('Helpers', function() {
     });
   });
 
-  describe('Shallow equality', function() {
-    var se = helpers.shallowEqual;
-
-    it('should check equalities correctly.', function() {
-      assert(se('Hey!', 'Hey!'));
-      assert(se(0, 0));
-      assert(se({hello: 'world'}, {hello: 'world'}));
-      assert(!se({hello: 'world'}, {hey: 'ho'}));
-    });
-  });
-
   describe('Update API', function() {
 
     it('should be possible to set nested values.', function() {
