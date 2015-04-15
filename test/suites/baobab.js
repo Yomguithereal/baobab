@@ -291,5 +291,65 @@ describe('Baobab API', function() {
         }, 0);
       }, 0);
     });
+
+    it('should be possible to validate the tree and rollback on fail.', function() {
+      var invalidCount = 0;
+
+      function v(state, nextState, paths) {
+        assert(this === baobab);
+
+        if (typeof nextState.hello !== 'string')
+          return new Error('Invalid tree!');
+      }
+
+      var baobab = new Baobab({hello: 'world'}, {validate: v, asynchronous: false});
+
+      baobab.on('invalid', function(e) {
+        var error = e.data.error;
+
+        assert.strictEqual(error.message, 'Invalid tree!');
+        invalidCount++;
+      });
+
+      baobab.set('hello', 'John');
+
+      assert.strictEqual(invalidCount, 0);
+      assert.strictEqual(baobab.get('hello'), 'John');
+
+      baobab.set('hello', 4);
+
+      assert.strictEqual(invalidCount, 1);
+      assert.strictEqual(baobab.get('hello'), 'John');
+    });
+
+    it('should be possible to validate the tree and let the tree update on fail.', function() {
+      var invalidCount = 0;
+
+      function v(state, nextState, paths) {
+        assert(this === baobab);
+
+        if (typeof nextState.hello !== 'string')
+          return new Error('Invalid tree!');
+      }
+
+      var baobab = new Baobab({hello: 'world'}, {validate: v, asynchronous: false, validationBehaviour: 'notify'});
+
+      baobab.on('invalid', function(e) {
+        var error = e.data.error;
+
+        assert.strictEqual(error.message, 'Invalid tree!');
+        invalidCount++;
+      });
+
+      baobab.set('hello', 'John');
+
+      assert.strictEqual(invalidCount, 0);
+      assert.strictEqual(baobab.get('hello'), 'John');
+
+      baobab.set('hello', 4);
+
+      assert.strictEqual(invalidCount, 1);
+      assert.strictEqual(baobab.get('hello'), 4);
+    });
   });
 });

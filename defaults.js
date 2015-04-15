@@ -15,5 +15,8 @@ module.exports = {
   facets: {},
 
   // Validation specifications
-  validate: null
+  validate: null,
+
+  // Validation behaviour 'rollback' or 'notify'
+  validationBehaviour: 'rollback'
 };

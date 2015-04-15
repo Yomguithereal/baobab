@@ -153,13 +153,30 @@ Baobab.prototype.commit = function() {
   var result = update(this.data, this._transaction, this.options);
 
   var oldData = this.data;
-  this.data = result.data;
 
   // Resetting
   this._transaction = {};
 
   if (this._future)
     this._future = clearTimeout(this._future);
+
+  // Validate?
+  var validate = this.options.validate,
+      behaviour = this.options.validationBehaviour;
+
+  if (typeof validate === 'function') {
+    var error = validate.call(this, oldData, result.data, result.log);
+
+    if (error instanceof Error) {
+      this.emit('invalid', {error: error});
+
+      if (behaviour === 'rollback')
+        return this;
+    }
+  }
+
+  // Switching tree's data
+  this.data = result.data;
 
   // Baobab-level update event
   this.emit('update', {
