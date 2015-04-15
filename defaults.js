@@ -14,9 +14,6 @@ module.exports = {
   // Facets registration
   facets: {},
 
-  // Collection of react mixins to merge with the tree's ones
-  mixins: [],
-
   // Validation specifications
   validate: null
 };
