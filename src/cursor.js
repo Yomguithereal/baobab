@@ -229,18 +229,15 @@ function pathPolymorphism(method, allowedType, key, val) {
 
   key = key || [];
 
+  // Checking value validity
+  if (allowedType && !allowedType(val))
+    throw Error('baobab.Cursor.' + method + ': incorrect value.');
+
   var path = [].concat(key),
       solvedPath = helpers.solvePath(this.get(), path, this.tree);
 
   if (!solvedPath)
     throw Error('baobab.Cursor.' + method + ': could not solve dynamic path.');
-
-  if (allowedType) {
-    var data = this.get(solvedPath);
-
-    if (!type[allowedType](data))
-      throw Error('baobab.Cursor.' + method + ': invalid target.');
-  }
 
   var leaf = {};
   leaf['$' + method] = val;
@@ -261,17 +258,9 @@ function makeUpdateMethod(command, type) {
 makeUpdateMethod('set');
 makeUpdateMethod('apply');
 makeUpdateMethod('chain');
-makeUpdateMethod('push', 'Array');
-makeUpdateMethod('unshift', 'Array');
-
-Cursor.prototype.merge = function(o) {
-  if (!type.Object(o))
-    throw Error('baobab.Cursor.merge: trying to merge a non-object.');
-
-  var spec = pathPolymorphism.bind(this, 'merge', 'Object').apply(this, arguments);
-
-  return this.update(spec);
-};
+makeUpdateMethod('push');
+makeUpdateMethod('unshift');
+makeUpdateMethod('merge', type.Object);
 
 Cursor.prototype.unset = function(key) {
   if (key === undefined && this.isRoot())

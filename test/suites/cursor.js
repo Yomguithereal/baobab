@@ -187,24 +187,6 @@ describe('Cursor API', function() {
         }, /solve/);
       });
 
-      it('should throw an error when trying to push to a non-array.', function() {
-        var baobab = new Baobab(state),
-            oneCursor = baobab.select('one');
-
-        assert.throws(function() {
-          oneCursor.push('test');
-        }, /target/);
-      });
-
-      it('should throw an error when trying to unshift to a non-array.', function() {
-        var baobab = new Baobab(state),
-            oneCursor = baobab.select('one');
-
-        assert.throws(function() {
-          oneCursor.unshift('test');
-        }, /target/);
-      });
-
       it('should be possible to chain mutations.', function(done) {
         var baobab = new Baobab({number: 1}),
             inc = function(i) { return i + 1; };
@@ -230,10 +212,6 @@ describe('Cursor API', function() {
 
       it('should be possible to shallow merge two objects.', function(done) {
         var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
-
-        assert.throws(function() {
-          baobab.select('test').merge({hello: 'moto'});
-        }, /merge/);
 
         var cursor = baobab.select('o');
         cursor.merge({hello: 'jarl'});
@@ -269,6 +247,14 @@ describe('Cursor API', function() {
       //   assert.deepEqual(cursor.get(), [1, 2, 3]);
       //   cursor.splice()
       // });
+
+      it('should throw errors when updating with wrong values.', function() {
+        var cursor = (new Baobab()).root;
+
+        assert.throws(function() {
+          cursor.merge('John');
+        }, /value/);
+      });
     });
   });
 
