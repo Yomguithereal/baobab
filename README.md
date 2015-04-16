@@ -6,9 +6,11 @@
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
-It can be paired with **React** easily through [mixins](#react-mixins) to provide a centralized model holding your application's state.
+It can be paired with **React** painlessly through mixins or higher order components (available [here](https://github.com/Yomguithereal/baobab-react)) and provide a centralized model holding your application's state.
 
-For a concise introduction about the library and how it can be used by a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) on the subject.
+For a concise introduction about the library and how it can be used in a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) on the subject.
+
+**Trivia**: A [Baobab](http://en.wikipedia.org/wiki/Adansonia_digitata), or *Adansonia digitata*, is a very big and magnificient African tree.
 
 ## Summary
 
@@ -20,17 +22,17 @@ For a concise introduction about the library and how it can be used by a React/F
     * [Cursors](#cursors)
     * [Updates](#updates)
     * [Events](#events)
-    * [React mixins](#react-mixins)
   * [Advanced](#advanced)
     * [Polymorphisms](#polymorphisms)
     * [Traversal](#traversal)
     * [Options](#options)
+    * [Facets](#facets)
     * [History](#history)
     * [Update specifications](#update-specifications)
     * [Chaining mutations](#chaining-mutations)
-    * [Cursor combinations](#cursor-combinations)
-    * [Data validation](#data-validation)
     * [Common pitfalls](#common-pitfalls)
+* [Philosophy](#philosophy)
+* [Migration](#migration)
 * [Contribution](#contribution)
 * [License](#license)
 
@@ -57,12 +59,12 @@ colorsCursor.push('orange');
 
 ## Installation
 
-If you want to use **Baobab** with node.js or browserify, you can use npm.
+If you want to use **Baobab** with node.js/io.js or browserify/webpack etc., you can use npm.
 
 ```sh
 npm install baobab
 
-# Or for the latest dev version
+# Or if you need the latest dev version
 npm install git+https://github.com/Yomguithereal/baobab.git
 ```
 
@@ -78,13 +80,15 @@ Or install with bower:
 bower install baobab
 ```
 
+The library (as a standalone) currently weights ~20ko minified and ~6ko gzipped.
+
 ## Usage
 
 ### Basics
 
 #### Instantiation
 
-Creating a *baobab* is as simple as instantiating it with an initial data set (note that only objects or array should be given).
+Creating a tree is as simple as instantiating *Baobab* with an initial data set.
 
 ```js
 var Baobab = require('baobab');
@@ -136,6 +140,20 @@ Rather, the tree will stack and merge every update order you give it and will on
 
 This enables the tree to perform efficient mutations and to be able to notify any relevant cursors that the data they are watching over has changed.
 
+Note also that the tree will shift the references of the objects it watches over in order to enable "immutabley" comparisons between one version of the state and another (this is especially useful when using things as such as React's pure render [mixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
+
+*Example*
+
+```js
+var tree = new Baobab({hello: 'world'});
+
+var initialState = tree.get();
+tree.set('hello', 'monde'});
+
+// After asynchronous update...
+assert(initialState !== tree.get());
+```
+
 ##### Tree level
 
 *Setting a key*
@@ -155,64 +173,137 @@ tree.unset('hello');
 *Replacing data at cursor*
 
 ```js
-cursor.edit({hello: 'world'});
+cursor.set({hello: 'world'});
 ```
 
 *Setting a key*
 
 ```js
 cursor.set('hello', 'world');
+
+// Nested path
+cursor.set(['one', 'two'], 'world');
 ```
 
 *Removing data at cursor*
 
 ```js
-cursor.remove();
+cursor.unset();
 ```
 
 *Unsetting a key*
 
 ```js
 cursor.unset('hello');
+
+// Nested path
+cursor.unset(['one', 'two']);
 ```
 
 *Pushing values*
 
-Obviously this will fail if target data is not an array.
+Obviously this will fail if the value watched over by your cursor is not an array.
 
 ```js
 cursor.push('purple');
+
+// Pushing several values
 cursor.push(['purple', 'orange']);
+
+// At key
+cursor.push('list', 'orange')
+
+// Nested path
+cursor.push(['one', 'two'], 'orange');
 ```
 
 *Unshifting values*
 
-Obviously this will fail if target data is not an array.
+Obviously this will fail if the value watched over by your cursor is not an array.
 
 ```js
 cursor.unshift('purple');
+
+// Unshifting several values
 cursor.unshift(['purple', 'orange']);
+
+// At key
+cursor.unshift('list', 'orange')
+
+// Nested path
+cursor.unshift(['one', 'two'], 'orange');
+```
+
+*Splicing an array*
+
+Obviously this will fail if the value watched over by your cursor is not an array.
+
+```js
+cursor.splice([1, 1]);
+
+// Applying splice n times with different arguments
+cursor.splice([[1, 2], [3, 2, 'hello']]);
+
+// At key
+cursor.splice('list', [1, 1])
+
+// Nested path
+cursor.splice(['one', 'two'], [1, 1]);
 ```
 
 *Applying a function*
 
 ```js
-cursor.apply(function(currentData) {
+var inc = function(currentData) {
   return currentData + 1;
-});
+};
+
+cursor.apply(inc);
+
+// At key
+cursor.apply('number', inc)
+
+// Nested path
+cursor.apply(['one', 'two'], 'orange');
+```
+
+*Chaining functions through composition*
+
+For more details about this particular point, check [this](#chaining-mutations).
+
+```js
+var inc = function(currentData) {
+  return currentData + 1;
+};
+
+cursor.chain(inc);
+
+// At key
+cursor.chain('number', inc)
+
+// Nested path
+cursor.chain(['one', 'two'], 'orange');
 ```
 
 *Shallowly merging objects*
 
+Obviously this will fail if the value watched over by your cursor is not an object.
+
 ```js
 cursor.merge({hello: 'world'});
+
+// At key
+cursor.merge('object', {hello: 'world'})
+
+// Nested path
+cursor.apply(['one', 'two'], {hello: 'world'});
 ```
 
 #### Events
 
 Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound elements, React components, for instance, can update.
 
-Note however that only relevant cursors will be notified of data change.
+Note however that **only** relevant cursors will be notified of a change.
 
 Events can be bound to either the tree or cursors using the `on` method.
 
@@ -255,22 +346,29 @@ johnCursor.set('firstname', 'John the third');
 Will fire if the tree is updated.
 
 ```js
-tree.on('update', fn);
+tree.on('update', function(e) {
+  var affectedPaths = e.data.log,
+      previousState = e.data.previousState;
+
+  //...
+});
 ```
 
 *invalid*
 
-Will fire if a data-validation specification was passed at instance and if new data does not abide by those specifications. For more information about this, see the [data validation](#data-validation) part of the documentation.
+Will fire if the `validate` function (see [options](#options)) returned an error for the current update.
 
 ```js
-tree.on('invalid', fn);
+tree.on('invalid', function(e) {
+  console.log(e.data.error);
+});
 ```
 
 ##### Cursor level
 
 *update*
 
-Will fire if data watched by cursor has updated.
+Will fire if data watched over by the cursor has updated.
 
 ```js
 cursor.on('update', fn);
@@ -286,7 +384,7 @@ cursor.on('irrelevant', fn);
 
 *relevant*
 
-Will fire if the cursor is irrelevant but becomes relevant again.
+Will fire if the cursor was irrelevant but becomes relevant again.
 
 ```js
 cursor.on('relevant', fn);
@@ -295,127 +393,6 @@ cursor.on('relevant', fn);
 ##### N.B.
 
 For more information concerning **Baobab**'s event emitting, see the [emmett](https://github.com/jacomyal/emmett) library.
-
-#### React mixins
-
-A *baobab* tree can easily be used as a UI model keeping the whole application state.
-
-It is then really simple to bind this centralized model to React components by using the library's built-in mixins. Those will naturally bind components to one or more cursors watching over parts of the main state so they can update only when relevant data has been changed.
-
-This basically makes the `shouldComponentUpdate` method useless in most of cases and ensures that your components will only re-render if they need to because of data changes.
-
-##### Tree level
-
-You can bind a React component to the tree itself and register some handy cursors:
-
-```jsx
-var tree = new Baobab({
-  users: ['John', 'Jack'],
-  information: {
-    title: 'My fancy App'
-  }
-});
-
-// Single cursor
-var UserList = React.createClass({
-  mixins: [tree.mixin],
-  cursor: ['users'],
-  render: function() {
-    var renderItem = function(name) {
-      return <li>{name}</li>;
-    };
-
-    // Cursor data is then available either through:
-    var data = this.cursor.get();
-    // Or
-    var data = this.state.cursor;
-
-    return <ul>{this.cursor.get().map(renderItem)}</ul>;
-  }
-});
-
-// Multiple cursors
-var UserList = React.createClass({
-  mixins: [tree.mixin],
-  cursors: [['users'], ['information', 'title']],
-  render: function() {
-    var renderItem = function(name) {
-      return <li>{name}</li>;
-    };
-
-    // Cursor data is then available either through:
-    var data = this.cursors[0].get();
-    // Or
-    var data = this.state.cursors[0];
-
-    return (
-      <div>
-        <h1>{this.cursors[1].get()}</h1>
-        <ul>{this.cursors[0].get().map(renderItem)}</ul>
-      </div>
-    );
-  }
-});
-
-// Better multiple cursors
-var UserList = React.createClass({
-  mixins: [tree.mixin],
-  cursors: {
-    users: ['users'],
-    title: ['information', 'title']
-  },
-  render: function() {
-    var renderItem = function(name) {
-      return <li>{name}</li>;
-    };
-
-    // Cursor data is then available either through:
-    var data = this.cursors.users.get();
-    // Or
-    var data = this.state.cursors.users;
-
-    return (
-      <div>
-        <h1>{this.cursors.title.get()}</h1>
-        <ul>{this.cursors.users.get().map(renderItem)}</ul>
-      </div>
-    );
-  }
-});
-
-// Cursor(s) can also be specified using a function
-// (if you need props, for instance)
-var UserListItem = React.createClass({
-  mixins: [tree.mixin],
-  cursor: function() {
-    return ['users', this.props.index];
-  },
-  render: function() {
-    var name = this.cursor.get();
-    return <li>{name}</li>;
-  }
-});
-```
-
-##### Cursor level
-
-Else you can bind a single cursor to a React component
-
-```jsx
-var tree = new Baobab({users: ['John', 'Jack']}),
-    usersCursor = tree.select('users');
-
-var UserList = React.createClass({
-  mixins: [usersCursor.mixin],
-  render: function() {
-    var renderItem = function(name) {
-      return <li>{name}</li>;
-    };
-
-    return <ul>{this.cursor.get().map(renderItem)}</ul>;
-  }
-});
-```
 
 ### Advanced
 
@@ -428,6 +405,7 @@ var tree = new Baobab({
   palette: {
     name: 'fancy',
     colors: ['blue', 'yellow', 'green'],
+    currentColor: 1,
     items: [{id: 'one', value: 'Hey'}, {id: 'two', value: 'Ho'}]
   }
 });
@@ -438,10 +416,10 @@ var colorsCursor = tree.select(['palette', 'colors']);
 var colorsCursor = tree.select('palette').select('colors');
 
 // Retrieving data
-colorsCursor.get(1)
+colorsCursor.get(1);
 >>> 'yellow'
 
-paletteCursor.get('colors', 2)
+paletteCursor.get('colors', 2);
 >>> 'green'
 
 tree.get('palette', 'colors');
@@ -462,6 +440,17 @@ tree.get('palette', 'colors', function(color) {
 var complexCursor = tree.select('items', {id: 'one'}, 'value');
 tree.get('items', {id: 'one'}, 'value');
 >>> 'Hey'
+
+// Retrieving or selecting data by using the value of another cursor
+var currentColorCursor = tree.select('colors', {$cursor: ['currentColor']});
+
+var currentColor = tree.get('colors', {$cursor: ['currentColor']});
+
+// Creating a blank tree
+var blankTree = new Baobab();
+
+// You despise "new"?
+var tree = Baobab();
 ```
 
 #### Traversal
@@ -505,12 +494,12 @@ twoCursor.rightmost().get();
 var tree = new Baobab({first: {second: 'yeah'}}),
     cursor = tree.select('first');
 
-var rootCursor = tree.root();
+var rootCursor = tree.root;
 // or
 var rootCursor = cursor.root();
 ```
 
-*Check information about the cursor's location in the tree*
+*Checking information about the cursor's location in the tree*
 
 ```js
 cursor.isRoot();
@@ -535,22 +524,33 @@ var baobab = new Baobab(
 
   // Options
   {
-    maxHistory: 5,
-    clone: true
+    autoCommit: false
   }
 )
 ```
 
 * **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
-* **clone** *boolean* [`false`]: by default, the tree will give access to references. Set to `true` to clone data when retrieving it from the tree if you feel paranoid and know you might mutate the references by accident or need a cloned object to handle.
-* **cloningFunction** *function*: the library's cloning method is minimalist on purpose and won't cover edgy cases. You remain free to pass your own more complex cloning function to the tree if needed.
-* **cursorSingletons** *boolean* [`true`]: by default, a *baobab* tree stashes the created cursor so only one would be created by path. You can override this behaviour by setting `cursorSingletons` to `false`.
-* **maxHistory** *number* [`0`]: max number of records the tree is allowed to store within its internal history.
-* **mixins** *array*: optional mixins to merge with baobab's ones. Recommending the [pure render](http://facebook.github.io/react/docs/pure-render-mixin.html) one from react.
-* **shiftReferences** *boolean* [`false`]: tell the tree to shift references of the objects it updates so that functions performing shallow comparisons (such as the one used by the `PureRenderMixin`, for instance), can assess that data changed.
-* **typology** *Typology|object*: a custom typology to be used to validate the tree's data.
-* **validate** *object*: a [typology](https://github.com/jacomyal/typology) schema ensuring the tree's data is valid.
+* **facets** *object*: a collection of facets to register when the tree is istantiated. For more information, see [facets](#facets).
+* **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.
+* **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter an invalid state anyway.
+
+*Validation function*
+
+```js
+function validationFunction(previousState, newState, affectedPaths) {
+  // Peform validation here and return an error if
+  // the tree is invalid
+  if (!valid)
+    return new Error('Invalid tree because of reasons.');
+}
+
+var tree = new Baobab({...}, {validate: validationFunction});
+```
+
+#### Facets
+
+WIP
 
 #### History
 
@@ -663,72 +663,6 @@ cursor.apply(inc);
 cursor.chain(inc);
 cursor.chain(inc);
 // will produce 3
-```
-
-#### Cursor combinations
-
-At times, you might want to listen to updates concerning a logical combination of cursors. For instance, you might want to know when two cursors both updated or when either one or the other did.
-
-You can build cursor combination likewise:
-
-```js
-// Simple "or" combination
-var combination = cursor1.or(cursor2);
-
-// Simple "and" combination
-var combination = cursor1.and(cursor2);
-
-// Complex combination
-var combination = cursor1.or(cursor2).or(cursor3).and(cursor4);
-
-// Listening to events
-combination.on('update', handler);
-
-// Releasing a combination to avoid leaks
-combination.release();
-```
-
-#### Data validation
-
-Given you pass the correct parameters, a baobab tree is able to check whether its data is valid or not against the supplied specification.
-
-This specification must be written in the [typology](https://github.com/jacomyal/typology) library's style.
-
-*Example*
-
-```js
-var baobab = new Baobab(
-
-  // Initial state
-  {
-    hello: 'world',
-    colors: ['yellow', 'blue'],
-    counters: {
-      users: 3,
-      groups: 1
-    }
-  },
-
-  // Parameters
-  {
-    validate: {
-      hello: '?string',
-      colors: ['string'],
-      counters: {
-        users: 'number',
-        groups: 'number'
-      }
-    }
-  }
-);
-
-// If one updates the tree and does not respect the validation specification
-baobab.set('hello', 42);
-
-// Then the tree will fire an 'invalid' event containing a list of errors
-baobab.on('invalid', function(e) {
-  console.log(e.data.errors);
-});
 ```
 
 #### Common pitfalls
