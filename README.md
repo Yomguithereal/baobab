@@ -62,7 +62,7 @@ colorsCursor.push('orange');
 If you want to use **Baobab** with node.js/io.js or browserify/webpack etc., you can use npm.
 
 ```sh
-npm install baobab
+npm install baobab@1.0.0-rc1
 
 # Or if you need the latest dev version
 npm install git+https://github.com/Yomguithereal/baobab.git
