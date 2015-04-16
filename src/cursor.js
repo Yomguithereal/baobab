@@ -26,6 +26,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.path = path;
   this.hash = hash;
   this.archive = null;
+  this.recording = false;
   this.undoing = false;
 
   // Privates
@@ -40,7 +41,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
   // Root listeners
   function update(previousState) {
-    if (self.isRecording() && !self.undoing) {
+    if (self.recording && !self.undoing) {
 
       // Handle archive
       var data = helpers.getIn(previousState, self.solvedPath, self.tree),
@@ -314,18 +315,19 @@ Cursor.prototype.startRecording = function(maxRecords) {
   this._lazyBind();
 
   this.archive = helpers.archive(maxRecords);
+  this.recording = true;
   return this;
 };
 
 Cursor.prototype.stopRecording = function() {
-  this.archive = null;
+  this.recording = false;
   return this;
 };
 
 Cursor.prototype.undo = function(steps) {
   steps = steps || 1;
 
-  if (!this.isRecording())
+  if (!this.recording)
     throw Error('baobab.Cursor.undo: cursor is not recording.');
 
   if (!type.PositiveInteger(steps))
@@ -340,16 +342,17 @@ Cursor.prototype.undo = function(steps) {
   return this.set(record);
 };
 
-Cursor.prototype.isRecording = function() {
-  return !!this.archive;
-};
-
 Cursor.prototype.hasHistory = function() {
   return !!(this.archive && this.archive.get().length);
 };
 
 Cursor.prototype.getHistory = function() {
   return this.archive ? this.archive.get() : [];
+};
+
+Cursor.prototype.clearHistory = function() {
+  this.archive = null;
+  return this;
 };
 
 /**

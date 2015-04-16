@@ -524,13 +524,13 @@ describe('Cursor API', function() {
       var baobab = new Baobab({item: 1}, {asynchronous: false}),
           cursor = baobab.select('item');
 
-      assert(!cursor.isRecording());
+      assert(!cursor.recording);
       assert(!cursor.hasHistory());
       assert.deepEqual(cursor.getHistory(), []);
 
       cursor.startRecording();
 
-      assert(cursor.isRecording());
+      assert(cursor.recording);
 
       [1, 2, 3, 4, 5, 6].forEach(function() {
         cursor.apply(function(e) { return e + 1; });
@@ -541,8 +541,9 @@ describe('Cursor API', function() {
       assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5, 6].reverse());
 
       cursor.stopRecording();
+      cursor.clearHistory();
 
-      assert(!cursor.isRecording());
+      assert(!cursor.recording);
       assert(!cursor.hasHistory());
       assert.deepEqual(cursor.getHistory(), []);
     });
