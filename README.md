@@ -6,7 +6,7 @@
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
-It can be paired with **React** painlessly through mixins or higher order components (available [here](https://github.com/Yomguithereal/baobab-react)) and provide a centralized model holding your application's state.
+It aims at providing a centralized model holding an application's state and can be paired with **React** easily through mixins or higher order components (available [here](https://github.com/Yomguithereal/baobab-react)).
 
 For a concise introduction about the library and how it can be used in a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) on the subject.
 
@@ -77,7 +77,7 @@ If you want to use it in the browser, just include the minified script located [
 Or install with bower:
 
 ```js
-bower install baobab
+bower install baobab@1.0.0-rc1
 ```
 
 The library (as a standalone) currently weights ~20ko minified and ~6ko gzipped.
@@ -136,11 +136,11 @@ var colorCursor = paletteCursor.select('colors');
 
 A *baobab* tree can obviously be updated. However, one has to understand that he won't do it, at least by default, synchronously.
 
-Rather, the tree will stack and merge every update order you give it and will only commit them at the next frame or next tick in node.
+Rather, the tree will stack and merge every update order you give it and will only commit them later on.
 
 This enables the tree to perform efficient mutations and to be able to notify any relevant cursors that the data they are watching over has changed.
 
-Note also that the tree will shift the references of the objects it stores in order to enable "immutabley" comparisons between one version of the state and another (this is especially useful when using things as such as React's pure render [mixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
+**Important**: Note that the tree will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using things as such as React's [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
 
 *Example*
 
@@ -202,7 +202,7 @@ cursor.unset(['one', 'two']);
 
 *Pushing values*
 
-Obviously this will fail if the value watched over by your cursor is not an array.
+Obviously this will fail if the value at cursor is not an array.
 
 ```js
 cursor.push('purple');
@@ -219,7 +219,7 @@ cursor.push(['one', 'two'], 'orange');
 
 *Unshifting values*
 
-Obviously this will fail if the value watched over by your cursor is not an array.
+Obviously this will fail if the value at cursor is not an array.
 
 ```js
 cursor.unshift('purple');
@@ -236,7 +236,7 @@ cursor.unshift(['one', 'two'], 'orange');
 
 *Splicing an array*
 
-Obviously this will fail if the value watched over by your cursor is not an array.
+Obviously this will fail if the value at cursor is not an array.
 
 ```js
 cursor.splice([1, 1]);
@@ -287,7 +287,7 @@ cursor.chain(['one', 'two'], 'orange');
 
 *Shallowly merging objects*
 
-Obviously this will fail if the value watched over by your cursor is not an object.
+Obviously this will fail if the value at cursor is not an object.
 
 ```js
 cursor.merge({hello: 'world'});
@@ -533,7 +533,7 @@ var baobab = new Baobab(
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
 * **facets** *object*: a collection of facets to register when the tree is istantiated. For more information, see [facets](#facets).
 * **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.
-* **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter an invalid state anyway.
+* **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter the invalid state anyway.
 
 *Validation function*
 
@@ -550,9 +550,9 @@ var tree = new Baobab({...}, {validate: validationFunction});
 
 #### Facets
 
-Facets can be considered as a "view" upon the data of your tree (a filtered version of an array stored within your tree, for instance).
+Facets can be considered as a "view" on the data of your tree (a filtered version of an array stored within your tree, for instance).
 
-They watch over some paths of your tree and will update their cached data only when needed. They can also be listened at like any cursors.
+They watch over some paths of your tree and will update their cached data only when needed. As for cursors, you can also listen to their updates.
 
 Facets can be defined at the tree's instantiation likewise:
 
@@ -588,7 +588,7 @@ var tree = new Baobab(
       // Name of your facet
       currentProject: {
 
-        // Cursors to which your facet is bound
+        // Cursors bound to your facet
         // If any of the paths listed below fire
         // an update, so will the facet.
         cursors: {
@@ -597,7 +597,7 @@ var tree = new Baobab(
         },
         get: function(data) {
 
-          // Data is the value of your mapped cursors
+          // 'data' is the value of your mapped cursors
 
           // Just return the wanted value
           // Here, we use lodash to return the current's project
@@ -717,7 +717,7 @@ If you ever need to specify complex updates without replacing the whole subtree 
 
 Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` or `cursor.update`.
 
-*Specifications*
+**Specifications**
 
 Those specifications are described by a JavaScript object that follows the nested structure you are trying to update and applying dollar-prefixed commands at leaf level.
 
@@ -728,7 +728,7 @@ The available commands are the following and are basically the same as the curso
 * `$chain`
 * `$push`
 * `$unshift`
-* `$unshift`
+* `$splice`
 * `$merge`
 * `$unset`
 
@@ -818,13 +818,13 @@ o.hello = 'other world';
 
 ## Philosophy
 
-*UIs as pure functions*
+**UIs as pure functions**
 
-UIs should be, as far as possible, considered as pure functions. **Baobab** is just a way to provide the needed arguments, i.e. the data representing your app's state, to such function.
+UIs should be, as far as possible, considered as pure functions. Baobab is just a way to provide the needed arguments, i.e. the data representing your app's state, to such a function.
 
-Considering your UIs like pure functions comes along with nice things like easy undo/redo features, state storing (just save your tree in the localStorage and here you go) and easy isomorphism.
+Considering your UIs like pure functions comes along with collateral advantages like easy undo/redo features, state storing (just save your tree in the `localStorage` and here you go) and easy isomorphism.
 
-*Only data should enter the tree*
+**Only data should enter the tree**
 
 You shouldn't try to shove anything else than raw data into the tree. The tree hasn't been conceived to hold classes or fancy indexes with many circular references and cannot perform its magic on it. But, probably such magic is not desirable for those kind of abstractions anyway.
 
@@ -832,7 +832,7 @@ That is to say the data you insert into the tree should logically be JSON-serial
 
 ## Migration
 
-*From v0.4.x to 1.0.0*
+**From v0.4.x to 1.0.0**
 
 A lot of changes occurred between `0.4.x` and `1.0.0`. Most notable changes being the following ones:
 
