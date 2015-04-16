@@ -43,24 +43,12 @@ function merge(a, b) {
       o.$apply = a.$chain;
   }
 
-  if (a.$push && o.$push) {
-    if (type.Array(o.$push))
-      o.$push = o.$push.concat(a.$push);
-    else
-      o.$push = [o.$push].concat(a.$push);
-  }
-  else if (a.$push) {
-    o.$push = a.$push;
+  if (a.$push || o.$push) {
+    o.$push = [].concat(o.$push || []).concat(a.$push || []);
   }
 
-  if (a.$unshift && o.$unshift) {
-    if (type.Array(a.$unshift))
-      o.$unshift = a.$unshift.concat(o.$unshift);
-    else
-      o.$unshift = [a.$unshift].concat(o.$unshift);
-  }
-  else if (a.$unshift) {
-    o.$unshift = a.$unshift;
+  if (a.$unshift || o.$unshift) {
+    o.$unshift = [].concat(a.$unshift || []).concat(o.$unshift || []);
   }
 
   for (k in a) {

@@ -20,7 +20,7 @@ function before(decorator, fn) {
 }
 
 // Non-mutative splice function
-function splice(array, index, nb /* &elements */) {
+function splice(array, index, nb /*, &elements */) {
   var elements = arrayOf(arguments).slice(3);
 
   index = +index;
