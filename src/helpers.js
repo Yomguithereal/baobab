@@ -19,6 +19,18 @@ function before(decorator, fn) {
   };
 }
 
+// Non-mutative splice function
+function splice(array, index, nb /* &elements */) {
+  var elements = arrayOf(arguments).slice(3);
+
+  index = +index;
+  nb = +nb;
+
+  return array
+    .slice(0, index)
+    .concat(array.slice(index + nb).concat(elements));
+}
+
 // Shallow merge
 function shallowMerge(o1, o2) {
   var o = {},
@@ -348,5 +360,6 @@ module.exports = {
   inherits: inherits,
   pathObject: pathObject,
   solvePath: solvePath,
-  solveUpdate: solveUpdate
+  solveUpdate: solveUpdate,
+  splice: splice
 };

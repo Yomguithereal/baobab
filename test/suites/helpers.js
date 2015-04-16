@@ -10,6 +10,59 @@ var assert = require('assert'),
 
 describe('Helpers', function() {
 
+  describe('Splice', function() {
+    var splice = helpers.splice;
+
+    it('should work in a non-mutative fashion.', function() {
+      var array = ['yellow', 'blue', 'purple'];
+
+      assert.deepEqual(
+        splice(array, 0, 0),
+        array
+      );
+
+      assert.deepEqual(
+        splice(array, 0, 1),
+        ['blue', 'purple']
+      );
+
+      assert.deepEqual(
+        splice(array, 1, 1),
+        ['yellow', 'purple']
+      );
+
+      assert.deepEqual(
+        splice(array, 2, 1),
+        ['yellow', 'blue']
+      );
+
+      assert.deepEqual(
+        splice(array, 2, 0),
+        array
+      );
+
+      assert.deepEqual(
+        splice(array, 1, 2),
+        ['yellow']
+      );
+
+      assert.deepEqual(
+        splice(array, 2, 1, 'orange', 'gold'),
+        ['yellow', 'blue', 'orange', 'gold']
+      );
+
+      assert.deepEqual(
+        splice(array, 5, 3),
+        array
+      );
+
+      assert.deepEqual(
+        splice(array, 5, 3, 'orange', 'gold'),
+        ['yellow', 'blue', 'purple', 'orange', 'gold']
+      );
+    });
+  });
+
   describe('Composition', function() {
 
     it('should be able to compose two simple functions.', function() {

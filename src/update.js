@@ -52,7 +52,7 @@ module.exports = function(data, spec, opts) {
           var olderKey = path[path.length - 2];
 
           if (type.Array(o)) {
-            parent[olderKey] = o.slice(0, +lastKey).concat(o.slice(+lastKey + 1));
+            parent[olderKey] = helpers.splice(parent[olderKey], +lastKey, 1);
           }
           else {
             parent[olderKey] = helpers.shallowClone(o);
