@@ -261,6 +261,14 @@ describe('Cursor API', function() {
         cursor.unset();
         assert.strictEqual(cursor.get(), undefined);
       });
+
+      // it('should be possible to splice an array.', function() {
+      //   var tree = new Baobab({list: [1, 2, 3]}),
+      //       cursor = tree.select('list');
+
+      //   assert.deepEqual(cursor.get(), [1, 2, 3]);
+      //   cursor.splice()
+      // });
     });
   });
 

@@ -39,7 +39,7 @@ module.exports = function(data, spec, opts) {
         v;
 
     var leafLevel = Object.keys(spec).some(function(k) {
-      return !!~['$unset', '$set', '$apply', '$merge', '$push', '$unshift'].indexOf(k);
+      return !!~['$set', '$push', '$unshift', '$splice', '$unset', '$merge', '$apply'].indexOf(k);
     });
 
     if (leafLevel) {
@@ -51,13 +51,11 @@ module.exports = function(data, spec, opts) {
         if (k === '$unset') {
           var olderKey = path[path.length - 2];
 
-          if (type.Array(o)) {
-            parent[olderKey] = helpers.splice(parent[olderKey], +lastKey, 1);
-          }
-          else {
-            parent[olderKey] = helpers.shallowClone(o);
-            delete parent[olderKey][lastKey];
-          }
+          if (!type.Object(parent[olderKey]))
+            throw makeError(path.slice(0, -1), 'using command $unset on a non-object');
+
+          parent[olderKey] = helpers.shallowClone(o);
+          delete parent[olderKey][lastKey];
 
           break;
         }
@@ -90,6 +88,18 @@ module.exports = function(data, spec, opts) {
 
           o[lastKey] = helpers.shallowMerge(o[lastKey], v);
           break;
+        }
+
+        // $splice
+        if (k === '$splice') {
+          v = spec.$splice;
+
+          if (!type.Array(o[lastKey]))
+            throw makeError(path, 'using command $push to a non array');
+
+          v.forEach(function(args) {
+            o[lastKey] = helpers.splice.apply(null, [o[lastKey]].concat(args));
+          });
         }
 
         // $push

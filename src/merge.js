@@ -43,6 +43,10 @@ function merge(a, b) {
       o.$apply = a.$chain;
   }
 
+  if (a.$splice || o.$splice) {
+    o.$splice = [].concat(o.$splice || []).concat(a.$splice || []);
+  }
+
   if (a.$push || o.$push) {
     o.$push = [].concat(o.$push || []).concat(a.$push || []);
   }
