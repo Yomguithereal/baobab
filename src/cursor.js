@@ -229,6 +229,15 @@ function pathPolymorphism(method, allowedType, key, val) {
 
   key = key || [];
 
+  // Splice exception
+  if (method === 'splice' &&
+      !type.Splicer(val)) {
+    if (type.Array(val))
+      val = [val];
+    else
+      throw Error('baobab.Cursor.splice: incorrect value.');
+  }
+
   // Checking value validity
   if (allowedType && !allowedType(val))
     throw Error('baobab.Cursor.' + method + ': incorrect value.');
@@ -256,11 +265,12 @@ function makeUpdateMethod(command, type) {
 }
 
 makeUpdateMethod('set');
-makeUpdateMethod('apply');
-makeUpdateMethod('chain');
+makeUpdateMethod('apply', type.Function);
+makeUpdateMethod('chain', type.Function);
 makeUpdateMethod('push');
 makeUpdateMethod('unshift');
 makeUpdateMethod('merge', type.Object);
+makeUpdateMethod('splice');
 
 Cursor.prototype.unset = function(key) {
   if (key === undefined && this.isRoot())

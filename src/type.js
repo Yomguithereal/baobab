@@ -63,6 +63,11 @@ type.NonScalar = function(value) {
   return type.Object(value) || type.Array(value);
 };
 
+type.Splicer = function(value) {
+  return type.Array(value) &&
+         value.every(type.Array);
+};
+
 type.Path = function(value) {
   var allowed = ['String', 'Number', 'Function', 'Object'];
 

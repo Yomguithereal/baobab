@@ -240,13 +240,21 @@ describe('Cursor API', function() {
         assert.strictEqual(cursor.get(), undefined);
       });
 
-      // it('should be possible to splice an array.', function() {
-      //   var tree = new Baobab({list: [1, 2, 3]}),
-      //       cursor = tree.select('list');
+      it('should be possible to splice an array.', function() {
+        var tree1 = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
+            tree2 = new Baobab(tree1.get(), {asynchronous: false}),
+            cursor1 = tree1.select('list'),
+            cursor2 = tree2.select('list');
 
-      //   assert.deepEqual(cursor.get(), [1, 2, 3]);
-      //   cursor.splice()
-      // });
+        assert.deepEqual(cursor1.get(), [1, 2, 3]);
+
+        cursor1.splice([[0, 1], [1, 1, 4]]);
+        cursor2.splice([0, 1]);
+        cursor2.splice([1, 1, 4]);
+
+        assert.deepEqual(cursor1.get(), [2, 4]);
+        assert.deepEqual(cursor1.get(), cursor2.get());
+      });
 
       it('should throw errors when updating with wrong values.', function() {
         var cursor = (new Baobab()).root;
@@ -254,6 +262,18 @@ describe('Cursor API', function() {
         assert.throws(function() {
           cursor.merge('John');
         }, /value/);
+
+        assert.throws(function() {
+          cursor.splice('John');
+        });
+
+        assert.throws(function() {
+          cursor.apply('John');
+        });
+
+        assert.throws(function() {
+          cursor.chain('John');
+        });
       });
     });
   });
