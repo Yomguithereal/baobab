@@ -332,7 +332,7 @@ describe('Baobab API', function() {
           return new Error('Invalid tree!');
       }
 
-      var baobab = new Baobab({hello: 'world'}, {validate: v, asynchronous: false, validationBehaviour: 'notify'});
+      var baobab = new Baobab({hello: 'world'}, {validate: v, asynchronous: false, validationBehavior: 'notify'});
 
       baobab.on('invalid', function(e) {
         var error = e.data.error;

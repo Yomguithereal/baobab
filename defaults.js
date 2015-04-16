@@ -18,5 +18,5 @@ module.exports = {
   validate: null,
 
   // Validation behaviour 'rollback' or 'notify'
-  validationBehaviour: 'rollback'
+  validationBehavior: 'rollback'
 };

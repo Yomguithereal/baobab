@@ -162,7 +162,7 @@ Baobab.prototype.commit = function() {
 
   // Validate?
   var validate = this.options.validate,
-      behaviour = this.options.validationBehaviour;
+      behavior = this.options.validationBehavior;
 
   if (typeof validate === 'function') {
     var error = validate.call(this, oldData, result.data, result.log);
@@ -170,7 +170,7 @@ Baobab.prototype.commit = function() {
     if (error instanceof Error) {
       this.emit('invalid', {error: error});
 
-      if (behaviour === 'rollback')
+      if (behavior === 'rollback')
         return this;
     }
   }
