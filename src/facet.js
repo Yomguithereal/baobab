@@ -5,19 +5,16 @@
  * Facets enable the user to define views on a given Baobab tree.
  */
 var EventEmitter = require('emmett'),
+    Cursor = require('./cursor.js'),
     helpers = require('./helpers.js'),
     type = require('./type.js');
-
-function identity(v) {
-  return v;
-}
 
 function Facet(tree, definition) {
   var self = this;
 
   var map = definition.cursors,
       solved = false,
-      solver = type.Function(definition.get) ? definition.get : identity,
+      solver = definition.get,
       data = null;
 
   if (!type.FacetCursors(map))
@@ -28,11 +25,19 @@ function Facet(tree, definition) {
 
   // Properties
   this.tree = tree;
+  this.cursors = {};
 
   // Path solving
   var paths = Object.keys(map).map(function(k) {
-    return map[k];
-  });
+    if (map[k] instanceof Cursor) {
+      this.cursors[k] = map[k];
+      return map[k].path;
+    }
+    else {
+      this.cursors[k] = tree.select(map[k]);
+      return map[k];
+    }
+  }, this);
 
   var solvedPaths = paths,
       complex = paths.some(type.ComplexPath);
@@ -62,10 +67,13 @@ function Facet(tree, definition) {
     // Solving
     var cursorsData = {};
 
-    for (var k in map)
-      cursorsData[k] = tree.get(map[k]);
+    for (var k in self.cursors)
+      cursorsData[k] = self.cursors[k].get();
 
-    data = solver.call(null, cursorsData);
+    data = typeof solver === 'function' ?
+      solver.call(null, cursorsData) :
+      cursorsData;
+
     solved = true;
 
     return data;

@@ -163,7 +163,9 @@ describe('Baobab API', function() {
             user: 'Jack'
           }
         ],
-        currentProjectId: 1
+        currentProjectId: 1,
+        value1: 'Hello',
+        value2: 'World'
       },
 
       // Options
@@ -200,6 +202,13 @@ describe('Baobab API', function() {
       var facet = baobab.createFacet({cursors: {list: ['list']}});
       assert(facet instanceof Facet);
       facet.release();
+    });
+
+    it('should fail when creating a facet from incorrect mappings.', function() {
+
+      assert.throws(function() {
+        baobab.createFacet({cursors: ['wrong']});
+      }, /mapping/);
     });
 
     it('should fire correctly.', function() {
@@ -311,6 +320,24 @@ describe('Baobab API', function() {
 
       assert.strictEqual(countF, 1);
       assert.strictEqual(countC, 2);
+    });
+
+    it('should be possible to pass cursors directly to facets.', function() {
+      var cursor = baobab.select('value1');
+
+      var facet = baobab.createFacet({
+        cursors: {
+          value1: cursor,
+          value2: ['value2']
+        }
+      });
+
+      assert.deepEqual(facet.get(), {
+        value1: 'Hello',
+        value2: 'World'
+      });
+
+      facet.release();
     });
   });
 
