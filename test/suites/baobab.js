@@ -358,6 +358,34 @@ describe('Baobab API', function() {
 
       facet.release();
     });
+
+    it('should be possible to base facets on other facets, yo dawg.', function() {
+      var facet = baobab.createFacet({facets: {value: 'current'}}),
+          value2 = baobab.createFacet({cursors: {value: 'value2'}});
+
+      assert.deepEqual(facet.get(), {
+        value: {
+          id: 2,
+          name: 'Huitzilopochtli',
+          user: 'John'
+        }
+      });
+
+      facet.release();
+
+      facet = baobab.createFacet({facets: {value2: value2}, cursors: {value1: ['value1']}});
+
+      assert.deepEqual(facet.get(), {
+        value1: 'Hello',
+        value2: {
+          value: 'World'
+        }
+      });
+
+      facet.release();
+
+
+    });
   });
 
   describe('Options', function() {

@@ -108,7 +108,8 @@ type.FacetFacets = function(value) {
   return Object.keys(value).every(function(k) {
     var v = value[k];
 
-    return typeof v === 'string' || v instanceof require('./facet.js');
+    return typeof v === 'string' ||
+           v instanceof require('./facet.js');
   });
 }
 
