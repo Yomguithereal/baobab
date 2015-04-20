@@ -97,7 +97,6 @@ type.FacetCursors = function(value) {
     var v = value[k];
 
     return type.Path(v) ||
-           type.Function(v) ||
            v instanceof require('./cursor.js');
   });
 };

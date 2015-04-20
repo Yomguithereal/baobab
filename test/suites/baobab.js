@@ -339,6 +339,25 @@ describe('Baobab API', function() {
 
       facet.release();
     });
+
+    it('should be possible to solve cursors mapping with a function.', function() {
+      var pointer = 'value1';
+
+      var facet = baobab.createFacet({
+        cursors: function() {
+          return {value: [pointer]};
+        }
+      });
+
+      assert.deepEqual(facet.get(), {value: 'Hello'});
+
+      pointer = 'value2';
+      facet.refresh();
+
+      assert.deepEqual(facet.get(), {value: 'World'});
+
+      facet.release();
+    });
   });
 
   describe('Options', function() {
