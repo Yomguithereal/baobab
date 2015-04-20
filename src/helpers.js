@@ -11,6 +11,26 @@ function arrayOf(o) {
   return Array.prototype.slice.call(o);
 }
 
+// Decorate a function by applying something before it
+function before(decorator, fn) {
+  return function() {
+    decorator();
+    fn.apply(null, arguments);
+  };
+}
+
+// Non-mutative splice function
+function splice(array, index, nb /*, &elements */) {
+  var elements = arrayOf(arguments).slice(3);
+
+  index = +index;
+  nb = +nb;
+
+  return array
+    .slice(0, index)
+    .concat(array.slice(index + nb).concat(elements));
+}
+
 // Shallow merge
 function shallowMerge(o1, o2) {
   var o = {},
@@ -151,10 +171,11 @@ function indexByComparison(object, spec) {
 }
 
 // Retrieve nested objects
-function getIn(object, path) {
+function getIn(object, path, tree) {
   path = path || [];
 
   var c = object,
+      p,
       i,
       l;
 
@@ -169,10 +190,21 @@ function getIn(object, path) {
       c = first(c, path[i]);
     }
     else if (typeof path[i] === 'object') {
-      if (!type.Array(c))
-        return;
+      if (tree && '$cursor' in path[i]) {
+        if (!type.Path(path[i].$cursor))
+          throw Error('baobab.getIn: $cursor path must be an array.');
 
-      c = firstByComparison(c, path[i]);
+        p = tree.get(path[i].$cursor);
+        c = c[p];
+      }
+
+      else if (!type.Array(c)) {
+        return;
+      }
+
+      else {
+        c = firstByComparison(c, path[i]);
+      }
     }
     else {
       c = c[path[i]];
@@ -183,7 +215,7 @@ function getIn(object, path) {
 }
 
 // Solve a complex path
-function solvePath(object, path) {
+function solvePath(object, path, tree) {
   var solvedPath = [],
       c = object,
       idx,
@@ -203,12 +235,24 @@ function solvePath(object, path) {
       c = c[idx];
     }
     else if (typeof path[i] === 'object') {
-      if (!type.Array(c))
-        return;
+      if (tree && '$cursor' in path[i]) {
+        if (!type.Path(path[i].$cursor))
+          throw Error('baobab.getIn: $cursor path must be an array.');
 
-      idx = indexByComparison(c, path[i]);
-      solvedPath.push(idx);
-      c = c[idx];
+        p = tree.get(path[i].$cursor);
+        solvedPath.push(p);
+        c = c[p];
+      }
+
+      else if (!type.Array(c)) {
+        return;
+      }
+
+      else {
+        idx = indexByComparison(c, path[i]);
+        solvedPath.push(idx);
+        c = c[idx];
+      }
     }
     else {
       solvedPath.push(path[i]);
@@ -217,6 +261,40 @@ function solvePath(object, path) {
   }
 
   return solvedPath;
+}
+
+// Determine whether an update should fire for the given paths
+// NOTES: 1) if performance becomes an issue, the threefold loop can be
+//           simplified to become a complex twofold one.
+//        2) a regex version could also work but I am not confident it would be
+//           faster.
+function solveUpdate(log, paths) {
+  var i, j, k, l, m, n, p, c, s;
+
+  // Looping through possible paths
+  for (i = 0, l = paths.length; i < l; i++) {
+    p = paths[i];
+
+    // Looping through logged paths
+    for (j = 0, m = log.length; j < m; j++) {
+      c = log[j];
+
+      // Looping through steps
+      for (k = 0, n = c.length; k < n; k++) {
+        s = c[k];
+
+        // If path is not relevant, we break
+        if (s != p[k])
+          break;
+
+        // If we reached last item and we are relevant
+        if (k + 1 === n || k + 1 === p.length)
+          return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 // Return a fake object relative to the given path
@@ -237,6 +315,7 @@ function pathObject(path, spec) {
   return o;
 }
 
+// Shim used for cross-compatible event emitting extension
 function inherits(ctor, superCtor) {
   ctor.super_ = superCtor;
   var TempCtor = function () {};
@@ -245,8 +324,34 @@ function inherits(ctor, superCtor) {
   ctor.prototype.constructor = ctor;
 }
 
+// Archive
+function archive(size) {
+  var records = [];
+
+  return {
+    add: function(record) {
+      records.unshift(record);
+
+      if (records.length > size)
+        records.length = size;
+    },
+    back: function(steps) {
+      var record = records[steps - 1];
+
+      if (record)
+        records = records.slice(steps);
+      return record;
+    },
+    get: function() {
+      return records;
+    }
+  };
+}
+
 module.exports = {
+  archive: archive,
   arrayOf: arrayOf,
+  before: before,
   deepClone: deepClone,
   shallowClone: shallowClone,
   shallowMerge: shallowMerge,
@@ -254,5 +359,7 @@ module.exports = {
   getIn: getIn,
   inherits: inherits,
   pathObject: pathObject,
-  solvePath: solvePath
+  solvePath: solvePath,
+  solveUpdate: solveUpdate,
+  splice: splice
 };

@@ -5,70 +5,426 @@
 var assert = require('assert'),
     state = require('../state.js'),
     helpers = require('../../src/helpers.js'),
-    Typology = require('typology'),
     Baobab = require('../../src/baobab.js'),
     async = require('async');
 
 describe('Cursor API', function() {
 
-  describe('Basics', function() {
+  describe('Getters', function() {
     var baobab = new Baobab(state);
 
-    var colorCursor = baobab.select(['one', 'subtwo', 'colors']),
-        oneCursor = baobab.select('one');
-
-    it('should be possible to retrieve data at cursor.', function() {
-      var colors = colorCursor.get();
-
-      assert(colors instanceof Array);
-      assert.deepEqual(colors, state.one.subtwo.colors);
-    });
-
-    it('should be possible to retrieve data with a 0 key.', function() {
-      var sub = new Baobab([1, 2]);
-      assert.strictEqual(sub.get(0), 1);
-      assert.strictEqual(colorCursor.get(0), 'blue');
-    });
-
-    it('should be possible to retrieve nested data.', function() {
-      var colors = oneCursor.get(['subtwo', 'colors']);
-
-      assert.deepEqual(colors, state.one.subtwo.colors);
-    });
-
-    it('should be possible to use some polymorphism on the selection.', function() {
-      var altCursor = baobab.select('one', 'subtwo', 'colors');
-
-      assert.deepEqual(altCursor.get(), colorCursor.get());
-    });
-
-    it('should be possible to select data using a function.', function() {
-      var cursor = baobab.select('one', 'subtwo', 'colors', function(v) {
-        return v === 'yellow';
+    describe('Root cursor', function() {
+      it('should be possible to retrieve full data.', function() {
+        var data = baobab.get();
+        assert.deepEqual(data, state);
       });
 
-      assert.strictEqual(cursor.get(), 'yellow');
+      it('should be possible to retrieve nested data.', function() {
+        var colors = baobab.get(['one', 'subtwo', 'colors']);
+        assert.deepEqual(colors, state.one.subtwo.colors);
+
+        // Polymorphism
+        var primitive = baobab.get('primitive');
+        assert.strictEqual(primitive, 3);
+      });
+
+      it('should be possible to get data from both maps and lists.', function() {
+        var yellow = baobab.get(['one', 'subtwo', 'colors', 1]);
+
+        assert.strictEqual(yellow, 'yellow');
+      });
+
+      it('should return undefined when data is not to be found through path.', function() {
+        var inexistant = baobab.get(['no']);
+        assert.strictEqual(inexistant, undefined);
+
+        // Nesting
+        var nestedInexistant = baobab.get(['no', 'no']);
+        assert.strictEqual(nestedInexistant, undefined);
+      });
+
+      it('should be possible to retrieve items with a function in path.', function() {
+        var yellow = baobab.get('one', 'subtwo', 'colors', function(i) { return i === 'yellow'; });
+
+        assert.strictEqual(yellow, 'yellow');
+      });
+
+      it('should be possible to retrieve items with a descriptor object.', function() {
+        var firstItem = baobab.get('items', {id: 'one'}),
+            secondItem = baobab.get('items', {id: 'two', user: {name: 'John'}}),
+            thirdItem = baobab.get('items', {id: ['one', 'two']});
+
+        assert.deepEqual(firstItem, {id: 'one'});
+        assert.deepEqual(secondItem, {id: 'two', user: {name: 'John', surname: 'Talbot'}});
+        assert.deepEqual(firstItem, {id: 'one'});
+      });
+
+      it('should not fail when retrieved data is null on the path.', function() {
+        var nullValue = baobab.get('setLater');
+        assert.strictEqual(nullValue, null);
+
+        var inexistant = baobab.get('setLater', 'a');
+        assert.strictEqual(inexistant, undefined);
+      });
+
+      it('should be able to resolve a cursor pointer.', function() {
+        var color = baobab.get('one', 'subtwo', 'colors', {$cursor: ['pointer']});
+
+        assert.strictEqual(color, 'yellow');
+      });
+
+      it('should fail when providing a wrong path to the $cursor command.', function() {
+        assert.throws(function() {
+          var color = baobab.get('one', 'subtwo', 'colors', {$cursor: null});
+        }, /\$cursor/);
+      });
     });
 
-    it('should be possible to select data using a descriptor object.', function() {
-      var cursor = baobab.select('items', {id: 'one'});
+    describe('Standard cursors', function() {
+      var colorCursor = baobab.select(['one', 'subtwo', 'colors']),
+          oneCursor = baobab.select('one');
 
-      assert.deepEqual(cursor.get(), {id: 'one'});
+      it('should be possible to retrieve data at cursor.', function() {
+        var colors = colorCursor.get();
+
+        assert(colors instanceof Array);
+        assert.deepEqual(colors, state.one.subtwo.colors);
+      });
+
+      it('should be possible to retrieve data with a 0 key.', function() {
+        var sub = new Baobab([1, 2]);
+        assert.strictEqual(sub.get(0), 1);
+        assert.strictEqual(colorCursor.get(0), 'blue');
+      });
+
+      it('should be possible to retrieve nested data.', function() {
+        var colors = oneCursor.get(['subtwo', 'colors']);
+
+        assert.deepEqual(colors, state.one.subtwo.colors);
+      });
+
+      it('should be possible to use some polymorphism on the getter.', function() {
+        var altCursor = baobab.select('one');
+
+        assert.deepEqual(altCursor.get('subtwo', 'colors'), state.one.subtwo.colors);
+      });
+    });
+  });
+
+  describe('Setters', function() {
+
+    describe('Root cursor', function() {
+      it('should be possible to set a key using a path rather than a key.', function() {
+        var baobab = new Baobab(state, {asynchronous: false});
+
+        baobab.set(['two', 'age'], 34);
+        assert.strictEqual(baobab.get().two.age, 34);
+      });
+
+      it('should be possible to set a key at an nonexistent path.', function() {
+        var baobab = new Baobab(state, {asynchronous: false});
+
+        baobab.set(['nonexistent', 'key'], 'hello');
+        assert.strictEqual(baobab.get().nonexistent.key, 'hello');
+      });
+
+      it('should be possible to set a key using a dynamic path.', function() {
+        var baobab = new Baobab(state, {asynchronous: false});
+
+        baobab.set(['items', {id: 'two'}, 'user', 'age'], 34);
+        assert.strictEqual(baobab.get().items[1].user.age, 34);
+      });
+
+      it('should fail when setting a nonexistent dynamic path.', function() {
+        var baobab = new Baobab(state, {asynchronous: false});
+
+        assert.throws(function() {
+          baobab.set(['items', {id: 'four'}, 'user', 'age'], 34);
+        }, /solve/);
+      });
     });
 
-    it('should be possible to use some polymorphism on the getter.', function() {
-      var altCursor = baobab.select('one');
+    describe('Standard cursors', function() {
+      it('should warn the user when too many arguments are applied to a setter.', function() {
+        var baobab = new Baobab(state),
+            cursor = baobab.select('items');
 
-      assert.deepEqual(altCursor.get('subtwo', 'colors'), state.one.subtwo.colors);
+        assert.throws(function() {
+          cursor.set('this', 'is', 'my', 'destiny!');
+        }, /too many/);
+      });
+
+      it('should be possible to set a key using a path rather than a key.', function() {
+        var baobab = new Baobab(state, {asynchronous: false}),
+            cursor = baobab.select('items');
+
+        cursor.set([1, 'user', 'age'], 34);
+        assert.strictEqual(cursor.get()[1].user.age, 34);
+      });
+
+      it('should be possible to set a key at an nonexistent path.', function() {
+        var baobab = new Baobab(state, {asynchronous: false}),
+            cursor = baobab.select('two');
+
+        cursor.set(['nonexistent', 'key'], 'hello');
+        assert.strictEqual(cursor.get().nonexistent.key, 'hello');
+      });
+
+      it('should be possible to set a key using a dynamic path.', function() {
+        var baobab = new Baobab(state, {asynchronous: false}),
+            cursor = baobab.select('items');
+
+        cursor.set([{id: 'two'}, 'user', 'age'], 34);
+        assert.strictEqual(cursor.get()[1].user.age, 34);
+      });
+
+      it('should fail when setting a nonexistent dynamic path.', function() {
+        var baobab = new Baobab(state, {asynchronous: false}),
+            cursor = baobab.select('items');
+
+        assert.throws(function() {
+          cursor.set([{id: 'four'}, 'user', 'age'], 34);
+        }, /solve/);
+      });
+
+      it('should be possible to chain mutations.', function(done) {
+        var baobab = new Baobab({number: 1}),
+            inc = function(i) { return i + 1; };
+
+        baobab.update({number: {$chain: inc}});
+        baobab.update({number: {$chain: inc}});
+
+        baobab.on('update', function() {
+          assert.strictEqual(baobab.get('number'), 3);
+          done();
+        });
+      });
+
+      it('a single $chain command should work like an $apply.', function() {
+        var baobab = new Baobab({number: 1}, {asynchronous: false}),
+            cursor = baobab.select('number'),
+            inc = function(i) { return i + 1; };
+
+        assert.strictEqual(cursor.get(), 1);
+        cursor.chain(inc);
+        assert.strictEqual(cursor.get(), 2);
+      });
+
+      it('should be possible to shallow merge two objects.', function(done) {
+        var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
+
+        var cursor = baobab.select('o');
+        cursor.merge({hello: 'jarl'});
+
+        baobab.on('update', function() {
+          assert.deepEqual(baobab.get('o'), {hello: 'jarl'});
+          done();
+        });
+      });
+
+      it('should be possible to remove keys from a cursor.', function() {
+        var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+            cursor = tree.select('two');
+
+        assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
+        cursor.unset('subone');
+        assert.deepEqual(cursor.get(), {subtwo: 2});
+      });
+
+      it('should be possible to remove data at cursor.', function() {
+        var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+            cursor = tree.select('two');
+
+        assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
+        cursor.unset();
+        assert.strictEqual(cursor.get(), undefined);
+      });
+
+      it('should be possible to splice an array.', function() {
+        var tree1 = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
+            tree2 = new Baobab(tree1.get(), {asynchronous: false}),
+            cursor1 = tree1.select('list'),
+            cursor2 = tree2.select('list');
+
+        assert.deepEqual(cursor1.get(), [1, 2, 3]);
+
+        cursor1.splice([[0, 1], [1, 1, 4]]);
+        cursor2.splice([0, 1]);
+        cursor2.splice([1, 1, 4]);
+
+        assert.deepEqual(cursor1.get(), [2, 4]);
+        assert.deepEqual(cursor1.get(), cursor2.get());
+      });
+
+      it('should throw errors when updating with wrong values.', function() {
+        var cursor = (new Baobab()).root;
+
+        assert.throws(function() {
+          cursor.merge('John');
+        }, /value/);
+
+        assert.throws(function() {
+          cursor.splice('John');
+        });
+
+        assert.throws(function() {
+          cursor.apply('John');
+        });
+
+        assert.throws(function() {
+          cursor.chain('John');
+        });
+      });
     });
+  });
+
+  describe('Events', function() {
+    var baobab = new Baobab(state);
 
     it('should be possible to listen to updates.', function(done) {
+      var colorCursor = baobab.select('one', 'subtwo', 'colors');
+
       colorCursor.on('update', function() {
         assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'purple']);
         done();
       });
 
       colorCursor.push('purple');
+    });
+
+    it('when a parent updates, so does the child.', function(done) {
+      var baobab = new Baobab(state),
+          parent = baobab.select('two'),
+          child = baobab.select(['two', 'firstname']);
+
+      var count = 0;
+
+      async.parallel({
+        parent: function(next) {
+          parent.on('update', function() {
+            assert.deepEqual({firstname: 'Napoleon', lastname: 'Bonaparte'}, this.get());
+            count++;
+            next();
+          });
+        },
+        child: function(next) {
+          child.on('update', function() {
+            count++;
+            next();
+          });
+        }
+      }, function() {
+        assert.strictEqual(count, 2);
+        done();
+      });
+
+      parent.set({firstname: 'Napoleon', lastname: 'Bonaparte'});
+    });
+
+    it('when a child updates, so does the parent.', function(done) {
+      var baobab = new Baobab(state),
+          parent = baobab.select('two'),
+          child = baobab.select(['two', 'firstname']);
+
+      var count = 0;
+
+      async.parallel({
+        parent: function(next) {
+          parent.on('update', function() {
+            count++;
+            next();
+          });
+        },
+        child: function(next) {
+          child.on('update', function() {
+            count++;
+            next();
+          });
+        }
+      }, function() {
+        assert.strictEqual(count, 2);
+        done();
+      });
+
+      child.set('Napoleon');
+    });
+
+    it('when a leave updates, it should not update its siblings.', function(done) {
+      var baobab = new Baobab({
+        node: {
+          leaf1: 'hey',
+          leaf2: 'ho'
+        }
+      });
+
+      var parent = baobab.select('node'),
+          leaf1 = parent.select('leaf1'),
+          leaf2 = parent.select('leaf2');
+
+      var count = 0,
+          handler = function() {count++;};
+
+      async.parallel({
+        node: function(next) {
+          parent.on('update', handler);
+          setTimeout(next, 30);
+        },
+        leaf1: function(next) {
+          leaf1.on('update', handler);
+          setTimeout(next, 30);
+        },
+        leaf2: function(next) {
+          leaf2.on('update', handler);
+          setTimeout(next, 30);
+        }
+      }, function() {
+        assert.strictEqual(count, 2);
+        done();
+      });
+
+      leaf1.set('tada');
+    });
+
+    it('should be possible to listen to the cursor\'s relevancy.', function(done) {
+      var baobab = new Baobab({
+        one: {
+          two: 'hello'
+        }
+      });
+
+      var cursor = baobab.select(['one', 'two']);
+
+      var irrelevant = false,
+          relevant = false;
+
+      cursor.on('irrelevant', function() {
+        irrelevant = true;
+      });
+
+      cursor.on('relevant', function() {
+        relevant = true;
+        assert(relevant && irrelevant);
+        done();
+      });
+
+      baobab.set('one', {other: 'thing'});
+      setTimeout(function() {
+        baobab.set('one', {two: 'hello'});
+      }, 30);
+    });
+
+    it('should be possible to listen to changes in an array.', function(done) {
+      var baobab = new Baobab({list: ['hello', 'world']}),
+          cursor = baobab.select('list', 1);
+
+      assert.strictEqual(cursor.get(), 'world');
+
+      cursor.on('update', function() {
+        assert.strictEqual(cursor.get(), 'jacky');
+        done();
+      });
+
+      cursor.set('jacky');
     });
   });
 
@@ -89,124 +445,6 @@ describe('Cursor API', function() {
       assert(baobab.select('one').isBranch());
       assert(!baobab.select('one').up().isBranch());
       assert(!baobab.select('primitive').isBranch());
-    });
-  });
-
-  describe('Updates', function() {
-    it('should be possible to set a key using a path rather than a key.', function() {
-      var baobab = new Baobab(state, {asynchronous: false}),
-          cursor = baobab.select('items');
-
-      cursor.set([1, 'user', 'age'], 34);
-      assert.strictEqual(cursor.get()[1].user.age, 34);
-    });
-
-    it('should be possible to set a key at an nonexistent path.', function() {
-      var baobab = new Baobab(state, {asynchronous: false}),
-          cursor = baobab.select('two');
-
-      cursor.set(['nonexistent', 'key'], 'hello');
-      assert.strictEqual(cursor.get().nonexistent.key, 'hello');
-    });
-
-    it('should be possible to set a key using a dynamic path.', function() {
-      var baobab = new Baobab(state, {asynchronous: false}),
-          cursor = baobab.select('items');
-
-      cursor.set([{id: 'two'}, 'user', 'age'], 34);
-      assert.strictEqual(cursor.get()[1].user.age, 34);
-    });
-
-    it('should fail when setting a nonexistent dynamic path.', function() {
-      var baobab = new Baobab(state, {asynchronous: false}),
-          cursor = baobab.select('items');
-
-      assert.throws(function() {
-        cursor.set([{id: 'four'}, 'user', 'age'], 34);
-      }, /solve/);
-    });
-
-    it('should throw an error when trying to push to a non-array.', function() {
-      var baobab = new Baobab(state),
-          oneCursor = baobab.select('one');
-
-      assert.throws(function() {
-        oneCursor.push('test');
-      }, /non-array/);
-    });
-
-    it('should throw an error when trying to unshift to a non-array.', function() {
-      var baobab = new Baobab(state),
-          oneCursor = baobab.select('one');
-
-      assert.throws(function() {
-        oneCursor.unshift('test');
-      }, /non-array/);
-    });
-
-    it('should be possible to chain mutations.', function(done) {
-      var baobab = new Baobab({number: 1}),
-          inc = function(i) { return i + 1; };
-
-      baobab.update({number: {$chain: inc}});
-      baobab.update({number: {$chain: inc}});
-
-      baobab.on('update', function() {
-        assert.strictEqual(baobab.get('number'), 3);
-        done();
-      });
-    });
-
-    it('a single $chain command should work like an $apply.', function() {
-      var baobab = new Baobab({number: 1}, {asynchronous: false}),
-          cursor = baobab.select('number'),
-          inc = function(i) { return i + 1; };
-
-      assert.strictEqual(cursor.get(), 1);
-      cursor.chain(inc);
-      assert.strictEqual(cursor.get(), 2);
-    });
-
-    it('should be possible to shallow merge two objects.', function(done) {
-      var baobab = new Baobab({o: {hello: 'world'}, string: 'test'});
-
-      assert.throws(function() {
-        baobab.select('test').merge({hello: 'moto'});
-      }, /merge/);
-
-      var cursor = baobab.select('o');
-      cursor.merge({hello: 'jarl'});
-
-      baobab.on('update', function() {
-        assert.deepEqual(baobab.get('o'), {hello: 'jarl'});
-        done();
-      });
-    });
-
-    it('should be possible to remove keys from the tree.', function() {
-      var tree = new Baobab({one: 1, two: 2}, {asynchronous: false});
-
-      assert.deepEqual(tree.get(), {one: 1, two: 2});
-      tree.unset('one');
-      assert.deepEqual(tree.get(), {two: 2});
-    });
-
-    it('should be possible to remove keys from a cursor.', function() {
-      var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
-          cursor = tree.select('two');
-
-      assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
-      cursor.unset('subone');
-      assert.deepEqual(cursor.get(), {subtwo: 2});
-    });
-
-    it('should be possible to remove data at cursor.', function() {
-      var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
-          cursor = tree.select('two');
-
-      assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
-      cursor.remove();
-      assert.strictEqual(cursor.get(), undefined);
     });
   });
 
@@ -280,141 +518,80 @@ describe('Cursor API', function() {
     });
   });
 
-  describe('Events', function() {
+  describe('History', function() {
 
-    it('when a parent updates, so does the child.', function(done) {
-      var baobab = new Baobab(state),
-          parent = baobab.select('two'),
-          child = baobab.select(['two', 'firstname']);
+    it('should be possible to record updates.', function() {
+      var baobab = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = baobab.select('item');
 
-      var count = 0;
+      assert(!cursor.recording);
+      assert(!cursor.hasHistory());
+      assert.deepEqual(cursor.getHistory(), []);
 
-      async.parallel({
-        parent: function(next) {
-          parent.on('update', function() {
-            assert.deepEqual({firstname: 'Napoleon', lastname: 'Bonaparte'}, this.get());
-            count++;
-            next();
-          });
-        },
-        child: function(next) {
-          child.on('update', function() {
-            count++;
-            next();
-          });
-        }
-      }, function() {
-        assert.strictEqual(count, 2);
-        done();
+      cursor.startRecording();
+
+      assert(cursor.recording);
+
+      [1, 2, 3, 4, 5, 6].forEach(function() {
+        cursor.apply(function(e) { return e + 1; });
       });
 
-      parent.edit({firstname: 'Napoleon', lastname: 'Bonaparte'});
+      assert(cursor.hasHistory());
+      assert.strictEqual(cursor.get(), 7);
+      assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5, 6].reverse());
+
+      cursor.stopRecording();
+      cursor.clearHistory();
+
+      assert(!cursor.recording);
+      assert(!cursor.hasHistory());
+      assert.deepEqual(cursor.getHistory(), []);
     });
 
-    it('when a child updates, so does the parent.', function(done) {
-      var baobab = new Baobab(state),
-          parent = baobab.select('two'),
-          child = baobab.select(['two', 'firstname']);
+    it('should throw an error if trying to undo a recordless cursor.', function() {
+      var baobab = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = baobab.select('item');
 
-      var count = 0;
-
-      async.parallel({
-        parent: function(next) {
-          parent.on('update', function() {
-            count++;
-            next();
-          });
-        },
-        child: function(next) {
-          child.on('update', function() {
-            count++;
-            next();
-          });
-        }
-      }, function() {
-        assert.strictEqual(count, 2);
-        done();
-      });
-
-      child.edit('Napoleon');
+      assert.throws(function() {
+        cursor.undo();
+      }, /recording/);
     });
 
-    it('when a leave updates, it should not update its siblings.', function(done) {
-      var baobab = new Baobab({
-        node: {
-          leaf1: 'hey',
-          leaf2: 'ho'
-        }
+    it('should be possible to go back in time.', function() {
+      var baobab = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = baobab.select('item');
+
+      cursor.startRecording();
+
+      [1, 2, 3, 4, 5, 6].forEach(function() {
+        cursor.apply(function(e) { return e + 1; });
       });
 
-      var parent = baobab.select('node'),
-          leaf1 = parent.select('leaf1'),
-          leaf2 = parent.select('leaf2');
+      assert.strictEqual(cursor.get(), 7);
 
-      var count = 0,
-          handler = function() {count++;};
+      cursor.undo();
+      assert.strictEqual(cursor.get(), 6);
+      assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5].reverse());
 
-      async.parallel({
-        node: function(next) {
-          parent.on('update', handler);
-          setTimeout(next, 30);
-        },
-        leaf1: function(next) {
-          leaf1.on('update', handler);
-          setTimeout(next, 30);
-        },
-        leaf2: function(next) {
-          leaf2.on('update', handler);
-          setTimeout(next, 30);
-        }
-      }, function() {
-        assert.strictEqual(count, 2);
-        done();
-      });
+      cursor.undo().undo();
 
-      leaf1.edit('tada');
-    });
+      assert.strictEqual(cursor.get(), 4);
+      assert.deepEqual(cursor.getHistory(), [2, 3].reverse());
 
-    it('should be possible to listen to the cursor\'s relevancy.', function(done) {
-      var baobab = new Baobab({
-        one: {
-          two: 'hello'
-        }
-      });
+      cursor.set(4).set(5);
 
-      var cursor = baobab.select(['one', 'two']);
+      cursor.undo(3);
 
-      var irrelevant = false,
-          relevant = false;
+      assert.strictEqual(cursor.get(), 3);
+      assert.deepEqual(cursor.getHistory(), [2]);
 
-      cursor.on('irrelevant', function() {
-        irrelevant = true;
-      });
+      assert.throws(function() {
+        cursor.undo(5);
+      }, /relevant/);
 
-      cursor.on('relevant', function() {
-        relevant = true;
-        assert(relevant && irrelevant);
-        done();
-      });
-
-      baobab.set('one', {other: 'thing'});
-      setTimeout(function() {
-        baobab.set('one', {two: 'hello'});
-      }, 30);
-    });
-
-    it('should be possible to listen to changes in an array.', function(done) {
-      var baobab = new Baobab({list: ['hello', 'world']}),
-          cursor = baobab.select('list', 1);
-
-      assert.strictEqual(cursor.get(), 'world');
-
-      cursor.on('update', function() {
-        assert.strictEqual(cursor.get(), 'jacky');
-        done();
-      });
-
-      cursor.edit('jacky');
+      assert.throws(function() {
+        cursor.undo(-5);
+      }, /positive/);
     });
   });
 
@@ -446,22 +623,10 @@ describe('Cursor API', function() {
       }, 0);
     });
 
-    it('should be possible to push several values through polymorphism.', function(done) {
-      var baobab = new Baobab({colors: ['blue']}),
-          colorCursor = baobab.select('colors');
-
-      colorCursor.push('yellow', 'green');
-
-      setTimeout(function() {
-        assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'green']);
-        done();
-      }, 0);
-    });
-
     it('an upper set should correctly resolve.', function(done) {
       var baobab = new Baobab({hello: {color: 'blue'}});
 
-      baobab.select('hello', 'color').edit('yellow');
+      baobab.select('hello', 'color').set('yellow');
       baobab.set('hello', 'purple');
 
       baobab.on('update', function() {

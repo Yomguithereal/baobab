@@ -13,6 +13,7 @@ module.exports = {
     firstname: 'John',
     lastname: 'Dillinger'
   },
+  pointer: 1,
   setLater: null,
   list: [[1, 2], [3, 4]],
   longList: [1, 2, 3, 4],

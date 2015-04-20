@@ -5,9 +5,8 @@
  * Nested selection into a baobab tree.
  */
 var EventEmitter = require('emmett'),
-    Combination = require('./combination.js'),
-    mixins = require('./mixins.js'),
     helpers = require('./helpers.js'),
+    defaults = require('../defaults.js'),
     type = require('./type.js');
 
 /**
@@ -26,52 +25,59 @@ function Cursor(tree, path, solvedPath, hash) {
   this.tree = tree;
   this.path = path;
   this.hash = hash;
-  this.relevant = this.reference() !== undefined;
+  this.archive = null;
+  this.recording = false;
+  this.undoing = false;
+
+  // Privates
+  this._identity = '[object Cursor]';
 
   // Complex path?
   this.complexPath = !!solvedPath;
   this.solvedPath = this.complexPath ? solvedPath : this.path;
 
+  // Relevant?
+  this.relevant = this.get() !== undefined;
+
   // Root listeners
+  function update(previousState) {
+    if (self.recording && !self.undoing) {
+
+      // Handle archive
+      var data = helpers.getIn(previousState, self.solvedPath, self.tree),
+          record = helpers.deepClone(data);
+
+      self.archive.add(record);
+    }
+
+    self.undoing = false;
+    return self.emit('update');
+  }
+
   this.updateHandler = function(e) {
     var log = e.data.log,
+        previousState = e.data.previousState,
         shouldFire = false,
         c, p, l, m, i, j;
 
     // Solving path if needed
     if (self.complexPath)
-      self.solvedPath = helpers.solvePath(self.tree.data, self.path);
+      self.solvedPath = helpers.solvePath(self.tree.data, self.path, self.tree);
 
     // If selector listens at tree, we fire
     if (!self.path.length)
-      return self.emit('update');
+      return update(previousState);
 
     // Checking update log to see whether the cursor should update.
-    outer:
-    for (i = 0, l = log.length; i < l; i++) {
-      c = log[i];
-
-      for (j = 0, m = c.length; j < m; j++) {
-        p = c[j];
-
-        // If path is not relevant to us, we break
-        if (p !== '' + self.solvedPath[j])
-          break;
-
-        // If we reached last item and we are relevant, we fire
-        if (j + 1 === m || j + 1 === self.solvedPath.length) {
-          shouldFire = true;
-          break outer;
-        }
-      }
-    }
+    if (self.solvedPath)
+      shouldFire = helpers.solveUpdate(log, [self.solvedPath]);
 
     // Handling relevancy
-    var data = self.reference() !== undefined;
+    var data = self.get() !== undefined;
 
     if (self.relevant) {
       if (data && shouldFire) {
-        self.emit('update');
+        update(previousState);
       }
       else if (!data) {
         self.emit('irrelevant');
@@ -81,36 +87,27 @@ function Cursor(tree, path, solvedPath, hash) {
     else {
       if (data && shouldFire) {
         self.emit('relevant');
-        self.emit('update');
+        update(previousState);
         self.relevant = true;
       }
     }
   };
 
-  // Making mixin
-  this.mixin = mixins.cursor(this);
-
   // Lazy binding
-  var bound = false,
-      regularOn = this.on,
-      regularOnce = this.once;
+  var bound = false;
 
-  var lazyBind = function() {
+  this._lazyBind = function() {
     if (bound)
       return;
     bound = true;
     self.tree.on('update', self.updateHandler);
   };
 
-  this.on = function() {
-    lazyBind();
-    return regularOn.apply(this, arguments);
-  };
+  this.on = helpers.before(this._lazyBind, this.on.bind(this));
+  this.once = helpers.before(this._lazyBind, this.once.bind(this));
 
-  this.once = function() {
-    lazyBind();
-    return regularOnce.apply(this, arguments);
-  };
+  if (this.complexPath)
+    this._lazyBind();
 }
 
 helpers.inherits(Cursor, EventEmitter);
@@ -123,7 +120,7 @@ Cursor.prototype.isRoot = function() {
 };
 
 Cursor.prototype.isLeaf = function() {
-  return type.Primitive(this.reference());
+  return type.Primitive(this.get());
 };
 
 Cursor.prototype.isBranch = function() {
@@ -179,7 +176,7 @@ Cursor.prototype.right = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  if (last + 1 === this.up().reference().length)
+  if (last + 1 === this.up().get().length)
     return null;
 
   return this.tree.select(this.solvedPath.slice(0, -1).concat(last + 1));
@@ -191,7 +188,7 @@ Cursor.prototype.rightmost = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  var list = this.up().reference();
+  var list = this.up().get();
 
   return this.tree.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
 };
@@ -199,7 +196,7 @@ Cursor.prototype.rightmost = function() {
 Cursor.prototype.down = function() {
   var last = +this.solvedPath[this.solvedPath.length - 1];
 
-  if (!(this.reference() instanceof Array))
+  if (!(this.get() instanceof Array))
     return null;
 
   return this.tree.select(this.solvedPath.concat(0));
@@ -212,142 +209,150 @@ Cursor.prototype.get = function(path) {
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
-  if (type.Step(path))
-    return this.tree.get(this.solvedPath.concat(path));
-  else
-    return this.tree.get(this.solvedPath);
-};
+  var fullPath = this.solvedPath.concat(
+    [].concat(path || path === 0 ? path : [])
+  );
 
-Cursor.prototype.reference = function(path) {
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (type.Step(path))
-    return this.tree.reference(this.solvedPath.concat(path));
-  else
-    return this.tree.reference(this.solvedPath);
-};
-
-Cursor.prototype.clone = function(path) {
-  if (arguments.length > 1)
-    path = helpers.arrayOf(arguments);
-
-  if (type.Step(path))
-    return this.tree.clone(this.solvedPath.concat(path));
-  else
-    return this.tree.clone(this.solvedPath);
+  return helpers.getIn(this.tree.data, fullPath, this.tree);
 };
 
 /**
  * Update
  */
-Cursor.prototype.set = function(key, val) {
-  if (arguments.length < 2)
-    throw Error('baobab.Cursor.set: expecting at least key/value.');
+function pathPolymorphism(method, allowedType, key, val) {
+  if (arguments.length > 5)
+    throw Error('baobab.Cursor.' + method + ': too many arguments.');
 
-  var data = this.reference();
-
-  if (typeof data !== 'object')
-    throw Error('baobab.Cursor.set: trying to set key to a non-object.');
-
-  var spec = {};
-
-  if (type.Array(key)) {
-    var path = helpers.solvePath(data, key);
-
-    if (!path)
-      throw Error('baobab.Cursor.set: could not solve dynamic path.');
-
-    spec = helpers.pathObject(path, {$set: val});
-  }
-  else {
-    spec[key] = {$set: val};
+  if (arguments.length < 4) {
+    val = key;
+    key = [];
   }
 
-  return this.update(spec);
-};
+  key = key || [];
 
-Cursor.prototype.edit = function(val) {
-  return this.update({$set: val});
-};
+  // Splice exception
+  if (method === 'splice' &&
+      !type.Splicer(val)) {
+    if (type.Array(val))
+      val = [val];
+    else
+      throw Error('baobab.Cursor.splice: incorrect value.');
+  }
+
+  // Checking value validity
+  if (allowedType && !allowedType(val))
+    throw Error('baobab.Cursor.' + method + ': incorrect value.');
+
+  var path = [].concat(key),
+      solvedPath = helpers.solvePath(this.get(), path, this.tree);
+
+  if (!solvedPath)
+    throw Error('baobab.Cursor.' + method + ': could not solve dynamic path.');
+
+  var leaf = {};
+  leaf['$' + method] = val;
+
+  var spec = helpers.pathObject(solvedPath, leaf);
+
+  return spec;
+}
+
+function makeUpdateMethod(command, type) {
+  Cursor.prototype[command] = function() {
+    var spec = pathPolymorphism.bind(this, command, type).apply(this, arguments);
+
+    return this.update(spec);
+  };
+}
+
+makeUpdateMethod('set');
+makeUpdateMethod('apply', type.Function);
+makeUpdateMethod('chain', type.Function);
+makeUpdateMethod('push');
+makeUpdateMethod('unshift');
+makeUpdateMethod('merge', type.Object);
+makeUpdateMethod('splice');
 
 Cursor.prototype.unset = function(key) {
-  if (!key && key !== 0)
-    throw Error('baobab.Cursor.unset: expects a valid key to unset.');
+  if (key === undefined && this.isRoot())
+    throw Error('baobab.Cursor.unset: cannot remove root node.');
 
-  if (typeof this.reference() !== 'object')
-    throw Error('baobab.Cursor.set: trying to set key to a non-object.');
+  var spec = pathPolymorphism.bind(this, 'unset', null).apply(this, [key, true]);
 
-  var spec = {};
-  spec[key] = {$unset: true};
   return this.update(spec);
 };
 
-Cursor.prototype.remove = function() {
-  if (this.isRoot())
-    throw Error('baobab.Cursor.remove: cannot remove root node.');
+Cursor.prototype.update = function(key, spec) {
+  if (arguments.length < 2) {
+    this.tree.stack(helpers.pathObject(this.solvedPath, key));
+    return this;
+  }
 
-  return this.update({$unset: true});
-};
+  // Solving path
+  var path = [].concat(key),
+      solvedPath = helpers.solvePath(this.get(), path, this.tree);
 
-Cursor.prototype.apply = function(fn) {
-  if (typeof fn !== 'function')
-    throw Error('baobab.Cursor.apply: argument is not a function.');
+  if (!solvedPath)
+    throw Error('baobab.Cursor.update: could not solve dynamic path.');
 
-  return this.update({$apply: fn});
-};
-
-Cursor.prototype.chain = function(fn) {
-  if (typeof fn !== 'function')
-    throw Error('baobab.Cursor.chain: argument is not a function.');
-
-  return this.update({$chain: fn});
-};
-
-Cursor.prototype.push = function(value) {
-  if (!(this.reference() instanceof Array))
-    throw Error('baobab.Cursor.push: trying to push to non-array value.');
-
-  if (arguments.length > 1)
-    return this.update({$push: helpers.arrayOf(arguments)});
-  else
-    return this.update({$push: value});
-};
-
-Cursor.prototype.unshift = function(value) {
-  if (!(this.reference() instanceof Array))
-    throw Error('baobab.Cursor.push: trying to push to non-array value.');
-
-  if (arguments.length > 1)
-    return this.update({$unshift: helpers.arrayOf(arguments)});
-  else
-    return this.update({$unshift: value});
-};
-
-Cursor.prototype.merge = function(o) {
-  if (!type.Object(o))
-    throw Error('baobab.Cursor.merge: trying to merge a non-object.');
-
-  if (!type.Object(this.reference()))
-    throw Error('baobab.Cursor.merge: trying to merge into a non-object.');
-
-  this.update({$merge: o});
-};
-
-Cursor.prototype.update = function(spec) {
-  this.tree.update(helpers.pathObject(this.solvedPath, spec));
+  this.tree.stack(helpers.pathObject(this.solvedPath.concat(solvedPath), spec));
   return this;
 };
 
 /**
- * Combination
+ * History
  */
-Cursor.prototype.or = function(otherCursor) {
-  return new Combination('or', this, otherCursor);
+Cursor.prototype.startRecording = function(maxRecords) {
+  maxRecords = maxRecords || 5;
+
+  if (maxRecords < 1)
+    throw Error('baobab.Cursor.startRecording: invalid maximum number of records.');
+
+  if (this.archive)
+    return this;
+
+  // Lazy bind
+  this._lazyBind();
+
+  this.archive = helpers.archive(maxRecords);
+  this.recording = true;
+  return this;
 };
 
-Cursor.prototype.and = function(otherCursor) {
-  return new Combination('and', this, otherCursor);
+Cursor.prototype.stopRecording = function() {
+  this.recording = false;
+  return this;
+};
+
+Cursor.prototype.undo = function(steps) {
+  steps = steps || 1;
+
+  if (!this.recording)
+    throw Error('baobab.Cursor.undo: cursor is not recording.');
+
+  if (!type.PositiveInteger(steps))
+    throw Error('baobab.Cursor.undo: expecting a positive integer.');
+
+  var record = this.archive.back(steps);
+
+  if (!record)
+    throw Error('boabab.Cursor.undo: cannot find a relevant record (' + steps + ' back).');
+
+  this.undoing = true;
+  return this.set(record);
+};
+
+Cursor.prototype.hasHistory = function() {
+  return !!(this.archive && this.archive.get().length);
+};
+
+Cursor.prototype.getHistory = function() {
+  return this.archive ? this.archive.get() : [];
+};
+
+Cursor.prototype.clearHistory = function() {
+  this.archive = null;
+  return this;
 };
 
 /**
@@ -366,6 +371,7 @@ Cursor.prototype.release = function() {
   delete this.tree;
   delete this.path;
   delete this.solvedPath;
+  delete this.archive;
 
   // Killing emitter
   this.kill();
@@ -375,11 +381,11 @@ Cursor.prototype.release = function() {
  * Output
  */
 Cursor.prototype.toJSON = function() {
-  return this.reference();
+  return this.get();
 };
 
-type.Cursor = function (value) {
-  return value instanceof Cursor;
+Cursor.prototype.toString = function() {
+  return this._identity;
 };
 
 /**

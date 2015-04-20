@@ -1,11 +1,10 @@
 {
   "name": "baobab",
-  "version": "0.4.4",
+  "version": "1.0.0",
   "description": "JavaScript data tree with cursors.",
   "main": "index.js",
   "dependencies": {
-    "emmett": "^2.1.2",
-    "typology": "^0.3.1"
+    "emmett": "^3.0.0"
   },
   "devDependencies": {
     "async": "~0.9.0",
@@ -16,10 +15,8 @@
     "gulp-mocha": "^2.0.0",
     "gulp-replace": "^0.5.3",
     "gulp-uglify": "^1.0.2",
-    "jsdom": "^3.1.0",
-    "lodash.clonedeep": "^3.0.0",
+    "lodash": "^3.6.0",
     "mocha": "^2.0.1",
-    "react": "^0.13.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
   },

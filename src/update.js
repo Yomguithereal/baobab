@@ -8,166 +8,150 @@
 var helpers = require('./helpers.js'),
     type = require('./type.js');
 
-var COMMANDS = {};
-[
-  '$set',
-  '$push',
-  '$unshift',
-  '$apply',
-  '$merge'
-].forEach(function(c) {
-  COMMANDS[c] = true;
-});
-
 // Helpers
 function makeError(path, message) {
   var e = new Error('baobab.update: ' + message + ' at path /' +
-                    path.toString());
+                    path.slice(1).join('/'));
 
   e.path = path;
   return e;
 }
 
-// Core function
-function update(target, spec, opts) {
-  opts = opts || {shiftReferences: false};
+module.exports = function(data, spec, opts) {
+  opts = opts || {};
+
+  if (!type.Object(data) && !type.Array(data))
+    throw Error('baobab.update: invalid target.');
+
   var log = {};
 
-  // Closure mutating the internal object
-  (function mutator(o, spec, path, parent) {
-    path = path || [];
+  // Shifting root
+  data = {root: helpers.shallowClone(data)};
 
-    var hash = path.join('λ'),
+  // Closure performing the updates themselves
+  var mutator = function(o, spec, path, parent) {
+    path = path || ['root'];
+
+    var hash = path.join('|λ|'),
+        lastKey = path[path.length - 1],
         fn,
-        h,
         k,
         v;
 
-    for (k in spec) {
-      if (COMMANDS[k]) {
-        v = spec[k];
+    var leafLevel = Object.keys(spec).some(function(k) {
+      return !!~['$set', '$push', '$unshift', '$splice', '$unset', '$merge', '$apply'].indexOf(k);
+    });
 
-        // Logging update
-        log[hash] = true;
+    if (leafLevel) {
+      log[hash] = true;
 
-        // TODO: this could be before in the recursion
-        // Applying
-        switch (k) {
-          case '$push':
-            if (!type.Array(o))
-              throw makeError(path, 'using command $push to a non array');
+      for (k in spec) {
 
-            if (!type.Array(v))
-              o.push(v);
-            else
-              o.push.apply(o, v);
-            break;
-          case '$unshift':
-            if (!type.Array(o))
-              throw makeError(path, 'using command $unshift to a non array');
+        // $unset
+        if (k === '$unset') {
+          var olderKey = path[path.length - 2];
 
-            if (!type.Array(v))
-              o.unshift(v);
-            else
-              o.unshift.apply(o, v);
-            break;
+          if (!type.Object(parent[olderKey]))
+            throw makeError(path.slice(0, -1), 'using command $unset on a non-object');
+
+          parent[olderKey] = helpers.shallowClone(o);
+          delete parent[olderKey][lastKey];
+
+          break;
         }
-      }
-      else {
-        h = hash ? hash + 'λ' + k : k;
 
-        if ('$unset' in (spec[k] || {})) {
+        // $set
+        if (k === '$set') {
+          v = spec.$set;
 
-          // Logging update
-          log[h] = true;
-
-          if (type.Array(o)) {
-            if (!opts.shiftReferences)
-              o.splice(k, 1);
-            else
-              parent[path[path.length - 1]] = o.slice(0, +k).concat(o.slice(+k + 1));
-          }
-          else {
-            delete o[k];
-          }
+          o[lastKey] = v;
+          break;
         }
-        else if ('$set' in (spec[k] || {})) {
-          v = spec[k].$set;
 
-          // Logging update
-          log[h] = true;
-          o[k] = v;
-        }
-        else if ('$apply' in (spec[k] || {}) || '$chain' in (spec[k] || {})) {
-
-          // TODO: this should not happen likewise.
-          fn = spec[k].$apply || spec[k].$chain;
+        // $apply
+        if (k === '$apply') {
+          fn = spec.$apply;
 
           if (typeof fn !== 'function')
-            throw makeError(path.concat(k), 'using command $apply with a non function');
+            throw makeError(path, 'using command $apply with a non function');
 
-          // Logging update
-          log[h] = true;
-          o[k] = fn.call(null, o[k]);
+          o[lastKey] = fn.call(null, o[lastKey]);
+          break;
         }
-        else if ('$merge' in (spec[k] || {})) {
-          v = spec[k].$merge;
 
-          if (!type.Object(o[k]))
-            throw makeError(path.concat(k), 'using command $merge on a non-object');
+        // $merge
+        if (k === '$merge') {
+          v = spec.$merge;
 
-          // Logging update
-          log[h] = true;
-          o[k] = helpers.shallowMerge(o[k], v);
+          if (!type.Object(o[lastKey]) || !type.Object(v))
+            throw makeError(path, 'using command $merge with a non object');
+
+          o[lastKey] = helpers.shallowMerge(o[lastKey], v);
+          break;
         }
-        else if (opts.shiftReferences &&
-                 ('$push' in (spec[k] || {}) ||
-                  '$unshift' in (spec[k] || {}))) {
-          if ('$push' in (spec[k] || {})) {
-            v = spec[k].$push;
 
-            if (!type.Array(o[k]))
-              throw makeError(path.concat(k), 'using command $push to a non array');
-            o[k] = o[k].concat(v);
-          }
-          if ('$unshift' in (spec[k] || {})) {
-            v = spec[k].$unshift;
+        // $splice
+        if (k === '$splice') {
+          v = spec.$splice;
 
-            if (!type.Array(o[k]))
-              throw makeError(path.concat(k), 'using command $unshift to a non array');
-            o[k] = (v instanceof Array ? v : [v]).concat(o[k]);
-          }
+          if (!type.Array(o[lastKey]))
+            throw makeError(path, 'using command $push to a non array');
 
-          // Logging update
-          log[h] = true;
+          v.forEach(function(args) {
+            o[lastKey] = helpers.splice.apply(null, [o[lastKey]].concat(args));
+          });
         }
-        else {
 
-          // If nested object does not exist, we create it
-          if (typeof o[k] === 'undefined')
-            o[k] = {};
+        // $push
+        if (k === '$push') {
+          v = spec.$push;
 
-          // Shifting reference
-          if (opts.shiftReferences)
-            o[k] = helpers.shallowClone(o[k]);
+          if (!type.Array(o[lastKey]))
+            throw makeError(path, 'using command $push to a non array');
 
-          // Recur
-          // TODO: fix this horrendous behaviour.
-          mutator(
-            o[k],
-            spec[k],
-            path.concat(k),
-            o
-          );
+          o[lastKey] = o[lastKey].concat(v);
+        }
+
+        // $unshift
+        if (k === '$unshift') {
+          v = spec.$unshift;
+
+          if (!type.Array(o[lastKey]))
+            throw makeError(path, 'using command $unshift to a non array');
+
+          o[lastKey] = [].concat(v).concat(o[lastKey]);
         }
       }
     }
-  })(target, spec);
+    else {
+      for (k in spec)  {
 
-  return Object.keys(log).map(function(hash) {
-    return hash.split('λ');
-  });
-}
+        // If nested object does not exist, we create it
+        if (typeof o[lastKey][k] === 'undefined')
+          o[lastKey][k] = {};
+        else
+          o[lastKey][k] = helpers.shallowClone(o[lastKey][k]);
 
-// Exporting
-module.exports = update;
+        // Recur
+        mutator(
+          o[lastKey],
+          spec[k],
+          path.concat(k),
+          o
+        );
+      }
+    }
+  };
+
+  mutator(data, spec);
+
+  // Returning data and path log
+  return {
+    data: data.root,
+
+    // SHIFT LOG
+    log: Object.keys(log).map(function(hash) {
+      return hash.split('|λ|').slice(1);
+    })
+  };
+};
