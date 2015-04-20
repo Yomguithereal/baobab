@@ -6,7 +6,6 @@
  */
 var Cursor = require('./cursor.js'),
     EventEmitter = require('emmett'),
-    Watcher = require('./watcher.js'),
     Facet = require('./facet.js'),
     helpers = require('./helpers.js'),
     update = require('./update.js'),
@@ -185,16 +184,6 @@ Baobab.prototype.commit = function() {
   });
 
   return this;
-};
-
-Baobab.prototype.watch = function(paths) {
-  if (!type.Array(paths) ||
-      paths.some(function(p) {
-        return !type.Path(p);
-      }))
-    throw Error('Baobab.watch: invalid paths.');
-
-  return new Watcher(this, [].concat(paths));
 };
 
 Baobab.prototype.release = function() {

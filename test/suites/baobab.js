@@ -6,6 +6,7 @@ var assert = require('assert'),
     state = require('../state.js'),
     Baobab = require('../../src/baobab.js'),
     Cursor = require('../../src/cursor.js'),
+    Facet = require('../../src/facet.js'),
     async = require('async'),
     _ = require('lodash');
 
@@ -194,6 +195,48 @@ describe('Baobab API', function() {
 
     var filtered = baobab.facets.filtered,
         current = baobab.facets.current;
+
+    it('baobab.createFacet should return a facet instance.', function() {
+      var facet = baobab.createFacet({cursors: {list: ['list']}});
+      assert(facet instanceof Facet);
+      facet.release();
+    });
+
+    it('should fire correctly.', function() {
+      var tree = new Baobab({list: [1, 2, 3], otherlist: [4, 5, 6], unrelated: 0}, {autoCommit: false}),
+          list = tree.select('list'),
+          other = tree.select('otherlist'),
+          unrelated = tree.select('unrelated');
+
+      var count = 0,
+          inc = function() {count++;};
+
+      var facet = tree.createFacet({cursors: {list: ['list'], otherList: ['otherlist']}});
+      facet.on('update', inc);
+
+      list.push(4);
+      tree.commit();
+
+      assert.strictEqual(count, 1);
+
+      unrelated.set(1);
+      tree.commit();
+
+      assert.strictEqual(count, 1);
+
+      other.push(4);
+      tree.commit();
+
+      assert.strictEqual(count, 2);
+
+      list.push(5);
+      other.push(5);
+      tree.commit();
+
+      assert.strictEqual(count, 3);
+
+      facet.release();
+    });
 
     it('should be possible to get data from facets.', function() {
       assert.deepEqual(filtered.get(), [

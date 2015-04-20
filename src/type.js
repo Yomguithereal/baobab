@@ -49,7 +49,9 @@ type.Function = function(value) {
 };
 
 type.Primitive = function(value) {
-  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+  return typeof value === 'string' ||
+         typeof value === 'number' ||
+         typeof value === 'boolean';
 };
 
 type.Date = function(value) {
@@ -94,8 +96,21 @@ type.FacetCursors = function(value) {
   return Object.keys(value).every(function(k) {
     var v = value[k];
 
-    return type.Path(k) || type.Function(k) || k instanceof require('./cursor.js');
+    return type.Path(v) ||
+           type.Function(v) ||
+           v instanceof require('./cursor.js');
   });
 };
+
+type.FacetFacets = function(value) {
+  if (!type.Object(value))
+    return false;
+
+  return Object.keys(value).every(function(k) {
+    var v = value[k];
+
+    return typeof v === 'string' || v instanceof require('./facet.js');
+  });
+}
 
 module.exports = type;

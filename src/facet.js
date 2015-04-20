@@ -5,7 +5,6 @@
  * Facets enable the user to define views on a given Baobab tree.
  */
 var EventEmitter = require('emmett'),
-    Watcher = require('./watcher.js'),
     helpers = require('./helpers.js'),
     type = require('./type.js');
 
@@ -16,38 +15,46 @@ function identity(v) {
 function Facet(tree, definition) {
   var self = this;
 
-  // // Extending event emitter
-  // EventEmitter.call(this);
-
-  // // Properties
-  // this.tree = tree;
-
-
-
-  // ...
-
-
-
-  // Private
-  var data = null,
+  var map = definition.cursors,
       solved = false,
-      solver = definition.get || identity,
-      map = definition.cursors;
+      solver = type.Function(definition.get) ? definition.get : identity,
+      data = null;
 
+  if (!type.FacetCursors(map))
+    throw Error('baobab.Facet: incorrect cursors mapping.');
+
+  // Extending event emitter
+  EventEmitter.call(this);
+
+  // Properties
+  this.tree = tree;
+
+  // Path solving
   var paths = Object.keys(map).map(function(k) {
     return map[k];
   });
 
-  // Watcher
-  var watcher = new Watcher(tree, paths);
+  var solvedPaths = paths,
+      complex = paths.some(type.ComplexPath);
 
-  function bind(name) {
-    self[name] = watcher[name].bind(watcher);
+  function solvePaths() {
+    if (complex)
+      solvedPaths = paths.map(function(p) {
+        return helpers.solvePath(self.tree.data, p, self.tree);
+      });
   }
 
-  ['on', 'once', 'release'].forEach(bind);
+  this.updateHandler = function(e) {
+    if (helpers.solveUpdate(e.data.log, solvedPaths)) {
+      solved = false;
+      self.emit('update');
+    }
+  };
 
-  // Getting facet data
+  solvePaths();
+  this.tree.on('update', this.updateHandler);
+
+  // Data solving
   this.get = function() {
     if (solved)
       return data;
@@ -63,13 +70,15 @@ function Facet(tree, definition) {
 
     return data;
   };
-
-  // Resetting flag on cursor update
-  this.on('update', function() {
-    solved = false;
-  });
 }
 
-// helpers.inherits(Facet, EventEmitter);
+helpers.inherits(Facet, EventEmitter);
+
+Facet.prototype.release = function() {
+  this.tree.off('update', this.updateHandler);
+
+  this.tree = null;
+  this.kill();
+};
 
 module.exports = Facet;
