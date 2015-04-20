@@ -383,8 +383,6 @@ describe('Baobab API', function() {
       });
 
       facet.release();
-
-
     });
   });
 
