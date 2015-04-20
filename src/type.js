@@ -81,17 +81,20 @@ type.Path = function(value) {
   }
 };
 
-type.MixinCursor = function(value) {
-  return anyOf(value, ['String', 'Number', 'Array', 'Function', 'Cursor']);
-};
-
-type.MixinCursors = function(value) {
-  return anyOf(value, ['Object', 'Array', 'Function']);
-};
-
 type.ComplexPath = function(value) {
   return value.some(function(step) {
     return anyOf(step, ['Object', 'Function']);
+  });
+};
+
+type.FacetCursors = function(value) {
+  if (!type.Object(value))
+    return false;
+
+  return Object.keys(value).every(function(k) {
+    var v = value[k];
+
+    return type.Path(k) || type.Function(k) || k instanceof require('./cursor.js');
   });
 };
 

@@ -4,8 +4,10 @@
  *
  * Facets enable the user to define views on a given Baobab tree.
  */
-var Watcher = require('./watcher.js'),
-    helpers = require('./helpers.js');
+var EventEmitter = require('emmett'),
+    Watcher = require('./watcher.js'),
+    helpers = require('./helpers.js'),
+    type = require('./type.js');
 
 function identity(v) {
   return v;
@@ -13,6 +15,18 @@ function identity(v) {
 
 function Facet(tree, definition) {
   var self = this;
+
+  // // Extending event emitter
+  // EventEmitter.call(this);
+
+  // // Properties
+  // this.tree = tree;
+
+
+
+  // ...
+
+
 
   // Private
   var data = null,
@@ -55,5 +69,7 @@ function Facet(tree, definition) {
     solved = false;
   });
 }
+
+// helpers.inherits(Facet, EventEmitter);
 
 module.exports = Facet;
