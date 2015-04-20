@@ -77,8 +77,8 @@ Baobab.prototype.addFacet = function(name, definition) {
   return this;
 };
 
-Baobab.prototype.createFacet = function(definition) {
-  return new Facet(this, definition);
+Baobab.prototype.createFacet = function(definition, scope) {
+  return new Facet(this, definition, scope);
 };
 
 Baobab.prototype.select = function(path) {

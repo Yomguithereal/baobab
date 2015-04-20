@@ -384,6 +384,13 @@ describe('Baobab API', function() {
 
       facet.release();
     });
+
+    it('should be possible to pass a scope to createFacet.', function() {
+      var fn = function() {return this;},
+          facet = baobab.createFacet({get: fn.bind({hello: 'world'})});
+
+      assert.deepEqual(facet.get(), {hello: 'world'});
+    });
   });
 
   describe('Options', function() {
