@@ -62,7 +62,7 @@ colorsCursor.push('orange');
 If you want to use **Baobab** with node.js/io.js or browserify/webpack etc., you can use npm.
 
 ```sh
-npm install baobab@1.0.0-rc1
+npm install baobab
 
 # Or if you need the latest dev version
 npm install git+https://github.com/Yomguithereal/baobab.git
@@ -77,7 +77,7 @@ If you want to use it in the browser, just include the minified script located [
 Or install with bower:
 
 ```js
-bower install baobab@1.0.0-rc1
+bower install baobab
 ```
 
 The library (as a standalone) currently weights ~20ko minified and ~6ko gzipped.
