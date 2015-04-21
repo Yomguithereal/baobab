@@ -165,7 +165,8 @@ describe('Baobab API', function() {
         ],
         currentProjectId: 1,
         value1: 'Hello',
-        value2: 'World'
+        value2: 'World',
+        token: 'shawarma'
       },
 
       // Options
@@ -394,6 +395,33 @@ describe('Baobab API', function() {
           facet = baobab.createFacet({get: fn.bind({hello: 'world'})});
 
       assert.deepEqual(facet.get(), {hello: 'world'});
+    });
+
+    it('should update correctly on sub facet updates.', function() {
+      var count = 0,
+          inc = function(e) { count++; };
+
+      var facet1 = baobab.createFacet({
+        cursors: {
+          token: ['token']
+        }
+      });
+
+      var facet2 = baobab.createFacet({
+        facets: {
+          token: facet1
+        }
+      });
+
+      facet1.on('update', inc);
+      facet2.on('update', inc);
+
+      baobab.set('token', 'falafel');
+
+      assert.strictEqual(count, 2);
+
+      facet1.release();
+      facet2.release();
     });
   });
 

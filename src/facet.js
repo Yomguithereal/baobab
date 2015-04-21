@@ -124,10 +124,23 @@ function Facet(tree, definition, scope) {
   };
 
   // Tracking the tree's updates
-  this.updateHandler = function(e) {
-    var paths = Object.keys(self.cursors).map(function(k) {
-      return self.cursors[k].solvedPath;
+  function cursorsPaths(cursors) {
+    return Object.keys(cursors).map(function(k) {
+      return cursors[k].solvedPath;
     });
+  }
+
+  function facetsPaths(facets) {
+    var paths =  Object.keys(facets).map(function(k) {
+      return cursorsPaths(facets[k].cursors);
+    });
+
+    return [].concat.apply([], paths);
+  }
+
+  this.updateHandler = function(e) {
+
+    var paths = cursorsPaths(self.cursors).concat(facetsPaths(self.facets));
 
     if (helpers.solveUpdate(e.data.log, paths)) {
       solved = false;
