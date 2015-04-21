@@ -15,7 +15,7 @@ function Facet(tree, definition, scope) {
   var firstTime = true,
       solved = false,
       getter = definition.get,
-      data = null;
+      facetData = null;
 
   // Extending event emitter
   EventEmitter.call(this);
@@ -100,7 +100,7 @@ function Facet(tree, definition, scope) {
   // Data solving
   this.get = function() {
     if (solved)
-      return data;
+      return facetData;
 
     // Solving
     var data = {},
@@ -118,15 +118,16 @@ function Facet(tree, definition, scope) {
       data;
 
     solved = true;
+    facetData = data;
 
-    return data;
+    return facetData;
   };
 
   // Tracking the tree's updates
   this.updateHandler = function(e) {
     var paths = Object.keys(self.cursors).map(function(k) {
       return self.cursors[k].solvedPath;
-    })
+    });
 
     if (helpers.solveUpdate(e.data.log, paths)) {
       solved = false;

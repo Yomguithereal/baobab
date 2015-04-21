@@ -111,6 +111,6 @@ type.FacetFacets = function(value) {
     return typeof v === 'string' ||
            v instanceof require('./facet.js');
   });
-}
+};
 
 module.exports = type;

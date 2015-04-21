@@ -36,7 +36,9 @@ module.exports = function(data, spec, opts) {
         lastKey = path[path.length - 1],
         fn,
         k,
-        v;
+        v,
+        i,
+        l;
 
     var leafLevel = Object.keys(spec).some(function(k) {
       return !!~['$set', '$push', '$unshift', '$splice', '$unset', '$merge', '$apply'].indexOf(k);
@@ -97,9 +99,8 @@ module.exports = function(data, spec, opts) {
           if (!type.Array(o[lastKey]))
             throw makeError(path, 'using command $push to a non array');
 
-          v.forEach(function(args) {
-            o[lastKey] = helpers.splice.apply(null, [o[lastKey]].concat(args));
-          });
+          for (i = 0, l = v.length; i < l; i++)
+            o[lastKey] = helpers.splice.apply(null, [o[lastKey]].concat(v[i]));
         }
 
         // $push
