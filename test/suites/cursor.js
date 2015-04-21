@@ -256,6 +256,18 @@ describe('Cursor API', function() {
         assert.deepEqual(cursor1.get(), cursor2.get());
       });
 
+      it('should be possible to set a falsy value.', function() {
+        var tree = new Baobab({hello: 'world'}, {asynchronous: false});
+
+        tree.set('hello', '');
+
+        assert.strictEqual(tree.get('hello'), '');
+
+        tree.set('hello', false);
+
+        assert.strictEqual(tree.get('hello'), false);
+      });
+
       it('should throw errors when updating with wrong values.', function() {
         var cursor = (new Baobab()).root;
 

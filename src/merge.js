@@ -24,7 +24,7 @@ function merge(a, b) {
       i;
 
   COMMANDS.forEach(function(c) {
-    if (b[c]) {
+    if (c in b) {
       o = only(c, b[c]);
       leafLevel = true;
     }
