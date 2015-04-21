@@ -20,9 +20,6 @@ function makeError(path, message) {
 module.exports = function(data, spec, opts) {
   opts = opts || {};
 
-  if (!type.Object(data) && !type.Array(data))
-    throw Error('baobab.update: invalid target.');
-
   var log = {};
 
   // Shifting root
