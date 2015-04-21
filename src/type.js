@@ -49,7 +49,8 @@ type.Function = function(value) {
 };
 
 type.Primitive = function(value) {
-  return typeof value === 'string' ||
+  return !value ||
+         typeof value === 'string' ||
          typeof value === 'number' ||
          typeof value === 'boolean';
 };

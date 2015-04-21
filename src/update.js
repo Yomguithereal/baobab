@@ -41,7 +41,7 @@ module.exports = function(data, spec, opts) {
         l;
 
     var leafLevel = Object.keys(spec).some(function(k) {
-      return !!~['$set', '$push', '$unshift', '$splice', '$unset', '$merge', '$apply'].indexOf(k);
+      return k.charAt(0) === '$';
     });
 
     if (leafLevel) {
