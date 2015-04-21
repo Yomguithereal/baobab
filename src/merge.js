@@ -10,57 +10,58 @@ var helpers = require('./helpers.js'),
 // Helpers
 var COMMANDS = ['$unset', '$set', '$merge', '$apply'];
 
-// TODO: delete every keys
-function only(o, n, keep) {
-  COMMANDS.forEach(function(c) {
-    if (keep !== c)
-      delete o[c];
-  });
-
-  o[keep] = n[keep];
+function only(command, commandValue) {
+  var o = {};
+  o[command] = commandValue;
+  return o;
 }
 
 // Main function
-// TODO: use a better way than shallow cloning b?
 function merge(a, b) {
-  var o = helpers.shallowClone(b || {}),
+  var o = helpers.shallowClone(a || {}),
+      leafLevel = false,
       k,
       i;
 
   COMMANDS.forEach(function(c) {
-    if (a[c])
-      only(o, a, c);
+    if (b[c]) {
+      o = only(c, b[c]);
+      leafLevel = true;
+    }
   });
 
-  if (a.$chain) {
-    COMMANDS.slice(0, -1).forEach(function(c) {
-      delete o[c];
-    });
+  if (b.$chain) {
 
     if (o.$apply)
-      o.$apply = helpers.compose(o.$apply, a.$chain);
+      o.$apply = helpers.compose(o.$apply, b.$chain);
     else
-      o.$apply = a.$chain;
+      o.$apply = b.$chain;
+
+    o = only('$apply', o.$apply);
+    leafLevel = true;
   }
 
-  if (a.$splice || o.$splice) {
-    o.$splice = [].concat(o.$splice || []).concat(a.$splice || []);
+  if (b.$splice || b.$splice) {
+    o.$splice = [].concat(o.$splice || []).concat(b.$splice || []);
+    leafLevel = true;
   }
 
-  if (a.$push || o.$push) {
-    o.$push = [].concat(o.$push || []).concat(a.$push || []);
+  if (b.$push || o.$push) {
+    o.$push = [].concat(o.$push || []).concat(b.$push || []);
+    leafLevel = true;
   }
 
-  if (a.$unshift || o.$unshift) {
-    o.$unshift = [].concat(a.$unshift || []).concat(o.$unshift || []);
+  if (b.$unshift || o.$unshift) {
+    o.$unshift = [].concat(b.$unshift || []).concat(o.$unshift || []);
+    leafLevel = true;
   }
 
-  for (k in a) {
+  if (leafLevel)
+    return o;
 
-    if (type.Object(a[k]))
-      o[k] = merge(a[k], o[k]);
-    else if (k[0] !== '$')
-      o[k] = a[k];
+  for (k in b) {
+    if (type.Object(b[k]))
+      o[k] = merge(o[k], b[k]);
   }
 
   return o;

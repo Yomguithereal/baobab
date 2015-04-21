@@ -6,7 +6,8 @@ var assert = require('assert'),
     state = require('../state.js'),
     Baobab = require('../../src/baobab.js'),
     helpers = require('../../src/helpers.js'),
-    update = require('../../src/update.js');
+    update = require('../../src/update.js'),
+    merge = require('../../src/merge.js');
 
 describe('Helpers', function() {
 
@@ -166,6 +167,50 @@ describe('Helpers', function() {
       assert(regex !== clone);
       assert.strictEqual(regex.source, clone.source);
       assert(regex.ignoreCase, clone.ignoreCase);
+    });
+  });
+
+  describe('Merge', function() {
+    return;
+    it('should solve edge cases.', function() {
+      var spec = {
+        hello: {
+          $set: 'ok',
+          otherKey: {
+            world: 'Niet'
+          }
+        }
+      };
+
+      assert.deepEqual(
+        merge({}, spec),
+        {
+          hello: {
+            $set: 'ok'
+          }
+        }
+      );
+
+      assert.deepEqual(
+        merge(
+          {
+            hello: {
+              $set: [1]
+            }
+          },
+          {
+            hello: {
+              $push: [2]
+            }
+          }
+        ),
+        {
+          hello: {
+            $set: [1],
+            $push: [2]
+          }
+        }
+      );
     });
   });
 

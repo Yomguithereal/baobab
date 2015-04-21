@@ -128,7 +128,7 @@ Baobab.prototype.stack = function(spec) {
   if (!type.Object(spec))
     throw Error('Baobab.update: wrong specification.');
 
-  this._transaction = merge(spec, this._transaction);
+  this._transaction = merge(this._transaction, spec);
 
   // Should we let the user commit?
   if (!this.options.autoCommit)
