@@ -453,6 +453,8 @@ var blankTree = new Baobab();
 var tree = Baobab();
 ```
 
+**Note**: when using a function or a descriptor object in a path, you are not filtering but rather selecting the first matching element. (It's actually the same as using something like [lodash](https://lodash.com/docs#find)'s `_.find`).
+
 #### Traversal
 
 *Going up in the tree*
@@ -630,7 +632,7 @@ var facet = tree.facets.currentProject;
 // Getting value (cached and only computed if needed)
 facet.get();
 
-// Listening
+// Facets are also event emitters
 facet.on('update', function() {
   console.log('New value:', facet.get());
 });
