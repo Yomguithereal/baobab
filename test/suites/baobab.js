@@ -209,6 +209,10 @@ describe('Baobab API', function() {
       assert.throws(function() {
         baobab.createFacet({cursors: ['wrong']});
       }, /mapping/);
+
+      assert.throws(function() {
+        baobab.createFacet({cursors: {name: Function.prototype}});
+      }, /mapping/);
     });
 
     it('should fire correctly.', function() {

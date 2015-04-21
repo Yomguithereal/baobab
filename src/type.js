@@ -70,8 +70,8 @@ type.Splicer = function(value) {
          value.every(type.Array);
 };
 
-type.Path = function(value) {
-  var allowed = ['String', 'Number', 'Function', 'Object'];
+type.Path = function(value, allowed) {
+  allowed = allowed || ['String', 'Number', 'Function', 'Object'];
 
   if (type.Array(value)) {
     return value.every(function(step) {
@@ -96,7 +96,7 @@ type.FacetCursors = function(value) {
   return Object.keys(value).every(function(k) {
     var v = value[k];
 
-    return type.Path(v) ||
+    return type.Path(v, ['String', 'Number', 'Object']) ||
            v instanceof require('./cursor.js');
   });
 };

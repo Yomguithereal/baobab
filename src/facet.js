@@ -75,8 +75,6 @@ function Facet(tree, definition, scope) {
           return;
         }
       }
-
-      throw Error('baobab.Facet: invalid value returned by function in ' + targetProperty + ' mapping.');
     });
   }
 
