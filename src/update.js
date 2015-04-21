@@ -67,29 +67,26 @@ module.exports = function(data, spec, opts) {
           v = spec.$set;
 
           o[lastKey] = v;
-          break;
         }
 
         // $apply
-        if (k === '$apply') {
+        else if (k === '$apply') {
           fn = spec.$apply;
 
           if (typeof fn !== 'function')
             throw makeError(path, 'using command $apply with a non function');
 
           o[lastKey] = fn.call(null, o[lastKey]);
-          break;
         }
 
         // $merge
-        if (k === '$merge') {
+        else if (k === '$merge') {
           v = spec.$merge;
 
           if (!type.Object(o[lastKey]) || !type.Object(v))
             throw makeError(path, 'using command $merge with a non object');
 
           o[lastKey] = helpers.shallowMerge(o[lastKey], v);
-          break;
         }
 
         // $splice

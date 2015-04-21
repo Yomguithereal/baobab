@@ -297,5 +297,15 @@ describe('Helpers', function() {
 
       assert.deepEqual(o2.list, [2, 4]);
     });
+
+    it('should be possible to set then to push etc.', function() {
+      var o1 = {},
+          o2 = update(o1, {
+            $set: [1],
+            $push: [2, 3]
+          }).data;
+
+      assert.deepEqual(o2, [1, 2, 3]);
+    });
   });
 });
