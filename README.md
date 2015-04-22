@@ -799,7 +799,7 @@ cursor.chain(inc);
 
 #### Common pitfalls
 
-*Immutable behaviour*
+**Immutable behaviour**
 
 TL;DR: Don't mutate things in your *baobab* tree. Let the tree handle its own mutations.
 
