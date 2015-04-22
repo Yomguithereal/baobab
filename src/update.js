@@ -31,16 +31,25 @@ module.exports = function(data, spec, opts) {
 
     var hash = path.join('|λ|'),
         lastKey = path[path.length - 1],
+        oldValue = o[lastKey],
         fn,
         k,
         v,
         i,
         l;
 
+    // If nested object does not exist, we create it
+    if (type.Primitive(o[lastKey]))
+      o[lastKey] = {};
+    else
+      o[lastKey] = helpers.shallowClone(o[lastKey]);
+
+    // Are we at leaf level?
     var leafLevel = Object.keys(spec).some(function(k) {
       return k.charAt(0) === '$';
     });
 
+    // Leaf level updates
     if (leafLevel) {
       log[hash] = true;
 
@@ -73,7 +82,7 @@ module.exports = function(data, spec, opts) {
           if (typeof fn !== 'function')
             throw makeError(path, 'using command $apply with a non function');
 
-          o[lastKey] = fn.call(null, o[lastKey]);
+          o[lastKey] = fn.call(null, oldValue);
         }
 
         // $merge
@@ -120,12 +129,6 @@ module.exports = function(data, spec, opts) {
     }
     else {
       for (k in spec)  {
-
-        // If nested object does not exist, we create it
-        if (typeof o[lastKey][k] === 'undefined')
-          o[lastKey][k] = {};
-        else
-          o[lastKey][k] = helpers.shallowClone(o[lastKey][k]);
 
         // Recur
         mutator(

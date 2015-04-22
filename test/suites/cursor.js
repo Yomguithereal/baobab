@@ -658,5 +658,19 @@ describe('Cursor API', function() {
         done();
       });
     });
+
+    it('should be possible to set a nested key on a primitive path.', function() {
+      var baobab = new Baobab({
+        hello: 42
+      }, {asynchronous: false});
+
+      baobab.set(['hello', 'cowabunga'], 43);
+
+      assert.deepEqual(baobab.get(), {
+        hello: {
+          cowabunga: 43
+        }
+      });
+    });
   });
 });
