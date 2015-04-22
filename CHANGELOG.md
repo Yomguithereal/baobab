@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.1
+
+* Fixing scope argument of `tree.createFacet`.
+* Fixing facet mappings edge cases.
+* Facets can now use facets.
+* Fixing merge edge cases.
+* Fixing update edge cases.
+* Fixing bug where setting falsy values would fail.
+
 ## v1.0.0
 
 * Dropping `cursor.edit` and `cursor.remove` in favor of `cursor.set` and `cursor.unset` polymorphisms.
