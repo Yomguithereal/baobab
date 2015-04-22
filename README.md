@@ -6,7 +6,7 @@
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
-It aims at providing a centralized model holding an application's state and can be paired with **React** easily through mixins or higher order components (available [here](https://github.com/Yomguithereal/baobab-react)).
+It aims at providing a centralized model holding an application's state and can be paired with **React** easily through mixins, higher order components, wrapper components or decorators (available [there](https://github.com/Yomguithereal/baobab-react)).
 
 For a concise introduction about the library and how it can be used in a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) on the subject.
 
