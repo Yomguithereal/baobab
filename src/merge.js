@@ -59,6 +59,11 @@ function merge(a, b) {
   if (leafLevel)
     return o;
 
+  for (k in o) {
+    if (k.charAt(0) === '$')
+      delete o[k];
+  }
+
   for (k in b) {
     if (type.Object(b[k]))
       o[k] = merge(o[k], b[k]);

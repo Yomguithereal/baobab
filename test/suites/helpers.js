@@ -171,7 +171,7 @@ describe('Helpers', function() {
   });
 
   describe('Merge', function() {
-    return;
+
     it('should solve edge cases.', function() {
       var spec = {
         hello: {
@@ -208,6 +208,52 @@ describe('Helpers', function() {
           hello: {
             $set: [1],
             $push: [2]
+          }
+        }
+      );
+
+      assert.deepEqual(
+        merge(
+          {
+            one: {
+              two: {
+                $set: 'test'
+              }
+            }
+          },
+          {
+            one: {
+              $set: 'ok'
+            }
+          }
+        ),
+        {
+          one: {
+            $set: 'ok'
+          }
+        }
+      );
+
+      assert.deepEqual(
+        merge(
+          {
+            one: {
+              $set: 'ok'
+            }
+          },
+          {
+            one: {
+              two: {
+                $set: 'test'
+              }
+            }
+          }
+        ),
+        {
+          one: {
+            two: {
+              $set: 'test'
+            }
           }
         }
       );
