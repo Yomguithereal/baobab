@@ -269,7 +269,7 @@ function makeUpdateMethod(command, type) {
   Cursor.prototype[command] = function() {
     var spec = pathPolymorphism.bind(this, command, type).apply(this, arguments);
 
-    return this.update(spec);
+    return this.update(spec, true);
   };
 }
 
@@ -287,23 +287,14 @@ Cursor.prototype.unset = function(key) {
 
   var spec = pathPolymorphism.bind(this, 'unset', null).apply(this, arguments);
 
-  return this.update(spec);
+  return this.update(spec, true);
 };
 
-Cursor.prototype.update = function(key, spec) {
-  if (arguments.length < 2) {
-    this.tree.stack(helpers.pathObject(this.solvedPath, key));
-    return this;
-  }
+Cursor.prototype.update = function(spec, skipMerge) {
+  if (!type.Object(spec))
+    throw Error('baobab.Cursor.update: invalid specifications.');
 
-  // Solving path
-  var path = [].concat(key),
-      solvedPath = helpers.solvePath(this.get(), path, this.tree);
-
-  if (!solvedPath)
-    throw Error('baobab.Cursor.update: could not solve dynamic path.');
-
-  this.tree.stack(helpers.pathObject(this.solvedPath.concat(solvedPath), spec));
+  this.tree.stack(helpers.pathObject(this.solvedPath, spec), skipMerge);
   return this;
 };
 

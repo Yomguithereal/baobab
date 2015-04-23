@@ -122,13 +122,15 @@ Baobab.prototype.select = function(path) {
   }
 };
 
-Baobab.prototype.stack = function(spec) {
+Baobab.prototype.stack = function(spec, skipMerge) {
   var self = this;
 
   if (!type.Object(spec))
     throw Error('Baobab.update: wrong specification.');
 
-  this._transaction = merge(this._transaction, spec);
+  this._transaction = (skipMerge && !Object.keys(this._transaction).length) ?
+    spec :
+    merge(this._transaction, spec);
 
   // Should we let the user commit?
   if (!this.options.autoCommit)

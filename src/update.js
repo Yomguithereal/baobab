@@ -76,8 +76,8 @@ module.exports = function(data, spec, opts) {
         }
 
         // $apply
-        else if (k === '$apply') {
-          fn = spec.$apply;
+        else if (k === '$apply' || k === '$chain') {
+          fn = spec.$apply || spec.$chain;
 
           if (typeof fn !== 'function')
             throw makeError(path, 'using command $apply with a non function');
