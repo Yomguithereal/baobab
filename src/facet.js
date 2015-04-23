@@ -70,7 +70,7 @@ function Facet(tree, definition, scope) {
         if (typeof solvedMapping[k] === 'string') {
           self.facets[k] = tree.facets[solvedMapping[k]];
 
-          if (!self.facets)
+          if (!self.facets[k])
             throw Error('baobab.Facet: unkown "' + solvedMapping[k] + '" facet in facets mapping.');
           return;
         }
