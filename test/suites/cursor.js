@@ -154,6 +154,15 @@ describe('Cursor API', function() {
         }, /too many/);
       });
 
+      it('should throw an error when the provided path is incorrect.', function() {
+        var baobab = new Baobab(state),
+            cursor = baobab.select('items');
+
+        assert.throws(function() {
+          cursor.set(null, '45');
+        }, /invalid path/);
+      });
+
       it('should be possible to set a key using a path rather than a key.', function() {
         var baobab = new Baobab(state, {asynchronous: false}),
             cursor = baobab.select('items');

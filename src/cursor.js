@@ -223,12 +223,20 @@ function pathPolymorphism(method, allowedType, key, val) {
   if (arguments.length > 5)
     throw Error('baobab.Cursor.' + method + ': too many arguments.');
 
-  if (arguments.length < 4) {
+  if (method === 'unset') {
+    val = true;
+
+    if (arguments.length === 2)
+      key = [];
+  }
+
+  else if (arguments.length < 4) {
     val = key;
     key = [];
   }
 
-  key = key || [];
+  if (!type.Path(key))
+    throw Error('baobab.Cursor.' + method + ': invalid path "' + key + '".');
 
   // Splice exception
   if (method === 'splice' &&
@@ -277,7 +285,7 @@ Cursor.prototype.unset = function(key) {
   if (key === undefined && this.isRoot())
     throw Error('baobab.Cursor.unset: cannot remove root node.');
 
-  var spec = pathPolymorphism.bind(this, 'unset', null).apply(this, [key, true]);
+  var spec = pathPolymorphism.bind(this, 'unset', null).apply(this, arguments);
 
   return this.update(spec);
 };
