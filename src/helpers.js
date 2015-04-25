@@ -23,12 +23,10 @@ function before(decorator, fn) {
 function splice(array, index, nb /*, &elements */) {
   var elements = arrayOf(arguments).slice(3);
 
-  index = +index;
-  nb = +nb;
-
   return array
     .slice(0, index)
-    .concat(array.slice(index + nb).concat(elements));
+    .concat(elements)
+    .concat(array.slice(index + nb));
 }
 
 // Shallow merge

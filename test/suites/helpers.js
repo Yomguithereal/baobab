@@ -61,6 +61,16 @@ describe('Helpers', function() {
         splice(array, 5, 3, 'orange', 'gold'),
         ['yellow', 'blue', 'purple', 'orange', 'gold']
       );
+
+      assert.deepEqual(
+        splice(array, 1, 0, 'gold'),
+        ['yellow', 'gold', 'blue', 'purple']
+      );
+
+      assert.deepEqual(
+        splice(array, 1, 1, 'gold'),
+        ['yellow', 'gold', 'purple']
+      );
     });
   });
 
