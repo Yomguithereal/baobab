@@ -268,6 +268,39 @@ describe('Helpers', function() {
         }
       );
     });
+
+    it('should merge merge commands.', function() {
+
+      assert.deepEqual(
+        merge(
+          {
+            hello: {
+              $merge: {
+                a: 1,
+                b: 2
+              }
+            }
+          },
+          {
+            hello: {
+              $merge: {
+                a: 42,
+                c: 3
+              }
+            }
+          }
+        ),
+        {
+          hello: {
+            $merge: {
+              a: 42,
+              b: 2,
+              c: 3
+            }
+          }
+        }
+      );
+    });
   });
 
   describe('Update API', function() {
@@ -354,7 +387,7 @@ describe('Helpers', function() {
       assert.deepEqual(o2.list, [2, 4]);
     });
 
-    it('should be possible to set then to push etc.', function() {
+    it('should be possible to set then to push.', function() {
       var o1 = {},
           o2 = update(o1, {
             $set: [1],
@@ -362,6 +395,18 @@ describe('Helpers', function() {
           }).data;
 
       assert.deepEqual(o2, [1, 2, 3]);
+    });
+
+    it('should be possible to set then to merge.', function() {
+      var o1 = {},
+          o2 = update(o1, {
+            hello: {
+              $set: {a: 1, b: 2},
+              $merge: {c: 3}
+            },
+          }).data;
+
+      assert.deepEqual(o2, {hello: {a: 1, b: 2, c: 3}});
     });
   });
 });

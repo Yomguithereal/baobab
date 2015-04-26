@@ -8,7 +8,7 @@ var helpers = require('./helpers.js'),
     type = require('./type.js');
 
 // Helpers
-var COMMANDS = ['$unset', '$set', '$merge', '$apply'];
+var COMMANDS = ['$unset', '$set', '$apply'];
 
 function only(command, commandValue) {
   var o = {};
@@ -38,6 +38,11 @@ function merge(a, b) {
       o.$apply = b.$chain;
 
     o = only('$apply', o.$apply);
+    leafLevel = true;
+  }
+
+  if (b.$merge) {
+    o.$merge = helpers.shallowMerge(o.$merge || {}, b.$merge);
     leafLevel = true;
   }
 
