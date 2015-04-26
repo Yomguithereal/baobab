@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.2
+
+* Fixing facets related issues (internal).
+* Fixing cases where falsy paths in cursors setters would fail the update.
+* Fixing `$splice` behavior.
+* Fixing `$merge` behavior.
+* Persistent history rather than deep cloned.
+* Improving performances on single update cases.
+
 ## v1.0.1
 
 * Fixing scope argument of `tree.createFacet`.
