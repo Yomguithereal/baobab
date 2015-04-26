@@ -390,11 +390,19 @@ describe('Baobab API', function() {
       facet.release();
     });
 
-    it('should be possible to pass a scope to createFacet.', function() {
-      var fn = function() {return this;},
-          facet = baobab.createFacet({get: fn.bind({hello: 'world'})});
+    it('should be possible to pass arguments to createFacet and facet.refresh', function() {
+      var fn = function(nb, test) {
+        assert(test);
+        return {value: ['value' + nb]};
+      };
 
-      assert.deepEqual(facet.get(), {hello: 'world'});
+      var facet = baobab.createFacet({cursors: fn, get: function(data) { return data.value; }}, [1, true]);
+
+      assert.strictEqual(facet.get(), 'Hello');
+
+      facet.refresh([2, true]);
+
+      assert.strictEqual(facet.get(), 'World');
     });
 
     it('should update correctly on sub facet updates.', function() {

@@ -72,13 +72,13 @@ helpers.inherits(Baobab, EventEmitter);
 /**
  * Prototype
  */
-Baobab.prototype.addFacet = function(name, definition) {
-  this.facets[name] = this.createFacet(definition);
+Baobab.prototype.addFacet = function(name, definition, args) {
+  this.facets[name] = this.createFacet(definition, args);
   return this;
 };
 
-Baobab.prototype.createFacet = function(definition, scope) {
-  return new Facet(this, definition, scope);
+Baobab.prototype.createFacet = function(definition, args) {
+  return new Facet(this, definition, args);
 };
 
 Baobab.prototype.select = function(path) {

@@ -9,7 +9,7 @@ var EventEmitter = require('emmett'),
     helpers = require('./helpers.js'),
     type = require('./type.js');
 
-function Facet(tree, definition, scope) {
+function Facet(tree, definition, args) {
   var self = this;
 
   var firstTime = true,
@@ -31,7 +31,7 @@ function Facet(tree, definition, scope) {
       complexFacets = typeof definition.facets === 'function';
 
   // Refreshing the internal mapping
-  function refresh(complexity, targetMapping, targetProperty, mappingType) {
+  function refresh(complexity, targetMapping, targetProperty, mappingType, refreshArgs) {
     if (!complexity && !firstTime)
       return;
 
@@ -40,7 +40,7 @@ function Facet(tree, definition, scope) {
     var solvedMapping = targetMapping;
 
     if (complexity)
-      solvedMapping = targetMapping.call(scope);
+      solvedMapping = targetMapping.apply(this, refreshArgs);
 
     if (!mappingType(solvedMapping))
       throw Error('baobab.Facet: incorrect ' + targetProperty + ' mapping.');
@@ -78,14 +78,19 @@ function Facet(tree, definition, scope) {
     });
   }
 
-  this.refresh = function() {
+  this.refresh = function(refreshArgs) {
+    refreshArgs = refreshArgs || [];
+
+    if (!type.Array(refreshArgs))
+      throw Error('baobab.Facet.refresh: first argument should be an array.');
 
     if (cursorsMapping)
       refresh(
         complexCursors,
         cursorsMapping,
         'cursors',
-        type.FacetCursors
+        type.FacetCursors,
+        refreshArgs
       );
 
     if (facetsMapping)
@@ -93,7 +98,8 @@ function Facet(tree, definition, scope) {
         complexFacets,
         facetsMapping,
         'facets',
-        type.FacetFacets
+        type.FacetFacets,
+        refreshArgs
       );
   };
 
@@ -149,7 +155,7 @@ function Facet(tree, definition, scope) {
   };
 
   // Init routine
-  this.refresh();
+  this.refresh(args);
   this.tree.on('update', this.updateHandler);
 
   firstTime = false;
