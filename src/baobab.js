@@ -82,9 +82,6 @@ Baobab.prototype.createFacet = function(definition, scope) {
 };
 
 Baobab.prototype.select = function(path) {
-  if (!path)
-    throw Error('Baobab.select: invalid path.');
-
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
