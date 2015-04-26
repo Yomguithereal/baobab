@@ -7,7 +7,7 @@
     "name": "Guillaume Plique",
     "url": "http://github.com/Yomguithereal"
   },
-  "description": "JavaScript data tree with cursors.",
+  "description": "JavaScript persistent data tree with cursors.",
   "keywords": [
     "cursors",
     "atom",

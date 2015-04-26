@@ -2,7 +2,7 @@
 
 # Baobab
 
-**Baobab** is a JavaScript data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
+**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
