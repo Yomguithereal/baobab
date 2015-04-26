@@ -44,9 +44,7 @@ function Cursor(tree, path, solvedPath, hash) {
     if (self.recording && !self.undoing) {
 
       // Handle archive
-      var data = helpers.getIn(previousState, self.solvedPath, self.tree),
-          record = helpers.deepClone(data);
-
+      var record = helpers.getIn(previousState, self.solvedPath, self.tree);
       self.archive.add(record);
     }
 
