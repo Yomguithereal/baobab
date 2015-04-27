@@ -103,6 +103,30 @@ function clone(deep, item) {
 var shallowClone = clone.bind(null, false),
     deepClone = clone.bind(null, true);
 
+// Freezing function
+var freeze = Object.freeze || Function.prototype;
+
+function deepFreeze(o) {
+  if (typeof o !== 'object')
+    return;
+
+  var p,
+      k;
+
+  freeze(o);
+
+  for (k in o) {
+    p = o[k];
+
+    if (!o.hasOwnProperty(k) ||
+        typeof p !== 'object' ||
+        Object.isFrozen(p))
+      continue;
+
+    deepFreeze(p);
+  }
+}
+
 // Simplistic composition
 function compose(fn1, fn2) {
   return function(arg) {
@@ -351,6 +375,7 @@ module.exports = {
   arrayOf: arrayOf,
   before: before,
   deepClone: deepClone,
+  deepFreeze: deepFreeze,
   shallowClone: shallowClone,
   shallowMerge: shallowMerge,
   compose: compose,
