@@ -25,6 +25,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.tree = tree;
   this.path = path;
   this.hash = hash;
+  this.refs = helpers.refPaths(path, tree);
   this.archive = null;
   this.recording = false;
   this.undoing = false;

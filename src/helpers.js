@@ -236,6 +236,25 @@ function getIn(object, path, tree) {
   return c;
 }
 
+function refPaths(path, tree) {
+  var refs = [],
+      i,
+      l;
+
+  for (i = 0, l = path.length; i < l; i++) {
+    if (typeof path[i] === 'object') {
+      if (tree && '$cursor' in path[i]) {
+        if (!type.Path(path[i].$cursor))
+          throw Error('baobab.getIn: $cursor path must be an array.');
+
+        refs.push(path[i].$cursor);
+      }
+    }
+  }
+
+  return refs;
+}
+
 // Solve a complex path
 function solvePath(object, path, tree) {
   var solvedPath = [],
@@ -374,6 +393,7 @@ module.exports = {
   archive: archive,
   arrayOf: arrayOf,
   before: before,
+  refPaths: refPaths,
   deepClone: deepClone,
   deepFreeze: deepFreeze,
   shallowClone: shallowClone,

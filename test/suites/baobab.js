@@ -217,15 +217,16 @@ describe('Baobab API', function() {
     });
 
     it('should fire correctly.', function() {
-      var tree = new Baobab({list: [1, 2, 3], otherlist: [4, 5, 6], unrelated: 0}, {autoCommit: false}),
+      var tree = new Baobab({list: [1, 2, 3], otherlist: [4, 5, 6], unrelated: 0, indices: {main: 1}}, {autoCommit: false}),
           list = tree.select('list'),
           other = tree.select('otherlist'),
-          unrelated = tree.select('unrelated');
+          unrelated = tree.select('unrelated'),
+          index = tree.select(['indices', 'main']);
 
       var count = 0,
           inc = function() {count++;};
 
-      var facet = tree.createFacet({cursors: {list: ['list'], otherList: ['otherlist']}});
+      var facet = tree.createFacet({cursors: {list: ['list'], otherList: ['otherlist'], dependent: ['list', {$cursor: ['indices', 'main']}]}});
       facet.on('update', inc);
 
       list.push(4);
@@ -248,6 +249,16 @@ describe('Baobab API', function() {
       tree.commit();
 
       assert.strictEqual(count, 3);
+
+      index.set(2);
+      tree.commit();
+
+      assert.strictEqual(count, 4);
+
+      index.set(1);
+      tree.commit();
+
+      assert.strictEqual(count, 5);
 
       facet.release();
     });
