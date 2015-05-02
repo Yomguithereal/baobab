@@ -14,6 +14,7 @@ function Facet(tree, definition, args) {
 
   var firstTime = true,
       solved = false,
+      refs = [],
       getter = definition.get,
       facetData = null;
 
@@ -24,6 +25,7 @@ function Facet(tree, definition, args) {
   this.tree = tree;
   this.cursors = {};
   this.facets = {};
+
 
   var cursorsMapping = definition.cursors,
       facetsMapping = definition.facets,
@@ -36,6 +38,7 @@ function Facet(tree, definition, args) {
       return;
 
     solved = false;
+    refs = [];
 
     var solvedMapping = targetMapping;
 
@@ -48,15 +51,16 @@ function Facet(tree, definition, args) {
     self[targetProperty] = {};
 
     Object.keys(solvedMapping).forEach(function(k) {
-
       if (targetProperty === 'cursors') {
         if (solvedMapping[k] instanceof Cursor) {
           self.cursors[k] = solvedMapping[k];
+          self.cursors[k].refs.forEach(function(path) { refs.push(path); });
           return;
         }
 
         if (type.Path(solvedMapping[k])) {
           self.cursors[k] = tree.select(solvedMapping[k]);
+          self.cursors[k].refs.forEach(function(path) { refs.push(path); });
           return;
         }
       }
@@ -146,7 +150,7 @@ function Facet(tree, definition, args) {
 
   this.updateHandler = function(e) {
 
-    var paths = cursorsPaths(self.cursors).concat(facetsPaths(self.facets));
+    var paths = refs.concat(cursorsPaths(self.cursors).concat(facetsPaths(self.facets)));
 
     if (helpers.solveUpdate(e.data.log, paths)) {
       solved = false;
