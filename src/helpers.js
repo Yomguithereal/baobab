@@ -110,20 +110,32 @@ function deepFreeze(o) {
   if (typeof o !== 'object')
     return;
 
-  var p,
-      k;
-
   freeze(o);
 
-  for (k in o) {
-    p = o[k];
+  if (Array.isArray(o)) {
 
-    if (!o.hasOwnProperty(k) ||
-        typeof p !== 'object' ||
-        Object.isFrozen(p))
-      continue;
+    // Iterating through the elements
+    var i,
+        l;
 
-    deepFreeze(p);
+    for (i = 0, l = o.length; i < l; i++)
+      deepFreeze(o[i]);
+  }
+  else {
+    var p,
+        k;
+
+    for (k in o) {
+      p = o[k];
+
+      if (!p ||
+          !o.hasOwnProperty(k) ||
+          typeof p !== 'object' ||
+          Object.isFrozen(p))
+        continue;
+
+      deepFreeze(p);
+    }
   }
 }
 

@@ -45,7 +45,8 @@ function Baobab(initialData, opts) {
   this._identity = '[object Baobab]';
 
   // Properties
-  this.data = helpers.deepClone(initialData);
+  this.data = this.options.immutable ?
+    helpers.deepFreeze(initialData) : initialData;
   this.root = this.select([]);
   this.facets = {};
 

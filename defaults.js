@@ -14,6 +14,9 @@ module.exports = {
   // Facets registration
   facets: {},
 
+  // Should the tree's data be immutable?
+  immutable: false,
+
   // Validation specifications
   validate: null,
 
