@@ -447,6 +447,21 @@ describe('Cursor API', function() {
 
       cursor.set('jacky');
     });
+
+    it('should fire update correctly even when root node is affected.', function(done) {
+      var baobab = new Baobab({first: 1, second: 2});
+
+      baobab.select('first').on('update', function() {
+        assert.deepEqual(
+          baobab.get(),
+          {first: 1.1, second: 2.2}
+        );
+
+        done();
+      });
+
+      baobab.root.set({first: 1.1, second: 2.2});
+    });
   });
 
   describe('Predicates', function() {

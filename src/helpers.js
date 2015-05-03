@@ -297,9 +297,15 @@ function solveUpdate(log, paths) {
   for (i = 0, l = paths.length; i < l; i++) {
     p = paths[i];
 
+    if (!p.length)
+      return true;
+
     // Looping through logged paths
     for (j = 0, m = log.length; j < m; j++) {
       c = log[j];
+
+      if (!c.length)
+        return true;
 
       // Looping through steps
       for (k = 0, n = c.length; k < n; k++) {
