@@ -38,12 +38,6 @@ module.exports = function(data, spec, opts) {
         i,
         l;
 
-    // If nested object does not exist, we create it
-    if (type.Primitive(o[lastKey]))
-      o[lastKey] = {};
-    else
-      o[lastKey] = helpers.shallowClone(o[lastKey]);
-
     // Are we at leaf level?
     var leafLevel = Object.keys(spec).some(function(k) {
       return k.charAt(0) === '$';
@@ -125,9 +119,24 @@ module.exports = function(data, spec, opts) {
 
           o[lastKey] = [].concat(v).concat(o[lastKey]);
         }
+
+        // Deep freezing the new value?
+        if (opts.immutable)
+          helpers.deepFreeze(o[lastKey]);
       }
     }
     else {
+
+      // If nested object does not exist, we create it
+      if (type.Primitive(o[lastKey]))
+        o[lastKey] = {};
+      else
+        o[lastKey] = helpers.shallowClone(o[lastKey]);
+
+      // Should we freeze?
+      if (opts.immutable)
+        helpers.freeze(o);
+
       for (k in spec)  {
 
         // Recur

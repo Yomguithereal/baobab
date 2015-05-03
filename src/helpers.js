@@ -55,7 +55,7 @@ function cloneRegexp(re) {
 }
 
 // Cloning function
-function clone(deep, item) {
+function cloner(deep, item) {
   if (!item ||
       typeof item !== 'object' ||
       item instanceof Error ||
@@ -100,17 +100,18 @@ function clone(deep, item) {
 }
 
 // Shallow & deep cloning functions
-var shallowClone = clone.bind(null, false),
-    deepClone = clone.bind(null, true);
+var shallowClone = cloner.bind(null, false),
+    deepClone = cloner.bind(null, true);
 
 // Freezing function
-var freeze = Object.freeze || Function.prototype;
-
-function deepFreeze(o) {
-  if (typeof o !== 'object')
+function freezer(deep, o) {
+  if (!Object.freeze || typeof o !== 'object')
     return;
 
-  freeze(o);
+  Object.freeze(o);
+
+  if (!deep)
+    return;
 
   if (Array.isArray(o)) {
 
@@ -138,6 +139,10 @@ function deepFreeze(o) {
     }
   }
 }
+
+// Shallow & deep freezing function
+var freeze = freezer.bind(null, false),
+    deepFreeze = freezer.bind(null, true);
 
 // Simplistic composition
 function compose(fn1, fn2) {
@@ -392,6 +397,7 @@ module.exports = {
   archive: archive,
   arrayOf: arrayOf,
   before: before,
+  freeze: freeze,
   deepClone: deepClone,
   deepFreeze: deepFreeze,
   shallowClone: shallowClone,
