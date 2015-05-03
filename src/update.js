@@ -122,7 +122,7 @@ module.exports = function(data, spec, opts) {
 
         // Deep freezing the new value?
         if (opts.immutable)
-          helpers.deepFreeze(o[lastKey]);
+          helpers.deepFreeze(o);
       }
     }
     else {
@@ -133,7 +133,7 @@ module.exports = function(data, spec, opts) {
       else
         o[lastKey] = helpers.shallowClone(o[lastKey]);
 
-      // Should we freeze?
+      // Should we freeze the parent?
       if (opts.immutable)
         helpers.freeze(o);
 

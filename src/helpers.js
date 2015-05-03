@@ -105,7 +105,7 @@ var shallowClone = cloner.bind(null, false),
 
 // Freezing function
 function freezer(deep, o) {
-  if (!Object.freeze || typeof o !== 'object')
+  if (typeof o !== 'object')
     return;
 
   Object.freeze(o);
@@ -141,8 +141,8 @@ function freezer(deep, o) {
 }
 
 // Shallow & deep freezing function
-var freeze = freezer.bind(null, false),
-    deepFreeze = freezer.bind(null, true);
+var freeze = Object.freeze ? freezer.bind(null, false) : Function.prototype,
+    deepFreeze = Object.freeze ? freezer.bind(null, true) : Function.prototype;
 
 // Simplistic composition
 function compose(fn1, fn2) {
