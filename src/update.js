@@ -59,6 +59,8 @@ module.exports = function(data, spec, opts) {
           parent[olderKey] = helpers.shallowClone(o);
           delete parent[olderKey][lastKey];
 
+          if (opts.immutable)
+            helpers.freeze(parent[olderKey]);
           break;
         }
 

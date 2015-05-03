@@ -515,6 +515,7 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to make the tree immutable.', function() {
+      var data;
       // TODO: perform counterpart mutability tests
 
       var baobab = new Baobab(
@@ -532,15 +533,15 @@ describe('Baobab API', function() {
       );
 
       function checkFridge() {
-        var data = baobab.get();
+        var targetData = baobab.get();
 
-        assert.isFrozen(data);
-        assert.isFrozen(data.one);
-        assert.isFrozen(data.one.two);
-        assert.isFrozen(data.one.two.three);
+        assert.isFrozen(targetData);
+        assert.isFrozen(targetData.one);
+        assert.isFrozen(targetData.one.two);
+        assert.isFrozen(targetData.one.two.three);
 
-        if (data.one.two.three.four)
-          assert.isFrozen(data.one.two.three.four);
+        if (targetData.one.two.three.four)
+          assert.isFrozen(targetData.one.two.three.four);
       }
 
       checkFridge();
@@ -555,10 +556,17 @@ describe('Baobab API', function() {
 
       baobab.set({one: {two: {three: {four: 'hey'}}}});
 
+      baobab.unset(['one', 'two']);
+
+      data = baobab.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data.one);
+
       // Arrays
       baobab.set([{nb: 1}, {nb: 2}]);
 
-      var data = baobab.get();
+      data = baobab.get();
 
       assert.isFrozen(data);
       assert.isFrozen(data[0]);
@@ -584,7 +592,7 @@ describe('Baobab API', function() {
         }
       });
 
-      var data = baobab.get();
+      data = baobab.get();
 
       assert.isFrozen(data);
       assert.isFrozen(data.one);
