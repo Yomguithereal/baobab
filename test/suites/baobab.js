@@ -513,5 +513,27 @@ describe('Baobab API', function() {
       assert.strictEqual(invalidCount, 1);
       assert.strictEqual(baobab.get('hello'), 4);
     });
+
+    it('should be possible to make the tree immutable.', function() {
+      var baobab = new Baobab(
+        {
+          one: {
+            two: {
+              three: 'Hello'
+            }
+          }
+        },
+        {
+          immutable: true,
+          asynchronous: false
+        }
+      );
+
+      var initialData = baobab.get();
+
+      assert.isFrozen(initialData);
+      assert.isFrozen(initialData.one);
+      assert.isFrozen(initialData.one.two);
+    });
   });
 });
