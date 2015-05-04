@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.3
+
+* Exposing `Cursor` and `Facet` classes for type checking (**@charlieschwabacher**).
+* Fixing `type.Object`.
+* Fixing root updates.
+
 ## v1.0.2
 
 * Fixing facets related issues (internal).
