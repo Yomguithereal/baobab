@@ -45,6 +45,8 @@ function Baobab(initialData, opts) {
   this._identity = '[object Baobab]';
 
   // Properties
+  this.log = [];
+  this.previousData = null;
   this.data = helpers.deepClone(initialData);
   this.root = this.select([]);
   this.facets = {};
@@ -119,15 +121,23 @@ Baobab.prototype.select = function(path) {
   }
 };
 
+// TODO: if syncwrite wins: drop skipMerge, this._transaction etc.
+// TODO: uniq'ing the log through path hashing
+// TODO: fix failed tested behaviors
 Baobab.prototype.stack = function(spec, skipMerge) {
   var self = this;
 
   if (!type.Object(spec))
     throw Error('Baobab.update: wrong specification.');
 
-  this._transaction = (skipMerge && !Object.keys(this._transaction).length) ?
-    spec :
-    merge(this._transaction, spec);
+  if (!this.previousData)
+    this.previousData = this.data;
+
+  // Applying modifications
+  var result = update(this.data, spec, this.options);
+
+  this.data = result.data;
+  this.log = [].concat(this.log).concat(result.log);
 
   // Should we let the user commit?
   if (!this.options.autoCommit)
@@ -145,15 +155,6 @@ Baobab.prototype.stack = function(spec, skipMerge) {
 };
 
 Baobab.prototype.commit = function() {
-  var self = this;
-
-  // Applying modifications
-  var result = update(this.data, this._transaction, this.options);
-
-  var oldData = this.data;
-
-  // Resetting
-  this._transaction = {};
 
   if (this._future)
     this._future = clearTimeout(this._future);
@@ -163,24 +164,26 @@ Baobab.prototype.commit = function() {
       behavior = this.options.validationBehavior;
 
   if (typeof validate === 'function') {
-    var error = validate.call(this, oldData, result.data, result.log);
+    var error = validate.call(this, this.previousData, this.data, this.log);
 
     if (error instanceof Error) {
       this.emit('invalid', {error: error});
 
-      if (behavior === 'rollback')
+      if (behavior === 'rollback') {
+        this.data = this.previousData;
         return this;
+      }
     }
   }
 
-  // Switching tree's data
-  this.data = result.data;
-
   // Baobab-level update event
   this.emit('update', {
-    log: result.log,
-    previousState: oldData
+    log: this.log,
+    previousState: this.previousData
   });
+
+  this.log = [];
+  this.previousData = null;
 
   return this;
 };
