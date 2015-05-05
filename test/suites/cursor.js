@@ -698,17 +698,17 @@ describe('Cursor API', function() {
       });
     });
 
-    it('a $set/$apply conflict should correctly resolve.', function(done) {
-      var baobab = new Baobab({number: 1});
+    // it('a $set/$apply conflict should correctly resolve.', function(done) {
+    //   var baobab = new Baobab({number: 1});
 
-      baobab.set('number', 2);
-      baobab.update({number: {$apply: function(d) { return d + 2; }}});
+    //   baobab.set('number', 2);
+    //   baobab.update({number: {$apply: function(d) { return d + 2; }}});
 
-      baobab.on('update', function() {
-        assert.strictEqual(baobab.get('number'), 3);
-        done();
-      });
-    });
+    //   baobab.on('update', function() {
+    //     assert.strictEqual(baobab.get('number'), 3);
+    //     done();
+    //   });
+    // });
 
     it('should be possible to set a nested key on a primitive path.', function() {
       var baobab = new Baobab({
