@@ -45,9 +45,13 @@ function Baobab(initialData, opts) {
   this._identity = '[object Baobab]';
 
   // Properties
-  this.data = helpers.deepClone(initialData);
+  this.data = initialData;
   this.root = this.select([]);
   this.facets = {};
+
+  // Immutable tree?
+  if (this.options.immutable)
+    helpers.deepFreeze(this.data);
 
   // Boostrapping root cursor's methods
   function bootstrap(name) {

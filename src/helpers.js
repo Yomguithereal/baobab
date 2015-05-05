@@ -55,7 +55,7 @@ function cloneRegexp(re) {
 }
 
 // Cloning function
-function clone(deep, item) {
+function cloner(deep, item) {
   if (!item ||
       typeof item !== 'object' ||
       item instanceof Error ||
@@ -100,32 +100,49 @@ function clone(deep, item) {
 }
 
 // Shallow & deep cloning functions
-var shallowClone = clone.bind(null, false),
-    deepClone = clone.bind(null, true);
+var shallowClone = cloner.bind(null, false),
+    deepClone = cloner.bind(null, true);
 
 // Freezing function
-var freeze = Object.freeze || Function.prototype;
-
-function deepFreeze(o) {
+function freezer(deep, o) {
   if (typeof o !== 'object')
     return;
 
-  var p,
-      k;
+  Object.freeze(o);
 
-  freeze(o);
+  if (!deep)
+    return;
 
-  for (k in o) {
-    p = o[k];
+  if (Array.isArray(o)) {
 
-    if (!o.hasOwnProperty(k) ||
-        typeof p !== 'object' ||
-        Object.isFrozen(p))
-      continue;
+    // Iterating through the elements
+    var i,
+        l;
 
-    deepFreeze(p);
+    for (i = 0, l = o.length; i < l; i++)
+      deepFreeze(o[i]);
+  }
+  else {
+    var p,
+        k;
+
+    for (k in o) {
+      p = o[k];
+
+      if (!p ||
+          !o.hasOwnProperty(k) ||
+          typeof p !== 'object' ||
+          Object.isFrozen(p))
+        continue;
+
+      deepFreeze(p);
+    }
   }
 }
+
+// Shallow & deep freezing function
+var freeze = Object.freeze ? freezer.bind(null, false) : Function.prototype,
+    deepFreeze = Object.freeze ? freezer.bind(null, true) : Function.prototype;
 
 // Simplistic composition
 function compose(fn1, fn2) {
@@ -380,6 +397,7 @@ module.exports = {
   archive: archive,
   arrayOf: arrayOf,
   before: before,
+  freeze: freeze,
   deepClone: deepClone,
   deepFreeze: deepFreeze,
   shallowClone: shallowClone,

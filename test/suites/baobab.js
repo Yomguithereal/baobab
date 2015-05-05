@@ -513,5 +513,91 @@ describe('Baobab API', function() {
       assert.strictEqual(invalidCount, 1);
       assert.strictEqual(baobab.get('hello'), 4);
     });
+
+    it('should be possible to make the tree immutable.', function() {
+      var data;
+      // TODO: perform counterpart mutability tests
+
+      var baobab = new Baobab(
+        {
+          one: {
+            two: {
+              three: 'Hello'
+            }
+          }
+        },
+        {
+          immutable: true,
+          asynchronous: false
+        }
+      );
+
+      function checkFridge() {
+        var targetData = baobab.get();
+
+        assert.isFrozen(targetData);
+        assert.isFrozen(targetData.one);
+        assert.isFrozen(targetData.one.two);
+        assert.isFrozen(targetData.one.two.three);
+
+        if (targetData.one.two.three.four)
+          assert.isFrozen(targetData.one.two.three.four);
+      }
+
+      checkFridge();
+
+      baobab.set(['one', 'two', 'three'], 'world');
+
+      checkFridge();
+
+      baobab.set(['one', 'two', 'three', 'four'], {five: 'hey'});
+
+      checkFridge();
+
+      baobab.set({one: {two: {three: {four: 'hey'}}}});
+
+      baobab.unset(['one', 'two']);
+
+      data = baobab.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data.one);
+
+      // Arrays
+      baobab.set([{nb: 1}, {nb: 2}]);
+
+      data = baobab.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data[0]);
+      assert.isFrozen(data[1]);
+
+      baobab.set(0, {nb: 3});
+
+      assert.isFrozen(data);
+      assert.isFrozen(data[0]);
+      assert.isFrozen(data[1]);
+
+      baobab.set({one: {}});
+
+      // Complex update
+      baobab.update({
+        one: {
+          subone: {
+            $set: 'hey'
+          },
+          subtwo: {
+            $set: 'ho'
+          }
+        }
+      });
+
+      data = baobab.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data.one);
+      assert.isFrozen(data.one.subone);
+      assert.isFrozen(data.one.subtwo);
+    });
   });
 });
