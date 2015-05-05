@@ -120,7 +120,7 @@ function Facet(tree, definition, args) {
 
     // Applying getter
     data = typeof getter === 'function' ?
-      getter.call(null, data) :
+      getter.call(self, data) :
       data;
 
     solved = true;

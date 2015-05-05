@@ -191,6 +191,11 @@ describe('Baobab API', function() {
             get: function(data) {
               return _.find(data.projects, {id: data.id});
             }
+          },
+          scope: {
+            get: function() {
+              return this;
+            }
           }
         }
       }
@@ -203,6 +208,10 @@ describe('Baobab API', function() {
       var facet = baobab.createFacet({cursors: {list: ['list']}});
       assert(facet instanceof Facet);
       facet.release();
+    });
+
+    it('should call facet\'s getter within the tree\'s scope.', function() {
+      assert(baobab.facets.scope.get(), baobab);
     });
 
     it('should fail when creating a facet from incorrect mappings.', function() {
