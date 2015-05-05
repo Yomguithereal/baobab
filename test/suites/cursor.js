@@ -552,6 +552,33 @@ describe('Cursor API', function() {
       assert.strictEqual(listItem.get(), 3);
       assert.strictEqual(listItem.rightmost().get(), 4);
     });
+
+    it('should be possible to map an array.', function() {
+      var count = 0;
+
+      var array = colorCursor.map(function(cursor, i) {
+        assert(this === colorCursor);
+        assert(count++ === i);
+
+        return cursor;
+      });
+
+      assert.deepEqual(
+        array.map(function(cursor) {
+          return cursor.get();
+        }),
+        state.one.subtwo.colors
+      );
+
+      var scope = {hello: 'world'};
+      colorCursor.map(function(cursor, i) {
+        assert(this === scope);
+      }, scope);
+
+      assert.throws(function() {
+        oneCursor.map(Function.prototype);
+      }, /non-list/);
+    });
   });
 
   describe('History', function() {

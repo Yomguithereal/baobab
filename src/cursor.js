@@ -200,6 +200,22 @@ Cursor.prototype.down = function() {
   return this.tree.select(this.solvedPath.concat(0));
 };
 
+Cursor.prototype.map = function(fn, scope) {
+  var array = this.get(),
+      l = arguments.length;
+
+  if (!type.Array(array))
+    throw Error('baobab.Cursor.map: cannot map a non-list type.');
+
+  return array.map(function(item, i) {
+    return fn.call(
+      l > 1 ? scope : this,
+      this.select(i),
+      i
+    );
+  }, this);
+};
+
 /**
  * Access
  */
