@@ -14,7 +14,7 @@ function arrayOf(o) {
 // Decorate a function by applying something before it
 function before(decorator, fn) {
   return function() {
-    decorator();
+    decorator.apply(null, arguments);
     fn.apply(null, arguments);
   };
 }
