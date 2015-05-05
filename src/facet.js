@@ -71,7 +71,7 @@ function Facet(tree, definition, args) {
           self.facets[k] = tree.facets[solvedMapping[k]];
 
           if (!self.facets[k])
-            throw Error('baobab.Facet: unkown "' + solvedMapping[k] + '" facet in facets mapping.');
+            throw Error('baobab.Facet: unknown "' + solvedMapping[k] + '" facet in facets mapping.');
           return;
         }
       }
