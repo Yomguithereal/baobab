@@ -50,10 +50,7 @@ type.Function = function(value) {
 };
 
 type.Primitive = function(value) {
-  return !value ||
-         typeof value === 'string' ||
-         typeof value === 'number' ||
-         typeof value === 'boolean';
+  return value !== Object(value);
 };
 
 type.Date = function(value) {
