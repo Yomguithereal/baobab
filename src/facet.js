@@ -21,6 +21,7 @@ function Facet(tree, definition, args) {
   EventEmitter.call(this);
 
   // Properties
+  this.killed = false;
   this.tree = tree;
   this.cursors = {};
   this.facets = {};
@@ -145,6 +146,8 @@ function Facet(tree, definition, args) {
   }
 
   this.updateHandler = function(e) {
+    if (self.killed)
+      return;
 
     var paths = cursorsPaths(self.cursors).concat(facetsPaths(self.facets));
 
@@ -169,6 +172,7 @@ Facet.prototype.release = function() {
   this.tree = null;
   this.cursors = null;
   this.facets = null;
+  this.killed = true;
   this.kill();
 };
 
