@@ -91,6 +91,21 @@ function Cursor(tree, path, solvedPath, hash) {
     }
   };
 
+  this.eventHandler = function(e) {
+    var type = e.type,
+        path = e.data.path;
+
+    if (helpers.solveUpdate([path], [self.solvedPath])) {
+      var data = helpers.shallowClone(e.data);
+
+      // Relative path
+      data.path = path.slice(self.solvedPath.length);
+
+      // Emitting from cursor too
+      self.emit(type, data);
+    }
+  };
+
   // Lazy binding
   var bound = false;
 
@@ -98,7 +113,11 @@ function Cursor(tree, path, solvedPath, hash) {
     if (bound)
       return;
     bound = true;
+
     self.tree.on('update', self.updateHandler);
+
+    // TODO: better lazy binding here
+    self.tree.on(['get', 'select'], self.eventHandler);
   };
 
   this.on = helpers.before(this._lazyBind, this.on.bind(this));
@@ -227,7 +246,13 @@ Cursor.prototype.get = function(path) {
     [].concat(path || path === 0 ? path : [])
   );
 
-  return helpers.getIn(this.tree.data, fullPath, this.tree);
+  // Retrieving data
+  var data = helpers.getIn(this.tree.data, fullPath, this.tree);
+
+  // Emitting an event
+  this.tree.emit('get', {path: fullPath, data: data});
+
+  return data;
 };
 
 /**
@@ -375,6 +400,7 @@ Cursor.prototype.release = function() {
 
   // Removing listener on parent
   this.tree.off('update', this.updateHandler);
+  this.tree.off(['get', 'select'], this.eventHandler);
 
   // If the cursor is hashed, we unsubscribe from the parent
   if (this.hash)

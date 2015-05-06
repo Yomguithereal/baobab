@@ -115,14 +115,18 @@ Baobab.prototype.select = function(path) {
       return step;
   }).join('|λ|');
 
+  var cursor;
   if (!this._cursors[hash]) {
-    var cursor = new Cursor(this, path, solvedPath, hash);
+    cursor = new Cursor(this, path, solvedPath, hash);
     this._cursors[hash] = cursor;
-    return cursor;
   }
   else {
-    return this._cursors[hash];
+    cursor = this._cursors[hash];
   }
+
+  // Emitting an event
+  this.emit('select', {path: path, cursor: cursor});
+  return cursor;
 };
 
 // TODO: if syncwrite wins: drop skipMerge, this._transaction etc.
