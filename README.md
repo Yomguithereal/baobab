@@ -541,7 +541,7 @@ var baobab = new Baobab(
 
 ```js
 function validationFunction(previousState, newState, affectedPaths) {
-  // Peform validation here and return an error if
+  // Perform validation here and return an error if
   // the tree is invalid
   if (!valid)
     return new Error('Invalid tree because of reasons.');
