@@ -37,7 +37,7 @@ function Cursor(tree, path, solvedPath, hash) {
   this.solvedPath = this.complexPath ? solvedPath : this.path;
 
   // Relevant?
-  this.relevant = this.get() !== undefined;
+  this.relevant = this.get(false) !== undefined;
 
   // Root listeners
   function update(previousState) {
@@ -71,7 +71,7 @@ function Cursor(tree, path, solvedPath, hash) {
       shouldFire = helpers.solveUpdate(log, [self.solvedPath]);
 
     // Handling relevancy
-    var data = self.get() !== undefined;
+    var data = self.get(false) !== undefined;
 
     if (self.relevant) {
       if (data && shouldFire) {
@@ -137,7 +137,7 @@ Cursor.prototype.isRoot = function() {
 };
 
 Cursor.prototype.isLeaf = function() {
-  return type.Primitive(this.get());
+  return type.Primitive(this.get(false));
 };
 
 Cursor.prototype.isBranch = function() {
@@ -193,7 +193,7 @@ Cursor.prototype.right = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  if (last + 1 === this.up().get().length)
+  if (last + 1 === this.up().get(false).length)
     return null;
 
   return this.tree.select(this.solvedPath.slice(0, -1).concat(last + 1));
@@ -205,7 +205,7 @@ Cursor.prototype.rightmost = function() {
   if (isNaN(last))
     throw Error('baobab.Cursor.right: cannot go right on a non-list type.');
 
-  var list = this.up().get();
+  var list = this.up().get(false);
 
   return this.tree.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
 };
@@ -213,14 +213,14 @@ Cursor.prototype.rightmost = function() {
 Cursor.prototype.down = function() {
   var last = +this.solvedPath[this.solvedPath.length - 1];
 
-  if (!(this.get() instanceof Array))
+  if (!(this.get(false) instanceof Array))
     return null;
 
   return this.tree.select(this.solvedPath.concat(0));
 };
 
 Cursor.prototype.map = function(fn, scope) {
-  var array = this.get(),
+  var array = this.get(false),
       l = arguments.length;
 
   if (!type.Array(array))
@@ -239,6 +239,13 @@ Cursor.prototype.map = function(fn, scope) {
  * Access
  */
 Cursor.prototype.get = function(path) {
+  var skipEvent = false;
+
+  if (path === false) {
+    path = [];
+    skipEvent = true;
+  }
+
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
@@ -250,7 +257,8 @@ Cursor.prototype.get = function(path) {
   var data = helpers.getIn(this.tree.data, fullPath, this.tree);
 
   // Emitting an event
-  this.tree.emit('get', {path: fullPath, data: data});
+  if (!skipEvent)
+    this.tree.emit('get', {path: fullPath, data: data});
 
   return data;
 };
@@ -291,7 +299,7 @@ function pathPolymorphism(method, allowedType, key, val) {
     throw Error('baobab.Cursor.' + method + ': incorrect value.');
 
   var path = [].concat(key),
-      solvedPath = helpers.solvePath(this.get(), path, this.tree);
+      solvedPath = helpers.solvePath(this.get(false), path, this.tree);
 
   if (!solvedPath)
     throw Error('baobab.Cursor.' + method + ': could not solve dynamic path.');

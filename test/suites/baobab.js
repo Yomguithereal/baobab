@@ -98,11 +98,17 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to listen to new selections.', function(done) {
-      var tree = new Baobab({one: {two: 'hello'}});
+      var tree = new Baobab({one: {two: 'hello'}}),
+          count = 0;
 
       tree.on('select', function(e) {
         assert.deepEqual(e.data.path, ['one', 'two']);
         assert.strictEqual(e.data.cursor.get(), 'hello');
+        count++;
+      });
+
+      process.nextTick(function() {
+        assert.strictEqual(count, 1);
         done();
       });
 
@@ -110,14 +116,21 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to listen to get events.', function(done) {
-      var tree = new Baobab({one: {two: 'hello'}});
+      var tree = new Baobab({one: {two: 'hello'}}),
+          count = 0;
 
       tree.on('get', function(e) {
         assert.deepEqual(e.data.path, ['one', 'two']);
         assert.strictEqual(e.data.data, 'hello');
+        count++;
+      });
+
+      process.nextTick(function() {
+        assert.strictEqual(count, 1);
         done();
       });
 
+      tree.select('one', 'two');
       tree.get('one', 'two');
     });
   });
