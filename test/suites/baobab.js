@@ -486,19 +486,19 @@ describe('Baobab API', function() {
       assert.strictEqual(baobab.get('hello'), 'you');
     });
 
-    // it('should be possible to let the user commit himself.', function(done) {
-    //   var baobab = new Baobab({number: 1}, {autoCommit: false});
-    //   baobab.set('number', 2);
+    it('should be possible to let the user commit himself.', function(done) {
+      var baobab = new Baobab({number: 1}, {autoCommit: false});
+      baobab.set('number', 2);
 
-    //   setTimeout(function() {
-    //     assert.strictEqual(baobab.get('number'), 1);
-    //     baobab.commit();
-    //     setTimeout(function() {
-    //       assert.strictEqual(baobab.get('number'), 2);
-    //       done();
-    //     }, 0);
-    //   }, 0);
-    // });
+      setTimeout(function() {
+        assert.strictEqual(baobab.get('number'), 1);
+        baobab.commit();
+        setTimeout(function() {
+          assert.strictEqual(baobab.get('number'), 2);
+          done();
+        }, 0);
+      }, 0);
+    });
 
     it('should be possible to validate the tree and rollback on fail.', function() {
       var invalidCount = 0;
@@ -644,6 +644,18 @@ describe('Baobab API', function() {
       assert.isFrozen(data.one);
       assert.isFrozen(data.one.subone);
       assert.isFrozen(data.one.subtwo);
+    });
+
+    it('should be possible to write the tree synchronously.', function(done) {
+      var baobab = new Baobab({hello: 'John'}, {syncwrite: true});
+
+      baobab.on('update', function() {
+        done();
+      });
+
+      assert.strictEqual(baobab.get('hello'), 'John');
+      baobab.set('hello', 'Jack');
+      assert.strictEqual(baobab.get('hello'), 'Jack');
     });
   });
 });

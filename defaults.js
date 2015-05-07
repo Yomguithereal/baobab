@@ -21,5 +21,8 @@ module.exports = {
   validate: null,
 
   // Validation behaviour 'rollback' or 'notify'
-  validationBehavior: 'rollback'
+  validationBehavior: 'rollback',
+
+  // Should the user be able to write the tree synchronously?
+  syncwrite: false
 };

@@ -131,7 +131,6 @@ Baobab.prototype.select = function(path) {
 
 // TODO: if syncwrite wins: drop skipMerge, this._transaction etc.
 // TODO: uniq'ing the log through path hashing
-// TODO: fix failed tested behaviors
 Baobab.prototype.stack = function(spec, skipMerge) {
   var self = this;
 
@@ -142,10 +141,16 @@ Baobab.prototype.stack = function(spec, skipMerge) {
     this.previousData = this.data;
 
   // Applying modifications
-  var result = update(this.data, spec, this.options);
-
-  this.data = result.data;
-  this.log = [].concat(this.log).concat(result.log);
+  if (this.options.syncwrite) {
+    var result = update(this.data, spec, this.options);
+    this.data = result.data;
+    this.log = [].concat(this.log).concat(result.log);
+  }
+  else {
+    this._transaction = (skipMerge && !Object.keys(this._transaction).length) ?
+      spec :
+      merge(this._transaction, spec);
+  }
 
   // Should we let the user commit?
   if (!this.options.autoCommit)
@@ -166,6 +171,17 @@ Baobab.prototype.commit = function() {
 
   if (this._future)
     this._future = clearTimeout(this._future);
+
+  if (!this.options.syncwrite) {
+
+    // Applying the asynchronous transaction
+    var result = update(this.data, this._transaction, this.options);
+    this.data = result.data;
+    this.log = result.log;
+  }
+
+  // Resetting transaction
+  this._transaction = {};
 
   // Validate?
   var validate = this.options.validate,
