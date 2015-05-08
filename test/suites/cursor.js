@@ -462,32 +462,6 @@ describe('Cursor API', function() {
 
       baobab.root.set({first: 1.1, second: 2.2});
     });
-
-    it('should be possible to listen to new selections.', function(done) {
-      var baobab = new Baobab({one: {two: 'hello'}}),
-          cursor = baobab.select('one');
-
-      cursor.on('select', function(e) {
-        assert.deepEqual(e.data.path, ['two']);
-        assert.strictEqual(e.data.cursor.get(), 'hello');
-        done();
-      });
-
-      baobab.select('one', 'two');
-    });
-
-    it('should be possible to listen to get events.', function(done) {
-      var baobab = new Baobab({one: {two: 'hello'}}),
-          cursor = baobab.select('one');
-
-      cursor.on('get', function(e) {
-        assert.deepEqual(e.data.path, ['two']);
-        assert.strictEqual(e.data.data, 'hello');
-        done();
-      });
-
-      baobab.get('one', 'two');
-    });
   });
 
   describe('Predicates', function() {

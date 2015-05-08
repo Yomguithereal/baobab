@@ -91,21 +91,6 @@ function Cursor(tree, path, solvedPath, hash) {
     }
   };
 
-  this.eventHandler = function(e) {
-    var type = e.type,
-        path = e.data.path;
-
-    if (helpers.solveUpdate([path], [self.solvedPath])) {
-      var data = helpers.shallowClone(e.data);
-
-      // Relative path
-      data.path = path.slice(self.solvedPath.length);
-
-      // Emitting from cursor too
-      self.emit(type, data);
-    }
-  };
-
   // Lazy binding
   var bound = false;
 
@@ -115,9 +100,6 @@ function Cursor(tree, path, solvedPath, hash) {
     bound = true;
 
     self.tree.on('update', self.updateHandler);
-
-    // TODO: better lazy binding here
-    self.tree.on(['get', 'select'], self.eventHandler);
   };
 
   this.on = helpers.before(this._lazyBind, this.on.bind(this));
@@ -408,7 +390,6 @@ Cursor.prototype.release = function() {
 
   // Removing listener on parent
   this.tree.off('update', this.updateHandler);
-  this.tree.off(['get', 'select'], this.eventHandler);
 
   // If the cursor is hashed, we unsubscribe from the parent
   if (this.hash)
