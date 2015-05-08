@@ -12,7 +12,7 @@ var EventEmitter = require('emmett'),
 /**
  * Main Class
  */
-function Cursor(tree, path, solvedPath, hash) {
+function Cursor(tree, path, hash) {
   var self = this;
 
   // Extending event emitter
@@ -20,6 +20,9 @@ function Cursor(tree, path, solvedPath, hash) {
 
   // Enforcing array
   path = path || [];
+
+  // Privates
+  this._identity = '[object Cursor]';
 
   // Properties
   this.tree = tree;
@@ -29,12 +32,14 @@ function Cursor(tree, path, solvedPath, hash) {
   this.recording = false;
   this.undoing = false;
 
-  // Privates
-  this._identity = '[object Cursor]';
+  // TODO: check if path is complex + solving + hash in same helper
 
-  // Complex path?
-  this.complexPath = !!solvedPath;
-  this.solvedPath = this.complexPath ? solvedPath : this.path;
+  // Path initialization
+  this.complex = type.ComplexPath(path);
+  this.solvedPath = path;
+
+  if (this.complex)
+    this.solvedPath = helpers.solvePath(this.tree.data, path, this.tree);
 
   // Relevant?
   this.relevant = this.get(false) !== undefined;

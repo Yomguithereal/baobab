@@ -48,7 +48,7 @@ function Baobab(initialData, opts) {
   this.log = [];
   this.previousData = null;
   this.data = initialData;
-  this.root = this.select([]);
+  this.root = this.select();
   this.facets = {};
 
   // Immutable tree?
@@ -88,6 +88,8 @@ Baobab.prototype.createFacet = function(definition, args) {
 };
 
 Baobab.prototype.select = function(path) {
+  path = path || [];
+
   if (arguments.length > 1)
     path = helpers.arrayOf(arguments);
 
@@ -96,14 +98,6 @@ Baobab.prototype.select = function(path) {
 
   // Casting to array
   path = [].concat(path);
-
-  // Complex path?
-  var complex = type.ComplexPath(path);
-
-  var solvedPath;
-
-  if (complex)
-    solvedPath = helpers.solvePath(this.data, path, this);
 
   // Registering a new cursor or giving the already existing one for path
   var hash = path.map(function(step) {
@@ -117,7 +111,7 @@ Baobab.prototype.select = function(path) {
 
   var cursor;
   if (!this._cursors[hash]) {
-    cursor = new Cursor(this, path, solvedPath, hash);
+    cursor = new Cursor(this, path, hash);
     this._cursors[hash] = cursor;
   }
   else {
