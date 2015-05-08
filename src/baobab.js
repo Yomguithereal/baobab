@@ -13,10 +13,12 @@ var Cursor = require('./cursor.js'),
     defaults = require('../defaults.js'),
     type = require('./type.js');
 
-function complexHash(type) {
-  return type + '$' +
-    (new Date()).getTime() + (''  + Math.random()).replace('0.', '');
-}
+var uniqid = (function() {
+  var i = 0;
+  return function() {
+    return i++;
+  };
+})();
 
 /**
  * Main Class
@@ -99,16 +101,15 @@ Baobab.prototype.select = function(path) {
   // Casting to array
   path = [].concat(path);
 
-  // Registering a new cursor or giving the already existing one for path
+  // Computing hash
   var hash = path.map(function(step) {
-    if (type.Function(step))
-      return complexHash('fn');
-    else if (type.Object(step))
-      return complexHash('ob');
+    if (type.Function(step) || type.Object(step))
+      return '$' + uniqid() + '$';
     else
       return step;
   }).join('|λ|');
 
+  // Registering a new cursor or giving the already existing one for path
   var cursor;
   if (!this._cursors[hash]) {
     cursor = new Cursor(this, path, hash);

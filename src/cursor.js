@@ -33,6 +33,7 @@ function Cursor(tree, path, hash) {
   this.undoing = false;
 
   // TODO: check if path is complex + solving + hash in same helper
+  // TODO: simplify complex hashing
 
   // Path initialization
   this.complex = type.ComplexPath(path);
