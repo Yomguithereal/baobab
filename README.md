@@ -2,7 +2,7 @@
 
 # Baobab
 
-**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
+**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and optionally [immutable](http://en.wikipedia.org/wiki/Immutable_object) data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
@@ -347,10 +347,8 @@ Will fire if the tree is updated.
 
 ```js
 tree.on('update', function(e) {
-  var affectedPaths = e.data.log,
-      previousData = e.data.previousData;
-
-  //...
+  console.log('Update log', e.data.log);
+  console.log('Previous data', e.data.previousData);
 });
 ```
 
@@ -360,7 +358,18 @@ Will fire if the `validate` function (see [options](#options)) returned an error
 
 ```js
 tree.on('invalid', function(e) {
-  console.log(e.data.error);
+  console.log('Error:', e.data.error);
+});
+```
+
+*get*
+
+Will fire whenever data is accessed in the tree.
+
+```js
+tree.on('get', function(e) {
+  console.log('Path:', e.data.path);
+  console.log('Target data:', e.data.data);
 });
 ```
 
@@ -534,6 +543,8 @@ var baobab = new Baobab(
 * **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
 * **facets** *object*: a collection of facets to register when the tree is istantiated. For more information, see [facets](#facets).
+* **immutable** *boolean* [`false`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze`.
+* **syncwrite** *boolean* [`false`]: when in syncwrite mode, all writes will apply to the tree synchronously, so you can easily read your writes, while keeping update events asynchronous.
 * **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.
 * **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter the invalid state anyway.
 
@@ -817,6 +828,22 @@ var o = {hello: 'world'};
 tree.set('key', o);
 o.hello = 'other world';
 ```
+
+Note that, if you want the tree to be immutable, you can now enable it through the `immutable` [option](#options).
+
+**Releasing**
+
+In most complex use cases, you might need to release the manipulated objects, i.e. kill their event emitters and wipe their associated data.
+
+Thus, any Baobab object can be cleared from memory by using the `release` method. This applies to trees, cursors and facets.
+
+```js
+tree.release();
+cursor.release();
+facet.release();
+```
+
+Note also that releasing a tree will consequently and automatically release every of its cursors and facets.
 
 ## Philosophy
 

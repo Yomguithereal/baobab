@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.0
+
+* Adding an `immutable` option to the tree.
+* Adding a `syncwrite` option to the tree.
+* Adding a `get` and `select` event to the tree.
+* Facets getters are now applied within the tree's scope.
+* `update` events are now exposing the related data for convenience.
+* Fixing a `$cursor` related bug.
+* Fixing `type.Primitive`.
+* Fixing `facet.release` issues.
+
 ## v1.0.3
 
 * Exposing `Cursor` and `Facet` classes for type checking (**@charlieschwabacher**).
