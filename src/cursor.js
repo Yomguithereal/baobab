@@ -23,6 +23,7 @@ function Cursor(tree, path, hash) {
 
   // Privates
   this._identity = '[object Cursor]';
+  this._additionnalPaths = [];
 
   // Properties
   this.tree = tree;
@@ -32,15 +33,18 @@ function Cursor(tree, path, hash) {
   this.recording = false;
   this.undoing = false;
 
-  // TODO: check if path is complex + solving + hash in same helper
-  // TODO: simplify complex hashing
-
   // Path initialization
   this.complex = type.ComplexPath(path);
   this.solvedPath = path;
 
   if (this.complex)
     this.solvedPath = helpers.solvePath(this.tree.data, path, this.tree);
+
+  if (this.complex)
+    path.forEach(function(step) {
+      if (type.Object(step) && '$cursor' in step)
+        this._additionnalPaths.push(step.$cursor);
+    }, this);
 
   // Relevant?
   this.relevant = this.get(false) !== undefined;
@@ -78,7 +82,10 @@ function Cursor(tree, path, hash) {
 
     // Checking update log to see whether the cursor should update.
     if (self.solvedPath)
-      shouldFire = helpers.solveUpdate(log, [self.solvedPath]);
+      shouldFire = helpers.solveUpdate(
+        log,
+        [self.solvedPath].concat(self._additionnalPaths)
+      );
 
     // Handling relevancy
     var data = self.get(false) !== undefined;

@@ -78,6 +78,26 @@ describe('Cursor API', function() {
           var color = baobab.get('one', 'subtwo', 'colors', {$cursor: null});
         }, /\$cursor/);
       });
+
+      it('a $cursor pointer should correctly resolve.', function(done) {
+        var specialTree = new Baobab({pointer: 0, list: ['hello']}),
+            cursor = specialTree.select('list', {$cursor: ['pointer']}),
+            count = 0;
+
+        cursor.on('update', function() {
+          assert.strictEqual(cursor.get(), count ? 'welt' : 'monde');
+          count++;
+
+          if (count > 1)
+            done();
+        });
+
+        cursor.set('monde');
+
+        setTimeout(function() {
+          cursor.set('welt');
+        }, 10);
+      });
     });
 
     describe('Standard cursors', function() {
