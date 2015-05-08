@@ -462,6 +462,18 @@ describe('Cursor API', function() {
 
       baobab.root.set({first: 1.1, second: 2.2});
     });
+
+    it('update events should expose the cursor\'s data.', function(done) {
+      var baobab = new Baobab({one: {hello: 'world'}});
+
+      baobab.select('one').on('update', function(e) {
+        assert.deepEqual(e.data.previousData, {hello: 'world'});
+        assert.deepEqual(e.data.data, {hello: 'monde'});
+        done();
+      });
+
+      baobab.set(['one', 'hello'], 'monde');
+    });
   });
 
   describe('Predicates', function() {

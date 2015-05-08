@@ -40,21 +40,25 @@ function Cursor(tree, path, solvedPath, hash) {
   this.relevant = this.get(false) !== undefined;
 
   // Root listeners
-  function update(previousState) {
+  function update(previousData) {
+    var record = helpers.getIn(previousData, self.solvedPath, self.tree);
+
     if (self.recording && !self.undoing) {
 
       // Handle archive
-      var record = helpers.getIn(previousState, self.solvedPath, self.tree);
       self.archive.add(record);
     }
 
     self.undoing = false;
-    return self.emit('update');
+    return self.emit('update', {
+      data: self.get(false),
+      previousData: record
+    });
   }
 
   this.updateHandler = function(e) {
     var log = e.data.log,
-        previousState = e.data.previousState,
+        previousData = e.data.previousData,
         shouldFire = false,
         c, p, l, m, i, j;
 
@@ -64,7 +68,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
     // If selector listens at tree, we fire
     if (!self.path.length)
-      return update(previousState);
+      return update(previousData);
 
     // Checking update log to see whether the cursor should update.
     if (self.solvedPath)
@@ -75,7 +79,7 @@ function Cursor(tree, path, solvedPath, hash) {
 
     if (self.relevant) {
       if (data && shouldFire) {
-        update(previousState);
+        update(previousData);
       }
       else if (!data) {
         self.emit('irrelevant');
@@ -85,7 +89,7 @@ function Cursor(tree, path, solvedPath, hash) {
     else {
       if (data && shouldFire) {
         self.emit('relevant');
-        update(previousState);
+        update(previousData);
         self.relevant = true;
       }
     }

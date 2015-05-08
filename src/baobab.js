@@ -203,7 +203,8 @@ Baobab.prototype.commit = function() {
   // Baobab-level update event
   this.emit('update', {
     log: this.log,
-    previousState: this.previousData
+    previousData: this.previousData,
+    data: this.data
   });
 
   this.log = [];

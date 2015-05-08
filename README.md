@@ -348,7 +348,7 @@ Will fire if the tree is updated.
 ```js
 tree.on('update', function(e) {
   var affectedPaths = e.data.log,
-      previousState = e.data.previousState;
+      previousData = e.data.previousData;
 
   //...
 });
