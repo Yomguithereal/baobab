@@ -269,6 +269,15 @@ describe('Cursor API', function() {
         assert.strictEqual(cursor.get(), undefined);
       });
 
+      it('should be possible to unset an array element by index', function() {
+            var tree = new Baobab({list: ["a", "b", "c"]}, {asynchronous: false}),
+                cursor = tree.select("list");
+            assert.deepEqual(cursor.get(2), "c");
+            assert.deepEqual(cursor.get(), ["a", "b", "c"]);
+            cursor.unset(2);
+            assert.deepEqual(cursor.get(), ["a", "b"]);
+      });
+
       it('should be possible to splice an array.', function() {
         var tree1 = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
             tree2 = new Baobab(tree1.get(), {asynchronous: false}),
