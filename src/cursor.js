@@ -147,7 +147,7 @@ Cursor.prototype.isBranch = function() {
  * Traversal
  */
 Cursor.prototype.root = function() {
-  return this.tree.root();
+  return this.tree.root;
 };
 
 Cursor.prototype.select = function(path) {
