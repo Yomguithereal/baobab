@@ -148,7 +148,7 @@ This enables the tree to perform efficient mutations and to be able to notify an
 var tree = new Baobab({hello: 'world'});
 
 var initialState = tree.get();
-tree.set('hello', 'monde'});
+tree.set({'hello', 'monde'});
 
 // After asynchronous update...
 assert(initialState !== tree.get());
