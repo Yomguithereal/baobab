@@ -381,7 +381,7 @@ Cursor.prototype.undo = function(steps) {
   var record = this.archive.back(steps);
 
   if (!record)
-    throw Error('boabab.Cursor.undo: cannot find a relevant record (' + steps + ' back).');
+    throw Error('baobab.Cursor.undo: cannot find a relevant record (' + steps + ' back).');
 
   this.undoing = true;
   return this.set(record);
