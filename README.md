@@ -424,6 +424,8 @@ var colorsCursor = tree.select('palette', 'colors');
 var colorsCursor = tree.select(['palette', 'colors']);
 var colorsCursor = tree.select('palette').select('colors');
 
+var paletteCursor = tree.select('palette');
+
 // Retrieving data
 colorsCursor.get(1);
 >>> 'yellow'
@@ -451,9 +453,9 @@ tree.get('items', {id: 'one'}, 'value');
 >>> 'Hey'
 
 // Retrieving or selecting data by using the value of another cursor
-var currentColorCursor = tree.select('colors', {$cursor: ['currentColor']});
+var currentColorCursor = paletteCursor.select('colors', {$cursor: ['palette', 'currentColor']});
 
-var currentColor = tree.get('colors', {$cursor: ['currentColor']});
+var currentColor = paletteCursor.get('colors', {$cursor: ['palette', 'currentColor']});
 
 // Creating a blank tree
 var blankTree = new Baobab();
