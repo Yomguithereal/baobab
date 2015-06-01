@@ -264,7 +264,7 @@ cursor.apply(inc);
 cursor.apply('number', inc)
 
 // Nested path
-cursor.apply(['one', 'two'], 'orange');
+cursor.apply(['one', 'two'], inc);
 ```
 
 *Chaining functions through composition*
@@ -282,7 +282,7 @@ cursor.chain(inc);
 cursor.chain('number', inc)
 
 // Nested path
-cursor.chain(['one', 'two'], 'orange');
+cursor.chain(['one', 'two'], inc);
 ```
 
 *Shallowly merging objects*
@@ -296,7 +296,7 @@ cursor.merge({hello: 'world'});
 cursor.merge('object', {hello: 'world'})
 
 // Nested path
-cursor.apply(['one', 'two'], {hello: 'world'});
+cursor.merge(['one', 'two'], {hello: 'world'});
 ```
 
 #### Events
