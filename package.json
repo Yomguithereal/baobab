@@ -22,9 +22,10 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
-    "test": "gulp test",
+    "benchmark": "node benchmark.js",
     "build": "gulp build",
-    "lint": "gulp lint"
+    "lint": "gulp lint",
+    "test": "gulp test"
   },
   "repository": {
     "type": "git",
