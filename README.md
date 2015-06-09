@@ -373,6 +373,17 @@ tree.on('get', function(e) {
 });
 ```
 
+*select*
+
+Will fire whenever a path is selected in the tree.
+
+```js
+tree.on('select', function(e) {
+  console.log('Path:', e.data.path);
+  console.log('Resultant cursor:', e.data.cursor);
+});
+```
+
 ##### Cursor level
 
 *update*
