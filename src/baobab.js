@@ -65,7 +65,18 @@ function Baobab(initialData, opts) {
     };
   }
 
-  ['get', 'set', 'unset', 'update'].forEach(bootstrap.bind(this));
+  [
+    'apply',
+    'chain',
+    'get',
+    'merge',
+    'push',
+    'set',
+    'splice',
+    'unset',
+    'unshift',
+    'update'
+  ].forEach(bootstrap.bind(this));
 
   // Facets
   if (!type.Object(this.options.facets))
