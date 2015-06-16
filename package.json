@@ -4,7 +4,7 @@
   "description": "JavaScript persistent data tree with cursors.",
   "main": "index.js",
   "dependencies": {
-    "emmett": "^3.0.0"
+    "emmett": "^3.0.1"
   },
   "devDependencies": {
     "async": "^1.2.1",
