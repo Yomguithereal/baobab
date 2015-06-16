@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.1
+
+* Updating `emmett` to `v3.0.1`.
+* Adding missing setters methods to the tree.
+* Fixing `cursor.root` method.
+
 ## v1.1.0
 
 * Adding an `immutable` option to the tree.

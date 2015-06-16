@@ -11,7 +11,7 @@ var Baobab = require('./src/baobab.js'),
 
 // Non-writable version
 Object.defineProperty(Baobab, 'version', {
-  value: '1.1.0'
+  value: '1.1.1'
 });
 
 // Exposing Cursor and Facet classes
