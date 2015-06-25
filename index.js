@@ -4,10 +4,10 @@
  *
  * Exposes the main library classes.
  */
-var Baobab = require('./src/baobab.js'),
-    Cursor = require('./src/cursor.js'),
-    Facet = require('./src/facet.js'),
-    helpers = require('./src/helpers.js');
+var Baobab = require('./src/baobab'),
+    Cursor = require('./src/cursor'),
+    Facet = require('./src/facet'),
+    helpers = require('./src/helpers');
 
 // Non-writable version
 Object.defineProperty(Baobab, 'version', {
