@@ -2,114 +2,111 @@
  * Baobab Type Checking
  * =====================
  *
- * Misc helpers functions used throughout the library to perform some type
+ * Helpers functions used throughout the library to perform some type
  * tests at runtime.
  *
- * @christianalfoni
  */
-var type = {};
+const type = {};
 
 /**
  * Helpers
+ * --------
  */
-function anyOf(value, allowed) {
+
+/**
+ * Checking whether the given variable is of any of the given types.
+ *
+ * @todo   Optimize this function by dropping `some`.
+ *
+ * @param  {mixed} target  - Variable to test.
+ * @param  {array} allowed - Array of allowed types.
+ * @return {boolean}
+ */
+function anyOf(target, allowed) {
   return allowed.some(function(t) {
-    return type[t](value);
+    return type[t](target);
   });
 }
 
 /**
  * Simple types
+ * -------------
  */
-type.Array = function(value) {
-  return Array.isArray(value);
-};
 
-type.Object = function(value) {
-  return value &&
-         typeof value === 'object' &&
-         !Array.isArray(value) &&
-         !(value instanceof Date) &&
-         !(value instanceof RegExp);
-};
-
-type.String = function(value) {
-  return typeof value === 'string';
-};
-
-type.Number = function(value) {
-  return typeof value === 'number';
-};
-
-type.PositiveInteger = function(value) {
-  return typeof value === 'number' && value > 0 && value % 1 === 0;
-};
-
-type.Function = function(value) {
-  return typeof value === 'function';
-};
-
-type.Primitive = function(value) {
-  return value !== Object(value);
-};
-
-type.Date = function(value) {
-  return value instanceof Date;
+/**
+ * Checking whether the given variable is an array.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.array = function(target) {
+  return Array.isArray(target);
 };
 
 /**
- * Complex types
+ * Checking whether the given variable is an object.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
  */
-type.NonScalar = function(value) {
-  return type.Object(value) || type.Array(value);
+type.object = function(target) {
+  return target &&
+         typeof target === 'object' &&
+         !Array.isArray(target) &&
+         !(target instanceof Date) &&
+         !(target instanceof RegExp);
 };
 
-type.Splicer = function(value) {
-  return type.Array(value) &&
-         value.every(type.Array);
+/**
+ * Checking whether the given variable is a string.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.string = function(target) {
+  return typeof target === 'string';
 };
 
-type.Path = function(value, allowed) {
-  allowed = allowed || ['String', 'Number', 'Function', 'Object'];
-
-  if (type.Array(value)) {
-    return value.every(function(step) {
-      return anyOf(step, allowed);
-    });
-  }
-  else {
-    return anyOf(value, allowed);
-  }
+/**
+ * Checking whether the given variable is a number.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.number = function(target) {
+  return typeof target === 'number';
 };
 
-type.ComplexPath = function(value) {
-  return value.some(function(step) {
-    return anyOf(step, ['Object', 'Function']);
-  });
+/**
+ * Checking whether the given variable is a positive integer.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.positiveInteger = function(target) {
+  return typeof target === 'number' &&
+         target > 0 &&
+         target % 1 === 0;
 };
 
-type.FacetCursors = function(value) {
-  if (!type.Object(value))
-    return false;
-
-  return Object.keys(value).every(function(k) {
-    var v = value[k];
-
-    return type.Path(v, ['String', 'Number', 'Object']) ||
-           v instanceof require('./cursor.js');
-  });
+/**
+ * Checking whether the given variable is a function.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.function = function(target) {
+  return typeof target === 'function';
 };
 
-type.FacetFacets = function(value) {
-  if (!type.Object(value))
-    return false;
-
-  return Object.keys(value).every(function(k) {
-    var v = value[k];
-
-    return typeof v === 'string' ||
-           v instanceof require('./facet.js');
-  });
+/**
+ * Checking whether the given variable is a JavaScript primitive.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.primitive = function(target) {
+  return target !== Object(target);
 };
 
-module.exports = type;
+export default type;

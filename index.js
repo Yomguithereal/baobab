@@ -2,24 +2,18 @@
  * Baobab Public Interface
  * ========================
  *
- * Exposes the main library classes.
+ * Exposes the library's classes
  */
-var Baobab = require('./src/baobab.js'),
-    Cursor = require('./src/cursor.js'),
-    Facet = require('./src/facet.js'),
-    helpers = require('./src/helpers.js');
+import Baobab from './src/baobab';
+import Cursor from './src/cursor';
 
 // Non-writable version
 Object.defineProperty(Baobab, 'version', {
-  value: '1.1.1'
+  value: '2.0.0-dev'
 });
 
-// Exposing Cursor and Facet classes
+// Exposing Cursor class
 Baobab.Cursor = Cursor;
-Baobab.Facet = Facet;
-
-// Exposing helpers
-Baobab.getIn = helpers.getIn;
 
 // Exporting
-module.exports = Baobab;
+export default Baobab;
