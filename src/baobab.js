@@ -11,6 +11,7 @@ import defaults from '../defaults';
 import {
   arrayFrom,
   deepFreeze,
+  makeError,
   shallowMerge,
   uniqid
 } from './helpers';
@@ -33,12 +34,12 @@ export default class Baobab extends Emitter {
     super();
 
     // Setting initialData to an empty object if no data is provided by use
-    if (arguments.length)
+    if (arguments.length < 1)
       initialData = {};
 
     // Checking whether given initial data is valid
-    if (!type.object(initialData) || !type.array(initialData))
-      throw Error('Baobab: invalid data.');
+    if (!type.object(initialData) && !type.array(initialData))
+      throw makeError('Baobab: invalid data.', {data: initialData});
 
     // Merging given options with defaults
     this.options = shallowMerge(defaults, opts);
@@ -75,11 +76,8 @@ export default class Baobab extends Emitter {
       path = arrayFrom(arguments);
 
     // Checking that given path is valid
-    if (!type.path(path)) {
-      const err = new Error('Baobab.select: invalid path.');
-      err.path = path;
-      throw err;
-    }
+    if (!type.path(path))
+      throw makeError('Baobab.select: invalid path.', {path});
 
     // Casting to array
     path = [].concat(path);

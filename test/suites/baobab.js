@@ -4,6 +4,7 @@
  */
 import assert from 'assert';
 import Baobab from '../../src/baobab';
+import Cursor from '../../src/cursor';
 import state from '../state';
 
 describe('Baobab API', function() {
@@ -17,6 +18,17 @@ describe('Baobab API', function() {
       assert.throws(function() {
         new Baobab(undefined);
       }, /invalid data/);
+    });
+  });
+
+  /**
+   * Selection and cursor creation
+   */
+  describe('Selection', function() {
+    const tree = new Baobab(state);
+
+    it('selecting data in the baobab should return a cursor.', function() {
+      assert(tree.select(['one']) instanceof Cursor);
     });
   });
 });

@@ -88,6 +88,22 @@ const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
 export {freeze, deepFreeze};
 
 /**
+ * Little helper returning a JavaScript error carrying some data with it.
+ *
+ * @param  {string} message - The error message.
+ * @param  {object} [data]  - Optional data to assign to the error.
+ * @return {Error}          - The created error.
+ */
+export function makeError(message, data) {
+  const err = new Error(message);
+
+  for (let k in data)
+    err[k] = data[k];
+
+  return err;
+}
+
+/**
  * Function taking two objects to shallowly merge them together. Note that the
  * second object will take precedence over the first one.
  *
