@@ -4,6 +4,11 @@
  *
  * Miscellaneous helper functions.
  */
+import type from './type';
+
+/**
+ * Noop function
+ */
 const noop = Function.prototype;
 
 /**
@@ -228,6 +233,49 @@ export function shallowMerge(o1, o2) {
   for (k in o2) o[k] = o2[k];
 
   return o;
+}
+
+/**
+ * Function solving the given path within the target object.
+ *
+ * @param  {object} object - The object in which the path must be solved.
+ * @param  {array}  path   - The path to follow.
+ * @return {mixed}         - The solved path if possible, else `null`.
+ */
+export function solvePath(object, path) {
+  let solvedPath = [],
+      c = object,
+      idx,
+      i,
+      l;
+
+  for (i = 0, l = path.length; i < l; i++) {
+    if (!c)
+      return null;
+
+    if (typeof path[i] === 'function') {
+      if (!type.array(c))
+        return;
+
+      idx = index(c, path[i]);
+      solvedPath.push(idx);
+      c = c[idx];
+    }
+    else if (typeof path[i] === 'object') {
+      if (!type.array(c))
+        return;
+
+      idx = indexByComparison(c, path[i]);
+      solvedPath.push(idx);
+      c = c[idx];
+    }
+    else {
+      solvedPath.push(path[i]);
+      c = c[path[i]] || {};
+    }
+  }
+
+  return solvedPath;
 }
 
 /**

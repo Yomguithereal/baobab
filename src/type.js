@@ -117,7 +117,8 @@ type.primitive = function(target) {
 /**
  * Checking whether the given variable is a valid cursor path.
  *
- * @param  {mixed} target - Variable to test.
+ * @param  {mixed} target    - Variable to test.
+ * @param  {array} [allowed] - Optional valid types in path.
  * @return {boolean}
  */
 type.path = function(target, allowed) {
@@ -126,6 +127,16 @@ type.path = function(target, allowed) {
   allowed = allowed || ['string', 'number', 'function', 'object'];
 
   return [...target].every(step => anyOf(step, allowed));
+};
+
+/**
+ * Checking whether the given path is a dynamic one.
+ *
+ * @param  {mixed} path - The path to test.
+ * @return {boolean}
+ */
+type.dynamicPath = function(path) {
+  return path.some(step => type.function(step) || type.object(step));
 };
 
 export default type;

@@ -36,5 +36,11 @@ describe('Baobab API', function() {
 
       assert.deepEqual(altCursor.get(), state.one.subtwo.colors);
     });
+
+    it('should be possible to select data using a function.', function() {
+      var cursor = tree.select('one', 'subtwo', 'colors', v => v === 'yellow');
+
+      assert.strictEqual(cursor.get(), 'yellow');
+    });
   });
 });

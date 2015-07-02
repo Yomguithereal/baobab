@@ -8,7 +8,8 @@ import Emitter from 'emmett';
 import type from './type';
 import {
   arrayFrom,
-  getIn
+  getIn,
+  solvePath
 } from './helpers';
 
 /**
@@ -28,20 +29,26 @@ export default class Cursor extends Emitter {
 
     // Privates
     // TODO: identity
-    // TODO: handle complex selection
+    this._archive = null;
 
     // Properties
     this.tree = tree;
     this.path = path;
-    this.solvedPath = path;
     this.hash = hash;
-    this.archive = null;
 
     // State
     this.state =  {
       recording: false,
       undoing: false
     };
+
+    // Checking whether the given path is dynamic or not
+    this._isDynamic = type.dynamicPath(this.path);
+
+    if (!this._isDynamic)
+      this.solvedPath = this.path;
+    else
+      this.solvedPath = solvePath(this.tree.data, this.path);
   }
 
   /**
