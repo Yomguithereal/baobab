@@ -80,13 +80,12 @@ function freezer(deep, o) {
  * Note that if the engine does not support `Object.freeze` then this will
  * export noop functions instead.
  */
-const isFreezeSupported = typeof Object.freeze === 'function';
+const isFreezeSupported = (typeof Object.freeze === 'function');
 
 const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
       deepFreeze = isFreezeSupported ? freezer.bind(null, true) : noop;
 
-export freeze;
-export deepFreeze;
+export {freeze, deepFreeze};
 
 /**
  * Function taking two objects to shallowly merge them together. Note that the
@@ -118,4 +117,4 @@ const uniqid = (function() {
   };
 })();
 
-export uniqid;
+export {uniqid};

@@ -30,6 +30,7 @@ import {
  */
 export default class Baobab extends Emitter {
   constructor(initialData, opts) {
+    super();
 
     // Setting initialData to an empty object if no data is provided by use
     if (arguments.length)

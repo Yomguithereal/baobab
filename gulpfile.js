@@ -1,6 +1,5 @@
 var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
-    mocha = require('gulp-mocha'),
     uglify = require('gulp-uglify'),
     header = require('gulp-header'),
     replace = require('gulp-replace'),
@@ -28,12 +27,6 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-// Testing
-gulp.task('test', ['gremlins'], function() {
-  return gulp.src('./test/endpoint.js')
-    .pipe(mocha({reporter: 'spec'}));
-});
-
 // Building
 gulp.task('build', function() {
   return browserify({
@@ -52,4 +45,4 @@ gulp.task('build', function() {
 });
 
 // Default
-gulp.task('default', ['lint', 'test', 'build']);
+gulp.task('default', ['lint', 'build']);

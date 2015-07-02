@@ -17,6 +17,7 @@ import type from './type';
  */
 export default class Cursor extends Emitter {
   constructor(tree, path, hash) {
+    super();
 
     // If no path were to be provided, we fallback to an empty path (root)
     path = path || [];

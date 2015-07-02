@@ -4,16 +4,17 @@
  *
  * Gathering and requiring test suites.
  */
+import assert from 'assert';
+import util from 'util';
+import type from '../src/type';
 
-var assert = require('assert'),
-    util = require('util'),
-    type = require('../src/type.js');
-
+// Creating a special assertion for frozen objects
 assert.isFrozen = function(v) {
-  assert(type.Primitive(v) ||
-         Object.isFrozen(v), util.inspect(v) + ' is not frozen.');
+  assert(
+    type.primitive(v) || Object.isFrozen(v),
+    util.inspect(v) + ' is not frozen.'
+  );
 };
 
-require('./suites/helpers.js');
+// Requiring the tests
 require('./suites/baobab.js');
-require('./suites/cursor.js');
