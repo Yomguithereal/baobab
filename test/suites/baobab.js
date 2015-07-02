@@ -49,4 +49,21 @@ describe('Baobab API', function() {
       assert.deepEqual(cursor.get(), {id: 'one'});
     });
   });
+
+  /**
+   * Events
+   */
+  // describe('Events', function() {
+
+  //   it('should be possible to listen to update events.', function(done) {
+  //     const tree = new Baobab(state);
+
+  //     tree.on('update', function(e) {
+  //       assert.deepEqual(e.data.log, [['one', 'subtwo', 'colors']]);
+  //       done();
+  //     });
+
+  //     tree.update({one: {subtwo: {colors: {$push: 'purple'}}}});
+  //   });
+  // });
 });
