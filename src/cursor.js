@@ -6,6 +6,10 @@
  */
 import Emitter from 'emmett';
 import type from './type';
+import {
+  arrayFrom,
+  getIn
+} from './helpers';
 
 /**
  * Cursor class
@@ -24,10 +28,12 @@ export default class Cursor extends Emitter {
 
     // Privates
     // TODO: identity
+    // TODO: handle complex selection
 
     // Properties
     this.tree = tree;
     this.path = path;
+    this.solvedPath = path;
     this.hash = hash;
     this.archive = null;
 
@@ -65,4 +71,53 @@ export default class Cursor extends Emitter {
   root() {
     return this.tree.root;
   }
+
+  /**
+   * Getter Methods
+   * ---------------
+   */
+
+  /**
+   * Internal get method. Basically contains the main body of the `get` method
+   * without the event emitting. This is sometimes needed not to fire useless
+   * events.
+   *
+   * @param  {string|function|object|array} path - Path to get in the tree.
+   * @return {object} info                       - The resultant information.
+   * @return {mixed}  info.data                  - Data at path.
+   * @return {array}  info.solvedPath            - The path solved when getting.
+   */
+  _get(path) {
+    path = path || path === 0 ? path : [];
+
+    if (arguments.length > 1)
+      path = arrayFrom(arguments);
+
+    const fullPath = this.solvedPath.concat([].concat(path)),
+          data = getIn(this.tree.data, fullPath);
+
+    return {data, solvedPath: fullPath};
+  }
+
+  /**
+   * Method used to get data from the tree. Will fire a `get` event from the
+   * tree so that the user may sometimes react upon it to fecth data, for
+   * instance.
+   *
+   * @param  {string|function|object|array} path - Path to get in the tree.
+   * @return {mixed}                             - Data at path.
+   */
+  get(path) {
+    const {data, solvedPath} = this._get(path);
+
+    // Emitting the event
+    this.tree.emit('get', {data, path: solvedPath});
+
+    return data;
+  }
+
+  /**
+   * Setter Methods
+   * ---------------
+   */
 }

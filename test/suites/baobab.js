@@ -30,5 +30,11 @@ describe('Baobab API', function() {
     it('selecting data in the baobab should return a cursor.', function() {
       assert(tree.select(['one']) instanceof Cursor);
     });
+
+    it('should be possible to use some polymorphism on the selection.', function() {
+      var altCursor = tree.select('one', 'subtwo', 'colors');
+
+      assert.deepEqual(altCursor.get(), state.one.subtwo.colors);
+    });
   });
 });

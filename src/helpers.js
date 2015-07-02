@@ -33,6 +33,56 @@ export function before(decorator, fn) {
 }
 
 /**
+ * Function comparing an object's properties to a given descriptive
+ * object.
+ *
+ * @param  {object} object      - The object to compare.
+ * @param  {object} description - The description's mapping.
+ * @return {boolean}            - Whether the object matches the description.
+ */
+function compare(object, description) {
+  let ok = true,
+      k;
+
+  // If we reached here via a recursive call, object may be undefined because
+  // not all items in a collection will have the same deep nesting structure.
+  if (!object)
+    return false;
+
+  for (k in description) {
+    if (type.object(description[k])) {
+      ok = ok && compare(object[k], description[k]);
+    }
+    else if (type.array(description[k])) {
+      ok = ok && !!~description[k].indexOf(object[k]);
+    }
+    else {
+      if (object[k] !== description[k])
+        return false;
+    }
+  }
+
+  return ok;
+}
+
+/**
+ * Function returning the first element of a list matching the given
+ * predicate.
+ *
+ * @param  {array}     a  - The target array.
+ * @param  {function}  fn - The predicate function.
+ * @return {mixed}        - The first matching item or `undefined`.
+ */
+function first(a, fn) {
+  let i, l;
+  for (i = 0, l = a.length; i < l; i++) {
+    if (fn(a[i]))
+      return a[i];
+  }
+  return;
+}
+
+/**
  * Function freezing the given variable if possible.
  *
  * @param  {boolean} deep - Should we recursively freeze the given objects?
@@ -86,6 +136,65 @@ const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
       deepFreeze = isFreezeSupported ? freezer.bind(null, true) : noop;
 
 export {freeze, deepFreeze};
+
+/**
+ * Function retrieving nested data within the given object and according to
+ * the given path.
+ *
+ * @todo: work if dynamic path hit objects also.
+ *
+ * @param  {object} object - The object we need to get data from.
+ * @param  {array}  path   - The path to follow.
+ * @return {mixed}         - The data at path, or if not found, `undefined`.
+ */
+export function getIn(object, path) {
+  path = path || [];
+
+  let c = object,
+      p,
+      i,
+      l;
+
+  for (i = 0, l = path.length; i < l; i++) {
+    if (!c)
+      return;
+
+    if (typeof path[i] === 'function') {
+      if (!type.array(c))
+        return;
+
+      c = first(c, path[i]);
+    }
+    else if (typeof path[i] === 'object') {
+      if (!type.array(c))
+        return;
+
+      c = first(c, e => compare(e, path[i]));
+    }
+    else {
+      c = c[path[i]];
+    }
+  }
+
+  return c;
+}
+
+/**
+ * Function returning the index of the first element of a list matching the
+ * given predicate.
+ *
+ * @param  {array}     a  - The target array.
+ * @param  {function}  fn - The predicate function.
+ * @return {mixed}        - The index of the first matching item or -1.
+ */
+function index(a, fn) {
+  let i, l;
+  for (i = 0, l = a.length; i < l; i++) {
+    if (fn(a[i]))
+      return i;
+  }
+  return -1;
+}
 
 /**
  * Little helper returning a JavaScript error carrying some data with it.
