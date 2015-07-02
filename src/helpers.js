@@ -12,6 +12,55 @@ import type from './type';
 const noop = Function.prototype;
 
 /**
+ * Archive abstraction
+ *
+ * @constructor
+ * @param {integer} size - Maximum number of records to store.
+ */
+export class Archive {
+  constructor(size) {
+    this.size = size;
+    this.records = [];
+  }
+
+  /**
+   * Method retrieving the records.
+   *
+   * @return {array} - The records.
+   */
+  get() {
+    return this.records;
+  }
+
+  /**
+   * Method adding a record to the archive
+   *
+   * @param {object} record - The record to store.
+   */
+  add(record) {
+    this.records.unshift(record);
+
+    // If the number of records is exceeded, we truncate the records
+    if (this.records.length > this.size)
+      this.records.length = this.size;
+  }
+
+  /**
+   * Method to go back in time.
+   *
+   * @param {integer} steps - Number of steps we should go back by.
+   * @return {number}       - The last record.
+   */
+  back(steps) {
+    let record = this.records[steps - 1];
+
+    if (record)
+      record = this.records.slice(steps);
+    return record;
+  }
+}
+
+/**
  * Function creating a real array from what should be an array but is not.
  * I'm looking at you nasty `arguments`...
  *
@@ -265,7 +314,7 @@ export function solvePath(object, path) {
       if (!type.array(c))
         return;
 
-      idx = indexByComparison(c, path[i]);
+      idx = index(c, e => compare(e, path[i]));
       solvedPath.push(idx);
       c = c[idx];
     }
@@ -276,6 +325,57 @@ export function solvePath(object, path) {
   }
 
   return solvedPath;
+}
+
+/**
+ * Function determining whether some paths in the tree were affected by some
+ * updates that occurred at the given paths. This helper is mainly used at
+ * cursor level to determine whether the cursor is concerned by the updates
+ * fired at tree level.
+ *
+ * NOTES: 1) If performance become an issue, the following threefold loop
+ *           can be simplified to a complex twofold one.
+ *        2) A regex version could also work but I am not confident it would
+ *           be faster.
+ *
+ * @param  {array} affectedPaths - The paths that were updated.
+ * @param  {array} comparedPaths - The paths that we are actually interested in.
+ * @return {boolean}             - Is the update relevant to the compared
+ *                                 paths?
+ */
+function solveUpdate(affectedPaths, comparedPaths) {
+  let i, j, k, l, m, n, p, c, s;
+
+  // Looping through possible paths
+  for (i = 0, l = affectedPaths.length; i < l; i++) {
+    p = affectedPaths[i];
+
+    if (!p.length)
+      return true;
+
+    // Looping through logged paths
+    for (j = 0, m = comparedPaths.length; j < m; j++) {
+      c = comparedPaths[j];
+
+      if (!c.length)
+        return true;
+
+      // Looping through steps
+      for (k = 0, n = c.length; k < n; k++) {
+        s = c[k];
+
+        // If path is not relevant, we break
+        if (s != p[k])
+          break;
+
+        // If we reached last item and we are relevant
+        if (k + 1 === n || k + 1 === p.length)
+          return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /**
