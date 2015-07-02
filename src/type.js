@@ -109,4 +109,23 @@ type.primitive = function(target) {
   return target !== Object(target);
 };
 
+/**
+ * Complex types
+ * --------------
+ */
+
+/**
+ * Checking whether the given variable is a valid cursor path.
+ *
+ * @param  {mixed} target - Variable to test.
+ * @return {boolean}
+ */
+type.path = function(target, allowed) {
+
+  // Order of allowed types is important for perf reasons
+  allowed = allowed || ['string', 'number', 'function', 'object'];
+
+  return [...target].every(step => anyOf(step, allowed));
+};
+
 export default type;

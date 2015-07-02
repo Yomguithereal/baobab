@@ -7,35 +7,29 @@
 const noop = Function.prototype;
 
 /**
- * Simple function returning a unique incremental id each time it is called.
+ * Function creating a real array from what should be an array but is not.
+ * I'm looking at you nasty `arguments`...
  *
- * @return {integer} - The latest unique id.
+ * @param  {mixed} culprit - The culprit to convert.
+ * @return {array}         - The real array.
  */
-const uniqid = (function() {
-  var i = 0;
-  return function() {
-    return i++;
-  };
-})();
-
-export uniqid;
+export function arrayFrom(culprit) {
+  return Array.prototype.slice.call(culprit);
+}
 
 /**
- * Function taking two objects to shallowly merge them together. Note that the
- * second object will take precedence over the first one.
+ * Function decorating one function with another that will be called before the
+ * decorated one.
  *
- * @param  {object} o1 - The first object.
- * @param  {object} o2 - The second object.
- * @return {object}    - The merged object.
+ * @param  {function} decorator - The decorating function.
+ * @param  {function} fn        - The function to decorate.
+ * @return {function}           - The decorated function.
  */
-export function shallowMerge(o1, o2) {
-  let o = {},
-      k;
-
-  for (k in o1) o[k] = o1[k];
-  for (k in o2) o[k] = o2[k];
-
-  return o;
+export function before(decorator, fn) {
+  return function() {
+    decorator.apply(null, arguments);
+    fn.apply(null, arguments);
+  };
 }
 
 /**
@@ -93,3 +87,35 @@ const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
 
 export freeze;
 export deepFreeze;
+
+/**
+ * Function taking two objects to shallowly merge them together. Note that the
+ * second object will take precedence over the first one.
+ *
+ * @param  {object} o1 - The first object.
+ * @param  {object} o2 - The second object.
+ * @return {object}    - The merged object.
+ */
+export function shallowMerge(o1, o2) {
+  let o = {},
+      k;
+
+  for (k in o1) o[k] = o1[k];
+  for (k in o2) o[k] = o2[k];
+
+  return o;
+}
+
+/**
+ * Function returning a unique incremental id each time it is called.
+ *
+ * @return {integer} - The latest unique id.
+ */
+const uniqid = (function() {
+  var i = 0;
+  return function() {
+    return i++;
+  };
+})();
+
+export uniqid;
