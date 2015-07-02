@@ -2,14 +2,15 @@
  * Baobab Data Structure
  * ======================
  *
- * A handy data tree with cursors. Main class of the library.
+ * A handy data tree with cursors.
  */
 import Emitter from 'emmett';
 import type from './type';
 import defaults from '../defaults';
+import {shallowMerge} from './helpers';
 
 /**
- * Main Class
+ * Baobab class
  *
  * @constructor
  * @param {object|array} [initialData={}]    - Initial data passed to the tree.
@@ -32,5 +33,8 @@ export default class Baobab extends Emitter {
     // Checking whether given initial data is valid
     if (!type.object(initialData) || !type.array(initialData))
       throw Error('Baobab: invalid data.');
+
+    // Merging given options with defaults
+    this.options = shallowMerge(defaults, opts);
   }
 }
