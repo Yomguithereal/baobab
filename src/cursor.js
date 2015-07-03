@@ -8,6 +8,7 @@ import Emitter from 'emmett';
 import type from './type';
 import {
   arrayFrom,
+  before,
   getIn,
   solvePath
 } from './helpers';
@@ -93,6 +94,28 @@ export default class Cursor extends Emitter {
       if (this.isRoot())
         return update();
     };
+
+    // Lazy binding
+    let bound = false;
+    this._lazyBind = () => {
+      if (bound)
+        return;
+
+      bound = true;
+      return this.tree.on('update', this._updateHandler);
+    };
+
+    // If the path is dynamic, we actually need to listen to the tree
+    // TODO: there should be another way
+    if (this._dynamicPath) {
+      this._lazyBind();
+    }
+    else {
+
+      // Overriding the emitter `on` and `once` methods
+      this.on = before(this._lazyBind, this.on.bind(this));
+      this.once = before(this._lazyBind, this.once.bind(this));
+    }
   }
 
   /**
