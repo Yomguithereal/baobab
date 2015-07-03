@@ -45,7 +45,8 @@ export default class Baobab extends Emitter {
     this.options = shallowMerge(defaults, opts);
 
     // Privates
-    // TODO: transaction, future, cursors, identity
+    // TODO: transaction, future
+    this._identity = '[object Baobab]';
     this._cursors = {};
 
     // Properties

@@ -33,7 +33,8 @@ gulp.task('build', function() {
     entries: './index.js',
     standalone: 'Baobab',
     fullPaths: false
-  }).bundle()
+  }).transform('babelify')
+    .bundle()
     .pipe(source('baobab.js'))
     .pipe(buffer())
     .pipe(header(banner))

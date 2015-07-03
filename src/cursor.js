@@ -28,7 +28,7 @@ export default class Cursor extends Emitter {
     path = path || [];
 
     // Privates
-    // TODO: identity
+    this._identity = '[object Cursor]';
     this._archive = null;
 
     // Properties
@@ -43,12 +43,56 @@ export default class Cursor extends Emitter {
     };
 
     // Checking whether the given path is dynamic or not
-    this._isDynamic = type.dynamicPath(this.path);
+    this._dynamicPath = type.dynamicPath(this.path);
 
-    if (!this._isDynamic)
+    if (!this._dynamicPath)
       this.solvedPath = this.path;
     else
       this.solvedPath = solvePath(this.tree.data, this.path);
+
+    /**
+     * Function in charge of actually trigger the cursor's updates and
+     * deal with the archived records.
+     *
+     * @param {mixed} previousData - the tree's previous data.
+     */
+    const fireUpdate = (previousData) => {
+      const record = getIn(previousData, this.solvedPath);
+
+      if (this.state.recording && !this.state.undoing)
+        this.archive.add(record);
+
+      this.state.undoing = false;
+      return this.emit('update', {
+        data: this._get(),
+        previousData: record
+      });
+    };
+
+    /**
+     * Listener bound to the tree's updates and determining whether the
+     * cursor is affected and should react accordingly.
+     *
+     * Note that this listener is lazily bound to the tree to be sure
+     * one wouldn't leak listeners when only creating cursors for convenience
+     * and not to listen to updates specifically.
+     *
+     * @param {object} event - The event fired by the tree.
+     */
+    this._updateHandler = (event) => {
+      const {log, previousData} = event.data,
+            update = fireUpdate.bind(this, previousData);
+
+      let shouldFire = false;
+
+      // If the cursor's path is dynamic, we need to recompute it
+      if (this._dynamicPath)
+        this.solvedPath = solvedPath(this.tree.data, this.path);
+
+      // If this is the root selector, we fire already
+      if (this.isRoot())
+        return update();
+    };
   }
 
   /**
