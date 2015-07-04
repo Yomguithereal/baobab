@@ -413,5 +413,17 @@ describe('Cursor API', function() {
 
       tree.root.set({first: 1.1, second: 2.2});
     });
+
+    it('update events should expose the cursor\'s data.', function(done) {
+      const tree = new Baobab({one: {hello: 'world'}});
+
+      tree.select('one').on('update', function(e) {
+        assert.deepEqual(e.data.previousData, {hello: 'world'});
+        assert.deepEqual(e.data.data, {hello: 'monde'});
+        done();
+      });
+
+      tree.set(['one', 'hello'], 'monde');
+    });
   });
 });

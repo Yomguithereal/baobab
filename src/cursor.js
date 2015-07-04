@@ -66,8 +66,9 @@ export default class Cursor extends Emitter {
         this.archive.add(record);
 
       this.state.undoing = false;
+
       return this.emit('update', {
-        data: this._get(),
+        data: this._get().data,
         previousData: record
       });
     };
@@ -146,7 +147,7 @@ export default class Cursor extends Emitter {
    * @return {boolean} - Is the cursor a leaf?
    */
   isLeaf() {
-    return type.primitive(this._get());
+    return type.primitive(this._get().data);
   }
 
   /**
@@ -200,13 +201,13 @@ export default class Cursor extends Emitter {
    * without the event emitting. This is sometimes needed not to fire useless
    * events.
    *
-   * @param  {path}   path            - Path to get in the tree.
+   * @param  {path}   [path=[]]       - Path to get in the tree.
    * @return {object} info            - The resultant information.
    * @return {mixed}  info.data       - Data at path.
    * @return {array}  info.solvedPath - The path solved when getting.
    */
-  _get(path) {
-    const fullPath = this.solvedPath.concat([].concat(path)),
+  _get(path=[]) {
+    const fullPath = this.solvedPath.concat(path),
           data = getIn(this.tree.data, fullPath);
 
     return {data, solvedPath: fullPath};
