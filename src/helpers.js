@@ -87,6 +87,85 @@ export function before(decorator, fn) {
 }
 
 /**
+ * Function cloning the given variable.
+ *
+ * @param  {boolean} deep - Should we deep clone the variable.
+ * @param  {mixed}   item - The variable to clone
+ * @return {mixed}        - The cloned variable.
+ */
+function cloner(deep, item) {
+  if (!item ||
+      typeof item !== 'object' ||
+      item instanceof Error ||
+      ('ArrayBuffer' in global && item instanceof ArrayBuffer))
+    return item;
+
+  // Array
+  if (type.array(item)) {
+    if (deep) {
+      let i, l, a = [];
+      for (i = 0, l = item.length; i < l; i++)
+        a.push(cloner(true, item[i]));
+      return a;
+    }
+    else {
+      return item.slice(0);
+    }
+  }
+
+  // Date
+  if (item instanceof Date)
+    return new Date(item.getTime());
+
+  // RegExp
+  if (item instanceof RegExp)
+    return cloneRegexp(item);
+
+  // Object
+  if (type.object(item)) {
+    let k, o = {};
+
+    if (item.constructor && item.constructor !== Object)
+      o = Object.create(item.constructor.prototype);
+
+    for (k in item)
+      if (item.hasOwnProperty(k))
+        o[k] = deep ? cloner(true, item[k]) : item[k];
+    return o;
+  }
+
+  return item;
+}
+
+/**
+ * Exporting shallow and deep cloning functions.
+ */
+const shallowClone = cloner.bind(null, false),
+      deepClone = cloner.bind(null, true);
+
+export {shallowClone, deepClone};
+
+/**
+ * Function cloning the given regular expression. Supports `y` and `u` flags
+ * already.
+ *
+ * @param  {RegExp} re - The target regular expression.
+ * @return {RegExp}    - The cloned regular expression.
+ */
+function cloneRegexp(re) {
+  let pattern = re.source,
+      flags = '';
+
+  if (re.global) flags += 'g';
+  if (re.multiline) flags += 'm';
+  if (re.ignoreCase) flags += 'i';
+  if (re.sticky) flags += 'y';
+  if (re.unicode) flags += 'u';
+
+  return new RegExp(pattern, flags);
+}
+
+/**
  * Function comparing an object's properties to a given descriptive
  * object.
  *

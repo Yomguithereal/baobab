@@ -174,10 +174,10 @@ export default class Cursor extends Emitter {
    * without the event emitting. This is sometimes needed not to fire useless
    * events.
    *
-   * @param  {string|function|object|array} path - Path to get in the tree.
-   * @return {object} info                       - The resultant information.
-   * @return {mixed}  info.data                  - Data at path.
-   * @return {array}  info.solvedPath            - The path solved when getting.
+   * @param  {path}   path            - Path to get in the tree.
+   * @return {object} info            - The resultant information.
+   * @return {mixed}  info.data       - Data at path.
+   * @return {array}  info.solvedPath - The path solved when getting.
    */
   _get(path) {
     path = path || path === 0 ? path : [];
@@ -196,8 +196,8 @@ export default class Cursor extends Emitter {
    * tree so that the user may sometimes react upon it to fecth data, for
    * instance.
    *
-   * @param  {string|function|object|array} path - Path to get in the tree.
-   * @return {mixed}                             - Data at path.
+   * @param  {path} path - Path to get in the tree.
+   * @return {mixed}     - Data at path.
    */
   get(path) {
     const {data, solvedPath} = this._get(path);
@@ -212,4 +212,25 @@ export default class Cursor extends Emitter {
    * Setter Methods
    * ---------------
    */
+
+  /**
+   * Method setting a new value at cursor's path or else at a subpath of
+   * said cursor.
+   *
+   * Arity 1:
+   * @param  {mixed} value - New value to set.
+   *
+   * Arity 2:
+   * @param  {path}  path  - Subpath to update starting from cursor's.
+   * @param  {mixed} value - New value to set.
+   *
+   * @return {mixed}       - Data at path.
+   */
+  set(path, value) {
+
+    if (arguments.length === 1) {
+      value = path;
+      path = [];
+    }
+  }
 }

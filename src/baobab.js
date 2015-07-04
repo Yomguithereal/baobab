@@ -7,6 +7,7 @@
 import Emitter from 'emmett';
 import Cursor from './cursor';
 import type from './type';
+import update from './update';
 import defaults from '../defaults';
 import {
   arrayFrom,
@@ -64,8 +65,13 @@ export default class Baobab extends Emitter {
    * Method used to select data within the tree by creating a cursor. Cursors
    * are kept as singletons by the tree for performance and hygiene reasons.
    *
-   * @param  {string|function|object|array} path - Path to select in the tree.
-   * @return {Cursor}                            - The resultant cursor.
+   * Arity 1:
+   * @param {path}    path - Path to select in the tree.
+   *
+   * Arity *:
+   * @param {...step} path - Path to select in the tree.
+   *
+   * @return {Cursor}      - The resultant cursor.
    */
   select(path) {
 
@@ -104,5 +110,26 @@ export default class Baobab extends Emitter {
     // Emitting an event to notify that a part of the tree was selected
     this.emit('select', {path, cursor});
     return cursor;
+  }
+
+  /**
+   * Method used to update the tree. Updates are simply expressed by a path,
+   * dynamic or not, and an operation.
+   *
+   * This is where path solving should happen and not in the cursor.
+   *
+   * Arity 1:
+   * @param  {object} operation - The operation to apply at root level.
+   *
+   * Arity 2:
+   * @param  {path}   path      - The path where we'll apply the operation.
+   * @param  {object} operation - The operation to apply.
+   *
+   * @return {mixed} - Return the result of the update.
+   */
+  update(path, operation) {
+    const {data, node} = update(this.data, path, operation, this.options);
+
+    console.log(data, node);
   }
 }
