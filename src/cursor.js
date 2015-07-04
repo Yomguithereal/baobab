@@ -10,6 +10,7 @@ import {
   arrayFrom,
   before,
   getIn,
+  makeError,
   solvePath
 } from './helpers';
 
@@ -191,6 +192,8 @@ export default class Cursor extends Emitter {
    * tree so that the user may sometimes react upon it to fecth data, for
    * instance.
    *
+   * @todo: check path validity
+   *
    * Arity (1):
    * @param  {path}   path           - Path to get in the tree.
    *
@@ -233,10 +236,19 @@ export default class Cursor extends Emitter {
    */
   set(path, value) {
 
+    // We should warn the user if he applies to many arguments to the function
+    if (arguments.length > 2)
+      throw makeError('Baobab.Cursor.set: too many arguments.');
+
+    // Handling arities
     if (arguments.length === 1) {
       value = path;
       path = [];
     }
+
+    // Checking the path's validity
+    if (!type.path(path))
+      throw makeError('Baobab.Cursor.set: invalid path.', {path});
 
     return this.tree.update(this.solvedPath.concat(path), {
       type: 'set',

@@ -10,7 +10,7 @@ import state from '../state';
 describe('Cursor API', function() {
 
   /**
-   * Getter
+   * Getters
    */
   describe('Getters', function() {
 
@@ -104,6 +104,77 @@ describe('Cursor API', function() {
         const colors = oneCursor.get('subtwo', 'colors');
 
         assert.deepEqual(colors, state.one.subtwo.colors);
+      });
+    });
+  });
+
+  /**
+   * Setters
+   */
+  describe('Setters', function() {
+
+    /**
+     * Root level
+     */
+    describe('Root cursor', function() {
+      it('should be possible to set a key using a path rather than a key.', function() {
+        const tree = new Baobab(state, {asynchronous: false});
+
+        tree.set(['two', 'age'], 34);
+        assert.strictEqual(tree.get().two.age, 34);
+      });
+
+      it('should be possible to set a key at an nonexistent path.', function() {
+        const tree = new Baobab(state, {asynchronous: false});
+
+        tree.set(['nonexistent', 'key'], 'hello');
+        assert.strictEqual(tree.get().nonexistent.key, 'hello');
+      });
+
+      it('should be possible to set a key using a dynamic path.', function() {
+        const tree = new Baobab(state, {asynchronous: false});
+
+        tree.set(['items', {id: 'two'}, 'user', 'age'], 34);
+        assert.strictEqual(tree.get().items[1].user.age, 34);
+      });
+
+      it('should fail when setting a nonexistent dynamic path.', function() {
+        const tree = new Baobab(state, {asynchronous: false});
+
+        assert.throws(function() {
+          tree.set(['items', {id: 'four'}, 'user', 'age'], 34);
+        }, /solve/);
+      });
+    });
+
+    /**
+     * Branch & leaf level
+     */
+    describe('Standard cursor', function() {
+      it('should warn the user when too many arguments are applied to a setter.', function() {
+        const tree = new Baobab(state),
+            cursor = tree.select('items');
+
+        assert.throws(function() {
+          cursor.set('this', 'is', 'my', 'destiny!');
+        }, /too many/);
+      });
+
+      it('should throw an error when the provided path is incorrect.', function() {
+        const tree = new Baobab(state),
+            cursor = tree.select('items');
+
+        assert.throws(function() {
+          cursor.set(null, '45');
+        }, /invalid path/);
+      });
+
+      it('should be possible to set a key using a path rather than a key.', function() {
+        const tree = new Baobab(state, {asynchronous: false}),
+              cursor = tree.select('items');
+
+        cursor.set([1, 'user', 'age'], 34);
+        assert.strictEqual(cursor.get()[1].user.age, 34);
       });
     });
   });

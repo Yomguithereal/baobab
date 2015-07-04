@@ -122,6 +122,8 @@ type.primitive = function(target) {
  * @return {boolean}
  */
 type.path = function(target, allowed) {
+  if (!target)
+    return false;
 
   // Order of allowed types is important for perf reasons
   allowed = allowed || ['string', 'number', 'function', 'object'];

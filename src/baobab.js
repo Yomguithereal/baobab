@@ -144,25 +144,28 @@ export default class Baobab extends Emitter {
    *
    * This is where path solving should happen and not in the cursor.
    *
-   * Arity (1):
-   * @param  {object} operation - The operation to apply at root level.
-   *
-   * Arity (2):
    * @param  {path}   path      - The path where we'll apply the operation.
    * @param  {object} operation - The operation to apply.
-   *
    * @return {mixed} - Return the result of the update.
    */
   update(path, operation) {
 
-    // TODO: coerce path and deal with polymorphism
+    // Coercing path
+    path = path || path === 0 ? path : [];
 
     // Stashing previous data if this is the frame's first update
     this.previousData = this.data;
 
     // Applying the operation
-    const solvedPath = solvePath(this.data, path),
-          hash = hashPath(solvedPath),
+    const solvedPath = solvePath(this.data, path);
+
+    // If we couldn't solve the path, we throw
+    if (!solvedPath)
+      throw makeError('Baobab.update: could not solve the given path.', {
+        path: solvedPath
+      });
+
+    const hash = hashPath(solvedPath),
           {data, node} = update(this.data, solvedPath, operation, this.options);
 
     // TODO: previousData
@@ -219,7 +222,7 @@ export default class Baobab extends Emitter {
       }
     }
 
-    // Caching
+    // Caching to keep original references before we change them
     const transaction = this._transaction,
           previousData = this.previousData;
 
