@@ -126,10 +126,28 @@ export default class Cursor extends Emitter {
   /**
    * Method returning whether the cursor is at root level.
    *
-   * @return {boolean} - Is the cursor root?
+   * @return {boolean} - Is the cursor the root?
    */
   isRoot() {
     return !this.path.length;
+  }
+
+  /**
+   * Method returning whether the cursor is at leaf level.
+   *
+   * @return {boolean} - Is the cursor a leaf?
+   */
+  isLeaf() {
+    return type.primitive(this._get());
+  }
+
+  /**
+   * Method returning whether the cursor is at branch level.
+   *
+   * @return {boolean} - Is the cursor a branch?
+   */
+  isBranch() {
+    return !this.isRoot() && !this.isLeaf();
   }
 
   /**
