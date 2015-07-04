@@ -7,8 +7,16 @@
 import type from './type';
 import {
   freeze,
-  shallowClone
+  makeError,
+  shallowClone,
+  shallowMerge,
+  splice
 } from './helpers';
+
+// TODO: maybe abstract more
+function err(message, path) {
+  return makeError(`Baobab.update: ${message}`, {path});
+}
 
 /**
  * Function aiming at applying a single update operation on the given tree's
@@ -29,20 +37,64 @@ export default function update(data, path, operation, opts={}) {
 
   // Walking the path
   let p = dummy,
+      currentPath = [],
       i,
       l,
       s;
 
   for (i = 0, l = dummyPath.length; i < l; i++) {
 
-    // Current step
     // Current item's reference is therefore p[s]
+    // The reason why we don't create a variable here for convenience
+    // is because we actually need to mutate the reference.
     s = dummyPath[i];
+
+    // Updating the path
+    if (i > 0)
+      currentPath.push(s);
 
     // If we are where the operation should be applied, we act
     if (i === l - 1) {
+
+      /**
+       * Set
+       */
       if (operationType === 'set') {
         p[s] = value;
+      }
+
+      /**
+       * Splice
+       */
+      else if (operationType === 'splice') {
+        if (!type.array(p[s]))
+          throw err(
+            'cannot apply the "splice" operation on a non array.',
+            currentPath
+          );
+
+        p[s] = splice.apply(null, [p[s]].concat(value));
+      }
+
+      /**
+       * Unset
+       */
+      else if (operationType === 'unset') {
+        if (type.object(p))
+          delete p[s];
+      }
+
+      /**
+       * Merge
+       */
+      else if (operationType === 'merge') {
+        if (!type.object(p[s]))
+          throw err(
+            'cannot apply the "merge" operation on a non object.',
+            currentPath
+          );
+
+        p[s] = shallowMerge(p[s], value);
       }
 
       break;

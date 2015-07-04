@@ -165,7 +165,7 @@ describe('Cursor API', function() {
             cursor = tree.select('items');
 
         assert.throws(function() {
-          cursor.set(null, '45');
+          cursor.set(/test/, '45');
         }, /invalid path/);
       });
 
@@ -200,6 +200,76 @@ describe('Cursor API', function() {
         assert.throws(function() {
           cursor.set([{id: 'four'}, 'user', 'age'], 34);
         }, /solve/);
+      });
+
+      it('should be possible to shallow merge two objects.', function(done) {
+        const tree = new Baobab({o: {hello: 'world'}, string: 'test'});
+
+        const cursor = tree.select('o');
+        cursor.merge({hello: 'jarl'});
+
+        tree.on('update', function() {
+          assert.deepEqual(tree.get('o'), {hello: 'jarl'});
+          done();
+        });
+      });
+
+      it('should be possible to remove keys from a cursor.', function() {
+        var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+            cursor = tree.select('two');
+
+        assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
+        cursor.unset('subone');
+        assert.deepEqual(cursor.get(), {subtwo: 2});
+      });
+
+      it('should be possible to remove data at cursor.', function() {
+        const tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+              cursor = tree.select('two');
+
+        assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
+        cursor.unset();
+        assert.strictEqual(cursor.get(), undefined);
+      });
+
+      it('should be possible to splice an array.', function() {
+        const tree = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
+              cursor = tree.select('list');
+
+        assert.deepEqual(cursor.get(), [1, 2, 3]);
+
+        cursor.splice([0, 1]);
+        cursor.splice([1, 1, 4])
+
+        assert.deepEqual(cursor.get(), [2, 4]);
+      });
+
+      it('should be possible to set a falsy value.', function() {
+        const tree = new Baobab({hello: 'world'}, {asynchronous: false});
+
+        tree.set('hello', '');
+
+        assert.strictEqual(tree.get('hello'), '');
+
+        tree.set('hello', false);
+
+        assert.strictEqual(tree.get('hello'), false);
+      });
+
+      it('should throw errors when updating with wrong values.', function() {
+        const cursor = (new Baobab()).root;
+
+        assert.throws(function() {
+          cursor.merge('John');
+        }, /value/);
+
+        assert.throws(function() {
+          cursor.splice('John');
+        });
+
+        assert.throws(function() {
+          cursor.apply('John');
+        });
       });
     });
   });

@@ -23,9 +23,7 @@ const type = {};
  * @return {boolean}
  */
 function anyOf(target, allowed) {
-  return allowed.some(function(t) {
-    return type[t](target);
-  });
+  return allowed.some(t => type[t](target));
 }
 
 /**
@@ -128,7 +126,7 @@ type.path = function(target, allowed) {
   // Order of allowed types is important for perf reasons
   allowed = allowed || ['string', 'number', 'function', 'object'];
 
-  return [...target].every(step => anyOf(step, allowed));
+  return [].concat(target).every(step => anyOf(step, allowed));
 };
 
 /**

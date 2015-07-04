@@ -253,14 +253,21 @@ function makeSetter(name, typeChecker) {
       throw makeError(`Baobab.Cursor.${name}: too many arguments.`);
 
     // Handling arities
-    if (arguments.length === 1) {
+    if (arguments.length === 1 && name !== 'unset') {
       value = path;
       path = [];
     }
 
+    // Coerce path
+    path = path || path === 0 ? path : [];
+
     // Checking the path's validity
     if (!type.path(path))
       throw makeError(`Baobab.Cursor.${name}: invalid path.`, {path});
+
+    // Checking the value's validity
+    if (typeChecker && !typeChecker(value))
+      throw makeError(`Baobab.Cursor.${name}: invalid value.`, {path, value});
 
     // Filing the update to the tree
     return this.tree.update(
@@ -277,6 +284,7 @@ function makeSetter(name, typeChecker) {
  * Making the necessary setters.
  */
 makeSetter('set');
+makeSetter('unset');
 makeSetter('apply', type.function);
 makeSetter('push');
 makeSetter('append', type.array);

@@ -87,8 +87,16 @@ export default class Baobab extends Emitter {
     };
 
     [
+      'append',
+      'apply',
       'get',
-      'set'
+      'prepend',
+      'push,',
+      'merge',
+      'set',
+      'splice',
+      'unset',
+      'unshift'
     ].forEach(bootstrap);
   }
 

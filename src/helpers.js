@@ -89,6 +89,8 @@ export function before(decorator, fn) {
 /**
  * Function cloning the given variable.
  *
+ * @todo: implement a faster way to clone an array.
+ *
  * @param  {boolean} deep - Should we deep clone the variable.
  * @param  {mixed}   item - The variable to clone
  * @return {mixed}        - The cloned variable.
@@ -455,6 +457,22 @@ function solveUpdate(affectedPaths, comparedPaths) {
   }
 
   return false;
+}
+
+/**
+ * Non-mutative version of the splice array method.
+ *
+ * @param {array} array       - The array to splice.
+ * @param {integer} index     - The start index.
+ * @param {integer} nb        - Number of elements to remove.
+ * @param {...mixed} elements - Elements to append after splicing.
+ * @return {array}            - The spliced array.
+ */
+export function splice(array, index, nb, ...elements) {
+  return array
+    .slice(0, index)
+    .concat(elements)
+    .concat(array.slice(index + nb));
 }
 
 /**
