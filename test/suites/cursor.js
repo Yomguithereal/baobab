@@ -14,6 +14,9 @@ describe('Cursor API', function() {
    */
   describe('Getters', function() {
 
+    /**
+     * Root level
+     */
     describe('Root cursor', function() {
       const tree = new Baobab(state);
 
@@ -67,6 +70,40 @@ describe('Cursor API', function() {
 
         const inexistant = tree.get('setLater', 'a');
         assert.strictEqual(inexistant, undefined);
+      });
+    });
+
+    /**
+     * Branch & leaf level
+     */
+    describe('Standard cursors', function() {
+      const tree = new Baobab(state),
+            colorCursor = tree.select(['one', 'subtwo', 'colors']),
+            oneCursor = tree.select('one');
+
+      it('should be possible to retrieve data at cursor.', function() {
+        const colors = colorCursor.get();
+
+        assert(colors instanceof Array);
+        assert.deepEqual(colors, state.one.subtwo.colors);
+      });
+
+      it('should be possible to retrieve data with a 0 key.', function() {
+        const specificTree = new Baobab([1, 2]);
+        assert.strictEqual(specificTree.get(0), 1);
+        assert.strictEqual(colorCursor.get(0), 'blue');
+      });
+
+      it('should be possible to retrieve nested data.', function() {
+        const colors = oneCursor.get(['subtwo', 'colors']);
+
+        assert.deepEqual(colors, state.one.subtwo.colors);
+      });
+
+      it('should be possible to use some polymorphism on the getter.', function() {
+        const colors = oneCursor.get('subtwo', 'colors');
+
+        assert.deepEqual(colors, state.one.subtwo.colors);
       });
     });
   });
