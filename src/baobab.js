@@ -142,11 +142,13 @@ export default class Baobab extends Emitter {
    */
   update(path, operation) {
 
+    // TODO: coerce path and deal with polymorphism
+
     // Stashing previous data if this is the frame's first update
     this.previousData = this.data;
 
     // Applying the operation
-    const solvedPath = solvedPath(this.data, path),
+    const solvedPath = solvePath(this.data, path),
           hash = hashPath(solvedPath),
           {data, node} = update(this.data, solvedPath, operation, this.options);
 
@@ -156,10 +158,10 @@ export default class Baobab extends Emitter {
 
     if (!this._transaction[hash])
       this._transaction[hash] = [];
-    this._transaction.push(operation);
+    this._transaction[hash].push(operation);
 
     // Should we let the user commit?
-    if (!this.options.autocommit) {
+    if (!this.options.autoCommit) {
       return node;
     }
 
@@ -215,7 +217,8 @@ export default class Baobab extends Emitter {
     this.emit('update', {
       transaction,
       previousData,
-      data: this.data
+      data: this.data,
+      paths: Object.keys(transaction).map(h => h.split('|λ|'))
     });
 
     return this;

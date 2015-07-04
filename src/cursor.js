@@ -81,7 +81,7 @@ export default class Cursor extends Emitter {
      * @param {object} event - The event fired by the tree.
      */
     this._updateHandler = (event) => {
-      const {log, previousData} = event.data,
+      const {paths, previousData} = event.data,
             update = fireUpdate.bind(this, previousData);
 
       let shouldFire = false;

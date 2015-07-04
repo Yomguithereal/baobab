@@ -59,7 +59,6 @@ export default function update(data, path, operation, opts={}) {
 
     p = p[s];
   }
-  console.log(p)
 
   // Returning new data object
   return {data: dummy.root, node: p[s]};

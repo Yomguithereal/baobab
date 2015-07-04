@@ -53,17 +53,20 @@ describe('Baobab API', function() {
   /**
    * Events
    */
-  // describe('Events', function() {
+  describe('Events', function() {
 
-  //   it('should be possible to listen to update events.', function(done) {
-  //     const tree = new Baobab(state);
+    it('should be possible to listen to update events.', function(done) {
+      const tree = new Baobab(state);
 
-  //     tree.on('update', function(e) {
-  //       assert.deepEqual(e.data.log, [['one', 'subtwo', 'colors']]);
-  //       done();
-  //     });
+      tree.on('update', function(e) {
+        assert.deepEqual(e.data.paths, [['one', 'subtwo', 'colors']]);
+        done();
+      });
 
-  //     tree.update({one: {subtwo: {colors: {$push: 'purple'}}}});
-  //   });
-  // });
+      tree.update(
+        ['one', 'subtwo', 'colors'],
+        {type: 'set', value: 'whatever'}
+      );
+    });
+  });
 });
