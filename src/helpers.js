@@ -277,6 +277,7 @@ export {freeze, deepFreeze};
  * the given path.
  *
  * @todo: work if dynamic path hit objects also.
+ * @todo: memoized perfgetters.
  *
  * @param  {object} object - The object we need to get data from.
  * @param  {array}  path   - The path to follow.

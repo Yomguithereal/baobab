@@ -3,6 +3,7 @@
  * =======================
  */
 import assert from 'assert';
+import async from 'async';
 import Baobab from '../../src/baobab';
 import Cursor from '../../src/cursor';
 import state from '../state';
@@ -289,6 +290,128 @@ describe('Cursor API', function() {
       });
 
       colorCursor.push('purple');
+    });
+
+    it('when a parent updates, so does the child.', function(done) {
+      const tree = new Baobab(state),
+            parent = tree.select('two'),
+            child = tree.select(['two', 'firstname']);
+
+      let count = 0;
+
+      async.parallel({
+        parent: function(next) {
+          parent.on('update', function() {
+            assert.deepEqual({firstname: 'Napoleon', lastname: 'Bonaparte'}, this.get());
+            count++;
+            next();
+          });
+        },
+        child: function(next) {
+          child.on('update', function() {
+            count++;
+            next();
+          });
+        }
+      }, function() {
+        assert.strictEqual(count, 2);
+        done();
+      });
+
+      parent.set({firstname: 'Napoleon', lastname: 'Bonaparte'});
+    });
+
+    it('when a child updates, so does the parent.', function(done) {
+      const tree = new Baobab(state),
+            parent = tree.select('two'),
+            child = tree.select(['two', 'firstname']);
+
+      let count = 0;
+
+      async.parallel({
+        parent: function(next) {
+          parent.on('update', function() {
+            count++;
+            next();
+          });
+        },
+        child: function(next) {
+          child.on('update', function() {
+            count++;
+            next();
+          });
+        }
+      }, function() {
+        assert.strictEqual(count, 2);
+        done();
+      });
+
+      child.set('Napoleon');
+    });
+
+    it('when a leave updates, it should not update its siblings.', function(done) {
+      const tree = new Baobab({
+        node: {
+          leaf1: 'hey',
+          leaf2: 'ho'
+        }
+      });
+
+      const parent = tree.select('node'),
+            leaf1 = parent.select('leaf1'),
+            leaf2 = parent.select('leaf2');
+
+      let count = 0,
+          handler = () => count++;
+
+      async.parallel({
+        node: function(next) {
+          parent.on('update', handler);
+          setTimeout(next, 30);
+        },
+        leaf1: function(next) {
+          leaf1.on('update', handler);
+          setTimeout(next, 30);
+        },
+        leaf2: function(next) {
+          leaf2.on('update', handler);
+          setTimeout(next, 30);
+        }
+      }, function() {
+        assert.strictEqual(count, 2);
+        done();
+      });
+
+      leaf1.set('tada');
+    });
+
+    it('should be possible to listen to changes in an array.', function(done) {
+      const tree = new Baobab({list: ['hello', 'world']}),
+            cursor = tree.select('list', 1);
+
+      assert.strictEqual(cursor.get(), 'world');
+
+      cursor.on('update', function() {
+        assert.strictEqual(cursor.get(), 'jacky');
+        done();
+      });
+
+      cursor.set('jacky');
+    });
+
+    it('should fire update correctly even when root node is affected.', function(done) {
+      const tree = new Baobab({first: 1, second: 2});
+
+      tree.select('first').on('update', function() {
+        assert.deepEqual(
+          tree.get(),
+          {first: 1.1, second: 2.2}
+        );
+
+        done();
+      });
+
+      tree.root.set({first: 1.1, second: 2.2});
     });
   });
 });

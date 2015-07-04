@@ -173,6 +173,24 @@ export default class Cursor extends Emitter {
   }
 
   /**
+   * Method selecting a subpath as a new cursor.
+   *
+   * Arity (1):
+   * @param  {path} path    - The path to select.
+   *
+   * Arity (*):
+   * @param  {...step} path - The path to select.
+   *
+   * @return {Cursor}       - The created cursor.
+   */
+  select(path) {
+    if (arguments.length > 1)
+      path = arrayFrom(arguments);
+
+    return this.tree.select(this.path.concat(path));
+  }
+
+  /**
    * Getter Methods
    * ---------------
    */

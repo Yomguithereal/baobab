@@ -26,12 +26,12 @@ import {
  * @return {string} string - The resultant hash.
  */
 function hashPath(path) {
-  return path.map(step => {
+  return '/' + path.map(step => {
     if (type.function(step) || type.object(step))
       return `#${uniqid()}#`;
     else
       return step;
-  }).join('|λ|');
+  }).join('/');
 }
 
 /**
@@ -242,7 +242,11 @@ export default class Baobab extends Emitter {
       transaction,
       previousData,
       data: this.data,
-      paths: Object.keys(transaction).map(h => h.split('|λ|'))
+      paths: Object.keys(transaction).map(h => {
+        return h !== '/' ?
+          h.split('/').slice(1) :
+          [];
+      })
     });
 
     return this;
