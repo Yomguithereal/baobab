@@ -18,3 +18,4 @@ assert.isFrozen = function(v) {
 
 // Requiring the tests
 require('./suites/baobab.js');
+require('./suites/cursor.js');

@@ -6,6 +6,7 @@
  */
 import type from './type';
 import {
+  freeze,
   shallowClone
 } from './helpers';
 
@@ -56,6 +57,10 @@ export default function update(data, path, operation, opts={}) {
     else {
       p[s] = shallowClone(p[s]);
     }
+
+    // Should we freeze the current step before continuing?
+    if (opts.immutable)
+      freeze(p);
 
     p = p[s];
   }

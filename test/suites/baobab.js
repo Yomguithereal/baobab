@@ -120,5 +120,17 @@ describe('Baobab API', function() {
 
       tree.get('one', 'two');
     });
+
+    it('update events should expose the tree\'s data.', function(done) {
+      const tree = new Baobab({hello: 'world'});
+
+      tree.on('update', function(e) {
+        assert.deepEqual(e.data.previousData, {hello: 'world'});
+        assert.deepEqual(e.data.data, {hello: 'monde'});
+        done();
+      });
+
+      tree.set('hello', 'monde');
+    });
   });
 });
