@@ -273,4 +273,22 @@ describe('Cursor API', function() {
       });
     });
   });
+
+  /**
+   * Events
+   */
+  describe('Events', function() {
+
+    it('should be possible to listen to updates.', function(done) {
+      const tree = new Baobab(state),
+            colorCursor = tree.select('one', 'subtwo', 'colors');
+
+      colorCursor.on('update', function() {
+        assert.deepEqual(colorCursor.get(), ['blue', 'yellow', 'purple']);
+        done();
+      });
+
+      colorCursor.push('purple');
+    });
+  });
 });

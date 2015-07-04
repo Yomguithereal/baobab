@@ -424,7 +424,7 @@ export function solvePath(object, path) {
  * @return {boolean}             - Is the update relevant to the compared
  *                                 paths?
  */
-function solveUpdate(affectedPaths, comparedPaths) {
+export function solveUpdate(affectedPaths, comparedPaths) {
   let i, j, k, l, m, n, p, c, s;
 
   // Looping through possible paths

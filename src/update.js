@@ -64,6 +64,32 @@ export default function update(data, path, operation, opts={}) {
       }
 
       /**
+       * Push
+       */
+      else if (operationType === 'push') {
+        if (!type.array(p[s]))
+          throw err(
+            'cannot apply the "push" operation on a non array.',
+            currentPath
+          );
+
+        p[s] = p[s].concat(value);
+      }
+
+      /**
+       * Unshift
+       */
+      else if (operationType === 'unshift') {
+        if (!type.array(p[s]))
+          throw err(
+            'cannot apply the "unshift" operation on a non array.',
+            currentPath
+          );
+
+        p[s] = [value].concat(p[s]);
+      }
+
+      /**
        * Splice
        */
       else if (operationType === 'splice') {
@@ -96,6 +122,8 @@ export default function update(data, path, operation, opts={}) {
 
         p[s] = shallowMerge(p[s], value);
       }
+
+      // TODO: deepFreeze here if needed
 
       break;
     }

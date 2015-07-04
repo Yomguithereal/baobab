@@ -11,7 +11,8 @@ import {
   before,
   getIn,
   makeError,
-  solvePath
+  solvePath,
+  solveUpdate
 } from './helpers';
 
 /**
@@ -85,14 +86,20 @@ export default class Cursor extends Emitter {
       const {paths, previousData} = event.data,
             update = fireUpdate.bind(this, previousData);
 
-      let shouldFire = false;
+      // If this is the root selector, we fire already
+      if (this.isRoot())
+        return update();
 
       // If the cursor's path is dynamic, we need to recompute it
       if (this._dynamicPath)
-        this.solvedPath = solvedPath(this.tree.data, this.path);
+        this.solvedPath = solvePath(this.tree.data, this.path);
 
-      // If this is the root selector, we fire already
-      if (this.isRoot())
+      let shouldFire = false;
+
+      if (this.solvedPath)
+        shouldFire = solveUpdate(paths, [this.solvedPath]);
+
+      if (shouldFire)
         return update();
     };
 
