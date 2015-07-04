@@ -205,6 +205,113 @@ export default class Cursor extends Emitter {
   }
 
   /**
+   * Method returning the child node of the cursor.
+   *
+   * @return {Baobab} - The child cursor.
+   */
+  down() {
+    const last = +this.solvedPath[this.solvedPath.length - 1];
+
+    if (!(this._get().data instanceof Array))
+      throw Error('Baobab.Cursor.down: cannot go down on a non-list type.');
+
+    return this.tree.select(this.solvedPath.concat(0));
+  }
+
+  /**
+   * Method returning the left sibling node of the cursor if this one is
+   * pointing at a list. Returns `null` if this cursor is already leftmost.
+   *
+   * @return {Baobab} - The left sibling cursor.
+   */
+  left() {
+    const last = +this.solvedPath[this.solvedPath.length - 1];
+
+    if (isNaN(last))
+      throw Error('Baobab.Cursor.left: cannot go left on a non-list type.');
+
+    return last ?
+      this.tree.select(this.solvedPath.slice(0, -1).concat(last - 1)) :
+      null;
+  }
+
+  /**
+   * Method returning the right sibling node of the cursor if this one is
+   * pointing at a list. Returns `null` if this cursor is already rightmost.
+   *
+   * @return {Baobab} - The right sibling cursor.
+   */
+  right() {
+    const last = +this.solvedPath[this.solvedPath.length - 1];
+
+    if (isNaN(last))
+      throw Error('Baobab.Cursor.right: cannot go right on a non-list type.');
+
+    if (last + 1 === this.up()._get().data.length)
+      return null;
+
+    return this.tree.select(this.solvedPath.slice(0, -1).concat(last + 1));
+  }
+
+  /**
+   * Method returning the leftmost sibling node of the cursor if this one is
+   * pointing at a list.
+   *
+   * @return {Baobab} - The leftmost sibling cursor.
+   */
+  leftmost() {
+    const last = +this.solvedPath[this.solvedPath.length - 1];
+
+    if (isNaN(last))
+      throw Error('Baobab.Cursor.leftmost: cannot go left on a non-list type.');
+
+    return this.tree.select(this.solvedPath.slice(0, -1).concat(0));
+  }
+
+  /**
+   * Method returning the rightmost sibling node of the cursor if this one is
+   * pointing at a list.
+   *
+   * @return {Baobab} - The rightmost sibling cursor.
+   */
+  rightmost() {
+    const last = +this.solvedPath[this.solvedPath.length - 1];
+
+    if (isNaN(last))
+      throw Error(
+        'Baobab.Cursor.rightmost: cannot go right on a non-list type.');
+
+    const list = this.up()._get().data;
+
+    return this.tree
+      .select(this.solvedPath.slice(0, -1).concat(list.length - 1));
+  }
+
+  /**
+   * Method mapping the children nodes of the cursor.
+   *
+   * @param  {function} fn      - The function to map.
+   * @param  {object}   [scope] - An optional scope.
+   * @return {array}            - The resultant array.
+   */
+  map(fn, scope) {
+    let array = this._get().data,
+        l = arguments.length;
+
+    if (!type.Array(array))
+      throw Error('baobab.Cursor.map: cannot map a non-list type.');
+
+    return array.map(function(item, i) {
+      return fn.call(
+        l > 1 ? scope : this,
+        this.select(i),
+        i,
+        array
+      );
+    }, this);
+  }
+
+  /**
    * Getter Methods
    * ---------------
    */
