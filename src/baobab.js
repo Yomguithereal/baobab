@@ -77,6 +77,19 @@ export default class Baobab extends Emitter {
     // Does the user want an immutable tree?
     if (this.options.immutable)
       deepFreeze(this.data);
+
+    // Bootstrapping root cursor's getters and setters
+    const bootstrap = (name) => {
+      this[name] = function() {
+        const r = this.root[name].apply(this.root, arguments);
+        return r instanceof Cursor ? this : r;
+      };
+    };
+
+    [
+      'get',
+      'set'
+    ].forEach(bootstrap);
   }
 
   /**

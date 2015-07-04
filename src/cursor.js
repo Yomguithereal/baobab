@@ -232,5 +232,10 @@ export default class Cursor extends Emitter {
       value = path;
       path = [];
     }
+
+    return this.tree.update(this.solvedPath.concat(path), {
+      type: 'set',
+      value
+    });
   }
 }

@@ -68,5 +68,21 @@ describe('Baobab API', function() {
         {type: 'set', value: 'whatever'}
       );
     });
+
+    it('should only fire updates once when committing synchronously but when not in synchronous mode.', function(done) {
+      let tree = new Baobab({hello: 'world'}),
+          count = 0;
+
+      tree.on('update', () => count++);
+
+      tree.set('hello', 'tada');
+      tree.commit();
+
+      setTimeout(function() {
+        assert.strictEqual(count, 1);
+        assert.strictEqual(tree.get('hello'), 'tada');
+        done();
+      }, 30);
+    });
   });
 });
