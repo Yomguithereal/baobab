@@ -180,11 +180,6 @@ export default class Cursor extends Emitter {
    * @return {array}  info.solvedPath - The path solved when getting.
    */
   _get(path) {
-    path = path || path === 0 ? path : [];
-
-    if (arguments.length > 1)
-      path = arrayFrom(arguments);
-
     const fullPath = this.solvedPath.concat([].concat(path)),
           data = getIn(this.tree.data, fullPath);
 
@@ -196,10 +191,20 @@ export default class Cursor extends Emitter {
    * tree so that the user may sometimes react upon it to fecth data, for
    * instance.
    *
-   * @param  {path} path - Path to get in the tree.
-   * @return {mixed}     - Data at path.
+   * Arity (1):
+   * @param  {path}   path           - Path to get in the tree.
+   *
+   * Arity (2):
+   * @param {..step} path            - Path to get in the tree.
+   *
+   * @return {mixed}                 - Data at path.
    */
   get(path) {
+    path = path || path === 0 ? path : [];
+
+    if (arguments.length > 1)
+      path = arrayFrom(arguments);
+
     const {data, solvedPath} = this._get(path);
 
     // Emitting the event
@@ -217,10 +222,10 @@ export default class Cursor extends Emitter {
    * Method setting a new value at cursor's path or else at a subpath of
    * said cursor.
    *
-   * Arity 1:
+   * Arity (1):
    * @param  {mixed} value - New value to set.
    *
-   * Arity 2:
+   * Arity (2):
    * @param  {path}  path  - Subpath to update starting from cursor's.
    * @param  {mixed} value - New value to set.
    *

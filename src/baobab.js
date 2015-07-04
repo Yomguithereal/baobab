@@ -96,10 +96,10 @@ export default class Baobab extends Emitter {
    * Method used to select data within the tree by creating a cursor. Cursors
    * are kept as singletons by the tree for performance and hygiene reasons.
    *
-   * Arity 1:
+   * Arity (1):
    * @param {path}    path - Path to select in the tree.
    *
-   * Arity *:
+   * Arity (*):
    * @param {...step} path - Path to select in the tree.
    *
    * @return {Cursor}      - The resultant cursor.
@@ -144,10 +144,10 @@ export default class Baobab extends Emitter {
    *
    * This is where path solving should happen and not in the cursor.
    *
-   * Arity 1:
+   * Arity (1):
    * @param  {object} operation - The operation to apply at root level.
    *
-   * Arity 2:
+   * Arity (2):
    * @param  {path}   path      - The path where we'll apply the operation.
    * @param  {object} operation - The operation to apply.
    *
