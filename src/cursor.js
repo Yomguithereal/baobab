@@ -192,6 +192,19 @@ export default class Cursor extends Emitter {
   }
 
   /**
+   * Method returning the parent node of the cursor or else `null` if the
+   * cursor is already at root level.
+   *
+   * @return {Baobab} - The parent cursor.
+   */
+  up() {
+    if (this.solvedPath && !this.isRoot())
+      return this.tree.select(this.path.slice(0, -1));
+    else
+      return null;
+  }
+
+  /**
    * Getter Methods
    * ---------------
    */

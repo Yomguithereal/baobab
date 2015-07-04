@@ -426,4 +426,27 @@ describe('Cursor API', function() {
       tree.set(['one', 'hello'], 'monde');
     });
   });
+
+  /**
+   * Predicates
+   */
+  describe('Predicates', function() {
+    const tree = new Baobab(state);
+
+    it('should be possible to tell whether cursor is root.', function() {
+      assert(tree.select('one').up().isRoot());
+      assert(!tree.select('one').isRoot());
+    });
+
+    it('should be possible to tell whether cursor is leaf.', function() {
+      assert(tree.select('primitive').isLeaf());
+      assert(!tree.select('one').isLeaf());
+    });
+
+    it('should be possible to tell whether cursor is branch.', function() {
+      assert(tree.select('one').isBranch());
+      assert(!tree.select('one').up().isBranch());
+      assert(!tree.select('primitive').isBranch());
+    });
+  });
 });
