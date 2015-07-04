@@ -14,8 +14,25 @@ import {
   deepFreeze,
   makeError,
   shallowMerge,
+  solvePath,
   uniqid
 } from './helpers';
+
+/**
+ * Function returning a string hash from a non-dynamic path expressed as an
+ * array.
+ *
+ * @param  {array}  path - The path to hash.
+ * @return {string} string - The resultant hash.
+ */
+function hashPath(path) {
+  return path.map(step => {
+    if (type.function(step) || type.object(step))
+      return `#${uniqid()}#`;
+    else
+      return step;
+  }).join('|λ|');
+}
 
 /**
  * Baobab class
@@ -46,9 +63,10 @@ export default class Baobab extends Emitter {
     this.options = shallowMerge(defaults, opts);
 
     // Privates
-    // TODO: transaction, future
     this._identity = '[object Baobab]';
     this._cursors = {};
+    this._future = null;
+    this._transaction = {};
 
     // Properties
     this.log = [];
@@ -91,12 +109,7 @@ export default class Baobab extends Emitter {
 
     // Computing hash (done here because it would be too late to do it in the
     // cursor's constructor since we need to hit the cursors' index first).
-    const hash = path.map(step => {
-      if (type.function(step) || type.object(step))
-        return `#${uniqid()}#`;
-      else
-        return step;
-    }).join('|λ|');
+    const hash = hashPath(path);
 
     // Creating a new cursor or returning the already existing one for the
     // requested path.
@@ -128,8 +141,83 @@ export default class Baobab extends Emitter {
    * @return {mixed} - Return the result of the update.
    */
   update(path, operation) {
-    const {data, node} = update(this.data, path, operation, this.options);
 
-    console.log(data, node);
+    // Stashing previous data if this is the frame's first update
+    this.previousData = this.data;
+
+    // Applying the operation
+    const solvedPath = solvedPath(this.data, path),
+          hash = hashPath(solvedPath),
+          {data, node} = update(this.data, solvedPath, operation, this.options);
+
+    // TODO: previousData
+    // Updating data and transaction
+    this.data = data;
+
+    if (!this._transaction[hash])
+      this._transaction[hash] = [];
+    this._transaction.push(operation);
+
+    // Should we let the user commit?
+    if (!this.options.autocommit) {
+      return node;
+    }
+
+    // Should we update asynchronously?
+    if (!this.options.asynchronous) {
+      this.commit();
+      return node;
+    }
+
+    // Updating asynchronously
+    if (!this._future)
+      this._future = setTimeout(() => this.commit(), 0);
+
+    // Finally returning the affected node
+    return node;
+  }
+
+  /**
+   * Method committing the updates of the tree and firing the tree's events.
+   *
+   * @return {Baobab} - The tree instance for chaining purposes.
+   */
+  commit() {
+
+    // Clearing timeout if one was defined
+    if (this._future)
+      this._future = clearTimeout(this._future);
+
+    // Validation?
+    const {validate, validationBehaviour: behavior} = this.options;
+
+    if (typeof validate === 'function') {
+      const error = validate.call(this, this._transaction);
+
+      if (error instanceof Error) {
+        this.emit('invalid', {error});
+
+        if (behavior === 'rollback') {
+          this.data = this.previousData;
+          return this;
+        }
+      }
+    }
+
+    // Caching
+    const transaction = this._transaction,
+          previousData = this.previousData;
+
+    this._transaction = {};
+    this.previousData = null;
+
+    // Emitting update event
+    this.emit('update', {
+      transaction,
+      previousData,
+      data: this.data
+    });
+
+    return this;
   }
 }

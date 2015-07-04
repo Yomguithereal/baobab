@@ -22,8 +22,8 @@ import {
 export default function update(data, path, operation, opts={}) {
   const {type: operationType, value} = operation;
 
-  // Shifting root
-  const dummy = {root: shallowClone(data)},
+  // Dummy root, so we can shift and alter the root
+  const dummy = {root: data},
         dummyPath = ['root', ...path];
 
   // Walking the path
