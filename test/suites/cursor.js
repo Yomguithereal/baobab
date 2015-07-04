@@ -176,6 +176,31 @@ describe('Cursor API', function() {
         cursor.set([1, 'user', 'age'], 34);
         assert.strictEqual(cursor.get()[1].user.age, 34);
       });
+
+      it('should be possible to set a key at an nonexistent path.', function() {
+        const tree = new Baobab(state, {asynchronous: false}),
+              cursor = tree.select('two');
+
+        cursor.set(['nonexistent', 'key'], 'hello');
+        assert.strictEqual(cursor.get().nonexistent.key, 'hello');
+      });
+
+      it('should be possible to set a key using a dynamic path.', function() {
+        const tree = new Baobab(state, {asynchronous: false}),
+              cursor = tree.select('items');
+
+        cursor.set([{id: 'two'}, 'user', 'age'], 34);
+        assert.strictEqual(cursor.get()[1].user.age, 34);
+      });
+
+      it('should fail when setting a nonexistent dynamic path.', function() {
+        const tree = new Baobab(state, {asynchronous: false}),
+              cursor = tree.select('items');
+
+        assert.throws(function() {
+          cursor.set([{id: 'four'}, 'user', 'age'], 34);
+        }, /solve/);
+      });
     });
   });
 });

@@ -215,18 +215,30 @@ export default class Cursor extends Emitter {
 
     return data;
   }
+}
+
+/**
+ * Setter Methods
+ * ---------------
+ *
+ * Those methods are dynamically assigned to the class for DRY reasons.
+ */
+
+/**
+ * Function creating a setter method for the Cursor class.
+ *
+ * @param {string}   name          - the method's name.
+ * @param {function} [typeChecker] - a function checking that the given value is
+ *                                   valid for the given operation.
+ */
+function makeSetter(name, typeChecker) {
 
   /**
-   * Setter Methods
-   * ---------------
-   */
-
-  /**
-   * Method setting a new value at cursor's path or else at a subpath of
-   * said cursor.
+   * Binding a setter method to the Cursor class and having the following
+   * definition.
    *
    * Arity (1):
-   * @param  {mixed} value - New value to set.
+   * @param  {mixed} value - New value to set at cursor's path.
    *
    * Arity (2):
    * @param  {path}  path  - Subpath to update starting from cursor's.
@@ -234,11 +246,11 @@ export default class Cursor extends Emitter {
    *
    * @return {mixed}       - Data at path.
    */
-  set(path, value) {
+  Cursor.prototype[name] = function(path, value) {
 
     // We should warn the user if he applies to many arguments to the function
     if (arguments.length > 2)
-      throw makeError('Baobab.Cursor.set: too many arguments.');
+      throw makeError(`Baobab.Cursor.${name}: too many arguments.`);
 
     // Handling arities
     if (arguments.length === 1) {
@@ -248,11 +260,27 @@ export default class Cursor extends Emitter {
 
     // Checking the path's validity
     if (!type.path(path))
-      throw makeError('Baobab.Cursor.set: invalid path.', {path});
+      throw makeError(`Baobab.Cursor.${name}: invalid path.`, {path});
 
-    return this.tree.update(this.solvedPath.concat(path), {
-      type: 'set',
-      value
-    });
-  }
+    // Filing the update to the tree
+    return this.tree.update(
+      this.solvedPath.concat(path),
+      {
+        type: name,
+        value
+      }
+    );
+  };
 }
+
+/**
+ * Making the necessary setters.
+ */
+makeSetter('set');
+makeSetter('apply', type.function);
+makeSetter('push');
+makeSetter('append', type.array);
+makeSetter('unshift');
+makeSetter('prepend', type.array);
+makeSetter('splice', type.array);
+makeSetter('merge', type.object);
