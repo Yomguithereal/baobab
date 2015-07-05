@@ -134,7 +134,7 @@ export default class Baobab extends Emitter {
 
             // Creating a facet if needed
             if (k[0] === '$') {
-              const facet = new Facet(p.concat(k), data[k]);
+              const facet = new Facet(this, p.concat(k), data[k]);
               deepMerge(
                 this._computedDataIndex,
                 pathObject(p, {[k]: facet})
