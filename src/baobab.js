@@ -66,7 +66,8 @@ export default class Baobab extends Emitter {
     this._identity = '[object Baobab]';
     this._cursors = {};
     this._future = null;
-    this._transaction = {};
+    this._transaction = [];
+    this._affectedPathsIndex = {};
 
     // Properties
     this.log = [];
@@ -162,7 +163,8 @@ export default class Baobab extends Emitter {
     path = path || path === 0 ? path : [];
 
     // Stashing previous data if this is the frame's first update
-    this.previousData = this.data;
+    if (!this._transaction.length)
+      this.previousData = this.data;
 
     // Applying the operation
     const solvedPath = solvePath(this.data, path);
@@ -176,13 +178,10 @@ export default class Baobab extends Emitter {
     const hash = hashPath(solvedPath),
           {data, node} = update(this.data, solvedPath, operation, this.options);
 
-    // TODO: previousData
     // Updating data and transaction
     this.data = data;
-
-    if (!this._transaction[hash])
-      this._transaction[hash] = [];
-    this._transaction[hash].push(operation);
+    this._affectedPathsIndex[hash] = true;
+    this._transaction.push({...operation, path: solvedPath});
 
     // Should we let the user commit?
     if (!this.options.autoCommit) {
@@ -214,7 +213,7 @@ export default class Baobab extends Emitter {
     if (this._future)
       this._future = clearTimeout(this._future);
 
-    const affectedPaths = Object.keys(this._transaction).map(h => {
+    const affectedPaths = Object.keys(this._affectedPathsIndex).map(h => {
       return h !== '/' ?
         h.split('/').slice(1) :
         [];
@@ -236,8 +235,9 @@ export default class Baobab extends Emitter {
 
         if (behavior === 'rollback') {
           this.data = this.previousData;
-          this._transaction = {};
-          this.previousData = null;
+          this._affectedPathsIndex = {};
+          this._transaction = [];
+          this.previousData = this.data;
           return this;
         }
       }
@@ -247,8 +247,9 @@ export default class Baobab extends Emitter {
     const transaction = this._transaction,
           previousData = this.previousData;
 
-    this._transaction = {};
-    this.previousData = null;
+    this._affectedPathsIndex = {};
+    this._transaction = [];
+    this.previousData = this.data;
 
     // Emitting update event
     this.emit('update', {
@@ -269,6 +270,7 @@ export default class Baobab extends Emitter {
 
     delete this.data;
     delete this._transaction;
+    delete this._affectedPathsIndex;
 
     // Releasing cursors
     for (k in this._cursors)
