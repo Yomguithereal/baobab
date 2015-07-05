@@ -133,4 +133,49 @@ describe('Baobab API', function() {
       tree.set('hello', 'monde');
     });
   });
+
+  /**
+   * Advanced issues
+   */
+  describe('Advanced', function() {
+    it('should be possible to release a tree.', function() {
+      const tree = new Baobab(state),
+            one = tree.select('one'),
+            two = tree.select('two');
+
+      tree.on('update', Function.prototype);
+      one.on('update', Function.prototype);
+      two.on('update', Function.prototype);
+
+      one.release();
+      tree.release();
+
+      assert(tree.data === undefined);
+    });
+
+    it('the tree should shift references on updates.', function() {
+      const list = [1],
+            tree = new Baobab({list: list}, {asynchronous: false});
+
+      tree.select('list').push(2);
+      assert.deepEqual(tree.get('list'), [1, 2]);
+      assert(list !== tree.get('list'));
+    });
+
+    it('the tree should also shift parent references.', function() {
+      const shiftingTree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {asynchronous: false});
+
+      const shiftingOriginal = shiftingTree.get();
+
+      shiftingTree.select('root', 'admin', 'items').push(2);
+
+      assert.deepEqual(shiftingTree.get('root', 'admin', 'items'), [1, 2]);
+
+      assert(shiftingTree.get() !== shiftingOriginal);
+      assert(shiftingTree.get().root !== shiftingOriginal.root);
+      assert(shiftingTree.get().root.admin !== shiftingOriginal.root.admin);
+      assert(shiftingTree.get().root.admin.items !== shiftingOriginal.root.admin.items);
+      assert(shiftingTree.get().root.admin.other === shiftingOriginal.root.admin.other);
+    });
+  });
 });

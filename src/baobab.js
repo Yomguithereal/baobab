@@ -251,4 +251,40 @@ export default class Baobab extends Emitter {
 
     return this;
   }
+
+  /**
+   * Method releasing the tree and its attached data from memory.
+   */
+  release() {
+    let k;
+
+    delete this.data;
+    delete this._transaction;
+
+    // Releasing cursors
+    for (k in this._cursors)
+      this._cursors[k].release();
+    delete this._cursors;
+
+    // Killing event emitter
+    this.kill();
+  }
+
+  /**
+   * Overriding the `toJSON` method for convenient use with JSON.stringify.
+   *
+   * @return {mixed} - Data at cursor.
+   */
+  toJSON() {
+    return this.get();
+  }
+
+  /**
+   * Overriding the `toString` method for debugging purposes.
+   *
+   * @return {string} - The baobab's identity.
+   */
+  toString() {
+    return this._identity;
+  }
 }
