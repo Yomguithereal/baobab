@@ -24,32 +24,16 @@ function err(operation, expectedTarget, path) {
 }
 
 /**
- * Function searching for computed data leaves in the given data.
- */
-function searchForComputedDataNode(data, path=[]) {
-  let k;
-
-  for (k in data) {
-
-    // If the key start with a dollar, we got ourselves a computed data node
-    if (k[0] === '$') {
-      const facet = new Facet(data[k]);
-    }
-  }
-}
-
-/**
  * Function aiming at applying a single update operation on the given tree's
  * data.
  *
  * @param  {mixed}  data      - The tree's data.
- * @param  {object} index     - The tree's computed data index.
  * @param  {path}   path      - Path of the update.
  * @param  {object} operation - The operation to apply.
  * @param  {object} [opts]    - Optional options.
  * @return {mixed}            - Both the new tree's data and the updated node.
  */
-export default function update(data, index, path, operation, opts={}) {
+export default function update(data, path, operation, opts={}) {
   const {type: operationType, value} = operation;
 
   // Dummy root, so we can shift and alter the root
@@ -207,5 +191,5 @@ export default function update(data, index, path, operation, opts={}) {
   }
 
   // Returning new data object
-  return {data: dummy.root, node: p[s], index};
+  return {data: dummy.root, node: p[s]};
 }

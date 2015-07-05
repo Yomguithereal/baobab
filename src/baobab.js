@@ -178,15 +178,12 @@ export default class Baobab extends Emitter {
 
     const hash = hashPath(solvedPath);
 
-    const {data, node, index} = update(
+    const {data, node} = update(
       this.data,
-      this._computedDataIndex,
       solvedPath,
       operation,
       this.options
     );
-
-    this._computedDataIndex = index;
 
     // Updating data and transaction
     this.data = data;
