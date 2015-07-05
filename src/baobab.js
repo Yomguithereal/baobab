@@ -159,7 +159,7 @@ export default class Baobab extends Emitter {
   update(path, operation) {
 
     // Coercing path
-    path = path || path === 0 ? path : [];
+    path = path || path === 0 ? path : [];
 
     // Stashing previous data if this is the frame's first update
     this.previousData = this.data;
@@ -190,7 +190,7 @@ export default class Baobab extends Emitter {
     }
 
     // Should we update asynchronously?
-    if (!this.options.asynchronous) {
+    if (!this.options.asynchronous) {
       this.commit();
       return node;
     }

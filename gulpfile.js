@@ -1,5 +1,4 @@
 var gulp = require('gulp'),
-    jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     header = require('gulp-header'),
     replace = require('gulp-replace'),
@@ -20,15 +19,8 @@ gulp.task('gremlins', function() {
     .pipe(gulp.dest('./src'));
 });
 
-// Linting
-gulp.task('lint', function() {
-  return gulp.src(files)
-    .pipe(jshint())
-    .pipe(jshint.reporter('default'));
-});
-
 // Building
-gulp.task('build', function() {
+gulp.task('build', ['gremlins'], function() {
   return browserify({
     entries: './index.js',
     standalone: 'Baobab',
@@ -46,4 +38,4 @@ gulp.task('build', function() {
 });
 
 // Default
-gulp.task('default', ['lint', 'build']);
+gulp.task('default', ['build']);

@@ -124,7 +124,7 @@ type.path = function(target, allowed) {
  * @return {boolean}
  */
 type.dynamicPath = function(path) {
-  return path.some(step => type.function(step) || type.object(step));
+  return path.some(step => type.function(step) || type.object(step));
 };
 
 export default type;

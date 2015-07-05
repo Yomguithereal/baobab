@@ -41,7 +41,7 @@ export default class Cursor extends Emitter {
     this.hash = hash;
 
     // State
-    this.state =  {
+    this.state = {
       recording: false,
       undoing: false
     };
@@ -211,8 +211,6 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The child cursor.
    */
   down() {
-    const last = +this.solvedPath[this.solvedPath.length - 1];
-
     if (!(this._get().data instanceof Array))
       throw Error('Baobab.Cursor.down: cannot go down on a non-list type.');
 
@@ -350,7 +348,7 @@ export default class Cursor extends Emitter {
    * @return {mixed}                 - Data at path.
    */
   get(path) {
-    path = path || path === 0 ? path : [];
+    path = path || path === 0 ? path : [];
 
     if (arguments.length > 1)
       path = arrayFrom(arguments);
@@ -377,7 +375,7 @@ export default class Cursor extends Emitter {
    * @return {Cursor}               - The cursor instance for chaining purposes.
    */
   startRecording(maxRecords) {
-    maxRecords = maxRecords || Infinity;
+    maxRecords = maxRecords || Infinity;
 
     if (maxRecords < 1)
       throw makeError('Baobab.Cursor.startRecording: invalid max records.', {
@@ -450,7 +448,8 @@ export default class Cursor extends Emitter {
    * @return {Cursor} - The cursor instance for chaining purposes.
    */
   clearHistory() {
-    this.archive && this.archive.clear();
+    if (this.archive)
+      this.archive.clear();
     return this;
   }
 
@@ -546,7 +545,7 @@ function makeSetter(name, typeChecker) {
     }
 
     // Coerce path
-    path = path || path === 0 ? path : [];
+    path = path || path === 0 ? path : [];
 
     // Checking the path's validity
     if (!type.path(path))

@@ -300,7 +300,6 @@ export function getIn(object, path) {
   path = path || [];
 
   let c = object,
-      p,
       i,
       l;
 
@@ -476,15 +475,15 @@ export function solveUpdate(affectedPaths, comparedPaths) {
 /**
  * Non-mutative version of the splice array method.
  *
- * @param {array} array       - The array to splice.
- * @param {integer} index     - The start index.
- * @param {integer} nb        - Number of elements to remove.
- * @param {...mixed} elements - Elements to append after splicing.
- * @return {array}            - The spliced array.
+ * @param {array}    array        - The array to splice.
+ * @param {integer}  startIndex   - The start index.
+ * @param {integer}  nb           - Number of elements to remove.
+ * @param {...mixed} elements     - Elements to append after splicing.
+ * @return {array}                - The spliced array.
  */
-export function splice(array, index, nb, ...elements) {
+export function splice(array, startIndex, nb, ...elements) {
   return array
-    .slice(0, index)
+    .slice(0, startIndex)
     .concat(elements)
     .concat(array.slice(index + nb));
 }
