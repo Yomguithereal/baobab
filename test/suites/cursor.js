@@ -216,8 +216,8 @@ describe('Cursor API', function() {
       });
 
       it('should be possible to remove keys from a cursor.', function() {
-        var tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
-            cursor = tree.select('two');
+        const tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
+              cursor = tree.select('two');
 
         assert.deepEqual(cursor.get(), {subone: 1, subtwo: 2});
         cursor.unset('subone');
@@ -625,6 +625,79 @@ describe('Cursor API', function() {
       assert.throws(function() {
         cursor.undo(5);
       }, /relevant/);
+    });
+  });
+
+  /**
+   * Advanced issues
+   */
+  describe('Advanced', function() {
+    it('should be possible to execute several orders within a single stack.', function(done) {
+      const tree = new Baobab({
+        one: 'coco',
+        two: 'koko'
+      });
+
+      tree.set('one', 'cece');
+      tree.set('two', 'keke');
+
+      setTimeout(function() {
+        assert.deepEqual(tree.get(), {one: 'cece', two: 'keke'});
+        done();
+      }, 0);
+    });
+
+    it('should be possible to merge push-like specifications.', function(done) {
+      const tree = new Baobab({list: [1]}),
+            cursor = tree.select('list');
+
+      cursor.push(2);
+      cursor.push(3);
+      cursor.prepend([-1, 0]);
+      cursor.unshift(-2);
+
+      setTimeout(function() {
+        assert.deepEqual(cursor.get(), [-2, -1, 0, 1, 2, 3]);
+        done();
+      }, 0);
+    });
+
+    it('an upper set should correctly resolve.', function(done) {
+      const tree = new Baobab({hello: {color: 'blue'}});
+
+      tree.select('hello', 'color').set('yellow');
+      tree.set('hello', 'purple');
+
+      tree.on('update', function() {
+        assert.deepEqual(tree.get(), {hello: 'purple'});
+        done();
+      });
+    });
+
+    it('a $set/$apply conflict should correctly resolve.', function(done) {
+      const tree = new Baobab({number: 1});
+
+      tree.set('number', 2);
+      tree.update(['number'], {type: 'apply', value: x => x + 2});
+
+      tree.on('update', function() {
+        assert.strictEqual(tree.get('number'), 4);
+        done();
+      });
+    });
+
+    it('should be possible to set a nested key on a primitive path.', function() {
+      const tree = new Baobab({
+        hello: 42
+      }, {asynchronous: false});
+
+      tree.set(['hello', 'cowabunga'], 43);
+
+      assert.deepEqual(tree.get(), {
+        hello: {
+          cowabunga: 43
+        }
+      });
     });
   });
 });

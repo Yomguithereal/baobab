@@ -13,9 +13,12 @@ import {
   splice
 } from './helpers';
 
-// TODO: maybe abstract more
-function err(message, path) {
-  return makeError(`Baobab.update: ${message}`, {path});
+function err(operation, expectedTarget, path) {
+  return makeError(
+    `Baobab.update: cannot apply the "${operation}" on ` +
+    `a non ${expectedTarget} (path: /${path.join('/')}).`,
+    {path}
+  );
 }
 
 /**
@@ -76,11 +79,12 @@ export default function update(data, path, operation, opts={}) {
       else if (operationType === 'push') {
         if (!type.array(p[s]))
           throw err(
-            'cannot apply the "push" operation on a non array.',
+            'push',
+            'array',
             currentPath
           );
 
-        p[s] = p[s].concat(value);
+        p[s] = p[s].concat([value]);
       }
 
       /**
@@ -89,11 +93,40 @@ export default function update(data, path, operation, opts={}) {
       else if (operationType === 'unshift') {
         if (!type.array(p[s]))
           throw err(
-            'cannot apply the "unshift" operation on a non array.',
+            'unshift',
+            'array',
             currentPath
           );
 
         p[s] = [value].concat(p[s]);
+      }
+
+      /**
+       * Append
+       */
+      else if (operationType === 'append') {
+        if (!type.array(p[s]))
+          throw err(
+            'append',
+            'array',
+            currentPath
+          );
+
+        p[s] = p[s].concat(value);
+      }
+
+      /**
+       * Prepend
+       */
+      else if (operationType === 'prepend') {
+        if (!type.array(p[s]))
+          throw err(
+            'prepend',
+            'array',
+            currentPath
+          );
+
+        p[s] = value.concat(p[s]);
       }
 
       /**
@@ -102,7 +135,8 @@ export default function update(data, path, operation, opts={}) {
       else if (operationType === 'splice') {
         if (!type.array(p[s]))
           throw err(
-            'cannot apply the "splice" operation on a non array.',
+            'splice',
+            'array',
             currentPath
           );
 
@@ -123,7 +157,8 @@ export default function update(data, path, operation, opts={}) {
       else if (operationType === 'merge') {
         if (!type.object(p[s]))
           throw err(
-            'cannot apply the "merge" operation on a non object.',
+            'merge',
+            'object',
             currentPath
           );
 
