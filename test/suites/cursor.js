@@ -146,6 +146,18 @@ describe('Cursor API', function() {
           tree.set(['items', {id: 'four'}, 'user', 'age'], 34);
         }, /solve/);
       });
+
+      it('should be possible to write the tree synchronously.', function(done) {
+        const tree = new Baobab({hello: 'John'}, {syncwrite: true});
+
+        tree.on('update', function() {
+          done();
+        });
+
+        assert.strictEqual(tree.get('hello'), 'John');
+        tree.set('hello', 'Jack');
+        assert.strictEqual(tree.get('hello'), 'Jack');
+      });
     });
 
     /**

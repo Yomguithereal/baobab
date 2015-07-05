@@ -178,4 +178,183 @@ describe('Baobab API', function() {
       assert(shiftingTree.get().root.admin.other === shiftingOriginal.root.admin.other);
     });
   });
+
+  /**
+   * Options
+   */
+  describe('Options', function() {
+    it('should be possible to commit changes immediately.', function() {
+      const tree = new Baobab({hello: 'world'}, {asynchronous: false});
+      tree.set('hello', 'you');
+      assert.strictEqual(tree.get('hello'), 'you');
+    });
+
+    it('should be possible to let the user commit himself.', function() {
+      const tree = new Baobab({number: 1}, {autoCommit: false, asynchronous: false});
+
+      let txCount = 0;
+
+      tree.on('update', () => txCount++);
+      tree.set('number', 2);
+      tree.apply('number', x => x + 1);
+      tree.commit();
+      tree.set('number', 5);
+
+      assert.strictEqual(txCount, 1);
+    });
+
+    it('should be possible to validate the tree and rollback on fail.', function() {
+      let invalidCount = 0;
+
+      function v(state, nextState, paths) {
+        assert(this === tree);
+
+        if (typeof nextState.hello !== 'string')
+          return new Error('Invalid tree!');
+      }
+
+      const tree = new Baobab({hello: 'world'}, {validate: v, asynchronous: false});
+
+      tree.on('invalid', function(e) {
+        const error = e.data.error;
+
+        assert.strictEqual(error.message, 'Invalid tree!');
+        invalidCount++;
+      });
+
+      tree.set('hello', 'John');
+
+      assert.strictEqual(invalidCount, 0);
+      assert.strictEqual(tree.get('hello'), 'John');
+
+      tree.set('hello', 4);
+
+      assert.strictEqual(invalidCount, 1);
+      assert.strictEqual(tree.get('hello'), 'John');
+    });
+
+    it('should be possible to validate the tree and let the tree update on fail.', function() {
+      let invalidCount = 0;
+
+      function v(state, nextState, paths) {
+        assert(this === tree);
+
+        if (typeof nextState.hello !== 'string')
+          return new Error('Invalid tree!');
+      }
+
+      const tree = new Baobab({hello: 'world'}, {validate: v, asynchronous: false, validationBehavior: 'notify'});
+
+      tree.on('invalid', function(e) {
+        const error = e.data.error;
+
+        assert.strictEqual(error.message, 'Invalid tree!');
+        invalidCount++;
+      });
+
+      tree.set('hello', 'John');
+
+      assert.strictEqual(invalidCount, 0);
+      assert.strictEqual(tree.get('hello'), 'John');
+
+      tree.set('hello', 4);
+
+      assert.strictEqual(invalidCount, 1);
+      assert.strictEqual(tree.get('hello'), 4);
+    });
+
+    it('the tree should be immutable by default.', function() {
+      let data;
+
+      const tree = new Baobab(
+        {
+          one: {
+            two: {
+              three: 'Hello'
+            }
+          }
+        },
+        {
+          immutable: true,
+          asynchronous: false
+        }
+      );
+
+      function checkFridge() {
+        const targetData = tree.get();
+
+        assert.isFrozen(targetData);
+        assert.isFrozen(targetData.one);
+        assert.isFrozen(targetData.one.two);
+        assert.isFrozen(targetData.one.two.three);
+
+        if (targetData.one.two.three.four)
+          assert.isFrozen(targetData.one.two.three.four);
+      }
+
+      checkFridge();
+
+      tree.set(['one', 'two', 'three'], 'world');
+
+      checkFridge();
+
+      tree.set(['one', 'two', 'three', 'four'], {five: 'hey'});
+
+      checkFridge();
+
+      tree.set({one: {two: {three: {four: 'hey'}}}});
+
+      tree.unset(['one', 'two']);
+
+      data = tree.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data.one);
+
+      // Arrays
+      tree.set([{nb: 1}, {nb: 2}]);
+
+      data = tree.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data[0]);
+      assert.isFrozen(data[1]);
+
+      tree.set(0, {nb: 3});
+
+      assert.isFrozen(data);
+      assert.isFrozen(data[0]);
+      assert.isFrozen(data[1]);
+
+      tree.set({one: {}});
+
+      // Complex update
+      tree.set('one', {
+        subone: 'hey',
+        subtwo: 'ho'
+      });
+
+      data = tree.get();
+
+      assert.isFrozen(data);
+      assert.isFrozen(data.one);
+      assert.isFrozen(data.one.subone);
+      assert.isFrozen(data.one.subtwo);
+    });
+
+    it('should be possible to disable immutability.', function() {
+      const immutableTree = new Baobab({hello: 'John'}),
+            mutableTree = new Baobab({hello: 'John'}, {immutable: false});
+
+      const immutableData = immutableTree.get();
+
+      assert.throws(function() {
+        immutableData.hello = 'Jack';
+      }, Error);
+
+      const mutableData = mutableTree.get();
+      mutableData.hello = 'Jack';
+      assert.strictEqual(mutableTree.get('hello'), 'Jack');
+    });
+  });
 });

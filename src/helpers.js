@@ -253,7 +253,7 @@ function freezer(deep, o) {
         l;
 
     for (i = 0, l = o.length; i < l; i++)
-      freezer(o[i]);
+      freezer(true, o[i]);
   }
   else {
     let p,
@@ -268,7 +268,7 @@ function freezer(deep, o) {
           Object.isFrozen(p))
         continue;
 
-      freezer(p);
+      freezer(true, p);
     }
   }
 }

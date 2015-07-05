@@ -7,6 +7,7 @@
 import type from './type';
 import {
   freeze,
+  deepFreeze,
   makeError,
   shallowClone,
   shallowMerge,
@@ -56,7 +57,7 @@ export default function update(data, path, operation, opts={}) {
     if (i > 0)
       currentPath.push(s);
 
-    // If we are where the operation should be applied, we act
+    // If we reached the end of the path, we apply the operation
     if (i === l - 1) {
 
       /**
@@ -165,7 +166,8 @@ export default function update(data, path, operation, opts={}) {
         p[s] = shallowMerge(p[s], value);
       }
 
-      // TODO: deepFreeze here if needed
+      if (opts.immutable)
+        deepFreeze(p);
 
       break;
     }
@@ -181,7 +183,7 @@ export default function update(data, path, operation, opts={}) {
     }
 
     // Should we freeze the current step before continuing?
-    if (opts.immutable)
+    if (opts.immutable && l > 0)
       freeze(p);
 
     p = p[s];

@@ -108,7 +108,7 @@ type.primitive = function(target) {
  * @return {boolean}
  */
 type.path = function(target, allowed) {
-  if (!target)
+  if (!target && target !== 0)
     return false;
 
   // Order of allowed types is important for perf reasons

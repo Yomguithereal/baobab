@@ -214,17 +214,30 @@ export default class Baobab extends Emitter {
     if (this._future)
       this._future = clearTimeout(this._future);
 
+    const affectedPaths = Object.keys(this._transaction).map(h => {
+      return h !== '/' ?
+        h.split('/').slice(1) :
+        [];
+    });
+
     // Validation?
-    const {validate, validationBehaviour: behavior} = this.options;
+    const {validate, validationBehavior: behavior} = this.options;
 
     if (typeof validate === 'function') {
-      const error = validate.call(this, this._transaction);
+      const error = validate.call(
+        this,
+        this.previousData,
+        this.data,
+        affectedPaths
+      );
 
       if (error instanceof Error) {
         this.emit('invalid', {error});
 
         if (behavior === 'rollback') {
           this.data = this.previousData;
+          this._transaction = {};
+          this.previousData = null;
           return this;
         }
       }
@@ -242,11 +255,7 @@ export default class Baobab extends Emitter {
       transaction,
       previousData,
       data: this.data,
-      paths: Object.keys(transaction).map(h => {
-        return h !== '/' ?
-          h.split('/').slice(1) :
-          [];
-      })
+      paths: affectedPaths
     });
 
     return this;
