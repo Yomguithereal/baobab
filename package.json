@@ -2,7 +2,7 @@
   "name": "baobab",
   "version": "2.0.0-dev",
   "description": "JavaScript persistent data tree with cursors.",
-  "main": "index.js",
+  "main": "./build/baobab.js",
   "dependencies": {
     "emmett": "^3.0.1"
   },
@@ -25,9 +25,10 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "scripts": {
-    "benchmark": "node benchmark.js",
+    "benchmark": "babel-node benchmark.js",
     "build": "gulp build",
     "lint": "eslint ./*.js && eslint ./src",
+    "prepublish": "npm run build",
     "test": "mocha -R spec --compilers js:babel/register ./test/endpoint.js"
   },
   "repository": {

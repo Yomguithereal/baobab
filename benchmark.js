@@ -3,21 +3,8 @@ var Benchmark = require('benchmark'),
 
 var suite = new Benchmark.Suite();
 
-var tree = new Baobab({
-  a: {
-    b: {
-      c: {
-        d: {
-          e: {
-            f: {
-              g: []
-            }
-          }
-        }
-      }
-    }
-  }
-});
+var tree = new Baobab();
+tree.set(['a', 'b', 'c', 'd', 'e', 'f', 'g'], []);
 
 var cursor = tree.select(['a', 'b', 'c']);
 
