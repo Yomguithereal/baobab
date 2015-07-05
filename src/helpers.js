@@ -361,10 +361,10 @@ export function makeError(message, data) {
 }
 
 /**
- * Function taking n objects to merge them together. Note that the
- * latter object will take precedence over the first one.
- *
- * Note that this function will take `$.` keys into account and should only
+ * Function taking n objects to merge them together.
+ * Note 1): the latter object will take precedence over the first one.
+ * Note 2): the first object will be mutated to allow for perf scenarios.
+ * Note 3): this function will take not `$.` keys into account and should only
  * be used by Baobab's internal and would be unsuited in any other case.
  *
  * @param  {boolean}   deep    - Whether the merge should be deep or not.
@@ -372,20 +372,20 @@ export function makeError(message, data) {
  * @return {object}            - The merged object.
  */
 export function merger(deep, ...objects) {
-  let o = {},
+  let o = objects[0],
       t,
       i,
       l,
       k;
 
-  for (i = 0, l = objects.length; i < l; i++) {
+  for (i = 1, l = objects.length; i < l; i++) {
     t = objects[i];
 
     for (k in t) {
       if (deep &&
           typeof t[k] === 'object' &&
           k[0] !== '$') {
-        o[k] = merger(true, o[k], t[k]);
+        o[k] = merger(true, o[k] || {}, t[k]);
       }
       else {
         o[k] = t[k];

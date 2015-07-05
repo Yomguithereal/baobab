@@ -164,7 +164,7 @@ export default function update(data, path, operation, opts={}) {
             currentPath
           );
 
-        p[s] = shallowMerge(p[s], value);
+        p[s] = shallowMerge({}, p[s], value);
       }
 
       if (opts.immutable)

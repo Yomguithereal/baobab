@@ -13,6 +13,7 @@ import {
   arrayFrom,
   deepFreeze,
   makeError,
+  deepMerge,
   shallowMerge,
   solvePath,
   uniqid
@@ -60,7 +61,7 @@ export default class Baobab extends Emitter {
       throw makeError('Baobab: invalid data.', {data: initialData});
 
     // Merging given options with defaults
-    this.options = shallowMerge(defaults, opts);
+    this.options = shallowMerge({}, defaults, opts);
 
     // Privates
     this._identity = '[object Baobab]';
@@ -100,6 +101,16 @@ export default class Baobab extends Emitter {
       'unset',
       'unshift'
     ].forEach(bootstrap);
+  }
+
+  /**
+   * Private method used to refresh the internal computed data index of the
+   * tree.
+   *
+   * @return {Baobab}      - The tree instance itself for chaining purposes.
+   */
+  _refreshComputedDataIndex(path, node) {
+
   }
 
   /**

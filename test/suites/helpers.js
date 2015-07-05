@@ -19,21 +19,29 @@ describe('Helpers', function() {
       const data = {a: 1, c: 3},
             nestedData = {a: 1, b: {c: 2}};
 
-      assert.deepEqual(shallowMerge(data, {b: 2}), {a: 1, b: 2, c: 3});
-      assert.deepEqual(shallowMerge(nestedData, {b: {d: 3}}), {a: 1, b: {d: 3}});
+      assert.deepEqual(shallowMerge({}, data, {b: 2}), {a: 1, b: 2, c: 3});
+      assert.deepEqual(shallowMerge({}, nestedData, {b: {d: 3}}), {a: 1, b: {d: 3}});
+    });
+
+    it('the merge functions should be mutative.', function() {
+      const data = {a: 1, c: 3};
+
+      shallowMerge(data, {b: 2});
+
+      assert.deepEqual(data, {a: 1, b: 2, c: 3});
     });
 
     it('should be possible to deep merge objects.', function() {
       const data = {inner: {a: 1, c: 3}};
 
-      assert.deepEqual(deepMerge(data, {inner: {b: 2}}), {inner: {a: 1, b: 2, c: 3}});
+      assert.deepEqual(deepMerge({}, data, {inner: {b: 2}}), {inner: {a: 1, b: 2, c: 3}});
     });
 
     it('deep merge should avoid computed node keys.', function() {
       const data = {a: 1, b: {c: 2, $facet: {d: 3}}};
 
       assert.deepEqual(
-        deepMerge(data, {a: 5, b: {$facet: 'test'}}),
+        deepMerge({}, data, {a: 5, b: {$facet: 'test'}}),
         {a: 5, b: {c: 2, $facet: 'test'}}
       );
     });
