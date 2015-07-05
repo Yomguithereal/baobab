@@ -4,6 +4,9 @@
  *
  * A class in charge of tree's computed data node.
  */
+import {
+  identity
+} from './helpers';
 
 /**
  * Facet class

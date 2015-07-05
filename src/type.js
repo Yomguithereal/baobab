@@ -127,4 +127,15 @@ type.dynamicPath = function(path) {
   return path.some(step => type.function(step) || type.object(step));
 };
 
+/**
+ * Checking whether the given path is read-only.
+ * Note: this should of course apply to a solved path and not a dynamic one.
+ *
+ * @param  {mixed} path - The path to test.
+ * @return {boolean}
+ */
+type.readOnlyPath = function(path) {
+  return path.slice(0, -1).some(step => step[0] === '$');
+};
+
 export default type;

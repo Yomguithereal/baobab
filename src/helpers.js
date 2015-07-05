@@ -328,6 +328,13 @@ export function getIn(object, path) {
 }
 
 /**
+ * The identity function.
+ */
+export function identity(v) {
+  return v;
+}
+
+/**
  * Function returning the index of the first element of a list matching the
  * given predicate.
  *

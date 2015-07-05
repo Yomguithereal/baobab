@@ -8,6 +8,16 @@ import _ from 'lodash';
 
 describe('Facets', function() {
 
+  it('should be impossible to update a read-only path.', function() {
+    const tree = new Baobab();
+
+    assert.throws(function() {
+      tree.set(['$computed', 'test'], 'Hey');
+    }, /read-only/);
+  });
+
+  return;
+
   it('the facet type should work correctly.', function() {
 
   });
@@ -30,6 +40,6 @@ describe('Facets', function() {
       }
     });
 
-    console.log(require('util').inspect(tree._computedDataIndex, {depth: null}));
+    // console.log(require('util').inspect(tree._computedDataIndex, {depth: null}));
   });
 });
