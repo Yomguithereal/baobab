@@ -361,22 +361,48 @@ export function makeError(message, data) {
 }
 
 /**
- * Function taking two objects to shallowly merge them together. Note that the
- * second object will take precedence over the first one.
+ * Function taking n objects to merge them together. Note that the
+ * latter object will take precedence over the first one.
  *
- * @param  {object} o1 - The first object.
- * @param  {object} o2 - The second object.
- * @return {object}    - The merged object.
+ * Note that this function will take `$.` keys into account and should only
+ * be used by Baobab's internal and would be unsuited in any other case.
+ *
+ * @param  {boolean}   deep    - Whether the merge should be deep or not.
+ * @param  {...object} objects - Objects to merge.
+ * @return {object}            - The merged object.
  */
-export function shallowMerge(o1, o2) {
+export function merger(deep, ...objects) {
   let o = {},
+      t,
+      i,
+      l,
       k;
 
-  for (k in o1) o[k] = o1[k];
-  for (k in o2) o[k] = o2[k];
+  for (i = 0, l = objects.length; i < l; i++) {
+    t = objects[i];
+
+    for (k in t) {
+      if (deep &&
+          typeof t[k] === 'object' &&
+          k[0] !== '$') {
+        o[k] = merger(true, o[k], t[k]);
+      }
+      else {
+        o[k] = t[k];
+      }
+    }
+  }
 
   return o;
 }
+
+/**
+ * Exporting both `shallowMerge` and `deepMerge` functions.
+ */
+const shallowMerge = merger.bind(null, false),
+      deepMerge = merger.bind(null, true);
+
+export {shallowMerge, deepMerge};
 
 /**
  * Function solving the given path within the target object.

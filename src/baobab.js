@@ -68,6 +68,7 @@ export default class Baobab extends Emitter {
     this._future = null;
     this._transaction = [];
     this._affectedPathsIndex = {};
+    this._computedDataIndex = {};
 
     // Properties
     this.log = [];
@@ -175,8 +176,17 @@ export default class Baobab extends Emitter {
         path: solvedPath
       });
 
-    const hash = hashPath(solvedPath),
-          {data, node} = update(this.data, solvedPath, operation, this.options);
+    const hash = hashPath(solvedPath);
+
+    const {data, node, index} = update(
+      this.data,
+      this._computedDataIndex,
+      solvedPath,
+      operation,
+      this.options
+    );
+
+    this._computedDataIndex = index;
 
     // Updating data and transaction
     this.data = data;
