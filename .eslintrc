@@ -1,0 +1,23 @@
+{
+  "ecmaFeatures": {
+    "jsx": true,
+    "modules": true
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "consistent-return": 0,
+    "curly": 0,
+    "eqeqeq": 0,
+    "quotes": [1, "single"],
+    "new-cap": 0,
+    "no-loop-func": 0,
+    "no-underscore-dangle": 0,
+    "no-use-before-define": 0,
+    "no-wrap-func": 0
+  }
+}
