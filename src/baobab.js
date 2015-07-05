@@ -9,7 +9,6 @@ import Cursor from './cursor';
 import Facet from './facet';
 import type from './type';
 import update from './update';
-import defaults from '../defaults';
 import {
   arrayFrom,
   deepFreeze,
@@ -20,6 +19,27 @@ import {
   solvePath,
   uniqid
 } from './helpers';
+
+/**
+ * Baobab defaults
+ */
+const DEFAULTS = {
+
+  // Should the tree handle its transactions on its own?
+  autoCommit: true,
+
+  // Should the transactions be handled asynchronously?
+  asynchronous: true,
+
+  // Should the tree's data be immutable?
+  immutable: true,
+
+  // Validation specifications
+  validate: null,
+
+  // Validation behaviour 'rollback' or 'notify'
+  validationBehavior: 'rollback'
+};
 
 /**
  * Function returning a string hash from a non-dynamic path expressed as an
@@ -63,7 +83,7 @@ export default class Baobab extends Emitter {
       throw makeError('Baobab: invalid data.', {data: initialData});
 
     // Merging given options with defaults
-    this.options = shallowMerge({}, defaults, opts);
+    this.options = shallowMerge({}, DEFAULTS, opts);
 
     // Privates
     this._identity = '[object Baobab]';
@@ -359,3 +379,20 @@ export default class Baobab extends Emitter {
     return this._identity;
   }
 }
+
+/**
+ * Version
+ */
+Object.defineProperty(Baobab, 'version', {
+  value: '2.0.0-dev'
+});
+
+/**
+ * Exposing the Cursor class
+ */
+Baobab.Cursor = Cursor;
+
+/**
+ * Exporting
+ */
+export default Baobab;

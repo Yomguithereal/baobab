@@ -22,7 +22,7 @@ gulp.task('gremlins', function() {
 // Building
 gulp.task('build', ['gremlins'], function() {
   return browserify({
-    entries: './index.js',
+    entries: './src/baobab.js',
     standalone: 'Baobab',
     fullPaths: false
   }).transform('babelify')
