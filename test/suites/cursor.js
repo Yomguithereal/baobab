@@ -449,4 +449,105 @@ describe('Cursor API', function() {
       assert(!tree.select('primitive').isBranch());
     });
   });
+
+  /**
+   * Traversal
+   */
+  describe('Traversal', function() {
+    const tree = new Baobab(state);
+
+    const colorCursor = tree.select(['one', 'subtwo', 'colors']),
+          oneCursor = tree.select('one');
+
+    it('should be possible to create subcursors.', function() {
+      const sub = oneCursor.select(['subtwo', 'colors']);
+      assert.deepEqual(sub.get(), state.one.subtwo.colors);
+    });
+
+    it('should be possible to go up.', function() {
+      const parent = colorCursor.up();
+      assert.deepEqual(parent.get(), state.one.subtwo);
+    });
+
+    it('a cusor going up to root cannot go higher and returns null.', function() {
+      const up = tree.select('one').up(),
+            upper = up.up();
+
+      assert.strictEqual(upper, null);
+    });
+
+    it('should be possible to go left.', function() {
+      const left = colorCursor.select(1).left();
+
+      assert.strictEqual(left.get(), 'blue');
+      assert.strictEqual(left.left(), null);
+
+      assert.throws(function() {
+        colorCursor.left();
+      }, /left/);
+    });
+
+    it('should be possible to go right.', function() {
+      const right = colorCursor.select(0).right();
+
+      assert.strictEqual(right.get(), 'yellow');
+      assert.strictEqual(right.right(), null);
+
+      assert.throws(function() {
+        colorCursor.right();
+      }, /right/);
+    });
+
+    it('should be possible to descend.', function() {
+      const list = tree.select('list');
+
+      assert.deepEqual(list.down().get(), [1, 2]);
+      assert.strictEqual(colorCursor.down().get(), 'blue');
+      assert.strictEqual(colorCursor.down().up().up().select('colors').down().get(), 'blue');
+      assert.strictEqual(list.down().right().down().right().get(), 4);
+
+      assert.throws(function() {
+        oneCursor.down();
+      }, /down/);
+    });
+
+    it('should be possible to get to the leftmost item of a list.', function() {
+      const listItem = tree.select('longList', 2);
+
+      assert.strictEqual(listItem.get(), 3);
+      assert.strictEqual(listItem.leftmost().get(), 1);
+    });
+
+    it('should be possible to get to the rightmost item of a list.', function() {
+      const listItem = tree.select('longList', 2);
+
+      assert.strictEqual(listItem.get(), 3);
+      assert.strictEqual(listItem.rightmost().get(), 4);
+    });
+
+    it('should be possible to map an array.', function() {
+      let count = 0;
+
+      const array = colorCursor.map(function(cursor, i) {
+        assert(this === colorCursor);
+        assert(count++ === i);
+
+        return cursor;
+      });
+
+      assert.deepEqual(
+        array.map(c => c.get()),
+        state.one.subtwo.colors
+      );
+
+      const scope = {hello: 'world'};
+      colorCursor.map(function(cursor, i) {
+        assert(this === scope);
+      }, scope);
+
+      assert.throws(function() {
+        oneCursor.map(Function.prototype);
+      }, /non-list/);
+    });
+  });
 });

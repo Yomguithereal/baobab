@@ -298,7 +298,7 @@ export default class Cursor extends Emitter {
     let array = this._get().data,
         l = arguments.length;
 
-    if (!type.Array(array))
+    if (!type.array(array))
       throw Error('baobab.Cursor.map: cannot map a non-list type.');
 
     return array.map(function(item, i) {
