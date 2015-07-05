@@ -4,7 +4,10 @@
  */
 import assert from 'assert';
 import Baobab from '../../src/baobab';
+import type from '../../src/type';
 import _ from 'lodash';
+
+const noop = Function.prototype;
 
 describe('Facets', function() {
 
@@ -16,10 +19,16 @@ describe('Facets', function() {
     }, /read-only/);
   });
 
-  return;
-
   it('the facet type should work correctly.', function() {
+    const validObject = {cursors: {a: ['one']}, get: noop},
+          validArray = [['one'], noop],
+          invalidObject = {hello: 'world'},
+          invalidArray = ['so crisp!'];
 
+    assert.strictEqual(type.facetDefinition(validObject), 'object');
+    assert.strictEqual(type.facetDefinition(validArray), 'array');
+    assert.strictEqual(type.facetDefinition(invalidObject), null);
+    assert.strictEqual(type.facetDefinition(invalidArray), null);
   });
 
   it('should be possible to create facets at instantiation.', function() {

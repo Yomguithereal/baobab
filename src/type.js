@@ -138,4 +138,28 @@ type.readOnlyPath = function(path) {
   return path.slice(0, -1).some(step => step[0] === '$');
 };
 
+/**
+ * Returns the type of the given facet definition or `null` if invalid.
+ *
+ * @param  {mixed} definition - The definition to check.
+ * @return {string|null}
+ */
+type.facetDefinition = function(definition) {
+
+  if (type.object(definition)) {
+    if (!type.function(definition.get))
+      return null;
+    else
+      return 'object';
+  }
+  else if (type.array(definition)) {
+    if (!type.function(definition[definition.length - 1]))
+      return null;
+    else
+      return 'array';
+  }
+
+  return null;
+};
+
 export default type;
