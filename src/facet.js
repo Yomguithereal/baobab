@@ -40,7 +40,7 @@ export default class Facet {
     // Harmonizing
     if (definitionType === 'object') {
       this.getter = definition.get;
-      this.projection = definition.cursors || {};
+      this.projection = definition.cursors || {};
       this.paths = Object.keys(this.projection)
         .map(k => this.projection[k]);
     }
@@ -55,7 +55,13 @@ export default class Facet {
       computed: false
     };
 
-    // Binding listener
+    /**
+     * Listener on the tree's `write` event.
+     *
+     * When the tree writes, this listener will check whether the updated paths
+     * are of any use to the facet and, if so, will clean any computed data
+     * so that the data may be recomputed when needed.
+     */
     this.listener = ({data: {path}}) => {
 
       // Is this facet affected by the current write event?
@@ -67,6 +73,7 @@ export default class Facet {
       }
     };
 
+    // Binding listener
     tree.on('write', this.listener);
   }
 
