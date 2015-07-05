@@ -405,6 +405,31 @@ const shallowMerge = merger.bind(null, false),
 export {shallowMerge, deepMerge};
 
 /**
+ * Function returning a nested object according to the given path and the
+ * given leaf.
+ *
+ * @param  {array}  path - The path to follow.
+ * @param  {mixed}  leaf - The leaf to append at the end of the path.
+ * @return {object}      - The nested object.
+ */
+export function pathObject(path, leaf) {
+  let l = path.length,
+      o = {},
+      c = o,
+      i;
+
+  if (!l)
+    o = leaf;
+
+  for (i = 0; i < l; i++) {
+    c[path[i]] = (i + 1 === l) ? leaf : {};
+    c = c[path[i]];
+  }
+
+  return o;
+}
+
+/**
  * Function solving the given path within the target object.
  *
  * @param  {object} object - The object in which the path must be solved.

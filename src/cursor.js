@@ -362,6 +362,34 @@ export default class Cursor extends Emitter {
   }
 
   /**
+   * Method use to project some of the data at cursor onto a map or a list.
+   *
+   * @param  {object|array} projection - The projection's formal definition.
+   * @return {objectLarray}            - The resultant map/list.
+   */
+  project(projection) {
+    if (type.object(projection)) {
+      const data = {};
+
+      for (let k in projection)
+        data[k] = this.get(projection[k]);
+
+      return data;
+    }
+
+    else if (type.array(projection)) {
+      const data = [];
+
+      for (let i = 0, l = projection.length; i < l; i++)
+        data.push(this.get(projection[i]));
+
+      return data;
+    }
+
+    throw makeError('Baobab.Cursor.project: wrong projection.', {projection});
+  }
+
+  /**
    * History Methods
    * ----------------
    */

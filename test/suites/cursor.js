@@ -72,6 +72,26 @@ describe('Cursor API', function() {
         const inexistant = tree.get('setLater', 'a');
         assert.strictEqual(inexistant, undefined);
       });
+
+      it('should be possible to use some projection.', function() {
+        const tree = new Baobab({
+          one: 1,
+          two: 2
+        });
+
+        assert.deepEqual(
+          tree.project({a: ['one'], b: ['two']}),
+          {
+            a: 1,
+            b: 2
+          }
+        );
+
+        assert.deepEqual(
+          tree.project([['one'], ['two']]),
+          [1, 2]
+        );
+      });
     });
 
     /**

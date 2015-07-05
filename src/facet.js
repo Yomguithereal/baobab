@@ -12,6 +12,6 @@
  */
 export default class Facet {
   constructor(definition) {
-
+    this._identity = '[object Facet]';
   }
 }

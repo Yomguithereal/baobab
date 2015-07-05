@@ -4,7 +4,6 @@
  *
  * The tree's update scheme.
  */
-import Facet from './facet';
 import type from './type';
 import {
   freeze,

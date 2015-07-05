@@ -6,6 +6,7 @@
  */
 import Emitter from 'emmett';
 import Cursor from './cursor';
+import Facet from './facet';
 import type from './type';
 import update from './update';
 import defaults from '../defaults';
@@ -14,6 +15,7 @@ import {
   deepFreeze,
   makeError,
   deepMerge,
+  pathObject,
   shallowMerge,
   solvePath,
   uniqid
@@ -96,11 +98,15 @@ export default class Baobab extends Emitter {
       'prepend',
       'push,',
       'merge',
+      'project',
       'set',
       'splice',
       'unset',
       'unshift'
     ].forEach(bootstrap);
+
+    // Creating the computed data index for the first time
+    this._refreshComputedDataIndex();
   }
 
   /**
@@ -111,6 +117,39 @@ export default class Baobab extends Emitter {
    */
   _refreshComputedDataIndex(path, node) {
 
+    if (!path) {
+
+      // Refreshing the whole tree
+      const walk = (data, p=[]) => {
+
+        // Have we reached the end?
+        if (type.primitive(data))
+          return;
+
+        // Object iteration
+        if (type.object(data)) {
+          let k;
+
+          for (k in data) {
+
+            // Creating a facet if needed
+            if (k[0] === '$') {
+              const facet = new Facet(data[k]);
+              deepMerge(
+                this._computedDataIndex,
+                pathObject(p, {[k]: facet})
+              );
+            }
+            else {
+              walk(data[k], p.concat(k));
+            }
+          }
+        }
+      };
+
+      // Walk the tree
+      walk(this.data);
+    }
   }
 
   /**
@@ -200,6 +239,9 @@ export default class Baobab extends Emitter {
     this.data = data;
     this._affectedPathsIndex[hash] = true;
     this._transaction.push({...operation, path: solvedPath});
+
+    // Emitting a `write` event
+    this.emit('write', {path: solvedPath});
 
     // Should we let the user commit?
     if (!this.options.autoCommit) {
