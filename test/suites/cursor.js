@@ -550,4 +550,81 @@ describe('Cursor API', function() {
       }, /non-list/);
     });
   });
+
+  /**
+   * History
+   */
+  describe('History', function() {
+
+    it('should be possible to record updates.', function() {
+      const tree = new Baobab({item: 1}, {asynchronous: false}),
+            cursor = tree.select('item');
+
+      assert(!cursor.state.recording);
+      assert(!cursor.hasHistory());
+      assert.deepEqual(cursor.getHistory(), []);
+
+      cursor.startRecording(5);
+
+      assert(cursor.state.recording);
+
+      [1, 2, 3, 4, 5, 6].forEach(function() {
+        cursor.apply(function(e) { return e + 1; });
+      });
+
+      assert(cursor.hasHistory());
+      assert.strictEqual(cursor.get(), 7);
+      assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5, 6].reverse());
+
+      cursor.stopRecording();
+      cursor.clearHistory();
+
+      assert(!cursor.state.recording);
+      assert(!cursor.hasHistory());
+      assert.deepEqual(cursor.getHistory(), []);
+    });
+
+    it('should throw an error if trying to undo a recordless cursor.', function() {
+      const tree = new Baobab({item: 1}, {asynchronous: false}),
+            cursor = tree.select('item');
+
+      assert.throws(function() {
+        cursor.undo();
+      }, /recording/);
+    });
+
+    it('should be possible to go back in time.', function() {
+      const tree = new Baobab({item: 1}, {asynchronous: false}),
+            cursor = tree.select('item');
+
+      cursor.startRecording(5);
+
+      [1, 2, 3, 4, 5, 6].forEach(function() {
+        cursor.apply(function(e) { return e + 1; });
+      });
+
+      assert.strictEqual(cursor.get(), 7);
+
+      cursor.undo();
+      assert.strictEqual(cursor.get(), 6);
+      assert.deepEqual(cursor.getHistory(), [2, 3, 4, 5].reverse());
+
+      cursor.undo().undo();
+
+      assert.strictEqual(cursor.get(), 4);
+      assert.deepEqual(cursor.getHistory(), [2, 3].reverse());
+
+      cursor.set(4)
+      cursor.set(5);
+
+      cursor.undo(3);
+
+      assert.strictEqual(cursor.get(), 3);
+      assert.deepEqual(cursor.getHistory(), [2]);
+
+      assert.throws(function() {
+        cursor.undo(5);
+      }, /relevant/);
+    });
+  });
 });

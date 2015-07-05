@@ -76,18 +76,6 @@ type.number = function(target) {
 };
 
 /**
- * Checking whether the given variable is a positive integer.
- *
- * @param  {mixed} target - Variable to test.
- * @return {boolean}
- */
-type.positiveInteger = function(target) {
-  return typeof target === 'number' &&
-         target > 0 &&
-         target % 1 === 0;
-};
-
-/**
  * Checking whether the given variable is a function.
  *
  * @param  {mixed} target - Variable to test.

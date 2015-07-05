@@ -35,7 +35,8 @@ export class Archive {
   /**
    * Method adding a record to the archive
    *
-   * @param {object} record - The record to store.
+   * @param {object}  record - The record to store.
+   * @return {Archive}       - The archive itself for chaining purposes.
    */
   add(record) {
     this.records.unshift(record);
@@ -43,6 +44,18 @@ export class Archive {
     // If the number of records is exceeded, we truncate the records
     if (this.records.length > this.size)
       this.records.length = this.size;
+
+    return this;
+  }
+
+  /**
+   * Method clearing the records.
+   *
+   * @return {Archive} - The archive itself for chaining purposes.
+   */
+  clear() {
+    this.records = [];
+    return this;
   }
 
   /**
@@ -52,10 +65,10 @@ export class Archive {
    * @return {number}       - The last record.
    */
   back(steps) {
-    let record = this.records[steps - 1];
+    const record = this.records[steps - 1];
 
     if (record)
-      record = this.records.slice(steps);
+      this.records = this.records.slice(steps);
     return record;
   }
 }

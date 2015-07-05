@@ -64,6 +64,13 @@ export default function update(data, path, operation, opts={}) {
       }
 
       /**
+       * Apply
+       */
+      if (operationType === 'apply') {
+        p[s] = value(p[s]);
+      }
+
+      /**
        * Push
        */
       else if (operationType === 'push') {

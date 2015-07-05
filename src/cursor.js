@@ -7,6 +7,7 @@
 import Emitter from 'emmett';
 import type from './type';
 import {
+  Archive,
   arrayFrom,
   before,
   getIn,
@@ -360,6 +361,146 @@ export default class Cursor extends Emitter {
     this.tree.emit('get', {data, path: solvedPath});
 
     return data;
+  }
+
+  /**
+   * History Methods
+   * ----------------
+   */
+
+  /**
+   * Methods starting to record the cursor's successive states.
+   *
+   * @param  {integer} [maxRecords] - Maximum records to keep in memory. Note
+   *                                  that if no number is provided, the cursor
+   *                                  will keep everything.
+   * @return {Cursor}               - The cursor instance for chaining purposes.
+   */
+  startRecording(maxRecords) {
+    maxRecords = maxRecords || Infinity;
+
+    if (maxRecords < 1)
+      throw makeError('Baobab.Cursor.startRecording: invalid max records.', {
+        value: maxRecords
+      });
+
+    if (this.archive)
+      return this;
+
+    // Lazy binding
+    this._lazyBind();
+
+    this.archive = new Archive(maxRecords);
+    this.state.recording = true;
+    return this;
+  }
+
+  /**
+   * Methods stopping to record the cursor's successive states.
+   *
+   * @return {Cursor} - The cursor instance for chaining purposes.
+   */
+  stopRecording() {
+    this.state.recording = false;
+    return this;
+  }
+
+  /**
+   * Methods undoing n steps of the cursor's recorded states.
+   *
+   * @param  {integer} [steps=1] - The number of steps to rollback.
+   * @return {Cursor}            - The cursor instance for chaining purposes.
+   */
+  undo(steps=1) {
+    if (!this.state.recording)
+      throw new Error('Baobab.Cursor.undo: cursor is not recording.');
+
+    const record = this.archive.back(steps);
+
+    if (!record)
+      throw Error('Baobab.Cursor.undo: cannot find a relevant record.');
+
+    this.state.undoing = true;
+    this.set(record);
+
+    return this;
+  }
+
+  /**
+   * Methods returning whether the cursor has a recorded history.
+   *
+   * @return {boolean} - `true` if the cursor has a recorded history?
+   */
+  hasHistory() {
+    return !!(this.archive && this.archive.get().length);
+  }
+
+  /**
+   * Methods returning the cursor's history.
+   *
+   * @return {array} - The cursor's history.
+   */
+  getHistory() {
+    return this.archive ? this.archive.get() : [];
+  }
+
+  /**
+   * Methods clearing the cursor's history.
+   *
+   * @return {Cursor} - The cursor instance for chaining purposes.
+   */
+  clearHistory() {
+    this.archive && this.archive.clear();
+    return this;
+  }
+
+  /**
+   * Releasing
+   * ----------
+   */
+
+  /**
+   * Methods releasing the cursor from memory.
+   */
+  release() {
+
+    // Removing listener on parent
+    this.tree.off('update', this._updateHandler);
+
+    // Unsubscribe from the parent
+    delete this.tree._cursors[this.hash];
+
+    // Dereferencing
+    delete this.tree;
+    delete this.path;
+    delete this.solvedPath;
+    delete this.archive;
+
+    // Killing emitter
+    this.kill();
+  }
+
+  /**
+   * Output
+   * -------
+   */
+
+  /**
+   * Overriding the `toJSON` method for convenient use with JSON.stringify.
+   *
+   * @return {mixed} - Data at cursor.
+   */
+  toJSON() {
+    return this.get();
+  }
+
+  /**
+   * Overriding the `toString` method for debugging purposes.
+   *
+   * @return {string} - The cursor's identity.
+   */
+  toString() {
+    return this._identity;
   }
 }
 
