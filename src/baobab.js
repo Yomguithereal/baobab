@@ -88,6 +88,7 @@ export default class Baobab extends Emitter {
     // Privates
     this._identity = '[object Baobab]';
     this._cursors = {};
+    this._facets = {};
     this._future = null;
     this._transaction = [];
     this._affectedPathsIndex = {};
@@ -155,6 +156,9 @@ export default class Baobab extends Emitter {
             // Creating a facet if needed
             if (k[0] === '$') {
               const facet = new Facet(this, p.concat(k), data[k]);
+
+              this._facets['/' + p.concat(k).join('/')] = facet;
+
               deepMerge(
                 this._computedDataIndex,
                 pathObject(p, {[k]: facet})
@@ -356,6 +360,11 @@ export default class Baobab extends Emitter {
     for (k in this._cursors)
       this._cursors[k].release();
     delete this._cursors;
+
+    // Releasing facets
+    for (k in this._facets)
+      this._facets[k].release();
+    delete this._facets;
 
     // Killing event emitter
     this.kill();

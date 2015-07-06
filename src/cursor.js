@@ -49,6 +49,9 @@ export default class Cursor extends Emitter {
     // Checking whether the given path is dynamic or not
     this._dynamicPath = type.dynamicPath(this.path);
 
+    // Checking whether the given will meet a facet
+    this._facetPath = type.facetPath(this.path);
+
     if (!this._dynamicPath)
       this.solvedPath = this.path;
     else
@@ -88,6 +91,12 @@ export default class Cursor extends Emitter {
       const {paths, previousData} = event.data,
             update = fireUpdate.bind(this, previousData);
 
+      // Checking whether we should keep track of some dependencies
+      // TODO: some operations here might be merged for perfs
+      const additionalPaths = this._facetPath ?
+        this.tree._facets['/' + this._facetPath.join('/')].paths :
+        [];
+
       // If this is the root selector, we fire already
       if (this.isRoot())
         return update();
@@ -99,7 +108,10 @@ export default class Cursor extends Emitter {
       let shouldFire = false;
 
       if (this.solvedPath)
-        shouldFire = solveUpdate(paths, [this.solvedPath]);
+        shouldFire = solveUpdate(
+          paths,
+          [this.solvedPath].concat(additionalPaths)
+        );
 
       if (shouldFire)
         return update();

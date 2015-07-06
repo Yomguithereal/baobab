@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 const noop = Function.prototype;
 
-const exampleTree = {
+const exampleState = {
   data: {
     messages: [
       {from: 'John', message: 'Hey'},
@@ -49,7 +49,7 @@ describe('Facets', function() {
   });
 
   it('should be possible to create facets at instantiation.', function() {
-    const tree = new Baobab(exampleTree);
+    const tree = new Baobab(exampleState);
 
     assert.deepEqual(
       tree.get('data', '$fromJohn'),
@@ -58,10 +58,55 @@ describe('Facets', function() {
   });
 
   it('should be possible to access data from beyond facets.', function() {
-    const tree = new Baobab(exampleTree);
+    const tree = new Baobab(exampleState);
 
     assert.strictEqual(
       tree.get('data', '$fromJohn', 0, 'message'),
+      'Hey'
+    );
+  });
+
+  it('facets should update when their dependencies update.', function() {
+    const tree = new Baobab(exampleState);
+
+    assert.deepEqual(
+      tree.get('data', '$fromJohn'),
+      [{from: 'John', message: 'Hey'}]
+    );
+
+    tree.push(['data', 'messages'], {from: 'John', message: 'Success!'});
+
+    assert.deepEqual(
+      tree.get('data', '$fromJohn'),
+      [{from: 'John', message: 'Hey'}, {from: 'John', message: 'Success!'}]
+    );
+  });
+
+  it('cursors with a facet in the path should work correctly.', function(done) {
+    const tree = new Baobab(exampleState),
+          cursor = tree.select('data', '$fromJohn');
+
+    cursor.on('update', e => done());
+
+    assert.deepEqual(
+      cursor.get(),
+      [{from: 'John', message: 'Hey'}]
+    );
+
+    tree.push(['data', 'messages'], {from: 'John', message: 'Success!'});
+
+    assert.deepEqual(
+      cursor.get(),
+      [{from: 'John', message: 'Hey'}, {from: 'John', message: 'Success!'}]
+    );
+  });
+
+  it('cursors should be able to listen to beyond facets.', function() {
+    const tree = new Baobab(exampleState),
+          cursor = tree.select('data', '$fromJohn', 0, 'message');
+
+    assert.strictEqual(
+      cursor.get(),
       'Hey'
     );
   });

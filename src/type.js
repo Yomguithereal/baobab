@@ -128,6 +128,28 @@ type.dynamicPath = function(path) {
 };
 
 /**
+ * Retrieve any facet subpath in the given path or null if the path never comes
+ * across computed data.
+ *
+ * @param  {mixed} path - The path to test.
+ * @return {boolean}
+ */
+type.facetPath = function(path) {
+  let subpath = [],
+      i,
+      l;
+
+  for (i = 0, l = path.length; i < l; i++) {
+    subpath.push(path[i]);
+
+    if (path[i][0] === '$')
+      return subpath;
+  }
+
+  return null;
+};
+
+/**
  * Checking whether the given path is read-only.
  * Note: this should of course apply to a solved path and not a dynamic one.
  *
