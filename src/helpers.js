@@ -164,7 +164,7 @@ function cloner(deep, item) {
       o = Object.create(item.constructor.prototype);
 
     for (k in item)
-      if (item.hasOwnProperty(k))
+      if (item.hasOwnProperty(k) && k[0] !== '$')
         o[k] = deep ? cloner(true, item[k]) : item[k];
     return o;
   }

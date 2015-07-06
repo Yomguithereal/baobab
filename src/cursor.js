@@ -10,6 +10,7 @@ import {
   Archive,
   arrayFrom,
   before,
+  deepClone,
   getIn,
   makeError,
   solvePath,
@@ -390,8 +391,10 @@ export default class Cursor extends Emitter {
    *
    * @return {mixed}                 - The retrieved raw data.
    */
-  serialize(path) {
+  serialize() {
+    const data = this.get.apply(this, arguments);
 
+    return deepClone(data);
   }
 
   /**
@@ -551,7 +554,7 @@ export default class Cursor extends Emitter {
    * @return {mixed} - Data at cursor.
    */
   toJSON() {
-    return this.get();
+    return this.serialize();
   }
 
   /**

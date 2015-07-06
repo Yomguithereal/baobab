@@ -168,4 +168,40 @@ describe('Facets', function() {
       }
     );
   });
+
+  it('should be possible to serialize the tree or some of its parts.', function() {
+    const tree = new Baobab(exampleState);
+
+    assert.deepEqual(
+      tree.serialize(),
+      {
+        data: {
+          messages: [
+            {from: 'John', message: 'Hey'},
+            {from: 'Jack', message: 'Ho'}
+          ]
+        }
+      }
+    );
+
+    assert.deepEqual(
+      tree.serialize('data'),
+      {
+        messages: [
+          {from: 'John', message: 'Hey'},
+          {from: 'Jack', message: 'Ho'}
+        ]
+      }
+    );
+
+    assert.deepEqual(
+      tree.select('data').serialize(),
+      {
+        messages: [
+          {from: 'John', message: 'Hey'},
+          {from: 'Jack', message: 'Ho'}
+        ]
+      }
+    );
+  });
 });

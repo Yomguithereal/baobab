@@ -119,6 +119,7 @@ export default class Baobab extends Emitter {
       'push',
       'merge',
       'project',
+      'serialize',
       'set',
       'splice',
       'unset',
@@ -372,7 +373,7 @@ export default class Baobab extends Emitter {
    * @return {mixed} - Data at cursor.
    */
   toJSON() {
-    return this.get();
+    return this.serialize();
   }
 
   /**
