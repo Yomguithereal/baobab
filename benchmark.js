@@ -9,6 +9,9 @@ tree.set(['a', 'b', 'c', 'd', 'e', 'f', 'g'], []);
 var cursor = tree.select(['a', 'b', 'c']);
 
 suite
+  .add('Baobab#get', function() {
+    tree.get(['a', 'b', 'c', 'd']);
+  })
   .add('Baobab#set', function() {
     tree.set(['a', 'b', 'c', 'foo'], 'bar');
   })
