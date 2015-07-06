@@ -134,45 +134,52 @@ export default class Baobab extends Emitter {
    * Private method used to refresh the internal computed data index of the
    * tree.
    *
-   * @return {Baobab}      - The tree instance itself for chaining purposes.
+   * @param  {array}  [path]      - Path to the modified node.
+   * @param  {string} [operation] - Type of the applied operation.
+   * @param  {mixed}  [node]      - The new node.
+   * @return {Baobab}             - The tree itself for chaining purposes.
    */
-  _refreshComputedDataIndex(path, node) {
+  _refreshComputedDataIndex(path, operation, node) {
+
+    // Refreshing the whole tree
+    const walk = (data, p=[]) => {
+
+      // Have we reached the end?
+      if (type.primitive(data))
+        return;
+
+      // Object iteration
+      // TODO: handle arrays?
+      if (type.object(data)) {
+        let k;
+
+        for (k in data) {
+
+          // Creating a facet if needed
+          if (k[0] === '$') {
+            const facet = new Facet(this, p.concat(k), data[k]),
+                  hash = '/' + p.concat(k).join('/');
+
+            if (this._facets[hash])
+              this._facets[hash].release();
+            this._facets[hash] = facet;
+
+            deepMerge(
+              this._computedDataIndex,
+              pathObject(p, {[k]: facet})
+            );
+          }
+          else {
+            walk(data[k], p.concat(k));
+          }
+        }
+      }
+    };
 
     if (!path) {
 
-      // Refreshing the whole tree
-      const walk = (data, p=[]) => {
-
-        // Have we reached the end?
-        if (type.primitive(data))
-          return;
-
-        // Object iteration
-        if (type.object(data)) {
-          let k;
-
-          for (k in data) {
-
-            // Creating a facet if needed
-            if (k[0] === '$') {
-              const facet = new Facet(this, p.concat(k), data[k]);
-
-              this._facets['/' + p.concat(k).join('/')] = facet;
-
-              deepMerge(
-                this._computedDataIndex,
-                pathObject(p, {[k]: facet})
-              );
-            }
-            else {
-              walk(data[k], p.concat(k));
-            }
-          }
-        }
-      };
-
-      // Walk the tree
-      walk(this.data);
+      // Walk the whole tree
+      return walk(this.data);
     }
   }
 

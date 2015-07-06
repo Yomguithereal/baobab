@@ -6,6 +6,7 @@
  */
 import type from './type';
 import {
+  deepFreeze,
   makeError,
   solveUpdate
 } from './helpers';
@@ -99,6 +100,11 @@ export default class Facet {
 
     this.state.computed = true;
     this.computedData = data;
+
+    // If the tree is immutable, we need to freeze the data
+    if (this.tree.options.immutable)
+      deepFreeze(this.computedData);
+
     return data;
   }
 

@@ -5,6 +5,7 @@
  * Miscellaneous helper functions.
  */
 import type from './type';
+import update from './update';
 
 /**
  * Noop function
@@ -297,7 +298,7 @@ export {freeze, deepFreeze};
  * @param  {object} [mask] - An optional computed data index.
  * @return {mixed}         - The data at path, or if not found, `undefined`.
  */
-export function getIn(object, path, mask={}) {
+export function getIn(object, path, mask=null, opts={}) {
   path = path || [];
 
   let c = object,
@@ -324,15 +325,43 @@ export function getIn(object, path, mask={}) {
     else {
 
       // Solving data from a facet if needed
-      if (cm && path[i][0] === '$')
+      if (cm && path[i][0] === '$') {
         c = cm[path[i]].get();
-      else
+        cm = null;
+      }
+      else {
         c = c[path[i]];
 
-      // Walking the mask
-      if (cm)
-        cm = cm[path[i]] || null;
+        // Walking the mask
+        if (cm)
+          cm = cm[path[i]] || null;
+      }
     }
+  }
+
+  // If the mask is still relevant, we continue until we solved computed data
+  // completely
+  if (cm && Object.keys(cm).length) {
+
+    // TODO: optimize, this is hardly performant
+    c = deepClone(c);
+
+    const walk = (d, m) => {
+      for (let k in m) {
+        if (k[0] === '$') {
+          d[k] = m[k].get();
+        }
+        else {
+          walk(d[k], m[k]);
+        }
+      }
+    };
+
+    walk(c, cm);
+
+    // Freezing again if immutable
+    if (opts.immutable)
+      deepFreeze(c);
   }
 
   return c;

@@ -57,6 +57,15 @@ describe('Facets', function() {
     );
   });
 
+  it('computed data should be immutable.', function() {
+    const tree = new Baobab(exampleState),
+          computedData = tree.get('data', '$fromJohn');
+
+    assert.throws(function() {
+      computedData[0] = 'test';
+    }, Error);
+  });
+
   it('should be possible to access data from beyond facets.', function() {
     const tree = new Baobab(exampleState);
 
@@ -108,6 +117,34 @@ describe('Facets', function() {
     assert.strictEqual(
       cursor.get(),
       'Hey'
+    );
+  });
+
+  it('getting a higher key should correctly solve computed data.', function() {
+    const tree = new Baobab(exampleState);
+
+    assert.deepEqual(
+      tree.get(),
+      {
+        data: {
+          messages: [
+            {from: 'John', message: 'Hey'},
+            {from: 'Jack', message: 'Ho'}
+          ],
+          $fromJohn: [{from: 'John', message: 'Hey'}]
+        }
+      }
+    );
+
+    assert.deepEqual(
+      tree.get('data'),
+      {
+        messages: [
+          {from: 'John', message: 'Hey'},
+          {from: 'Jack', message: 'Ho'}
+        ],
+        $fromJohn: [{from: 'John', message: 'Hey'}]
+      }
     );
   });
 });

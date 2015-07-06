@@ -342,7 +342,8 @@ export default class Cursor extends Emitter {
           data = getIn(
             this.tree.data,
             fullPath,
-            this.tree._computedDataIndex
+            this.tree._computedDataIndex,
+            this.tree.options
           );
 
     return {data, solvedPath: fullPath};
@@ -378,10 +379,26 @@ export default class Cursor extends Emitter {
   }
 
   /**
-   * Method use to project some of the data at cursor onto a map or a list.
+   * Method used to return raw data from the tree, by carefully avoiding
+   * computed one.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to serialize in the tree.
+   *
+   * Arity (2):
+   * @param {..step} path            - Path to serialize in the tree.
+   *
+   * @return {mixed}                 - The retrieved raw data.
+   */
+  serialize(path) {
+
+  }
+
+  /**
+   * Method used to project some of the data at cursor onto a map or a list.
    *
    * @param  {object|array} projection - The projection's formal definition.
-   * @return {objectLarray}            - The resultant map/list.
+   * @return {object|array}            - The resultant map/list.
    */
   project(projection) {
     if (type.object(projection)) {
