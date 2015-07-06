@@ -82,7 +82,7 @@ export class Archive {
  * @return {array}         - The real array.
  */
 export function arrayFrom(culprit) {
-  return Array.prototype.slice.call(culprit);
+  return slice(culprit);
 }
 
 /**
@@ -98,6 +98,26 @@ export function before(decorator, fn) {
     decorator.apply(null, arguments);
     fn.apply(null, arguments);
   };
+}
+
+/**
+ * Function cloning the given regular expression. Supports `y` and `u` flags
+ * already.
+ *
+ * @param  {RegExp} re - The target regular expression.
+ * @return {RegExp}    - The cloned regular expression.
+ */
+function cloneRegexp(re) {
+  let pattern = re.source,
+      flags = '';
+
+  if (re.global) flags += 'g';
+  if (re.multiline) flags += 'm';
+  if (re.ignoreCase) flags += 'i';
+  if (re.sticky) flags += 'y';
+  if (re.unicode) flags += 'u';
+
+  return new RegExp(pattern, flags);
 }
 
 /**
@@ -125,7 +145,7 @@ function cloner(deep, item) {
       return a;
     }
     else {
-      return item.slice(0);
+      return slice(item);
     }
   }
 
@@ -160,26 +180,6 @@ const shallowClone = cloner.bind(null, false),
       deepClone = cloner.bind(null, true);
 
 export {shallowClone, deepClone};
-
-/**
- * Function cloning the given regular expression. Supports `y` and `u` flags
- * already.
- *
- * @param  {RegExp} re - The target regular expression.
- * @return {RegExp}    - The cloned regular expression.
- */
-function cloneRegexp(re) {
-  let pattern = re.source,
-      flags = '';
-
-  if (re.global) flags += 'g';
-  if (re.multiline) flags += 'm';
-  if (re.ignoreCase) flags += 'i';
-  if (re.sticky) flags += 'y';
-  if (re.unicode) flags += 'u';
-
-  return new RegExp(pattern, flags);
-}
 
 /**
  * Function comparing an object's properties to a given descriptive
@@ -467,6 +467,23 @@ export function pathObject(path, leaf) {
   }
 
   return o;
+}
+
+/**
+ * Efficient slice function used to clone arrays or parts of them.
+ *
+ * @param  {array} array - The array to slice.
+ * @return {array}       - The sliced array.
+ */
+function slice(array) {
+  let newArray = new Array(array.length),
+      i,
+      l;
+
+  for (i = 0, l = array.length; i < l; i++)
+    newArray[i] = array[i];
+
+  return newArray;
 }
 
 /**
