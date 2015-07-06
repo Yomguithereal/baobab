@@ -70,7 +70,7 @@ export default function update(data, path, operation, opts={}) {
       /**
        * Apply
        */
-      if (operationType === 'apply') {
+      else if (operationType === 'apply') {
         p[s] = value(p[s]);
       }
 
