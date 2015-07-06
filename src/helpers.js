@@ -238,7 +238,7 @@ function first(a, fn) {
  * @return {object}    - The merged object.
  */
 function freezer(deep, o) {
-  if (typeof o !== 'object')
+  if (typeof o !== 'object' || o === null)
     return;
 
   Object.freeze(o);
