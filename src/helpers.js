@@ -5,7 +5,6 @@
  * Miscellaneous helper functions.
  */
 import type from './type';
-import update from './update';
 
 /**
  * Noop function

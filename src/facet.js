@@ -47,7 +47,7 @@ export default class Facet {
     }
     else {
       this.getter = definition[definition.length - 1];
-      this.projection = defition.slice(0, -1);
+      this.projection = definition.slice(0, -1);
       this.paths = this.projection;
     }
 
