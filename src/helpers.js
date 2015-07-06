@@ -294,12 +294,14 @@ export {freeze, deepFreeze};
  *
  * @param  {object} object - The object we need to get data from.
  * @param  {array}  path   - The path to follow.
+ * @param  {object} [mask] - An optional computed data index.
  * @return {mixed}         - The data at path, or if not found, `undefined`.
  */
-export function getIn(object, path) {
+export function getIn(object, path, mask={}) {
   path = path || [];
 
   let c = object,
+      cm = mask,
       i,
       l;
 
@@ -320,7 +322,16 @@ export function getIn(object, path) {
       c = first(c, e => compare(e, path[i]));
     }
     else {
-      c = c[path[i]];
+
+      // Solving data from a facet if needed
+      if (cm && path[i][0] === '$')
+        c = cm[path[i]].get();
+      else
+        c = c[path[i]];
+
+      // Walking the mask
+      if (cm)
+        cm = cm[path[i]] || null;
     }
   }
 

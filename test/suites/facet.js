@@ -9,6 +9,23 @@ import _ from 'lodash';
 
 const noop = Function.prototype;
 
+const exampleTree = {
+  data: {
+    messages: [
+      {from: 'John', message: 'Hey'},
+      {from: 'Jack', message: 'Ho'}
+    ],
+    $fromJohn: {
+      cursors: {
+        messages: ['data', 'messages']
+      },
+      get: function({messages}) {
+        return _.filter(messages, {from: 'John'});
+      }
+    }
+  }
+};
+
 describe('Facets', function() {
 
   it('should be impossible to update a read-only path.', function() {
@@ -32,23 +49,20 @@ describe('Facets', function() {
   });
 
   it('should be possible to create facets at instantiation.', function() {
-    const tree = new Baobab({
-      data: {
-        messages: [
-          {from: 'John', message: 'Hey'},
-          {from: 'Jack', message: 'Ho'}
-        ],
-        $fromJohn: {
-          cursors: {
-            messages: ['data', 'messages']
-          },
-          get: function({messages}) {
-            return _.filter(messages, {from: 'John'});
-          }
-        }
-      }
-    });
+    const tree = new Baobab(exampleTree);
 
-    // console.log(require('util').inspect(tree._computedDataIndex, {depth: null}));
+    assert.deepEqual(
+      tree.get('data', '$fromJohn'),
+      [{from: 'John', message: 'Hey'}]
+    );
+  });
+
+  it('should be possible to access data from beyond facets.', function() {
+    const tree = new Baobab(exampleTree);
+
+    assert.strictEqual(
+      tree.get('data', '$fromJohn', 0, 'message'),
+      'Hey'
+    );
   });
 });

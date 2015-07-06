@@ -327,7 +327,11 @@ export default class Cursor extends Emitter {
    */
   _get(path=[]) {
     const fullPath = this.solvedPath.concat(path),
-          data = getIn(this.tree.data, fullPath);
+          data = getIn(
+            this.tree.data,
+            fullPath,
+            this.tree._computedDataIndex
+          );
 
     return {data, solvedPath: fullPath};
   }

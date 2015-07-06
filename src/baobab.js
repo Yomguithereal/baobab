@@ -116,7 +116,7 @@ export default class Baobab extends Emitter {
       'apply',
       'get',
       'prepend',
-      'push,',
+      'push',
       'merge',
       'project',
       'set',
