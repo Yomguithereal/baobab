@@ -1,5 +1,23 @@
 # Changelog
 
+## v2.0.0 (provisonal)
+
+* The tree is now immutable by default.
+* Cursor's setters method won't return themselves but rather the affected node now.
+* Adding `cursor.append` and `cursor.prepend`, replacing some `cursor.push` and `cursor.unshift` weird behaviors.
+* Adding the `cursor.serialize` method.
+* Adding the `cursor.project` method.
+* Changing the way you can define computed data in the tree, aka "facets". Facets are now to be defined within the tree itself and can be accessed using the exact same API as normal data.
+* Adding an alternative facet definition syntax for convenience.
+* Dropped the `syncwrite` option. The tree is now writing synchronously but still emits its updates asynchronously by default.
+* Max number of records is now set to `Infinity` by default, meaning there is no limit.
+* Update events are now exposing the detail of each transaction so you can replay them elsewhere.
+* Dropped the `$cursor` helper.
+* Dropped the `update` specs for a simpler transaction syntax.
+* Updated `emmett` to `3.1.0`.
+* ES6 codebase rewrite.
+* Full code self documentation.
+
 ## v1.1.1
 
 * Updating `emmett` to `v3.0.1`.
