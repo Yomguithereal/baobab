@@ -8,3 +8,5 @@ build/
 gulpfile.js
 benchmark.js
 *.log
+.eslintrc
+TODO.md
