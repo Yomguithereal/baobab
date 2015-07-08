@@ -7,6 +7,7 @@
 import type from './type';
 import {
   deepFreeze,
+  getIn,
   makeError,
   solveUpdate
 } from './helpers';
@@ -52,7 +53,7 @@ export default class Facet {
     }
 
     // Is the facet recursive?
-    this.recursivePaths = this.paths.filter(p => type.facetPath(p));
+    this.isRecursive = !!this.paths.filter(p => type.facetPath(p)).length;
 
     // Internal state
     this.state = {
@@ -69,7 +70,7 @@ export default class Facet {
     this.listener = ({data: {path}}) => {
 
       // Is this facet affected by the current write event?
-      const concerned = solveUpdate([path], this.paths);
+      const concerned = solveUpdate([path], this.relatedPaths());
 
       if (concerned) {
         this.computedData = null;
@@ -80,6 +81,27 @@ export default class Facet {
     // Binding listener
     tree.on('write', this.listener);
   }
+
+  /**
+   * Method returning solved paths related to the facet.
+   *
+   * @return {array} - An array of related paths.
+   */
+  relatedPaths() {
+    if (!this.isRecursive)
+      return this.paths;
+    else
+      return this.paths.reduce((paths, path) => {
+        if (!type.facetPath(path))
+          return paths.concat(path);
+
+        // Solving recursive path
+        const relatedFacet = getIn(this.tree._computedDataIndex, path);
+
+        return paths.concat(relatedFacet.relatedPaths());
+      }, []);
+  }
+
 
   /**
    * Getter method

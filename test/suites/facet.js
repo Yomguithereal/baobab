@@ -223,8 +223,7 @@ describe('Facets', function() {
 
     tree.select('data', 'number').on('update', () => {
       assert.strictEqual(tree.get('computed', '$one'), 6);
-      // FIXME
-      // assert.strictEqual(tree.get('computed', '$two'), 7);
+      assert.strictEqual(tree.get('computed', '$two'), 7);
       done();
     });
 

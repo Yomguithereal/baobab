@@ -95,7 +95,7 @@ export default class Cursor extends Emitter {
       // Checking whether we should keep track of some dependencies
       // TODO: some operations here might be merged for perfs
       const additionalPaths = this._facetPath ?
-        getIn(this.tree._computedDataIndex, this._facetPath).paths :
+        getIn(this.tree._computedDataIndex, this._facetPath).relatedPaths() :
         [];
 
       // If this is the root selector, we fire already
