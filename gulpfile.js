@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
+    babelify = require('babelify'),
     header = require('gulp-header'),
     replace = require('gulp-replace'),
     rename = require('gulp-rename'),
@@ -25,7 +26,7 @@ gulp.task('build', ['gremlins'], function() {
     entries: './src/baobab.js',
     standalone: 'Baobab',
     fullPaths: false
-  }).transform('babelify')
+  }).transform(babelify.configure({loose: true}))
     .bundle()
     .pipe(source('baobab.js'))
     .pipe(buffer())
