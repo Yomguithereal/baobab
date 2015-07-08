@@ -51,6 +51,9 @@ export default class Facet {
       this.paths = this.projection;
     }
 
+    // Is the facet recursive?
+    this.recursivePaths = this.paths.filter(p => type.facetPath(p));
+
     // Internal state
     this.state = {
       computed: false
