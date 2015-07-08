@@ -53,7 +53,7 @@ export default class Facet {
     }
 
     // Is the facet recursive?
-    this.isRecursive = !!this.paths.filter(p => type.facetPath(p)).length;
+    this.isRecursive = this.paths.some(p => !!type.facetPath(p));
 
     // Internal state
     this.state = {
@@ -92,11 +92,12 @@ export default class Facet {
       return this.paths;
     else
       return this.paths.reduce((paths, path) => {
-        if (!type.facetPath(path))
+        const facetPath = type.facetPath(path);
+        if (!facetPath)
           return paths.concat(path);
 
         // Solving recursive path
-        const relatedFacet = getIn(this.tree._computedDataIndex, path);
+        const relatedFacet = getIn(this.tree._computedDataIndex, facetPath);
 
         return paths.concat(relatedFacet.relatedPaths());
       }, []);
