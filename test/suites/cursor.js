@@ -178,6 +178,14 @@ describe('Cursor API', function() {
         tree.set('hello', 'Jack');
         assert.strictEqual(tree.get('hello'), 'Jack');
       });
+
+      it('using an unknown operation type should throw.', function() {
+        const tree = new Baobab();
+
+        assert.throws(function() {
+          tree.update([], {type: 'shawarma', value: 'hey'});
+        }, /unknown/);
+      });
     });
 
     /**

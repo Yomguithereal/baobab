@@ -239,6 +239,12 @@ export default class Baobab extends Emitter {
     // Coercing path
     path = path || path === 0 ? path : [];
 
+    if (!type.operationType(operation.type))
+      throw makeError(
+        `Baobab.update: unknown operation type "${operation.type}".`,
+        {operation: operation}
+      );
+
     // Stashing previous data if this is the frame's first update
     if (!this._transaction.length)
       this.previousData = this.data;

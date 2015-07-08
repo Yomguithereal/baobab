@@ -184,4 +184,28 @@ type.facetDefinition = function(definition) {
   return null;
 };
 
+/**
+ * Checking whether the given string is a valid operation type.
+ *
+ * @param  {mixed} string - The string to test.
+ * @return {boolean}
+ */
+
+// Ordered by likeliness
+const VALID_OPERATIONS = [
+  'set',
+  'apply',
+  'push',
+  'unshift',
+  'append',
+  'prepend',
+  'merge',
+  'splice',
+  'unset'
+];
+
+type.operationType = function(string) {
+  return typeof string === 'string' && !!~VALID_OPERATIONS.indexOf(string);
+};
+
 export default type;
