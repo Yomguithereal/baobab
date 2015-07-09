@@ -21,12 +21,14 @@ import {
  * Cursor class
  *
  * @constructor
- * @param {Baobab} tree - The cursor's root.
- * @param {array}  path - The cursor's path in the tree.
- * @param {string} hash - The path's hash computed ahead by the tree.
+ * @param {Baobab} tree   - The cursor's root.
+ * @param {array}  path   - The cursor's path in the tree.
+ * @param {object} [opts] - Options
+ * @param {string} [opts.hash]  - The path's hash computed ahead by the tree.
+ * @param {array}  [opts.watch] - Paths the cursor is meant to watch.
  */
 export default class Cursor extends Emitter {
-  constructor(tree, path, hash) {
+  constructor(tree, path, opts={}) {
     super();
 
     // If no path were to be provided, we fallback to an empty path (root)
@@ -39,13 +41,22 @@ export default class Cursor extends Emitter {
     // Properties
     this.tree = tree;
     this.path = path;
-    this.hash = hash;
+    this.hash = opts.hash;
 
     // State
     this.state = {
       recording: false,
       undoing: false
     };
+
+    // Checking whether the cursor is a watcher
+    this._watch = opts.watch;
+    this._watchedPaths = opts.watch && (!type.array(opts.watch) ?
+      Object.keys(opts.watch).map(k => opts.watch[k]) :
+      opts.watch);
+
+    if (this._watch)
+      this.get = this.tree.project.bind(this.tree, this._watch);
 
     // Checking whether the given path is dynamic or not
     this._dynamicPath = type.dynamicPath(this.path);
@@ -65,6 +76,10 @@ export default class Cursor extends Emitter {
      * @param {mixed} previousData - the tree's previous data.
      */
     const fireUpdate = (previousData) => {
+
+      if (this._watch)
+        return this.emit('update');
+
       const record = getIn(previousData, this.solvedPath);
 
       if (this.state.recording && !this.state.undoing)
@@ -92,29 +107,43 @@ export default class Cursor extends Emitter {
       const {paths, previousData} = event.data,
             update = fireUpdate.bind(this, previousData);
 
-      // Checking whether we should keep track of some dependencies
-      // TODO: some operations here might be merged for perfs
-      const additionalPaths = this._facetPath ?
-        getIn(this.tree._computedDataIndex, this._facetPath).relatedPaths() :
-        [];
+      let comparedPaths;
 
-      // If this is the root selector, we fire already
-      if (this.isRoot())
-        return update();
+      // Standard cursor
+      if (!this._watch) {
 
-      // If the cursor's path is dynamic, we need to recompute it
-      if (this._dynamicPath)
-        this.solvedPath = solvePath(this.tree.data, this.path);
+        // Checking whether we should keep track of some dependencies
+        const additionalPaths = this._facetPath ?
+          getIn(this.tree._computedDataIndex, this._facetPath).relatedPaths() :
+          [];
 
-      let shouldFire = false;
+        // If the cursor's path is dynamic, we need to recompute it
+        if (this._dynamicPath)
+          this.solvedPath = solvePath(this.tree.data, this.path);
 
-      if (this.solvedPath)
-        shouldFire = solveUpdate(
-          paths,
-          [this.solvedPath].concat(additionalPaths)
-        );
+        comparedPaths = [this.solvedPath].concat(additionalPaths);
+      }
 
-      if (shouldFire)
+      // Watcher cursor
+      else {
+        comparedPaths = this._watchedPaths.reduce((cp, p) => {
+          if (type.dynamicPath(p))
+            p = solvePath(this.tree.data, p);
+
+          if (!p)
+            return cp;
+
+          const facetPath = type.facetPath(p);
+
+          if (facetPath)
+            return cp.concat(
+              getIn(this.tree._computedDataIndex, p).relatedPaths());
+
+          return cp.concat([p]);
+        }, []);
+      }
+
+      if (solveUpdate(paths, comparedPaths))
         return update();
     };
 
@@ -531,7 +560,8 @@ export default class Cursor extends Emitter {
     this.tree.off('update', this._updateHandler);
 
     // Unsubscribe from the parent
-    delete this.tree._cursors[this.hash];
+    if (this.hash)
+      delete this.tree._cursors[this.hash];
 
     // Dereferencing
     delete this.tree;

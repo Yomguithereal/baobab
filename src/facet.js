@@ -17,11 +17,11 @@ import {
  *
  * @constructor
  * @param {Baobab}       tree       - The tree.
- * @param {array}        path       - Path where the facets stands in its tree.
+ * @param {array}        pathInTree - Path where the facets stands in its tree.
  * @param {array|object} definition - The facet's definition.
  */
 export default class Facet {
-  constructor(tree, path, definition) {
+  constructor(tree, pathInTree, definition) {
 
     // Checking definition's type
     const definitionType = type.facetDefinition(definition);
@@ -30,8 +30,8 @@ export default class Facet {
     if (!definitionType)
       throw makeError(
         'Baobab.Facet: attempting to create a computed data node with a ' +
-        `wrong definition (path: /${path.join('/')}).`,
-        {path, definition}
+        `wrong definition (path: /${pathInTree.join('/')}).`,
+        {path: pathInTree, definition}
       );
 
     // Properties

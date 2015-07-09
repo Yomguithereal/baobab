@@ -558,7 +558,7 @@ export function solveUpdate(affectedPaths, comparedPaths) {
     for (j = 0, m = comparedPaths.length; j < m; j++) {
       c = comparedPaths[j];
 
-      if (!c.length)
+      if (!c || !c.length)
         return true;
 
       // Looping through steps

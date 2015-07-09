@@ -215,7 +215,7 @@ export default class Baobab extends Emitter {
     let cursor = this._cursors[hash];
 
     if (!cursor) {
-      cursor = new Cursor(this, path, hash);
+      cursor = new Cursor(this, path, {hash});
       this._cursors[hash] = cursor;
     }
 
@@ -352,6 +352,20 @@ export default class Baobab extends Emitter {
     });
 
     return this;
+  }
+
+  /**
+   * Method used to watch a collection of paths within the tree. Very useful
+   * to bind UI components and such to the tree.
+   *
+   * @param  {object|array} paths - Paths to listen.
+   * @return {Cursor}             - A special cursor that can be listened.
+   */
+  watch(paths) {
+    if (!type.object(paths) && !type.array(paths))
+      throw Error('Baobab.watch: wrong argument.');
+
+    return new Cursor(this, null, {watch: paths});
   }
 
   /**
