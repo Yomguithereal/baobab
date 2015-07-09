@@ -157,7 +157,7 @@ export default class Baobab extends Emitter {
 
           // Creating a facet if needed
           if (k[0] === '$') {
-            const facet = new Facet(this, p.concat(k), data[k]);
+            const facet = new Facet(this, data[k], p.concat(k));
 
             deepMerge(
               this._computedDataIndex,
@@ -352,6 +352,17 @@ export default class Baobab extends Emitter {
     });
 
     return this;
+  }
+
+  /**
+   * Method used to watch a collection of paths within the tree. Very useful
+   * to bind UI components and such to the tree.
+   *
+   * @param  {object|array} definition - A facet definition.
+   * @return {Facet}                   - A lone facet that can be listened.
+   */
+  watch(definition) {
+    return new Facet(this.tree, definition);
   }
 
   /**
