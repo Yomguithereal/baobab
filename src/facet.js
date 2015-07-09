@@ -4,7 +4,6 @@
  *
  * A class in charge of tree's computed data node.
  */
-import Emitter from 'emmett';
 import type from './type';
 import {
   deepFreeze,
@@ -14,11 +13,6 @@ import {
 } from './helpers';
 
 /**
- * Identity function
- */
-const identity = x => x;
-
-/**
  * Facet class
  *
  * @constructor
@@ -26,9 +20,8 @@ const identity = x => x;
  * @param {array}        path       - Path where the facets stands in its tree.
  * @param {array|object} definition - The facet's definition.
  */
-export default class Facet extends Emitter {
-  constructor(tree, definition, pathInTree=null) {
-    super();
+export default class Facet {
+  constructor(tree, path, definition) {
 
     // Checking definition's type
     const definitionType = type.facetDefinition(definition);
@@ -37,15 +30,14 @@ export default class Facet extends Emitter {
     if (!definitionType)
       throw makeError(
         'Baobab.Facet: attempting to create a computed data node with a ' +
-        `wrong definition (path: /${(pathInTree || []).join('/')}).`,
-        {path: pathInTree, definition}
+        `wrong definition (path: /${path.join('/')}).`,
+        {path, definition}
       );
 
     // Properties
     this.tree = tree;
     this.computedData = null;
     this.type = definitionType;
-    this.watcher = !pathInTree;
 
     // Harmonizing
     if (definitionType === 'object') {
@@ -75,7 +67,7 @@ export default class Facet extends Emitter {
      * are of any use to the facet and, if so, will clean any computed data
      * so that the data may be recomputed when needed.
      */
-    this.writeListener = ({data: {path}}) => {
+    this.listener = ({data: {path}}) => {
 
       // Is this facet affected by the current write event?
       const concerned = solveUpdate([path], this.relatedPaths());
@@ -86,23 +78,8 @@ export default class Facet extends Emitter {
       }
     };
 
-    /**
-     * Listener on the tree's `update` event.
-     *
-     * This will run only if the Facet is created by a watch routine.
-     */
-    this.updateListener = ({data: {paths}}) => {
-      const concerned = solveUpdate(paths, this.relatedPaths());
-
-      if (concerned)
-        this.emit('update');
-    };
-
-    // Binding listeners
-    if (this.watcher)
-      tree.on('update', this.updateListener);
-    else
-      tree.on('write', this.writeListener);
+    // Binding listener
+    tree.on('write', this.listener);
   }
 
   /**
@@ -167,13 +144,7 @@ export default class Facet extends Emitter {
     delete this.projection;
     delete this.paths;
 
-    // Unbinding listeners
-    if (this.watcher)
-      this.tree.off('update', this.updateListener);
-    else
-      this.tree.off('write', this.writeListener);
-
-    // Killing emitter
-    this.kill();
+    // Unbinding listener
+    this.tree.off('write', this.listener);
   }
 }
