@@ -7,7 +7,7 @@ import Baobab from '../../src/baobab';
 import Cursor from '../../src/cursor';
 import state from '../state';
 
-describe('Baobab API', function() {
+describe('Baobab API', function() {
 
   /**
    * Testing the very basics of the API like tree instantiation.
