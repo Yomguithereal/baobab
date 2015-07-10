@@ -103,31 +103,17 @@ export default function update(data, path, operation, opts={}) {
       }
 
       /**
-       * Append
+       * Concat
        */
-      else if (operationType === 'append') {
+      else if (operationType === 'concat') {
         if (!type.array(p[s]))
           throw err(
-            'append',
+            'concat',
             'array',
             currentPath
           );
 
         p[s] = p[s].concat(value);
-      }
-
-      /**
-       * Prepend
-       */
-      else if (operationType === 'prepend') {
-        if (!type.array(p[s]))
-          throw err(
-            'prepend',
-            'array',
-            currentPath
-          );
-
-        p[s] = value.concat(p[s]);
       }
 
       /**

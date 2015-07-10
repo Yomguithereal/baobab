@@ -197,8 +197,7 @@ const VALID_OPERATIONS = [
   'apply',
   'push',
   'unshift',
-  'append',
-  'prepend',
+  'concat',
   'merge',
   'splice',
   'unset'

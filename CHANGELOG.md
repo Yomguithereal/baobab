@@ -4,7 +4,7 @@
 
 * The tree is now immutable by default.
 * Cursor's setters method won't return themselves but rather the affected node now.
-* Adding `cursor.append` and `cursor.prepend`, replacing some `cursor.push` and `cursor.unshift` weird behaviors.
+* Adding `cursor.concat`.
 * Adding the `cursor.serialize` method.
 * Adding the `cursor.project` method.
 * Changing the way you can define computed data in the tree, aka "facets". Facets are now to be defined within the tree itself and can be accessed using the exact same API as normal data.
@@ -12,6 +12,7 @@
 * Dropped the `syncwrite` option. The tree is now writing synchronously but still emits its updates asynchronously by default.
 * Max number of records is now set to `Infinity` by default, meaning there is no limit.
 * Update events are now exposing the detail of each transaction so you can replay them elsewhere.
+* Fixing `cursor.push/unshift` behavior.
 * Dropped the `$cursor` helper.
 * Dropped the `update` specs for a simpler transaction syntax.
 * Updated `emmett` to `3.1.0`.

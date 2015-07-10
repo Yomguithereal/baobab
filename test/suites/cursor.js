@@ -693,11 +693,11 @@ describe('Cursor API', function() {
 
       cursor.push(2);
       cursor.push(3);
-      cursor.prepend([-1, 0]);
-      cursor.unshift(-2);
+      cursor.unshift(-1);
+      cursor.concat([4, 5]);
 
       setTimeout(function() {
-        assert.deepEqual(cursor.get(), [-2, -1, 0, 1, 2, 3]);
+        assert.deepEqual(cursor.get(), [-1, 1, 2, 3, 4, 5]);
         done();
       }, 0);
     });
