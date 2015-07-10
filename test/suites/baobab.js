@@ -463,7 +463,7 @@ describe('Baobab API', function() {
       assert.strictEqual(facet.get(), 'World');
     });
 
-    it('should update correctly on sub facet updates.', function() {
+    it('should update correctly on sub facet updates for direct children.', function() {
       var count = 0,
           inc = function(e) { count++; };
 
@@ -489,6 +489,48 @@ describe('Baobab API', function() {
       facet1.release();
       facet2.release();
     });
+		
+    it('should update correctly on sub facet updates, regardless of the levels of nesting.', function() {
+      var count = 0,
+          inc = function(e) { count++; };
+
+      var facet1 = baobab.createFacet({
+        cursors: {
+          token: ['token']
+        }
+      });
+
+      var facet2 = baobab.createFacet({
+        facets: {
+          token: facet1
+        }
+      });
+
+      var facet3 = baobab.createFacet({
+        facets: {
+          token: facet2
+        }
+      });
+
+      var facet4 = baobab.createFacet({
+        facets: {
+          token: facet3
+        }
+      });
+
+      facet1.on('update', inc);
+      facet2.on('update', inc);
+      facet3.on('update', inc);
+      facet4.on('update', inc);
+
+      baobab.set('token', 'falafel');
+
+      assert.strictEqual(count, 4);
+
+      facet1.release();
+      facet2.release();
+    });
+
   });
 
   describe('Options', function() {
