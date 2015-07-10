@@ -361,6 +361,9 @@ export function getIn(object, path, mask=null, opts={}) {
       if (cm && path[i][0] === '$') {
         c = cm[path[i]].get();
         cm = null;
+
+        if (opts.immutable)
+          deepFreeze(c);
       }
       else {
         c = c[path[i]];
