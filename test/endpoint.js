@@ -16,6 +16,13 @@ assert.isFrozen = function(v) {
   );
 };
 
+assert.isNotFrozen = function(v) {
+  assert(
+    type.primitive(v) || !Object.isFrozen(v),
+    util.inspect(v) + ' is frozen.'
+  );
+};
+
 // Requiring the tests
 require('./suites/helpers.js');
 require('./suites/baobab.js');

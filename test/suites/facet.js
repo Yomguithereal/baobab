@@ -229,6 +229,22 @@ describe('Facets', function() {
 
     tree.set(['data', 'number'], 5);
   });
+
+  it('data retrieved through facets should be immutable by default.', function() {
+    const tree = new Baobab(exampleState),
+          data = tree.get();
+
+    assert.isFrozen(data.data);
+    assert.isFrozen(data.data.$fromJohn);
+    assert.isFrozen(data.data.$fromJohn[0]);
+
+    const mutableTree = new Baobab(_.cloneDeep(exampleState), {immutable: false}),
+          mutableData = mutableTree.get();
+
+    assert.isNotFrozen(mutableData.data);
+    assert.isNotFrozen(mutableData.data.$fromJohn);
+    assert.isNotFrozen(mutableData.data.$fromJohn[0]);
+  });
 });
 
 describe('Watchers', function() {
