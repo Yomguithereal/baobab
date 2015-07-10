@@ -139,7 +139,7 @@ function Facet(tree, definition, args) {
 
   function facetsPaths(facets) {
     var paths =  Object.keys(facets).map(function(k) {
-      return cursorsPaths(facets[k].cursors);
+      return cursorsPaths(facets[k].cursors).concat(facetsPaths(facets[k].facets));
     });
 
     return [].concat.apply([], paths);
