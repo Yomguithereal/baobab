@@ -286,6 +286,40 @@ const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
 export {freeze, deepFreeze};
 
 /**
+ * Function used to solve a computed data mask by recursively walking a tree
+ * and patching it.
+ *
+ * @param {boolean} immutable - Is the data immutable?
+ * @param {mixed}  data       - Data to patch.
+ * @param {object} mask       - Computed data mask.
+ * @param {object} [parent]   - Parent object in the iteration.
+ * @param {string} [lastKey]  - Current value's key in parent.
+ */
+function solveMask(immutable, data, mask, parent, lastKey) {
+  for (let k in mask) {
+    if (k[0] === '$') {
+
+      // Patching
+      data[k] = mask[k].get();
+
+      if (immutable)
+        deepFreeze(parent);
+    }
+    else {
+      if (immutable) {
+        data[k] = shallowClone(data[k]);
+
+        if (parent)
+          freeze(parent);
+      }
+      solveMask(immutable, data[k], mask[k], data, k);
+    }
+  }
+
+  return data;
+}
+
+/**
  * Function retrieving nested data within the given object and according to
  * the given path.
  *
@@ -338,29 +372,10 @@ export function getIn(object, path, mask=null, opts={}) {
     }
   }
 
-  // If the mask is still relevant, we continue until we solved computed data
-  // completely
+  // If the mask is still relevant, we solve it down to the leaves
   if (cm && Object.keys(cm).length) {
-
-    // TODO: optimize, this is hardly performant
-    c = deepClone(c);
-
-    const walk = (d, m) => {
-      for (let k in m) {
-        if (k[0] === '$') {
-          d[k] = m[k].get();
-        }
-        else {
-          walk(d[k], m[k]);
-        }
-      }
-    };
-
-    walk(c, cm);
-
-    // Freezing again if immutable
-    if (opts.immutable)
-      deepFreeze(c);
+    let patchedData = solveMask(opts.immutable, {root: c}, {root: cm});
+    c = patchedData.root;
   }
 
   return c;
