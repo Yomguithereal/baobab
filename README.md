@@ -502,8 +502,8 @@ var listCursor = tree.select('list'),
 listCursor.down().right().get();
 >>> [3, 4]
 
-listCursor.select(1).down().left().get();
->>> 3
+listCursor.select(1).down().right().get();
+>>> 4
 
 twoCursor.leftmost().get();
 >>> 'one'
