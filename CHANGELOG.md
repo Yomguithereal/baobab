@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.2
+
+* Fixing problems concerning dynamic cursors.
+* Fixing recursive facets (**tschwecke**).
+
 ## v1.1.1
 
 * Updating `emmett` to `v3.0.1`.
