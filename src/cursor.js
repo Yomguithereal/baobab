@@ -73,7 +73,7 @@ function Cursor(tree, path, hash) {
         c, p, l, m, i, j;
 
     // Solving path if needed
-    if (self.complexPath)
+    if (self.complex)
       self.solvedPath = helpers.solvePath(self.tree.data, self.path, self.tree);
 
     // If selector listens at tree, we fire
@@ -122,7 +122,7 @@ function Cursor(tree, path, hash) {
   this.on = helpers.before(this._lazyBind, this.on.bind(this));
   this.once = helpers.before(this._lazyBind, this.once.bind(this));
 
-  if (this.complexPath)
+  if (this.complex)
     this._lazyBind();
 }
 
@@ -238,6 +238,10 @@ Cursor.prototype.map = function(fn, scope) {
  * Access
  */
 Cursor.prototype.get = function(path) {
+
+  if (!this.solvedPath)
+    return;
+
   var skipEvent = false;
 
   if (path === false) {
@@ -339,6 +343,9 @@ Cursor.prototype.unset = function(key) {
 Cursor.prototype.update = function(spec, skipMerge) {
   if (!type.Object(spec))
     throw Error('baobab.Cursor.update: invalid specifications.');
+
+  if (!this.solvedPath)
+    throw Error('baobab.Cursor.update: could not solve the cursor\'s dynamic path.');
 
   this.tree.stack(helpers.pathObject(this.solvedPath, spec), skipMerge);
   return this;
