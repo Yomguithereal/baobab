@@ -3,7 +3,7 @@
 ## v1.1.2
 
 * Fixing problems concerning dynamic cursors.
-* Fixing recursive facets (**tschwecke**).
+* Fixing recursive facets (**@tschwecke**).
 
 ## v1.1.1
 
