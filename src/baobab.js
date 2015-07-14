@@ -134,11 +134,10 @@ export default class Baobab extends Emitter {
    * tree.
    *
    * @param  {array}  [path]      - Path to the modified node.
-   * @param  {string} [operation] - Type of the applied operation.
    * @param  {mixed}  [node]      - The new node.
    * @return {Baobab}             - The tree itself for chaining purposes.
    */
-  _refreshComputedDataIndex(path, operation, node) {
+  _refreshComputedDataIndex(path, node) {
 
     // Refreshing the whole tree
     const walk = (data, p=[]) => {
@@ -175,6 +174,11 @@ export default class Baobab extends Emitter {
       // Walk the whole tree
       return walk(this.data);
     }
+    // else {
+
+    //   // Walk the affected leaf
+    //   return walk(node, path);
+    // }
   }
 
   /**
@@ -266,6 +270,10 @@ export default class Baobab extends Emitter {
       this.options
     );
 
+    // Refreshing facet index
+    // TODO: provide a setting to disable this or at least selectively for perf
+    this._refreshComputedDataIndex(solvedPath, node);
+
     // Updating data and transaction
     this.data = data;
     this._affectedPathsIndex[hash] = true;
@@ -275,9 +283,8 @@ export default class Baobab extends Emitter {
     this.emit('write', {path: solvedPath});
 
     // Should we let the user commit?
-    if (!this.options.autoCommit) {
+    if (!this.options.autoCommit)
       return node;
-    }
 
     // Should we update asynchronously?
     if (!this.options.asynchronous) {

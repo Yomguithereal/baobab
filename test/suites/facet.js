@@ -245,6 +245,14 @@ describe('Facets', function() {
     assert.isNotFrozen(mutableData.data.$fromJohn);
     assert.isNotFrozen(mutableData.data.$fromJohn[0]);
   });
+
+  // it('should be possible to change facets at runtime.', function() {
+  //   const tree = new Baobab(exampleState, {asynchronous: false});
+
+  //   tree.set(['data', '$fromJohn'], {get: () => 'Hey'});
+
+  //   console.log(tree._computedDataIndex);
+  // });
 });
 
 describe('Watchers', function() {

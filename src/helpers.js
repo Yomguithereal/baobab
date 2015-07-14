@@ -4,6 +4,7 @@
  *
  * Miscellaneous helper functions.
  */
+import Facet from './facet';
 import type from './type';
 
 /**
@@ -423,6 +424,8 @@ export function makeError(message, data) {
  * Note 2): the first object will be mutated to allow for perf scenarios.
  * Note 3): this function will take not `$.` keys into account and should only
  * be used by Baobab's internal and would be unsuited in any other case.
+ * Note 4): this function will release any facet found on its path to the
+ * leaves for cleanup reasons.
  *
  * @param  {boolean}   deep    - Whether the merge should be deep or not.
  * @param  {...object} objects - Objects to merge.
@@ -445,6 +448,11 @@ export function merger(deep, ...objects) {
         o[k] = merger(true, o[k] || {}, t[k]);
       }
       else {
+
+        // Releasing
+        if (o[k] instanceof Facet)
+          o[k].release();
+
         o[k] = t[k];
       }
     }
