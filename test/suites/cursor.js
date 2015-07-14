@@ -92,6 +92,13 @@ describe('Cursor API', function() {
           [1, 2]
         );
       });
+
+      it('an unsolved dynamic cursor should get undefined.', function() {
+        const cursor = tree.select('one', 'subtwo', 'colors', {id: 4});
+
+        assert.strictEqual(cursor.solvedPath, null);
+        assert.strictEqual(cursor.get(), undefined);
+      });
     });
 
     /**

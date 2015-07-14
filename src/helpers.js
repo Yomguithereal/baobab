@@ -526,6 +526,9 @@ export function solvePath(object, path) {
         return;
 
       idx = index(c, path[i]);
+      if (!~idx)
+        return null;
+
       solvedPath.push(idx);
       c = c[idx];
     }
@@ -534,6 +537,9 @@ export function solvePath(object, path) {
         return;
 
       idx = index(c, e => compare(e, path[i]));
+      if (!~idx)
+        return null;
+
       solvedPath.push(idx);
       c = c[idx];
     }
