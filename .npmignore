@@ -10,3 +10,4 @@ benchmark.js
 *.log
 .eslintrc
 TODO.md
+bower.json
