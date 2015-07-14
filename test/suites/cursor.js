@@ -596,6 +596,38 @@ describe('Cursor API', function() {
         oneCursor.map(Function.prototype);
       }, /non-list/);
     });
+
+    it('should be supported correctly with dynamic cursors.', function() {
+      const cursor = tree.select('one', 'subtwo', 'colors', {id: 23});
+
+      assert.deepEqual(cursor.up().path, ['one', 'subtwo', 'colors']);
+      assert.deepEqual(cursor.select('test').path, ['one', 'subtwo', 'colors', {id: 23}, 'test']);
+      assert.strictEqual(cursor.root(), tree.root);
+
+      assert.throws(function() {
+        cursor.left();
+      }, /left/);
+
+      assert.throws(function() {
+        cursor.right();
+      }, /right/);
+
+      assert.throws(function() {
+        cursor.down();
+      }, /down/);
+
+      assert.throws(function() {
+        cursor.leftmost();
+      }, /leftmost/);
+
+      assert.throws(function() {
+        cursor.rightmost();
+      }, /rightmost/);
+
+      assert.throws(function() {
+        cursor.map();
+      }, /map/);
+    });
   });
 
   /**

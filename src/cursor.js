@@ -18,6 +18,23 @@ import {
   solveUpdate
 } from './helpers';
 
+
+/**
+ * Traversal helper function for dynamic cursors. Will throw a legible error
+ * if traversal is not possible.
+ *
+ * @param {string} method     - The method name, to create a correct error msg.
+ * @param {array}  solvedPath - The cursor's solved path.
+ */
+function checkPossibilityOfDynamicTraversal(method, solvedPath) {
+  if (!solvedPath)
+    throw makeError(
+      `Baobab.Cursor.${method}: ` +
+      `cannot use ${method} on an unresolved dynamic path.`,
+      {path: solvedPath}
+    );
+}
+
 /**
  * Cursor class
  *
@@ -251,7 +268,7 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The parent cursor.
    */
   up() {
-    if (this.solvedPath && !this.isRoot())
+    if (!this.isRoot())
       return this.tree.select(this.path.slice(0, -1));
     else
       return null;
@@ -263,6 +280,8 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The child cursor.
    */
   down() {
+    checkPossibilityOfDynamicTraversal('down', this.solvedPath);
+
     if (!(this._get().data instanceof Array))
       throw Error('Baobab.Cursor.down: cannot go down on a non-list type.');
 
@@ -276,6 +295,8 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The left sibling cursor.
    */
   left() {
+    checkPossibilityOfDynamicTraversal('left', this.solvedPath);
+
     const last = +this.solvedPath[this.solvedPath.length - 1];
 
     if (isNaN(last))
@@ -293,6 +314,8 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The right sibling cursor.
    */
   right() {
+    checkPossibilityOfDynamicTraversal('right', this.solvedPath);
+
     const last = +this.solvedPath[this.solvedPath.length - 1];
 
     if (isNaN(last))
@@ -311,6 +334,8 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The leftmost sibling cursor.
    */
   leftmost() {
+    checkPossibilityOfDynamicTraversal('leftmost', this.solvedPath);
+
     const last = +this.solvedPath[this.solvedPath.length - 1];
 
     if (isNaN(last))
@@ -326,6 +351,8 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The rightmost sibling cursor.
    */
   rightmost() {
+    checkPossibilityOfDynamicTraversal('rightmost', this.solvedPath);
+
     const last = +this.solvedPath[this.solvedPath.length - 1];
 
     if (isNaN(last))
@@ -346,6 +373,8 @@ export default class Cursor extends Emitter {
    * @return {array}            - The resultant array.
    */
   map(fn, scope) {
+    checkPossibilityOfDynamicTraversal('map', this.solvedPath);
+
     let array = this._get().data,
         l = arguments.length;
 
