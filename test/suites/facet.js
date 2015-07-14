@@ -279,6 +279,36 @@ describe('Watchers', function() {
     assert.strictEqual(count, 2);
   });
 
+  it('should be possible to give cursors to a watcher.', function() {
+    const tree = new Baobab({
+      data: {
+        greeting: 'Hello',
+        name: 'Jack'
+      }
+    }, {asynchronous: false});
+
+    const watcher = tree.watch({
+      greeting: tree.select(['data', 'greeting']),
+      name: tree.select(['data', 'name'])
+    });
+
+    let count = 0,
+        inc = () => count++;
+
+    watcher.on('update', inc);
+
+    assert.deepEqual(watcher.get(), {
+      greeting: 'Hello',
+      name: 'Jack'
+    });
+
+    tree.set(['data', 'name'], 'John');
+    tree.set('data', {});
+    tree.set('hey', 'ho');
+
+    assert.strictEqual(count, 2);
+  });
+
   it('should be possible to use the array shorthand.', function() {
     const tree = new Baobab({
       data: {

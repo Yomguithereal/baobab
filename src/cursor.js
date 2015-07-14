@@ -13,6 +13,7 @@ import {
   deepClone,
   getIn,
   makeError,
+  shallowClone,
   solvePath,
   solveUpdate
 } from './helpers';
@@ -50,13 +51,22 @@ export default class Cursor extends Emitter {
     };
 
     // Checking whether the cursor is a watcher
-    this._watch = opts.watch;
-    this._watchedPaths = opts.watch && (!type.array(opts.watch) ?
-      Object.keys(opts.watch).map(k => opts.watch[k]) :
-      opts.watch);
+    if (opts.watch) {
+      this._watch = shallowClone(opts.watch);
 
-    if (this._watch)
+      // Normalizing path
+      for (let k in this._watch)
+        if (this._watch[k] instanceof Cursor)
+          this._watch[k] = this._watch[k].path;
+
+      // Keeping track of watched paths
+      this._watchedPaths = opts.watch && (!type.array(this._watch) ?
+        Object.keys(this._watch).map(k => this._watch[k]) :
+        this._watch);
+
+      // Overriding the cursor's get method
       this.get = this.tree.project.bind(this.tree, this._watch);
+    }
 
     // Checking whether the given path is dynamic or not
     this._dynamicPath = type.dynamicPath(this.path);
