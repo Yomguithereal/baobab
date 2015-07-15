@@ -382,7 +382,7 @@ export default class Baobab extends Emitter {
     if (!type.object(paths) && !type.array(paths))
       throw Error('Baobab.watch: wrong argument.');
 
-    return new Cursor(this, null, {watch: paths});
+    return new Cursor(this, null, {watched: paths});
   }
 
   /**
