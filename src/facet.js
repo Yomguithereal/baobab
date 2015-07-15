@@ -97,7 +97,7 @@ export default class Facet {
           return paths.concat(path);
 
         // Solving recursive path
-        const relatedFacet = getIn(this.tree._computedDataIndex, facetPath);
+        const relatedFacet = getIn(this.tree._computedDataIndex, facetPath).data;
 
         return paths.concat(relatedFacet.relatedPaths());
       }, []);

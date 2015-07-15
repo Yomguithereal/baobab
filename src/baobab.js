@@ -12,11 +12,11 @@ import update from './update';
 import {
   arrayFrom,
   deepFreeze,
+  getIn,
   makeError,
   deepMerge,
   pathObject,
   shallowMerge,
-  solvePath,
   uniqid
 } from './helpers';
 
@@ -253,7 +253,11 @@ export default class Baobab extends Emitter {
       this.previousData = this.data;
 
     // Applying the operation
-    const solvedPath = solvePath(this.data, path);
+    const {solvedPath} = getIn(
+      this.data,
+      path,
+      this._computedDataIndex
+    );
 
     // If we couldn't solve the path, we throw
     if (!solvedPath)

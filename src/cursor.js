@@ -14,7 +14,6 @@ import {
   getIn,
   makeError,
   shallowClone,
-  solvePath,
   solveUpdate
 } from './helpers';
 
@@ -94,7 +93,11 @@ export default class Cursor extends Emitter {
     if (!this._dynamicPath)
       this.solvedPath = this.path;
     else
-      this.solvedPath = solvePath(this.tree.data, this.path);
+      this.solvedPath = getIn(
+        this.tree.data,
+        this.path,
+        this.tree._computedDataIndex
+      ).solvedPath;
 
     /**
      * Function in charge of actually trigger the cursor's updates and
@@ -107,7 +110,7 @@ export default class Cursor extends Emitter {
       if (this._watch)
         return this.emit('update');
 
-      const record = getIn(previousData, this.solvedPath);
+      const record = getIn(previousData, this.solvedPath).data;
 
       if (this.state.recording && !this.state.undoing)
         this.archive.add(record);
@@ -141,12 +144,18 @@ export default class Cursor extends Emitter {
 
         // Checking whether we should keep track of some dependencies
         const additionalPaths = this._facetPath ?
-          getIn(this.tree._computedDataIndex, this._facetPath).relatedPaths() :
+          getIn(this.tree._computedDataIndex, this._facetPath)
+            .data
+            .relatedPaths() :
           [];
 
         // If the cursor's path is dynamic, we need to recompute it
         if (this._dynamicPath)
-          this.solvedPath = solvePath(this.tree.data, this.path);
+          this.solvedPath = getIn(
+            this.tree.data,
+            this.path,
+            this._computedDataIndex
+          ).solvedPath;
 
         comparedPaths = [this.solvedPath].concat(additionalPaths);
       }
@@ -155,7 +164,11 @@ export default class Cursor extends Emitter {
       else {
         comparedPaths = this._watchedPaths.reduce((cp, p) => {
           if (type.dynamicPath(p))
-            p = solvePath(this.tree.data, p);
+            p = getIn(
+              this.tree.data,
+              p,
+              this._computedDataIndex
+            ).solvedPath;
 
           if (!p)
             return cp;
@@ -164,7 +177,7 @@ export default class Cursor extends Emitter {
 
           if (facetPath)
             return cp.concat(
-              getIn(this.tree._computedDataIndex, p).relatedPaths());
+              getIn(this.tree._computedDataIndex, p).data.relatedPaths());
 
           return cp.concat([p]);
         }, []);
@@ -419,7 +432,7 @@ export default class Cursor extends Emitter {
         fullPath,
         this.tree._computedDataIndex,
         this.tree.options
-      );
+      ).data;
 
     return {data, solvedPath: fullPath};
   }

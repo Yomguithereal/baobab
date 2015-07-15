@@ -5,11 +5,51 @@
 import assert from 'assert';
 import {
   deepMerge,
+  getIn,
   shallowMerge,
   splice
 } from '../../src/helpers';
 
 describe('Helpers', function() {
+
+  /**
+   * Nested getter
+   */
+  describe('GetIn', function() {
+    it('should return both data at path and solved path.', function() {
+      const data = {a: {b: {c: 'hey'}}};
+
+      assert.deepEqual(
+        getIn(data, ['a', 'b', 'c']),
+        {data: 'hey', solvedPath: ['a', 'b', 'c']}
+      );
+    });
+
+    it('should also work with dynamic paths.', function() {
+      const data = {a: {b: [null, {id: 34}]}};
+
+      assert.deepEqual(
+        getIn(data, ['a', 'b', {id: 34}]),
+        {data: {id: 34}, solvedPath: ['a', 'b', 1]}
+      );
+    });
+
+    it('should return a not-found object when the data cannot be accessed.', function() {
+      const data = {a: null};
+
+      assert.deepEqual(
+        getIn(data, ['a', 'b', 'c']),
+        {data: undefined, solvedPath: ['a', 'b', 'c']}
+      );
+
+      const otherData = {a: [{id: 45}]};
+
+      assert.deepEqual(
+        getIn(otherData, ['a', e => e.id === 46]),
+        {data: undefined, solvedPath: null}
+      );
+    });
+  });
 
   /**
    * Merge

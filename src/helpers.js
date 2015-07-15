@@ -215,23 +215,6 @@ function compare(object, description) {
 }
 
 /**
- * Function returning the first element of a list matching the given
- * predicate.
- *
- * @param  {array}     a  - The target array.
- * @param  {function}  fn - The predicate function.
- * @return {mixed}        - The first matching item or `undefined`.
- */
-function first(a, fn) {
-  let i, l;
-  for (i = 0, l = a.length; i < l; i++) {
-    if (fn(a[i]))
-      return a[i];
-  }
-  return;
-}
-
-/**
  * Function freezing the given variable if possible.
  *
  * @param  {boolean} deep - Should we recursively freeze the given objects?
@@ -330,41 +313,55 @@ function solveMask(immutable, data, mask, parent, lastKey) {
  * @param  {object} object - The object we need to get data from.
  * @param  {array}  path   - The path to follow.
  * @param  {object} [mask] - An optional computed data index.
- * @return {mixed}         - The data at path, or if not found, `undefined`.
+ * @return {object} result            - The result.
+ * @return {mixed}  result.data       - The data at path, or `undefined`.
+ * @return {array}  result.solvedPath - The solved path or `null`.
  */
+const notFoundObject = {data: undefined, solvedPath: null};
+
 export function getIn(object, path, mask=null, opts={}) {
   path = path || [];
 
-  let c = object,
+  let solvedPath = [],
+      c = object,
       cm = mask,
+      idx,
       i,
       l;
 
   for (i = 0, l = path.length; i < l; i++) {
     if (!c)
-      return;
+      return {data: undefined, solvedPath: path};
 
     if (typeof path[i] === 'function') {
       if (!type.array(c))
-        return;
+        return notFoundObject;
 
-      c = first(c, path[i]);
+      idx = index(c, path[i]);
+      if (!~idx)
+        return notFoundObject;
+
+      solvedPath.push(idx);
+      c = c[idx];
     }
     else if (typeof path[i] === 'object') {
       if (!type.array(c))
-        return;
+        return notFoundObject;
 
-      c = first(c, e => compare(e, path[i]));
+      idx = index(c, e => compare(e, path[i]));
+      if (!~idx)
+        return notFoundObject;
+
+      solvedPath.push(idx);
+      c = c[idx];
     }
     else {
+      solvedPath.push(path[i]);
 
       // Solving data from a facet if needed
       if (cm && path[i][0] === '$') {
         c = cm[path[i]].get();
         cm = null;
-
-        if (opts.immutable)
-          deepFreeze(c);
       }
       else {
         c = c[path[i]];
@@ -382,7 +379,7 @@ export function getIn(object, path, mask=null, opts={}) {
     c = patchedData.root;
   }
 
-  return c;
+  return {data: c, solvedPath};
 }
 
 /**
@@ -512,55 +509,6 @@ function slice(array) {
 }
 
 /**
- * Function solving the given path within the target object.
- *
- * @param  {object} object - The object in which the path must be solved.
- * @param  {array}  path   - The path to follow.
- * @return {mixed}         - The solved path if possible, else `null`.
- */
-export function solvePath(object, path) {
-  let solvedPath = [],
-      c = object,
-      idx,
-      i,
-      l;
-
-  for (i = 0, l = path.length; i < l; i++) {
-    if (!c)
-      return null;
-
-    if (typeof path[i] === 'function') {
-      if (!type.array(c))
-        return;
-
-      idx = index(c, path[i]);
-      if (!~idx)
-        return null;
-
-      solvedPath.push(idx);
-      c = c[idx];
-    }
-    else if (typeof path[i] === 'object') {
-      if (!type.array(c))
-        return;
-
-      idx = index(c, e => compare(e, path[i]));
-      if (!~idx)
-        return null;
-
-      solvedPath.push(idx);
-      c = c[idx];
-    }
-    else {
-      solvedPath.push(path[i]);
-      c = c[path[i]] || {};
-    }
-  }
-
-  return solvedPath;
-}
-
-/**
  * Function determining whether some paths in the tree were affected by some
  * updates that occurred at the given paths. This helper is mainly used at
  * cursor level to determine whether the cursor is concerned by the updates
@@ -598,6 +546,7 @@ export function solveUpdate(affectedPaths, comparedPaths) {
         s = c[k];
 
         // If path is not relevant, we break
+        // NOTE: the '!=' instead of '!==' is required here!
         if (s != p[k])
           break;
 
