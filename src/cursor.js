@@ -698,6 +698,12 @@ function makeSetter(name, typeChecker) {
    * Binding a setter method to the Cursor class and having the following
    * definition.
    *
+   * Note: this is not really possible to make those setters variadic because
+   * it would create an impossible polymorphism with path.
+   *
+   * @todo: perform value validation elsewhere so that tree.update can
+   * beneficiate from it.
+   *
    * Arity (1):
    * @param  {mixed} value - New value to set at cursor's path.
    *
