@@ -279,7 +279,7 @@ export {freeze, deepFreeze};
  * @param {object} [parent]   - Parent object in the iteration.
  * @param {string} [lastKey]  - Current value's key in parent.
  */
-function solveMask(immutable, data, mask, parent, lastKey) {
+function solveMask(immutable, data, mask, parent) {
   for (let k in mask) {
     if (k[0] === '$') {
 
@@ -296,7 +296,7 @@ function solveMask(immutable, data, mask, parent, lastKey) {
         if (parent)
           freeze(parent);
       }
-      solveMask(immutable, data[k], mask[k], data, k);
+      solveMask(immutable, data[k], mask[k], data);
     }
   }
 

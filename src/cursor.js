@@ -420,21 +420,15 @@ export default class Cursor extends Emitter {
    * @return {array}  info.solvedPath - The path solved when getting.
    */
   _get(path=[]) {
-    const fullPath = this.solvedPath && this.solvedPath.concat(path);
+    if (!this.solvedPath)
+      return {data: undefined, solvedPath: null};
 
-    let data;
-
-    if (!fullPath)
-      data = undefined;
-    else
-      data = getIn(
-        this.tree.data,
-        fullPath,
-        this.tree._computedDataIndex,
-        this.tree.options
-      ).data;
-
-    return {data, solvedPath: fullPath};
+    return getIn(
+      this.tree.data,
+      this.solvedPath.concat(path),
+      this.tree._computedDataIndex,
+      this.tree.options
+    );
   }
 
   /**
@@ -459,8 +453,7 @@ export default class Cursor extends Emitter {
     const {data, solvedPath} = this._get(path);
 
     // Emitting the event
-    if (solvedPath)
-      this.tree.emit('get', {data, path: solvedPath});
+    this.tree.emit('get', {data, solvedPath, path: this.path.concat(path)});
 
     return data;
   }

@@ -121,15 +121,34 @@ describe('Baobab API', function() {
       tree.get('one', 'two');
     });
 
-    // it('should be possible to listen to failed dynamic get events.', function(done) {
-    //   const tree = new Baobab({data: []});
+    it('should be possible to listen to failed dynamic get events.', function(done) {
+      const tree = new Baobab({data: [{id: 34, txt: 'Hey'}]});
 
-    //   tree.on('get', function({data}) {
-    //     console.log(data);
-    //   });
+      let count = 0;
 
-    //   tree.get('data', {id: 45});
-    // });
+      tree.on('get', function({data: {path, solvedPath, data}}) {
+        count++;
+
+        if (count === 1) {
+          assert.strictEqual(solvedPath, null);
+          assert.strictEqual(data, undefined);
+          return;
+        }
+        else if (count === 2) {
+          assert.deepEqual(path, ['data']);
+          return;
+        }
+
+        assert.deepEqual(solvedPath, ['data', 0]);
+
+        if (count > 2)
+          done();
+      });
+
+      tree.get('data', {id: 45});
+      tree.get('data');
+      tree.get('data', x => x.id === 34);
+    });
 
     it('update events should expose the tree\'s data.', function(done) {
       const tree = new Baobab({hello: 'world'});
