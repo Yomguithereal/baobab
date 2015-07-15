@@ -261,7 +261,7 @@ Cursor.prototype.get = function(path) {
 
   // Emitting an event
   if (!skipEvent)
-    this.tree.emit('get', {path: fullPath, data: data});
+    this.tree.emit('get', {path: fullPath, unsolvedPath: this.path, data: data});
 
   return data;
 };
