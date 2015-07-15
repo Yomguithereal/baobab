@@ -426,10 +426,8 @@ export default class Cursor extends Emitter {
 
   /**
    * Method used to get data from the tree. Will fire a `get` event from the
-   * tree so that the user may sometimes react upon it to fecth data, for
+   * tree so that the user may sometimes react upon it to fetch data, for
    * instance.
-   *
-   * @todo: check path validity
    *
    * Arity (1):
    * @param  {path}   path           - Path to get in the tree.

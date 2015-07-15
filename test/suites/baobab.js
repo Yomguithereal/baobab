@@ -121,6 +121,16 @@ describe('Baobab API', function() {
       tree.get('one', 'two');
     });
 
+    // it('should be possible to listen to failed dynamic get events.', function(done) {
+    //   const tree = new Baobab({data: []});
+
+    //   tree.on('get', function({data}) {
+    //     console.log(data);
+    //   });
+
+    //   tree.get('data', {id: 45});
+    // });
+
     it('update events should expose the tree\'s data.', function(done) {
       const tree = new Baobab({hello: 'world'});
 
