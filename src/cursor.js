@@ -100,6 +100,23 @@ export default class Cursor extends Emitter {
       ).solvedPath;
 
     /**
+     * Listener bound to the tree's writes so that cursors with dynamic paths
+     * may update their solved path correctly.
+     *
+     * @param {object} event - The event fired by the tree.
+     */
+    this._writeHandler = ({data}) => {
+      if (!solveUpdate([data.path], this._getComparedPaths()))
+        return;
+
+      this.solvedPath = getIn(
+        this.tree.data,
+        this.path,
+        this._computedDataIndex
+      ).solvedPath;
+    };
+
+    /**
      * Function in charge of actually trigger the cursor's updates and
      * deal with the archived records.
      *
@@ -135,53 +152,8 @@ export default class Cursor extends Emitter {
      */
     this._updateHandler = (event) => {
       const {paths, previousData} = event.data,
-            update = fireUpdate.bind(this, previousData);
-
-      let comparedPaths;
-
-      // Standard cursor
-      if (!this._watch) {
-
-        // Checking whether we should keep track of some dependencies
-        const additionalPaths = this._facetPath ?
-          getIn(this.tree._computedDataIndex, this._facetPath)
-            .data
-            .relatedPaths() :
-          [];
-
-        // If the cursor's path is dynamic, we need to recompute it
-        if (this._dynamicPath)
-          this.solvedPath = getIn(
-            this.tree.data,
-            this.path,
-            this._computedDataIndex
-          ).solvedPath;
-
-        comparedPaths = [this.solvedPath].concat(additionalPaths);
-      }
-
-      // Watcher cursor
-      else {
-        comparedPaths = this._watchedPaths.reduce((cp, p) => {
-          if (type.dynamicPath(p))
-            p = getIn(
-              this.tree.data,
-              p,
-              this._computedDataIndex
-            ).solvedPath;
-
-          if (!p)
-            return cp;
-
-          const facetPath = type.facetPath(p);
-
-          if (facetPath)
-            return cp.concat(
-              getIn(this.tree._computedDataIndex, p).data.relatedPaths());
-
-          return cp.concat([p]);
-        }, []);
-      }
+            update = fireUpdate.bind(this, previousData),
+            comparedPaths = this._getComparedPaths();
 
       if (solveUpdate(paths, comparedPaths))
         return update();
@@ -194,11 +166,14 @@ export default class Cursor extends Emitter {
         return;
 
       bound = true;
+
+      if (this._dynamicPath)
+        this.tree.on('write', this._writeHandler);
+
       return this.tree.on('update', this._updateHandler);
     };
 
     // If the path is dynamic, we actually need to listen to the tree
-    // TODO: there should be another way
     if (this._dynamicPath) {
       this._lazyBind();
     }
@@ -208,6 +183,59 @@ export default class Cursor extends Emitter {
       this.on = before(this._lazyBind, this.on.bind(this));
       this.once = before(this._lazyBind, this.once.bind(this));
     }
+  }
+
+  /**
+   * Internal helpers
+   * -----------------
+   */
+
+  /**
+   * Method returning the paths of the tree watched over by the cursor and that
+   * should be taken into account when solving a potential update.
+   *
+   * @return {array} - Array of paths to compare with a given update.
+   */
+  _getComparedPaths() {
+    let comparedPaths;
+
+    // Standard cursor
+    if (!this._watch) {
+
+      // Checking whether we should keep track of some dependencies
+      const additionalPaths = this._facetPath ?
+        getIn(this.tree._computedDataIndex, this._facetPath)
+          .data
+          .relatedPaths() :
+        [];
+
+      comparedPaths = [this.solvedPath].concat(additionalPaths);
+    }
+
+    // Watcher cursor
+    else {
+      comparedPaths = this._watchedPaths.reduce((cp, p) => {
+        if (type.dynamicPath(p))
+          p = getIn(
+            this.tree.data,
+            p,
+            this._computedDataIndex
+          ).solvedPath;
+
+        if (!p)
+          return cp;
+
+        const facetPath = type.facetPath(p);
+
+        if (facetPath)
+          return cp.concat(
+            getIn(this.tree._computedDataIndex, p).data.relatedPaths());
+
+        return cp.concat([p]);
+      }, []);
+    }
+
+    return comparedPaths;
   }
 
   /**
@@ -606,7 +634,10 @@ export default class Cursor extends Emitter {
    */
   release() {
 
-    // Removing listener on parent
+    // Removing listeners on parent
+    if (this._dynamicPath)
+      this.tree.off('write', this._writeHandler);
+
     this.tree.off('update', this._updateHandler);
 
     // Unsubscribe from the parent

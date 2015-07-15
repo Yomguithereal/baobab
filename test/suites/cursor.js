@@ -472,6 +472,19 @@ describe('Cursor API', function() {
 
       tree.set(['one', 'hello'], 'monde');
     });
+
+    it('dynamic cursors should see their solvedPath correctly update on writes.', function(done) {
+      const tree = new Baobab({colors: []}),
+            cursor = tree.select('colors', {id: 0});
+
+      assert.strictEqual(cursor.get(), undefined);
+
+      tree.push('colors', {id: 0, name: 'yellow'});
+
+      assert.deepEqual(cursor.get(), {id: 0, name: 'yellow'});
+
+      cursor.on('update', done.bind(null, null));
+    });
   });
 
   /**
