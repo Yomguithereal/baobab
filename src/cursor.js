@@ -494,7 +494,7 @@ export default class Cursor extends Emitter {
    * @param  {path}   path           - Path to serialize in the tree.
    *
    * Arity (2):
-   * @param {..step} path            - Path to serialize in the tree.
+   * @param  {..step} path           - Path to serialize in the tree.
    *
    * @return {mixed}                 - The retrieved raw data.
    */

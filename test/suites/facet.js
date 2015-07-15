@@ -112,6 +112,28 @@ describe('Facets', function() {
     );
   });
 
+  it('facets should be able to work with dynamic paths.', function() {
+    const tree = new Baobab(
+      {
+        list: [{id: 1, name: 'John'}],
+        $greeting: {
+          cursors: {
+            person: ['list', {id: 1}]
+          },
+          get({person: {name}}) {
+            return `Hello ${name}`;
+          }
+        }
+      }
+    );
+
+    assert.strictEqual(tree.get('$greeting'), 'Hello John');
+
+    tree.set(['list', 0, 'name'], 'Jack')
+
+    assert.strictEqual(tree.get('$greeting'), 'Hello Jack');
+  });
+
   it('cursors with a facet in the path should work correctly.', function(done) {
     const tree = new Baobab(exampleState),
           cursor = tree.select('data', '$fromJohn');

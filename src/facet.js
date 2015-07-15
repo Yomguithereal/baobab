@@ -52,6 +52,8 @@ export default class Facet {
       this.paths = this.projection;
     }
 
+    this._hasDynamicPaths = this.paths.some(p => type.dynamicPath(p));
+
     // Is the facet recursive?
     this.isRecursive = this.paths.some(p => !!type.facetPath(p));
 
@@ -88,10 +90,19 @@ export default class Facet {
    * @return {array} - An array of related paths.
    */
   relatedPaths() {
-    if (!this.isRecursive)
-      return this.paths;
+    let paths;
+
+    if (this._hasDynamicPaths)
+      paths = this.paths.map(
+        p => getIn(this.tree.data, p, this.tree._computedDataIndex).solvedPath
+      );
     else
-      return this.paths.reduce((paths, path) => {
+      paths = this.paths;
+
+    if (!this.isRecursive)
+      return paths;
+    else
+      return paths.reduce((paths, path) => {
         const facetPath = type.facetPath(path);
         if (!facetPath)
           return paths.concat(path);
