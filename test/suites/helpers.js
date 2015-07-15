@@ -21,7 +21,7 @@ describe('Helpers', function() {
 
       assert.deepEqual(
         getIn(data, ['a', 'b', 'c']),
-        {data: 'hey', solvedPath: ['a', 'b', 'c']}
+        {data: 'hey', solvedPath: ['a', 'b', 'c'], exists: true}
       );
     });
 
@@ -30,7 +30,7 @@ describe('Helpers', function() {
 
       assert.deepEqual(
         getIn(data, ['a', 'b', {id: 34}]),
-        {data: {id: 34}, solvedPath: ['a', 'b', 1]}
+        {data: {id: 34}, solvedPath: ['a', 'b', 1], exists: true}
       );
     });
 
@@ -39,14 +39,14 @@ describe('Helpers', function() {
 
       assert.deepEqual(
         getIn(data, ['a', 'b', 'c']),
-        {data: undefined, solvedPath: ['a', 'b', 'c']}
+        {data: undefined, solvedPath: ['a', 'b', 'c'], exists: false}
       );
 
       const otherData = {a: [{id: 45}]};
 
       assert.deepEqual(
         getIn(otherData, ['a', e => e.id === 46]),
-        {data: undefined, solvedPath: null}
+        {data: undefined, solvedPath: null, exists: false}
       );
     });
   });

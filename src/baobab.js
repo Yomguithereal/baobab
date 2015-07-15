@@ -250,12 +250,8 @@ export default class Baobab extends Emitter {
         {operation: operation}
       );
 
-    // Stashing previous data if this is the frame's first update
-    if (!this._transaction.length)
-      this.previousData = this.data;
-
-    // Applying the operation
-    const {solvedPath} = getIn(
+    // Solving the given path
+    const {solvedPath, exists} = getIn(
       this.data,
       path,
       this._computedDataIndex
@@ -267,8 +263,17 @@ export default class Baobab extends Emitter {
         path: solvedPath
       });
 
+    // We don't unset irrelevant paths
+    if (operation.type === 'unset' && !exists)
+      return;
+
+    // Stashing previous data if this is the frame's first update
+    if (!this._transaction.length)
+      this.previousData = this.data;
+
     const hash = hashPath(solvedPath);
 
+    // Applying the operation
     const {data, node} = update(
       this.data,
       solvedPath,

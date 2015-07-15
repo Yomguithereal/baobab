@@ -289,6 +289,14 @@ describe('Cursor API', function() {
         assert.strictEqual(cursor.get().length, 2);
       });
 
+      it('should do nothing to unset an inexistant key.', function() {
+        const tree = new Baobab();
+
+        tree.unset(['one', 'two']);
+
+        assert.deepEqual(tree.get(), {});
+      });
+
       it('should be possible to splice an array.', function() {
         const tree = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
               cursor = tree.select('list');

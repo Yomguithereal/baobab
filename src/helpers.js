@@ -317,7 +317,7 @@ function solveMask(immutable, data, mask, parent) {
  * @return {mixed}  result.data       - The data at path, or `undefined`.
  * @return {array}  result.solvedPath - The solved path or `null`.
  */
-const notFoundObject = {data: undefined, solvedPath: null};
+const notFoundObject = {data: undefined, solvedPath: null, exists: false};
 
 export function getIn(object, path, mask=null, opts={}) {
   path = path || [];
@@ -331,7 +331,7 @@ export function getIn(object, path, mask=null, opts={}) {
 
   for (i = 0, l = path.length; i < l; i++) {
     if (!c)
-      return {data: undefined, solvedPath: path};
+      return {data: undefined, solvedPath: path, exists: false};
 
     if (typeof path[i] === 'function') {
       if (!type.array(c))
@@ -379,7 +379,7 @@ export function getIn(object, path, mask=null, opts={}) {
     c = patchedData.root;
   }
 
-  return {data: c, solvedPath};
+  return {data: c, solvedPath, exists: true};
 }
 
 /**
