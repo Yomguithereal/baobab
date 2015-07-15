@@ -136,6 +136,9 @@ export default function update(data, path, operation, opts={}) {
       else if (operationType === 'unset') {
         if (type.object(p))
           delete p[s];
+
+        else if (type.array(p))
+          p.splice(s, 1);
       }
 
       /**

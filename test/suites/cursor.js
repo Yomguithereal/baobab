@@ -280,6 +280,15 @@ describe('Cursor API', function() {
         assert.strictEqual(cursor.get(), undefined);
       });
 
+      it('should be possible to unset an array\'s item.', function() {
+        const tree = new Baobab({list: [1, 2, 3]}),
+              cursor = tree.select('list');
+
+        cursor.unset(1);
+        assert.deepEqual(cursor.get(), [1, 3]);
+        assert.strictEqual(cursor.get().length, 2);
+      });
+
       it('should be possible to splice an array.', function() {
         const tree = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
               cursor = tree.select('list');
