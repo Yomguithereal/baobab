@@ -297,6 +297,16 @@ describe('Cursor API', function() {
         assert.deepEqual(tree.get(), {});
       });
 
+      it('should be possible to push/unshift/concat to an array.', function() {
+        const tree = new Baobab([]);
+
+        tree.push(2);
+        tree.unshift(1);
+        tree.concat([3, 4]);
+
+        assert.deepEqual(tree.get(), [1, 2, 3, 4]);
+      });
+
       it('should be possible to splice an array.', function() {
         const tree = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
               cursor = tree.select('list');
