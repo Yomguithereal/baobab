@@ -649,11 +649,11 @@ var tree = new Baobab({
     $fromJohn: {
       cursors: {
         messages: ['data', 'messages'],
-        get: function(data) {
-          return data.messages.filter(function(m) {
-            return m.from === 'John';
-          });
-        }
+      },
+      get: function(data) {
+        return data.messages.filter(function(m) {
+          return m.from === 'John';
+        });
       }
     }
   }
