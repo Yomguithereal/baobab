@@ -5,8 +5,10 @@
 * The tree is now immutable by default.
 * Cursor's setters method won't return themselves but rather the affected node now.
 * Adding `cursor.concat`.
-* Adding the `cursor.serialize` method.
-* Adding the `cursor.project` method.
+* Adding `cursor.serialize`.
+* Adding `cursor.project`.
+* Adding `cursor.exists`.
+* Adding `cursor.watch`.
 * Changing the way you can define computed data in the tree, aka "facets". Facets are now to be defined within the tree itself and can be accessed using the exact same API as normal data.
 * Adding an alternative facet definition syntax for convenience.
 * Dropped the `syncwrite` option. The tree is now writing synchronously but still emits its updates asynchronously by default.
