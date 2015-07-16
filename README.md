@@ -2,7 +2,7 @@
 
 # Baobab
 
-**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and optionally [immutable](http://en.wikipedia.org/wiki/Immutable_object) data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
+**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and [immutable](http://en.wikipedia.org/wiki/Immutable_object) (at least by default) data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
 
@@ -24,12 +24,11 @@ For a concise introduction about the library and how it can be used in a React/F
     * [Events](#events)
   * [Advanced](#advanced)
     * [Polymorphisms](#polymorphisms)
+    * [Specialized getters](#specialized-getters)
     * [Traversal](#traversal)
+    * [Computed data](#computed-data)
     * [Options](#options)
-    * [Facets](#facets)
     * [History](#history)
-    * [Update specifications](#update-specifications)
-    * [Chaining mutations](#chaining-mutations)
     * [Common pitfalls](#common-pitfalls)
 * [Philosophy](#philosophy)
 * [Migration](#migration)
@@ -80,7 +79,7 @@ Or install with bower:
 bower install baobab
 ```
 
-The library (as a standalone) currently weights ~20ko minified and ~6ko gzipped.
+The library (as a standalone) currently weights ~25ko minified and ~7ko gzipped.
 
 ## Usage
 
@@ -134,13 +133,11 @@ var colorCursor = paletteCursor.select('colors');
 
 #### Updates
 
-A *baobab* tree can obviously be updated. However, one has to understand that the library won't do so, at least by default, synchronously.
+A *baobab* tree can obviously be updated. However, one has to understand that, even if you can write the tree synchronously, `update` events won't be, at least by default, fired until next frame.
 
-Rather, the tree will stack and merge every update order you give it and will only commit them later on (note that you remain free to force a synchronous update of the tree through `tree.commit` or by tweaking the tree's [options](#options)).
+If you really need to fire an update synchronously (typically if you store a form's state within your app's state, for instance), your remain free to use the `tree.commit` methid or tweak the tree's [options](#options) to fit your needs.
 
-This enables the tree to perform efficient mutations and to be able to notify any relevant cursors that the data they are watching over has changed.
-
-**Important**: Note that the tree will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using things as such as React's [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
+**Important**: Note that the tree, being a persistent data structure, will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using things as such as React's [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
 
 *Example*
 
@@ -154,35 +151,23 @@ tree.set('hello', 'monde');
 assert(initialState !== tree.get());
 ```
 
-##### Tree level
-
-*Setting a key*
-
-```js
-tree.set('hello', 'world');
-```
-
-*Unsetting a key*
-
-```js
-tree.unset('hello');
-```
-
 ##### Cursor level
+
+Since **Baobab** is immutable by default, note that all the methods below will return the data of the updated node for convenience and so you don't have to use `.get` afterwards to continue what you were doing.
 
 *Replacing data at cursor*
 
 ```js
-cursor.set({hello: 'world'});
+var newData = cursor.set({hello: 'world'});
 ```
 
 *Setting a key*
 
 ```js
-cursor.set('hello', 'world');
+var newData = cursor.set('hello', 'world');
 
 // Nested path
-cursor.set(['one', 'two'], 'world');
+var newData = cursor.set(['one', 'two'], 'world');
 ```
 
 *Removing data at cursor*
@@ -205,16 +190,13 @@ cursor.unset(['one', 'two']);
 Obviously this will fail if the value at cursor is not an array.
 
 ```js
-cursor.push('purple');
-
-// Pushing several values
-cursor.push(['purple', 'orange']);
+var newArray = cursor.push('purple');
 
 // At key
-cursor.push('list', 'orange')
+var newArray = cursor.push('list', 'orange')
 
 // Nested path
-cursor.push(['one', 'two'], 'orange');
+var newArray = cursor.push(['one', 'two'], 'orange');
 ```
 
 *Unshifting values*
@@ -222,16 +204,27 @@ cursor.push(['one', 'two'], 'orange');
 Obviously this will fail if the value at cursor is not an array.
 
 ```js
-cursor.unshift('purple');
-
-// Unshifting several values
-cursor.unshift(['purple', 'orange']);
+var newArray = cursor.unshift('purple');
 
 // At key
-cursor.unshift('list', 'orange')
+var newArray = cursor.unshift('list', 'orange')
 
 // Nested path
-cursor.unshift(['one', 'two'], 'orange');
+var newArray = cursor.unshift(['one', 'two'], 'orange');
+```
+
+*Concatenating*
+
+Obviously this will fail if the value at cursor is not an array.
+
+```js
+var newArray = cursor.concat(['purple', 'yellow']);
+
+// At key
+var newArray = cursor.unshift('list', ['purple', 'yellow'])
+
+// Nested path
+var newArray = cursor.unshift(['one', 'two'], ['purple', 'yellow']);
 ```
 
 *Splicing an array*
@@ -239,16 +232,16 @@ cursor.unshift(['one', 'two'], 'orange');
 Obviously this will fail if the value at cursor is not an array.
 
 ```js
-cursor.splice([1, 1]);
+var newArray = cursor.splice([1, 1]);
 
 // Applying splice n times with different arguments
-cursor.splice([[1, 2], [3, 2, 'hello']]);
+var newArray = cursor.splice([[1, 2], [3, 2, 'hello']]);
 
 // At key
-cursor.splice('list', [1, 1])
+var newArray = cursor.splice('list', [1, 1])
 
 // Nested path
-cursor.splice(['one', 'two'], [1, 1]);
+var newArray = cursor.splice(['one', 'two'], [1, 1]);
 ```
 
 *Applying a function*
@@ -258,31 +251,13 @@ var inc = function(currentData) {
   return currentData + 1;
 };
 
-cursor.apply(inc);
+var newData = cursor.apply(inc);
 
 // At key
-cursor.apply('number', inc)
+var newData = cursor.apply('number', inc)
 
 // Nested path
-cursor.apply(['one', 'two'], inc);
-```
-
-*Chaining functions through composition*
-
-For more details about this particular point, check [this](#chaining-mutations).
-
-```js
-var inc = function(currentData) {
-  return currentData + 1;
-};
-
-cursor.chain(inc);
-
-// At key
-cursor.chain('number', inc)
-
-// Nested path
-cursor.chain(['one', 'two'], inc);
+var newData = cursor.apply(['one', 'two'], inc);
 ```
 
 *Shallowly merging objects*
@@ -290,18 +265,45 @@ cursor.chain(['one', 'two'], inc);
 Obviously this will fail if the value at cursor is not an object.
 
 ```js
-cursor.merge({hello: 'world'});
+var newObject = cursor.merge({hello: 'world'});
 
 // At key
-cursor.merge('object', {hello: 'world'})
+var newObject = cursor.merge('object', {hello: 'world'})
 
 // Nested path
-cursor.merge(['one', 'two'], {hello: 'world'});
+var newObject = cursor.merge(['one', 'two'], {hello: 'world'});
+```
+
+##### Tree level
+
+Note that you can use any of the above methods on the tree itself for convenience:
+
+*Example*
+
+```js
+// Replacing whole data
+tree.set({hello: 'world'});
+
+// Setting value at key
+tree.set('hello', 'world');
+
+// Nested path
+tree.set(['message', 'hello'], 'world');
+
+// Every other methods also work
+tree.set
+tree.unset
+tree.apply
+tree.push
+tree.unshift
+tree.splice
+tree.concat
+tree.merge
 ```
 
 #### Events
 
-Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound elements, React components, for instance, can update.
+Whenever an update is committed, events are fired to notify relevant parts of the tree that data was changed so that bound elements, UI components, for instance, may update.
 
 Note however that **only** relevant cursors will be notified of a change.
 
@@ -347,8 +349,22 @@ Will fire if the tree is updated.
 
 ```js
 tree.on('update', function(e) {
-  console.log('Update log', e.data.log);
-  console.log('Previous data', e.data.previousData);
+  var eventData = e.data;
+
+  console.log('New data:', eventData.data);
+  console.log('Previous data:', eventData.previousData);
+  console.log('Transaction details:', eventData.transaction);
+  console.log('Affected paths', eventData.paths);
+});
+```
+
+*write*
+
+Will fire whenever the tree is written.
+
+```js
+tree.on('write', function(e) {
+  console.log('Affected path:', e.data.path);
 });
 ```
 
@@ -369,6 +385,7 @@ Will fire whenever data is accessed in the tree.
 ```js
 tree.on('get', function(e) {
   console.log('Path:', e.data.path);
+  console.log('Solved path:', e.data.solvedPath);
   console.log('Target data:', e.data.data);
 });
 ```
@@ -392,22 +409,6 @@ Will fire if data watched over by the cursor has updated.
 
 ```js
 cursor.on('update', fn);
-```
-
-*irrelevant*
-
-Will fire if the cursor has become irrelevant and does not watch over any data anymore.
-
-```js
-cursor.on('irrelevant', fn);
-```
-
-*relevant*
-
-Will fire if the cursor was irrelevant but becomes relevant again.
-
-```js
-cursor.on('relevant', fn);
 ```
 
 ##### N.B.
@@ -470,12 +471,98 @@ var currentColor = paletteCursor.get('colors', {$cursor: ['palette', 'currentCol
 
 // Creating a blank tree
 var blankTree = new Baobab();
-
-// You despise "new"?
-var tree = Baobab();
 ```
 
 **Note**: when using a function or a descriptor object in a path, you are not filtering but rather selecting the first matching element. (It's actually the same as using something like [lodash](https://lodash.com/docs#find)'s `_.find`).
+
+#### Specialized getters
+
+**tree/cursor.project**
+
+Retrieve data from several parts of the tree by following the given projection:
+
+```js
+// Considering the following tree
+var tree = new Baobab({
+  one: {
+    name: 'John'
+  },
+  two: {
+    surname: 'Smith'
+  }
+});
+
+// Using an object projection
+tree.project({
+  name: ['one', 'name'],
+  surname: ['two', 'surname']
+});
+>>> {name: 'John', surname: 'Smith'}
+
+// Using an array projection
+tree.project([
+  ['one', 'name'],
+  ['two', 'surname']
+]);
+>>> ['John', 'Smith']
+```
+
+**tree/cursor.serialize**
+
+Retrieve only raw data (therefore avoiding computed data) from the tree or a cursor.
+
+This is useful when you want to serialize your tree into JSON, for instance.
+
+```js
+tree.serialize();
+cursor.serialize();
+
+// Can also take a path
+tree.serialize('hello');
+tree.serialize('hello', 'message');
+tree.serialize(['hello', 'message']);
+```
+
+**tree/cursor.exists**
+
+Check whether a specific path exists within the tree (won't fire a `get` event).
+
+```js
+tree.exists();
+cursor.exists();
+
+// Can also take a path
+tree.exists('hello');
+tree.exists('hello', 'message');
+tree.exists(['hello', 'message']);
+```
+
+**tree.watch**
+
+Create a watcher that will fire an `update` event if any of the given paths is affected by a transaction.
+
+This is useful to create modules binding a state tree to UI components.
+
+```js
+// Considering the following tree
+var tree = new Baobab({
+  one: {
+    name: 'John'
+  },
+  two: {
+    surname: 'Smith'
+  }
+});
+
+var watcher = tree.watch({
+  name: ['one', 'name'],
+  surname: ['two', 'surname']
+});
+
+watcher.on('update', function(e) {
+  // One of the watched paths was updated!
+});
+```
 
 #### Traversal
 
@@ -526,13 +613,105 @@ var rootCursor = tree.root;
 var rootCursor = cursor.root();
 ```
 
-*Checking information about the cursor's location in the tree*
+*Getting information about the cursor's location in the tree*
 
 ```js
 cursor.isRoot();
 cursor.isBranch();
 cursor.isLeaf();
 ```
+
+#### Computed data
+
+For convenience, **Baobab** allows you to store computed data within the tree.
+
+Computed data node can be considered as a "view" over some parts of the data stored within your tree (a filtered version of an array, for instance).
+
+Those specific nodes must have, by convention, a key starting with `$` and can define dependencies to some paths within the tree.
+
+*Example*
+
+```js
+var tree = new Baobab({
+  user: {
+    name: 'John',
+    surname: 'Smith',
+    $fullname: {
+      cursors: {
+        name: ['user', 'name'],
+        surname: ['user', surname']
+      },
+      get: function(data) {
+        return data.name + ' ' + data.surname;
+      }
+    }
+  },
+  data: {
+    messages: [
+      {from: 'John', txt: 'Hey'},
+      {from: 'Jack', txt: 'Ho'}
+    ],
+    $fromJohn: {
+      cursors: {
+        messages: ['data', 'messages'],
+        get: function(data) {
+          return data.messages.filter(function(m) {
+            return m.from === 'John';
+          });
+        }
+      }
+    }
+  }
+});
+
+// Alternate shorthand definition syntax
+var tree = new Baobab({
+  user: {
+    name: 'John',
+    surname: 'Smith',
+    $fullname: [
+      ['user', 'name'],
+      ['user', surname'],
+      function(name, surname) {
+        return name + ' ' + surname;
+      }
+    ]
+  },
+  data: {
+    messages: [
+      {from: 'John', txt: 'Hey'},
+      {from: 'Jack', txt: 'Ho'}
+    ],
+    $fromJohn: [
+      ['data', 'messages'],
+      function(messages) {
+        return messages.filter(function(m) {
+          return m.from === 'John';
+        });
+      }
+    ]
+  }
+});
+
+// You can then access or select data as with any other part of the tree
+tree.get('user', '$fullname');
+>>> 'John Smith'
+
+tree.get('data', '$fromJohn');
+>>> [{from: 'John', txt: 'Hey'}]
+
+tree.get('data', '$fromJohn', 'txt');
+>>> 'Hey'
+
+// Just note than computed data node a read-only and that the tree
+// will throw if you try to update a path lying beyond a computed node
+tree.set(['data', '$fromJohn', 'txt'], 'Yay');
+>>> Error!
+```
+
+The computed data node will of course automatically update whenever at least one of the watched paths is updated.
+
+Note that the getter function is lazy and that data won't be computed before you need to access it explicitly.
 
 #### Options
 
@@ -558,9 +737,7 @@ var baobab = new Baobab(
 
 * **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
-* **facets** *object*: a collection of facets to register when the tree is istantiated. For more information, see [facets](#facets).
-* **immutable** *boolean* [`false`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze`.
-* **syncwrite** *boolean* [`false`]: when in syncwrite mode, all writes will apply to the tree synchronously, so you can easily read your writes, while keeping update events asynchronous.
+* **immutable** *boolean* [`true`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze` and should be disable while in production for performance reasons.
 * **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.
 * **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter the invalid state anyway.
 
@@ -575,94 +752,6 @@ function validationFunction(previousState, newState, affectedPaths) {
 }
 
 var tree = new Baobab({...}, {validate: validationFunction});
-```
-
-#### Facets
-
-Facets can be considered as a "view" on the data of your tree (a filtered version of an array stored within your tree, for instance).
-
-They watch over some paths of your tree and will update their cached data only when needed. As for cursors, you can also listen to their updates.
-
-Facets can be defined at the tree's instantiation likewise:
-
-```js
-var tree = new Baobab(
-
-  // Data
-  {
-    projects: [
-      {
-        id: 1,
-        name: 'Tezcatlipoca',
-        user: 'John'
-      },
-      {
-        id: 2,
-        name: 'Huitzilopochtli',
-        user: 'John'
-      },
-      {
-        id: 3,
-        name: 'Tlaloc',
-        user: 'Jack'
-      }
-    ],
-    currentProjectId: 1
-  },
-
-  // Options
-  {
-    facets: {
-
-      // Name of your facet
-      currentProject: {
-
-        // Cursors bound to your facet
-        // If any of the paths listed below fire
-        // an update, so will the facet.
-        cursors: {
-          id: ['currentProjectId'],
-          projects: ['projects']
-        },
-        get: function(data) {
-
-          // 'data' is the value of your mapped cursors
-
-          // Just return the wanted value
-          // Here, we use lodash to return the current's project
-          // data based on its id
-          return _.find(data.projects, {id: data.id});
-        }
-      },
-
-      // Other example
-      filteredProjects: {
-        cursors: {
-          projects: ['projects']
-        },
-        get: function(data) {
-          return data.projects.filter(function(p) {
-            return p.user === 'John';
-          });
-        }
-      },
-    }
-  }
-)
-```
-
-You can then access facets' data and listen to their changes thusly:
-
-```js
-var facet = tree.facets.currentProject;
-
-// Getting value (cached and only computed if needed)
-facet.get();
-
-// Facets are also event emitters
-facet.on('update', function() {
-  console.log('New value:', facet.get());
-});
 ```
 
 #### History
@@ -697,7 +786,7 @@ cursor.get();
 
 *Starting recording*
 
-Default max number of records is 5.
+If you do not provide a maximum number of records, will record everything without any limit.
 
 ```js
 cursor.startRecording(maxNbOfRecords);
@@ -728,124 +817,13 @@ cursor.clearHistory();
 cursor.hasHistory();
 ```
 
-*Checking whether the cursor is currently recording*
-
-```js
-cursor.recording;
-```
-
 *Retrieving the cursor's history*
 
 ```js
 cursor.getHistory();
 ```
 
-#### Update specifications
-
-If you ever need to specify complex updates without replacing the whole subtree you are acting on, for readability or performance reasons, you remain free to use **Baobab**'s internal update specifications.
-
-Those are widely inspired by React's immutable [helpers](http://facebook.github.io/react/docs/update.html) and can be used through `tree.update` or `cursor.update`.
-
-**Specifications**
-
-Those specifications are described by a JavaScript object that follows the nested structure you are trying to update and applying dollar-prefixed commands at leaf level.
-
-The available commands are the following and are basically the same as the cursor's updating methods:
-
-* `$set`
-* `$apply`
-* `$chain`
-* `$push`
-* `$unshift`
-* `$splice`
-* `$merge`
-* `$unset`
-
-*Example*
-
-```js
-var tree = new Baobab({
-  users: {
-    john: {
-      firstname: 'John',
-      lastname: 'Silver'
-    },
-    jack: {
-      firstname: 'Jack',
-      lastname: 'Gold'
-    }
-  }
-});
-
-// From tree
-tree.update({
-  users: {
-    john: {
-      firstname: {
-        $set: 'John the 3rd'
-      }
-    },
-    jack: {
-      firstname: {
-        $apply: function(firstname) {
-          return firstname + ' the 2nd';
-        }
-      }
-    }
-  }
-});
-
-// From cursor
-var cursor = tree.select('users', 'john');
-cursor.update({
-  firstname: {
-    $set: 'Little Johnsie'
-  }
-})
-```
-
-#### Chaining mutations
-
-Because updates will be committed later, update orders are merged when given and the new order will sometimes override older ones, especially if you set the same key twice to different values.
-
-This is problematic when what you want is to increment a counter for instance. In those cases, you need to *chain* functions that will be assembled through composition when the update orders are merged.
-
-```js
-var inc = function(i) {
-  return i + 1;
-};
-
-// If cursor.get() >>> 1
-cursor.apply(inc);
-cursor.apply(inc);
-// will produce 2, while
-cursor.chain(inc);
-cursor.chain(inc);
-// will produce 3
-```
-
 #### Common pitfalls
-
-**Immutable behaviour**
-
-TL;DR: Don't mutate things in your *baobab* tree. Let the tree handle its own mutations.
-
-For performance and size reasons *baobab* does not (yet?) use an immutable data structure. However, because it aims at producing a one-way data flow for your application state (like **React** would at component level), it must be used like an immutable data structure.
-
-For this reason, don't be surprised if you mutate things and break your tree.
-
-```js
-// This is bad:
-var users = tree.get('users');
-users[0].name = 'Jonathan';
-
-// This is also bad:
-var o = {hello: 'world'};
-tree.set('key', o);
-o.hello = 'other world';
-```
-
-Note that, if you want the tree to be immutable, you can now enable it through the `immutable` [option](#options).
 
 **Releasing**
 
@@ -856,10 +834,9 @@ Thus, any Baobab object can be cleared from memory by using the `release` method
 ```js
 tree.release();
 cursor.release();
-facet.release();
 ```
 
-Note also that releasing a tree will consequently and automatically release every of its cursors and facets.
+Note also that releasing a tree will consequently and automatically release every of its cursors and computed data nodes.
 
 ## Philosophy
 
@@ -867,7 +844,7 @@ Note also that releasing a tree will consequently and automatically release ever
 
 UIs should be, as far as possible, considered as pure functions. Baobab is just a way to provide the needed arguments, i.e. the data representing your app's state, to such a function.
 
-Considering your UIs like pure functions comes along with collateral advantages like easy undo/redo features, state storing (just save your tree in the `localStorage` and here you go) and easy isomorphism.
+Considering your UIs like pure functions comes along with collateral advantages like easy undo/redo features, state storing (just save your tree in the `localStorage` and here you go) and easy usage in both client & server.
 
 **Only data should enter the tree**
 
@@ -877,7 +854,17 @@ That is to say the data you insert into the tree should logically be JSON-serial
 
 ## Migration
 
-**From v0.4.x to 1.0.0**
+**From v1 to v2**
+
+* The tree is now immutable by default (but you can shunt this behavior through a dedicated [option](#options)).
+* Writing to the tree is synchronous now for convenience. Updates remain asynchronous for obvious performance reasons.
+* You cannot chain update methods now since those will return the affected node's data to better tackle immutability.
+* The strange concat-like behavior of the `push` and `unshift` method was dropped in favor of the `concat` method.
+* Facets are now full-fledged computed data node sitting within the tree itself.
+* The weird `$cursor` sugar has now been dropped.
+* The update specifications have been dropped.
+
+**From v0.4.x to v1**
 
 A lot of changes occurred between `0.4.x` and `1.0.0`. Most notable changes being the following ones:
 
