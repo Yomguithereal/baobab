@@ -320,7 +320,8 @@ function solveMask(immutable, data, mask, parent) {
 const notFoundObject = {data: undefined, solvedPath: null, exists: false};
 
 export function getIn(object, path, mask=null, opts={}) {
-  path = path || [];
+  if (!path)
+    return notFoundObject;
 
   let solvedPath = [],
       c = object,

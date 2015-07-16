@@ -133,6 +133,10 @@ describe('Cursor API', function() {
 
         assert.deepEqual(colors, state.one.subtwo.colors);
       });
+
+      it('should be possible to tell whether a cursor is relevant or not.', function() {
+
+      });
     });
   });
 

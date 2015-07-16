@@ -93,11 +93,7 @@ export default class Cursor extends Emitter {
     if (!this._dynamicPath)
       this.solvedPath = this.path;
     else
-      this.solvedPath = getIn(
-        this.tree.data,
-        this.path,
-        this.tree._computedDataIndex
-      ).solvedPath;
+      this.solvedPath = this._getIn(this.path).solvedPath;
 
     /**
      * Listener bound to the tree's writes so that cursors with dynamic paths
@@ -109,11 +105,7 @@ export default class Cursor extends Emitter {
       if (!solveUpdate([data.path], this._getComparedPaths()))
         return;
 
-      this.solvedPath = getIn(
-        this.tree.data,
-        this.path,
-        this._computedDataIndex
-      ).solvedPath;
+      this.solvedPath = this._getIn(this.path).solvedPath;
     };
 
     /**
@@ -191,6 +183,22 @@ export default class Cursor extends Emitter {
    */
 
   /**
+   * Curried version of the `getIn` helper and ready to serve a cursor instance
+   * purpose without having to write endlessly the same args over and over.
+   *
+   * @param  {array} path - The path to get in the tree.
+   * @return {object}     - The result of the `getIn` helper.
+   */
+  _getIn(path) {
+    return getIn(
+      this.tree.data,
+      path,
+      this.tree._computedDataIndex,
+      this.tree.options
+    );
+  }
+
+  /**
    * Method returning the paths of the tree watched over by the cursor and that
    * should be taken into account when solving a potential update.
    *
@@ -216,11 +224,7 @@ export default class Cursor extends Emitter {
     else {
       comparedPaths = this._watchedPaths.reduce((cp, p) => {
         if (type.dynamicPath(p))
-          p = getIn(
-            this.tree.data,
-            p,
-            this._computedDataIndex
-          ).solvedPath;
+          p = this._getIn(p).solvedPath;
 
         if (!p)
           return cp;
@@ -449,14 +453,9 @@ export default class Cursor extends Emitter {
    */
   _get(path=[]) {
     if (!this.solvedPath)
-      return {data: undefined, solvedPath: null};
+      return {data: undefined, solvedPath: null, exists: false};
 
-    return getIn(
-      this.tree.data,
-      this.solvedPath.concat(path),
-      this.tree._computedDataIndex,
-      this.tree.options
-    );
+    return this._getIn(this.solvedPath.concat(path));
   }
 
   /**
