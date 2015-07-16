@@ -101,7 +101,7 @@ tree.get();
 
 #### Cursors
 
-Then you can create cursors to easily access nested data in your tree and be able to listen to changes concerning the part of the tree you selected.
+Then you can create cursors to easily access nested data in your tree and listen to changes concerning the part of the tree you selected.
 
 ```js
 // Considering the following tree
@@ -127,7 +127,7 @@ var thirdColorCursor = tree.select('palette', 'colors', 2);
 thirdColorCursor.get();
 >>> 'green'
 
-// Note you can also perform subselections if needed
+// Note that you can also perform subselections if needed
 var colorCursor = paletteCursor.select('colors');
 ```
 
@@ -135,9 +135,9 @@ var colorCursor = paletteCursor.select('colors');
 
 A *baobab* tree can obviously be updated. However, one has to understand that, even if you can write the tree synchronously, `update` events won't be, at least by default, fired until next frame.
 
-If you really need to fire an update synchronously (typically if you store a form's state within your app's state, for instance), your remain free to use the `tree.commit` methid or tweak the tree's [options](#options) to fit your needs.
+If you really need to fire an update synchronously (typically if you store a form's state within your app's state, for instance), your remain free to use the `tree.commit` method or tweak the tree's [options](#options) to fit your needs.
 
-**Important**: Note that the tree, being a persistent data structure, will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using things as such as React's [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
+**Important**: Note that the tree, being a persistent data structure, will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using strategies as such as React's [pure rendering](https://facebook.github.io/react/docs/pure-render-mixin.html)).
 
 *Example*
 
@@ -221,10 +221,10 @@ Obviously this will fail if the value at cursor is not an array.
 var newArray = cursor.concat(['purple', 'yellow']);
 
 // At key
-var newArray = cursor.unshift('list', ['purple', 'yellow'])
+var newArray = cursor.concat('list', ['purple', 'yellow'])
 
 // Nested path
-var newArray = cursor.unshift(['one', 'two'], ['purple', 'yellow']);
+var newArray = cursor.concat(['one', 'two'], ['purple', 'yellow']);
 ```
 
 *Splicing an array*
@@ -281,7 +281,7 @@ Note that you can use any of the above methods on the tree itself for convenienc
 *Example*
 
 ```js
-// Replacing whole data
+// Completely replacing the tree's data
 tree.set({hello: 'world'});
 
 // Setting value at key
@@ -464,11 +464,6 @@ var complexCursor = tree.select('items', {id: 'one'}, 'value');
 tree.get('items', {id: 'one'}, 'value');
 >>> 'Hey'
 
-// Retrieving or selecting data by using the value of another cursor
-var currentColorCursor = paletteCursor.select('colors', {$cursor: ['palette', 'currentColor']});
-
-var currentColor = paletteCursor.get('colors', {$cursor: ['palette', 'currentColor']});
-
 // Creating a blank tree
 var blankTree = new Baobab();
 ```
@@ -639,7 +634,7 @@ var tree = new Baobab({
     $fullname: {
       cursors: {
         name: ['user', 'name'],
-        surname: ['user', surname']
+        surname: ['user', 'surname']
       },
       get: function(data) {
         return data.name + ' ' + data.surname;
@@ -671,7 +666,7 @@ var tree = new Baobab({
     surname: 'Smith',
     $fullname: [
       ['user', 'name'],
-      ['user', surname'],
+      ['user', 'surname'],
       function(name, surname) {
         return name + ' ' + surname;
       }
@@ -693,7 +688,7 @@ var tree = new Baobab({
   }
 });
 
-// You can then access or select data as with any other part of the tree
+// You can then access or select data naturally
 tree.get('user', '$fullname');
 >>> 'John Smith'
 
@@ -711,7 +706,7 @@ tree.set(['data', '$fromJohn', 'txt'], 'Yay');
 
 The computed data node will of course automatically update whenever at least one of the watched paths is updated.
 
-Note that the getter function is lazy and that data won't be computed before you need to access it explicitly.
+Note that the getter function is lazy and that data won't be computed before you access it.
 
 #### Options
 
@@ -737,7 +732,7 @@ var baobab = new Baobab(
 
 * **autoCommit** *boolean* [`true`]: should the tree auto commit updates or should it let the user do so through the `commit` method?
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
-* **immutable** *boolean* [`true`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze` and should be disable while in production for performance reasons.
+* **immutable** *boolean* [`true`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze` and should be disabled in production for performance reasons.
 * **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.
 * **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter the invalid state anyway.
 
@@ -829,7 +824,7 @@ cursor.getHistory();
 
 In most complex use cases, you might need to release the manipulated objects, i.e. kill their event emitters and wipe their associated data.
 
-Thus, any Baobab object can be cleared from memory by using the `release` method. This applies to trees, cursors and facets.
+Thus, any tree or cursor object can be cleared from memory by using the `release` method.
 
 ```js
 tree.release();
@@ -857,7 +852,7 @@ That is to say the data you insert into the tree should logically be JSON-serial
 **From v1 to v2**
 
 * The tree is now immutable by default (but you can shunt this behavior through a dedicated [option](#options)).
-* Writing to the tree is synchronous now for convenience. Updates remain asynchronous for obvious performance reasons.
+* Writing to the tree is now synchronous for convenience. Updates remain asynchronous for obvious performance reasons.
 * You cannot chain update methods now since those will return the affected node's data to better tackle immutability.
 * The strange concat-like behavior of the `push` and `unshift` method was dropped in favor of the `concat` method.
 * Facets are now full-fledged computed data node sitting within the tree itself.
