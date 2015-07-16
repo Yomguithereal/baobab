@@ -452,10 +452,35 @@ export default class Cursor extends Emitter {
    * @return {array}  info.solvedPath - The path solved when getting.
    */
   _get(path=[]) {
+
+    if (!type.path(path))
+      throw makeError('Baobab.Cursor.getters: invalid path.', {path});
+
     if (!this.solvedPath)
       return {data: undefined, solvedPath: null, exists: false};
 
     return this._getIn(this.solvedPath.concat(path));
+  }
+
+  /**
+   * Method used to check whether a certain path exists in the tree starting
+   * from the current cursor.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to check in the tree.
+   *
+   * Arity (2):
+   * @param {..step}  path           - Path to check in the tree.
+   *
+   * @return {boolean}               - Does the given path exists?
+   */
+  exists(path) {
+    path = path || path === 0 ? path : [];
+
+    if (arguments.length > 1)
+      path = arrayFrom(arguments);
+
+    return this._get(path).exists;
   }
 
   /**
@@ -467,7 +492,7 @@ export default class Cursor extends Emitter {
    * @param  {path}   path           - Path to get in the tree.
    *
    * Arity (2):
-   * @param {..step} path            - Path to get in the tree.
+   * @param  {..step} path           - Path to get in the tree.
    *
    * @return {mixed}                 - Data at path.
    */

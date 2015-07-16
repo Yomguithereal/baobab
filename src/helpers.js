@@ -380,7 +380,7 @@ export function getIn(object, path, mask=null, opts={}) {
     c = patchedData.root;
   }
 
-  return {data: c, solvedPath, exists: true};
+  return {data: c, solvedPath, exists: c !== undefined};
 }
 
 /**

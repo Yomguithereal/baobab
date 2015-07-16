@@ -73,14 +73,20 @@ describe('Cursor API', function() {
         assert.strictEqual(inexistant, undefined);
       });
 
+      it('should throw when using an invalid path in getters.', function() {
+        assert.throws(function() {
+          tree.get([null, false]);
+        }, /invalid/);
+      });
+
       it('should be possible to use some projection.', function() {
-        const tree = new Baobab({
+        const altTree = new Baobab({
           one: 1,
           two: 2
         });
 
         assert.deepEqual(
-          tree.project({a: ['one'], b: ['two']}),
+          altTree.project({a: ['one'], b: ['two']}),
           {
             a: 1,
             b: 2
@@ -88,7 +94,7 @@ describe('Cursor API', function() {
         );
 
         assert.deepEqual(
-          tree.project([['one'], ['two']]),
+          altTree.project([['one'], ['two']]),
           [1, 2]
         );
       });
@@ -98,6 +104,15 @@ describe('Cursor API', function() {
 
         assert.strictEqual(cursor.solvedPath, null);
         assert.strictEqual(cursor.get(), undefined);
+      });
+
+      it('should be possible to tell whether a path exists or not.', function() {
+        assert.strictEqual(tree.exists(), true);
+        assert.strictEqual(tree.exists('one'), true);
+        assert.strictEqual(tree.exists('three'), false);
+        assert.strictEqual(tree.exists(['one', 'subtwo']), true);
+        assert.strictEqual(tree.exists('one', 'subtwo'), true);
+        assert.strictEqual(tree.exists('one', 'subthree'), false);
       });
     });
 
@@ -134,8 +149,11 @@ describe('Cursor API', function() {
         assert.deepEqual(colors, state.one.subtwo.colors);
       });
 
-      it('should be possible to tell whether a cursor is relevant or not.', function() {
-
+      it('should be possible to tell whether a cursor exists or not.', function() {
+        assert.strictEqual(oneCursor.exists(), true);
+        assert.strictEqual(oneCursor.select('subtwo', 'colors').exists(), true);
+        assert.strictEqual(oneCursor.select('subtwo').exists('colors'), true);
+        assert.strictEqual(oneCursor.select('hey').exists(), false);
       });
     });
   });
