@@ -102,15 +102,15 @@ export default class Facet {
     if (!this.isRecursive)
       return paths;
     else
-      return paths.reduce((paths, path) => {
+      return paths.reduce((accumulatedPaths, path) => {
         const facetPath = type.facetPath(path);
         if (!facetPath)
-          return paths.concat(path);
+          return accumulatedPaths.concat(path);
 
         // Solving recursive path
         const relatedFacet = getIn(this.tree._computedDataIndex, facetPath).data;
 
-        return paths.concat(relatedFacet.relatedPaths());
+        return accumulatedPaths.concat(relatedFacet.relatedPaths());
       }, []);
   }
 
