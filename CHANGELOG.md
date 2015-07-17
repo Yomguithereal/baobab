@@ -17,7 +17,7 @@
 * Fixing `cursor.push/unshift` behavior.
 * Dropped the `$cursor` helper.
 * Dropped the `update` specs for a simpler transaction syntax.
-* Updated `emmett` to `3.1.0`.
+* Updated `emmett` to `3.1.1`.
 * ES6 codebase rewrite.
 * Full code self documentation.
 
