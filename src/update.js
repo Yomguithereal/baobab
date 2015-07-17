@@ -85,7 +85,10 @@ export default function update(data, path, operation, opts={}) {
             currentPath
           );
 
-        p[s] = p[s].concat([value]);
+        if (opts.persistent)
+          p[s] = p[s].concat([value]);
+        else
+          p[s].push(value);
       }
 
       /**
@@ -99,7 +102,10 @@ export default function update(data, path, operation, opts={}) {
             currentPath
           );
 
-        p[s] = [value].concat(p[s]);
+        if (opts.persistent)
+          p[s] = [value].concat(p[s]);
+        else
+          p[s].unshift(value);
       }
 
       /**
@@ -113,7 +119,10 @@ export default function update(data, path, operation, opts={}) {
             currentPath
           );
 
-        p[s] = p[s].concat(value);
+        if (opts.persistent)
+          p[s] = p[s].concat(value);
+        else
+          p[s].push.apply(p[s], value);
       }
 
       /**
@@ -127,7 +136,10 @@ export default function update(data, path, operation, opts={}) {
             currentPath
           );
 
-        p[s] = splice.apply(null, [p[s]].concat(value));
+        if (opts.persistent)
+          p[s] = splice.apply(null, [p[s]].concat(value));
+        else
+          p[s].splice.apply(p[s], value);
       }
 
       /**
@@ -152,7 +164,10 @@ export default function update(data, path, operation, opts={}) {
             currentPath
           );
 
-        p[s] = shallowMerge({}, p[s], value);
+        if (opts.persistent)
+          p[s] = shallowMerge({}, p[s], value);
+        else
+          p[s] = shallowMerge(p[s], value);
       }
 
       if (opts.immutable)

@@ -34,6 +34,9 @@ const DEFAULTS = {
   // Should the tree's data be immutable?
   immutable: true,
 
+  // Should the tree be persistent?
+  persistent: true,
+
   // Validation specifications
   validate: null,
 
@@ -84,6 +87,10 @@ export default class Baobab extends Emitter {
 
     // Merging given options with defaults
     this.options = shallowMerge({}, DEFAULTS, opts);
+
+    // Disabling immutability if persistence if disabled
+    if (!this.options.persistent)
+      this.options.immutable = false;
 
     // Privates
     this._identity = '[object Baobab]';

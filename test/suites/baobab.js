@@ -385,5 +385,55 @@ describe('Baobab API', function() {
       mutableData.hello = 'Jack';
       assert.strictEqual(mutableTree.get('hello'), 'Jack');
     });
+
+    it('if persitence is disabled, so should immutability.', function() {
+      const tree = new Baobab({}, {persistent: false});
+
+      assert.strictEqual(tree.options.persistent, false);
+      assert.strictEqual(tree.options.immutable, false);
+    });
+
+    it('turning persistence off should work.', function() {
+      const tree = new Baobab(
+        {
+          list: [],
+          object: {
+            one: 1
+          }
+        },
+        {
+          asynchronous: false,
+          persistent: false
+        }
+      );
+
+      var initialList = tree.get('list'),
+          initialObject = tree.get('object');
+
+      tree.push('list', 2);
+
+      assert.deepEqual(tree.get('list'), [2]);
+      assert.strictEqual(tree.get('list'), initialList);
+
+      tree.unshift('list', 1);
+
+      assert.deepEqual(tree.get('list'), [1, 2]);
+      assert.strictEqual(tree.get('list'), initialList);
+
+      tree.concat('list', [3, 4]);
+
+      assert.deepEqual(tree.get('list'), [1, 2, 3, 4]);
+      assert.strictEqual(tree.get('list'), initialList);
+
+      tree.splice('list', [0, 1]);
+
+      assert.deepEqual(tree.get('list'), [2, 3, 4]);
+      assert.strictEqual(tree.get('list'), initialList);
+
+      tree.merge('object', {two: 2});
+
+      assert.deepEqual(tree.get('object'), {one: 1, two: 2});
+      assert.strictEqual(tree.get('object'), initialObject);
+    });
   });
 });
