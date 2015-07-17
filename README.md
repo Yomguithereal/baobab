@@ -2,9 +2,9 @@
 
 # Baobab
 
-**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and [immutable](http://en.wikipedia.org/wiki/Immutable_object) (at least by default) data tree supporting cursors and enabling developers to easily navigate and monitor nested data.
+**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and [immutable](http://en.wikipedia.org/wiki/Immutable_object) (at least by default) data tree supporting cursors and enabling developers to easily navigate and monitor nested data through events.
 
-It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) such as Clojure's ones and by [Om](https://github.com/swannodette/om)'s cursors.
+It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) (such as Clojure's ones) and by [Om](https://github.com/swannodette/om)'s cursors.
 
 It aims at providing a centralized model holding an application's state and can be paired with **React** easily through mixins, higher order components, wrapper components or decorators (available [there](https://github.com/Yomguithereal/baobab-react)).
 
@@ -24,9 +24,9 @@ For a concise introduction about the library and how it can be used in a React/F
     * [Events](#events)
   * [Advanced](#advanced)
     * [Polymorphisms](#polymorphisms)
+    * [Computed data](#computed-data)
     * [Specialized getters](#specialized-getters)
     * [Traversal](#traversal)
-    * [Computed data](#computed-data)
     * [Options](#options)
     * [History](#history)
     * [Common pitfalls](#common-pitfalls)
@@ -49,8 +49,10 @@ var tree = new Baobab({
 
 var colorsCursor = tree.select('palette', 'colors');
 
-colorsCursor.on('update', function() {
-  console.log('Selected colors have updated:', colorsCursor.get());
+colorsCursor.on('update', function(e) {
+  var eventData = e.data;
+
+  console.log('Selected colors have updated:', eventData.data);
 });
 
 colorsCursor.push('orange');
@@ -168,6 +170,10 @@ var newData = cursor.set('hello', 'world');
 
 // Nested path
 var newData = cursor.set(['one', 'two'], 'world');
+// Same as
+var newData = cursor.select('one', 'two').set('world');
+// Or
+var newData = cursor.select('one').set('two', 'world');
 ```
 
 *Removing data at cursor*
@@ -345,7 +351,7 @@ johnCursor.set('firstname', 'John the third');
 
 *update*
 
-Will fire if the tree is updated.
+Will fire if the tree is updated (this concerns the asynchronous updates of the tree).
 
 ```js
 tree.on('update', function(e) {
@@ -360,7 +366,7 @@ tree.on('update', function(e) {
 
 *write*
 
-Will fire whenever the tree is written.
+Will fire whenever the tree is written (synchronously, unlike the `update` event).
 
 ```js
 tree.on('write', function(e) {
@@ -419,7 +425,7 @@ For more information concerning **Baobab**'s event emitting, see the [emmett](ht
 
 #### Polymorphisms
 
-If you ever need to, know that they are many ways to select and retrieve data within a *baobab*.
+If you ever need to, know that there are many ways to select and retrieve data within a *baobab*.
 
 ```js
 var tree = new Baobab({
@@ -470,157 +476,11 @@ var blankTree = new Baobab();
 
 **Note**: when using a function or a descriptor object in a path, you are not filtering but rather selecting the first matching element. (It's actually the same as using something like [lodash](https://lodash.com/docs#find)'s `_.find`).
 
-#### Specialized getters
-
-**tree/cursor.project**
-
-Retrieve data from several parts of the tree by following the given projection:
-
-```js
-// Considering the following tree
-var tree = new Baobab({
-  one: {
-    name: 'John'
-  },
-  two: {
-    surname: 'Smith'
-  }
-});
-
-// Using an object projection
-tree.project({
-  name: ['one', 'name'],
-  surname: ['two', 'surname']
-});
->>> {name: 'John', surname: 'Smith'}
-
-// Using an array projection
-tree.project([
-  ['one', 'name'],
-  ['two', 'surname']
-]);
->>> ['John', 'Smith']
-```
-
-**tree/cursor.serialize**
-
-Retrieve only raw data (therefore avoiding computed data) from the tree or a cursor.
-
-This is useful when you want to serialize your tree into JSON, for instance.
-
-```js
-tree.serialize();
-cursor.serialize();
-
-// Can also take a path
-tree.serialize('hello');
-tree.serialize('hello', 'message');
-tree.serialize(['hello', 'message']);
-```
-
-**tree/cursor.exists**
-
-Check whether a specific path exists within the tree (won't fire a `get` event).
-
-```js
-tree.exists();
-cursor.exists();
-
-// Can also take a path
-tree.exists('hello');
-tree.exists('hello', 'message');
-tree.exists(['hello', 'message']);
-```
-
-**tree.watch**
-
-Create a watcher that will fire an `update` event if any of the given paths is affected by a transaction.
-
-This is useful to create modules binding a state tree to UI components.
-
-```js
-// Considering the following tree
-var tree = new Baobab({
-  one: {
-    name: 'John'
-  },
-  two: {
-    surname: 'Smith'
-  }
-});
-
-var watcher = tree.watch({
-  name: ['one', 'name'],
-  surname: ['two', 'surname']
-});
-
-watcher.on('update', function(e) {
-  // One of the watched paths was updated!
-});
-```
-
-#### Traversal
-
-*Going up in the tree*
-
-```js
-var tree = new Baobab({first: {second: 'yeah'}})
-    secondCursor = tree.select('first', 'second');
-
-var firstCursor = secondCursor.up();
-```
-
-*Going left/right/down in lists*
-
-```js
-var tree = new Baobab({
-  list: [[1, 2], [3, 4]],
-  longList: ['one', 'two', 'three', 'four']
-});
-
-var listCursor = tree.select('list'),
-    twoCursor = tree.select('longList', 1);
-
-listCursor.down().right().get();
->>> [3, 4]
-
-listCursor.select(1).down().right().get();
->>> 4
-
-listCursor.select(1).down().right().left().get();
->>> 3
-
-twoCursor.leftmost().get();
->>> 'one'
-
-twoCursor.rightmost().get();
->>> 'four'
-```
-
-*Getting root cursor*
-
-```js
-var tree = new Baobab({first: {second: 'yeah'}}),
-    cursor = tree.select('first');
-
-var rootCursor = tree.root;
-// or
-var rootCursor = cursor.root();
-```
-
-*Getting information about the cursor's location in the tree*
-
-```js
-cursor.isRoot();
-cursor.isBranch();
-cursor.isLeaf();
-```
-
-#### Computed data
+#### Computed data (facets)
 
 For convenience, **Baobab** allows you to store computed data within the tree.
 
-Computed data node can be considered as a "view" over some parts of the data stored within your tree (a filtered version of an array, for instance).
+Computed data node can be considered as a "view" or "facet" over some parts of the data stored within your tree (a filtered version of an array, for instance).
 
 Those specific nodes must have, by convention, a key starting with `$` and can define dependencies to some paths within the tree.
 
@@ -698,7 +558,7 @@ tree.get('data', '$fromJohn');
 tree.get('data', '$fromJohn', 'txt');
 >>> 'Hey'
 
-// Just note than computed data node a read-only and that the tree
+// Just note that computed data node is read-only and that the tree
 // will throw if you try to update a path lying beyond a computed node
 tree.set(['data', '$fromJohn', 'txt'], 'Yay');
 >>> Error!
@@ -707,6 +567,155 @@ tree.set(['data', '$fromJohn', 'txt'], 'Yay');
 The computed data node will of course automatically update whenever at least one of the watched paths is updated.
 
 Note that the getter function is lazy and that data won't be computed before you access it.
+
+#### Specialized getters
+
+**tree/cursor.exists**
+
+Check whether a specific path exists within the tree (won't fire a `get` event).
+
+```js
+// Probably true
+tree.exists();
+
+// Does the cursor points at an existing path?
+cursor.exists();
+
+// Can also take a path
+tree.exists('hello');
+tree.exists('hello', 'message');
+tree.exists(['hello', 'message']);
+```
+
+**tree/cursor.serialize**
+
+Retrieve only raw data (therefore avoiding computed data) from the tree or a cursor.
+
+This is useful when you want to serialize your tree into JSON, for instance.
+
+```js
+tree.serialize();
+cursor.serialize();
+
+// Can also take a path
+tree.serialize('hello');
+tree.serialize('hello', 'message');
+tree.serialize(['hello', 'message']);
+```
+
+**tree.watch**
+
+Create a watcher that will fire an `update` event if any of the given paths is affected by a transaction.
+
+This is useful to create modules binding a state tree to UI components.
+
+```js
+// Considering the following tree
+var tree = new Baobab({
+  one: {
+    name: 'John'
+  },
+  two: {
+    surname: 'Smith'
+  }
+});
+
+var watcher = tree.watch({
+  name: ['one', 'name'],
+  surname: ['two', 'surname']
+});
+
+watcher.on('update', function(e) {
+  // One of the watched paths was updated!
+});
+```
+
+**tree/cursor.project**
+
+Retrieve data from several parts of the tree by following the given projection:
+
+```js
+// Considering the following tree
+var tree = new Baobab({
+  one: {
+    name: 'John'
+  },
+  two: {
+    surname: 'Smith'
+  }
+});
+
+// Using an object projection
+tree.project({
+  name: ['one', 'name'],
+  surname: ['two', 'surname']
+});
+>>> {name: 'John', surname: 'Smith'}
+
+// Using an array projection
+tree.project([
+  ['one', 'name'],
+  ['two', 'surname']
+]);
+>>> ['John', 'Smith']
+```
+
+#### Traversal
+
+*Getting root cursor*
+
+```js
+var tree = new Baobab({first: {second: 'yeah'}}),
+    cursor = tree.select('first');
+
+var rootCursor = tree.root;
+// or
+var rootCursor = cursor.root();
+```
+
+*Going up in the tree*
+
+```js
+var tree = new Baobab({first: {second: 'yeah'}})
+    secondCursor = tree.select('first', 'second');
+
+var firstCursor = secondCursor.up();
+```
+
+*Going left/right/down in lists*
+
+```js
+var tree = new Baobab({
+  list: [[1, 2], [3, 4]],
+  longList: ['one', 'two', 'three', 'four']
+});
+
+var listCursor = tree.select('list'),
+    twoCursor = tree.select('longList', 1);
+
+listCursor.down().right().get();
+>>> [3, 4]
+
+listCursor.select(1).down().right().get();
+>>> 4
+
+listCursor.select(1).down().right().left().get();
+>>> 3
+
+twoCursor.leftmost().get();
+>>> 'one'
+
+twoCursor.rightmost().get();
+>>> 'four'
+```
+
+*Getting information about the cursor's location in the tree*
+
+```js
+cursor.isRoot();
+cursor.isBranch();
+cursor.isLeaf();
+```
 
 #### Options
 
@@ -751,7 +760,7 @@ var tree = new Baobab({...}, {validate: validationFunction});
 
 #### History
 
-**Baobab** lets you record the state of any cursor so you can seamlessly implement undo/redo features.
+**Baobab** lets you record the successive states of any cursor so you can seamlessly implement undo/redo features.
 
 *Example*
 
@@ -835,9 +844,9 @@ Note also that releasing a tree will consequently and automatically release ever
 
 ## Philosophy
 
-**UIs as pure functions**
+**User interfaces as pure functions**
 
-UIs should be, as far as possible, considered as pure functions. Baobab is just a way to provide the needed arguments, i.e. the data representing your app's state, to such a function.
+User interfacess should be, as far as possible, considered as pure functions. Baobab is just a way to provide the needed arguments, i.e. the data representing your app's state, to such a function.
 
 Considering your UIs like pure functions comes along with collateral advantages like easy undo/redo features, state storing (just save your tree in the `localStorage` and here you go) and easy usage in both client & server.
 
