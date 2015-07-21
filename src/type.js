@@ -201,6 +201,22 @@ type.facetDefinition = function(definition) {
 };
 
 /**
+ * Checking whether the given watcher definition is valid.
+ *
+ * @param  {mixed}   definition - The definition to check.
+ * @return {boolean}
+ */
+type.watcherDefinition = function(definition) {
+
+  if (type.object(definition))
+    return Object.keys(definition).every(k => type.path(definition[k]));
+  else if (type.array(definition))
+    return definition.every(type.path);
+
+  return false;
+};
+
+/**
  * Checking whether the given string is a valid operation type.
  *
  * @param  {mixed} string - The string to test.

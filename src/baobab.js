@@ -383,14 +383,14 @@ export default class Baobab extends Emitter {
    * Method used to watch a collection of paths within the tree. Very useful
    * to bind UI components and such to the tree.
    *
-   * @param  {object|array} paths - Paths to listen.
-   * @return {Cursor}             - A special cursor that can be listened.
+   * @param  {object|array} definition - Paths to listen.
+   * @return {Cursor}                  - A special cursor that can be listened.
    */
-  watch(paths) {
-    if (!type.object(paths) && !type.array(paths))
-      throw Error('Baobab.watch: wrong argument.');
+  watch(definition) {
+    if (!type.watcherDefinition(definition))
+      throw makeError('Baobab.watch: wrong definition.', {definition});
 
-    return new Cursor(this, null, {watched: paths});
+    return new Cursor(this, null, {watched: definition});
   }
 
   /**
