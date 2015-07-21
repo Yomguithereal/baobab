@@ -39,6 +39,11 @@ export default class Facet {
     this.computedData = null;
     this.type = definitionType;
 
+    // State
+    this.state = {
+      killed: false
+    };
+
     // Harmonizing
     if (definitionType === 'object') {
       this.getter = definition.get;
@@ -70,6 +75,8 @@ export default class Facet {
      * so that the data may be recomputed when needed.
      */
     this.listener = ({data: {path}}) => {
+      if (this.state.killed)
+        return;
 
       // Is this facet affected by the current write event?
       const concerned = solveUpdate([path], this.relatedPaths());
@@ -157,5 +164,6 @@ export default class Facet {
 
     // Unbinding listener
     this.tree.off('write', this.listener);
+    this.state.killed = true;
   }
 }

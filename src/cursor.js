@@ -66,6 +66,7 @@ export default class Cursor extends Emitter {
 
     // State
     this.state = {
+      killed: false,
       recording: false,
       undoing: false
     };
@@ -106,7 +107,8 @@ export default class Cursor extends Emitter {
      * @param {object} event - The event fired by the tree.
      */
     this._writeHandler = ({data}) => {
-      if (!solveUpdate([data.path], this._getComparedPaths()))
+      if (this.state.killed ||
+          !solveUpdate([data.path], this._getComparedPaths()))
         return;
 
       this.solvedPath = this._getIn(this.path).solvedPath;
@@ -147,6 +149,9 @@ export default class Cursor extends Emitter {
      * @param {object} event - The event fired by the tree.
      */
     this._updateHandler = (event) => {
+      if (this.state.killed)
+        return;
+
       const {paths, previousData} = event.data,
             update = fireUpdate.bind(this, previousData),
             comparedPaths = this._getComparedPaths();
@@ -680,6 +685,7 @@ export default class Cursor extends Emitter {
 
     // Killing emitter
     this.kill();
+    this.state.killed = true;
   }
 
   /**
