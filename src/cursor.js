@@ -133,7 +133,7 @@ export default class Cursor extends Emitter {
       this.state.undoing = false;
 
       return this.emit('update', {
-        data: this._get().data,
+        currentData: this._get().data,
         previousData: record
       });
     };

@@ -372,7 +372,7 @@ export default class Baobab extends Emitter {
     this.emit('update', {
       transaction,
       previousData,
-      data: this.data,
+      currentData: this.data,
       paths: affectedPaths
     });
 

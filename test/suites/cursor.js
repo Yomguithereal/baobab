@@ -515,7 +515,7 @@ describe('Cursor API', function() {
 
       tree.select('one').on('update', function(e) {
         assert.deepEqual(e.data.previousData, {hello: 'world'});
-        assert.deepEqual(e.data.data, {hello: 'monde'});
+        assert.deepEqual(e.data.currentData, {hello: 'monde'});
         done();
       });
 

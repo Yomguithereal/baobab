@@ -357,7 +357,7 @@ Will fire if the tree is updated (this concerns the asynchronous updates of the 
 tree.on('update', function(e) {
   var eventData = e.data;
 
-  console.log('New data:', eventData.data);
+  console.log('Current data:', eventData.currentData);
   console.log('Previous data:', eventData.previousData);
   console.log('Transaction details:', eventData.transaction);
   console.log('Affected paths', eventData.paths);
@@ -414,7 +414,10 @@ tree.on('select', function(e) {
 Will fire if data watched over by the cursor has updated.
 
 ```js
-cursor.on('update', fn);
+cursor.on('update', function(e) {
+  console.log('Current data:', eventData.currentData);
+  console.log('Previous data:', eventData.previousData);
+});
 ```
 
 ##### N.B.
