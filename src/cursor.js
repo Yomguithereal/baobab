@@ -799,5 +799,5 @@ makeSetter('apply', type.function);
 makeSetter('push');
 makeSetter('concat', type.array);
 makeSetter('unshift');
-makeSetter('splice', type.array);
+makeSetter('splice', type.splicer);
 makeSetter('merge', type.object);

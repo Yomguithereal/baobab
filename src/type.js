@@ -101,20 +101,36 @@ type.primitive = function(target) {
  */
 
 /**
+ * Checking whether the given variable is a valid splicer.
+ *
+ * @param  {mixed} target    - Variable to test.
+ * @param  {array} [allowed] - Optional valid types in path.
+ * @return {boolean}
+ */
+type.splicer = function(target) {
+  if (!type.array(target) || target.length < 2)
+    return false;
+
+  return anyOf(target[0], ['number', 'function', 'object']) &&
+         type.number(target[1]);
+};
+
+/**
  * Checking whether the given variable is a valid cursor path.
  *
  * @param  {mixed} target    - Variable to test.
  * @param  {array} [allowed] - Optional valid types in path.
  * @return {boolean}
  */
-type.path = function(target, allowed) {
+
+// Order is important for performance reasons
+const ALLOWED_FOR_PATH = ['string', 'number', 'function', 'object'];
+
+type.path = function(target) {
   if (!target && target !== 0)
     return false;
 
-  // Order of allowed types is important for perf reasons
-  allowed = allowed || ['string', 'number', 'function', 'object'];
-
-  return [].concat(target).every(step => anyOf(step, allowed));
+  return [].concat(target).every(step => anyOf(step, ALLOWED_FOR_PATH));
 };
 
 /**
