@@ -137,7 +137,7 @@ var colorCursor = paletteCursor.select('colors');
 
 A *baobab* tree can obviously be updated. However, one has to understand that, even if you can write the tree synchronously, `update` events won't be, at least by default, fired until next frame.
 
-If you really need to fire an update synchronously (typically if you store a form's state within your app's state, for instance), your remain free to use the `tree.commit` method or tweak the tree's [options](#options) to fit your needs.
+If you really need to fire an update synchronously (typically if you store a form's state within your app's state, for instance), your remain free to use the `tree.commit()` method or tweak the tree's [options](#options) to fit your needs.
 
 **Important**: Note that the tree, being a persistent data structure, will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using strategies as such as React's [pure rendering](https://facebook.github.io/react/docs/pure-render-mixin.html)).
 
@@ -769,7 +769,7 @@ var tree = new Baobab({...}, {validate: validationFunction});
 *Example*
 
 ```js
-// Asynchronous tree so that examples are simpler
+// Synchronous tree so that examples are simpler
 var baobab = new Baobab({colors: ['blue']}, {asynchronous: false}),
     cursor = baobab.select('colors');
 
