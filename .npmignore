@@ -5,7 +5,6 @@ node_modules
 .travis.yml
 test/
 build/
-gulpfile.js
 benchmark.js
 *.log
 .eslintrc
