@@ -325,6 +325,7 @@ export default class Baobab extends Emitter {
    * @return {Baobab} - The tree instance for chaining purposes.
    */
   commit() {
+    const self = this;
 
     // Clearing timeout if one was defined
     if (this._future)
@@ -370,10 +371,14 @@ export default class Baobab extends Emitter {
 
     // Emitting update event
     this.emit('update', {
+      paths: affectedPaths,
       transaction,
-      previousData,
-      currentData: this.data,
-      paths: affectedPaths
+      get previousData() {
+        return previousData;
+      },
+      get currentData() {
+        return self.get();
+      }
     });
 
     return this;

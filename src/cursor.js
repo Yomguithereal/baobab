@@ -121,21 +121,26 @@ export default class Cursor extends Emitter {
      * @param {mixed} previousData - the tree's previous data.
      */
     const fireUpdate = (previousData) => {
+      const self = this;
 
       if (this._watched)
         return this.emit('update');
 
-      const record = getIn(previousData, this.solvedPath).data;
+      const eventData = {
+        get previousData() {
+          return getIn(previousData, self.solvedPath).data;
+        },
+        get currentData() {
+          return self.get();
+        }
+      };
 
       if (this.state.recording && !this.state.undoing)
-        this.archive.add(record);
+        this.archive.add(eventData.previousData);
 
       this.state.undoing = false;
 
-      return this.emit('update', {
-        currentData: this._get().data,
-        previousData: record
-      });
+      return this.emit('update', eventData);
     };
 
     /**
