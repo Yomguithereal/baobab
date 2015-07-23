@@ -185,13 +185,15 @@ type.readOnlyPath = function(path) {
 type.facetDefinition = function(definition) {
 
   if (type.object(definition)) {
-    if (!type.function(definition.get))
+    if (!type.function(definition.get) ||
+        (definition.cursors && !(type.watcherDefinition(definition.cursors))))
       return null;
     else
       return 'object';
   }
   else if (type.array(definition)) {
-    if (!type.function(definition[definition.length - 1]))
+    if (!type.function(definition[definition.length - 1]) ||
+        !type.watcherDefinition(definition.slice(0, -1)))
       return null;
     else
       return 'array';
