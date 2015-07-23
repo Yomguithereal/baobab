@@ -290,12 +290,11 @@ function solveMask(immutable, data, mask, parent) {
         deepFreeze(parent);
     }
     else {
-      if (immutable) {
-        data[k] = shallowClone(data[k]);
+      data[k] = shallowClone(data[k]);
 
-        if (parent)
-          freeze(parent);
-      }
+      if (immutable && parent)
+        freeze(parent);
+
       solveMask(immutable, data[k], mask[k], data);
     }
   }
