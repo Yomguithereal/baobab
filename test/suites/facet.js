@@ -252,6 +252,41 @@ describe('Facets', function() {
     tree.set(['data', 'number'], 5);
   });
 
+  it('recursivity should take updates into account.', function() {
+    let count = 0;
+
+    const tree = new Baobab({
+      rows: [1, 2, 3, 4, 5],
+      visibleRows: {start: 0, end: 0},
+      $rowLength: [
+        ['rows'],
+        function(rows) {
+          return rows.length;
+        }
+      ],
+      $specialRows: [
+        ['rows'],
+        function(rows) {
+          return rows;
+        }
+      ],
+      $visibleRowsData: [
+        ['$specialRows'],
+        ['visibleRows'],
+        function(specialRows, visibleRows) {
+          count++;
+          return specialRows.slice(visibleRows.start, visibleRows.end);
+        }
+      ],
+    }, {asynchronous: false});
+
+    tree.get('$visibleRowsData');
+    tree.select('visibleRows').set({start:1,end:4});
+    tree.get('$visibleRowsData');
+
+    assert.strictEqual(count, 2);
+  });
+
   it('data retrieved through facets should be immutable by default.', function() {
     const tree = new Baobab(getExampleState()),
           data = tree.get();
