@@ -182,7 +182,7 @@ export default function update(data, path, operation, opts={}) {
     }
 
     // Else, we shift the reference and continue the path
-    else {
+    else if (opts.persistent) {
       p[s] = shallowClone(p[s]);
     }
 
