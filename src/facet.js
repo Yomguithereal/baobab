@@ -112,7 +112,7 @@ export default class Facet {
       return paths.reduce((accumulatedPaths, path) => {
         const facetPath = type.facetPath(path);
         if (!facetPath)
-          return accumulatedPaths.concat(path);
+          return accumulatedPaths.concat([path]);
 
         // Solving recursive path
         const relatedFacet = getIn(this.tree._computedDataIndex, facetPath).data;
