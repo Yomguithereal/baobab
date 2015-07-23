@@ -101,7 +101,7 @@ export default class Facet {
 
     if (this._hasDynamicPaths)
       paths = this.paths.map(
-        p => getIn(this.tree.data, p, this.tree._computedDataIndex).solvedPath
+        p => getIn(this.tree._data, p, this.tree._computedDataIndex).solvedPath
       );
     else
       paths = this.paths;

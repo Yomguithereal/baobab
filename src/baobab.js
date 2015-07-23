@@ -99,16 +99,15 @@ export default class Baobab extends Emitter {
     this._transaction = [];
     this._affectedPathsIndex = {};
     this._computedDataIndex = {};
+    this._previousData = null;
+    this._data = initialData;
 
     // Properties
-    this.log = [];
-    this.previousData = null;
-    this.data = initialData;
     this.root = this.select();
 
     // Does the user want an immutable tree?
     if (this.options.immutable)
-      deepFreeze(this.data);
+      deepFreeze(this._data);
 
     // Bootstrapping root cursor's getters and setters
     const bootstrap = (name) => {
@@ -179,12 +178,12 @@ export default class Baobab extends Emitter {
     if (!path || !path.length) {
 
       // Walk the whole tree
-      return walk(this.data);
+      return walk(this._data);
     }
     else {
 
       // Retrieving parent of affected node
-      const parentNode = getIn(this.data, path.slice(0, -1)).data;
+      const parentNode = getIn(this._data, path.slice(0, -1)).data;
 
       // Walk the affected leaf
       return walk(parentNode, path.slice(0, -1));
@@ -260,7 +259,7 @@ export default class Baobab extends Emitter {
 
     // Solving the given path
     const {solvedPath, exists} = getIn(
-      this.data,
+      this._data,
       path,
       this._computedDataIndex
     );
@@ -277,20 +276,20 @@ export default class Baobab extends Emitter {
 
     // Stashing previous data if this is the frame's first update
     if (!this._transaction.length)
-      this.previousData = this.data;
+      this._previousData = this._data;
 
     const hash = hashPath(solvedPath);
 
     // Applying the operation
     const {data, node} = update(
-      this.data,
+      this._data,
       solvedPath,
       operation,
       this.options
     );
 
     // Updating data and transaction
-    this.data = data;
+    this._data = data;
     this._affectedPathsIndex[hash] = true;
     this._transaction.push({...operation, path: solvedPath});
 
@@ -343,8 +342,8 @@ export default class Baobab extends Emitter {
     if (typeof validate === 'function') {
       const error = validate.call(
         this,
-        this.previousData,
-        this.data,
+        this._previousData,
+        this._data,
         affectedPaths
       );
 
@@ -352,10 +351,10 @@ export default class Baobab extends Emitter {
         this.emit('invalid', {error});
 
         if (behavior === 'rollback') {
-          this.data = this.previousData;
+          this._data = this._previousData;
           this._affectedPathsIndex = {};
           this._transaction = [];
-          this.previousData = this.data;
+          this._previousData = this._data;
           return this;
         }
       }
@@ -363,11 +362,11 @@ export default class Baobab extends Emitter {
 
     // Caching to keep original references before we change them
     const transaction = this._transaction,
-          previousData = this.previousData;
+          previousData = this._previousData;
 
     this._affectedPathsIndex = {};
     this._transaction = [];
-    this.previousData = this.data;
+    this._previousData = this._data;
 
     // Emitting update event
     this.emit('update', {
@@ -404,7 +403,7 @@ export default class Baobab extends Emitter {
   release() {
     let k;
 
-    delete this.data;
+    delete this._data;
     delete this._transaction;
     delete this._affectedPathsIndex;
 

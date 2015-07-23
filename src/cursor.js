@@ -205,7 +205,7 @@ export default class Cursor extends Emitter {
    */
   _getIn(path) {
     return getIn(
-      this.tree.data,
+      this.tree._data,
       path,
       this.tree._computedDataIndex,
       this.tree.options
