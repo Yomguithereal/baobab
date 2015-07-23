@@ -296,9 +296,8 @@ export {freeze, deepFreeze};
  * @param {boolean} immutable - Is the data immutable?
  * @param {mixed}  data       - Data to patch.
  * @param {object} mask       - Computed data mask.
- * @param {object} [parent]   - Parent object in the iteration.
  */
-function solveMask(immutable, data, mask, parent) {
+function solveMask(immutable, data, mask) {
   for (let k in mask) {
     if (k[0] === '$') {
 
@@ -309,7 +308,7 @@ function solveMask(immutable, data, mask, parent) {
         deepFreeze(data[k]);
     }
     else {
-      solveMask(immutable, data[k], mask[k], data);
+      solveMask(immutable, data[k], mask[k]);
     }
   }
 
