@@ -215,6 +215,20 @@ function compare(object, description) {
 }
 
 /**
+ * Function to partially freeze an object by carefully avoiding the `$`
+ * keys indicating the presence of facets.
+ *
+ * @param {object} o - The object to partially freeze.
+ */
+function partialFreeze(o) {
+  let k;
+
+  for (k in o)
+    if (k[0] !== '$')
+      Object.defineProperty(o, k, {writable: false});
+}
+
+/**
  * Function freezing the given variable if possible.
  *
  * @param  {boolean} deep - Should we recursively freeze the given objects?
@@ -225,12 +239,18 @@ function freezer(deep, o) {
   if (typeof o !== 'object' || o === null)
     return;
 
-  Object.freeze(o);
+  const isArray = Array.isArray(o),
+        anyFacet = !isArray && Object.keys(o).some(k => k[0] === '$');
+
+  if (anyFacet)
+    partialFreeze(o);
+  else
+    Object.freeze(o);
 
   if (!deep)
     return;
 
-  if (Array.isArray(o)) {
+  if (isArray) {
 
     // Iterating through the elements
     let i,
@@ -277,7 +297,6 @@ export {freeze, deepFreeze};
  * @param {mixed}  data       - Data to patch.
  * @param {object} mask       - Computed data mask.
  * @param {object} [parent]   - Parent object in the iteration.
- * @param {string} [lastKey]  - Current value's key in parent.
  */
 function solveMask(immutable, data, mask, parent) {
   for (let k in mask) {
@@ -287,14 +306,9 @@ function solveMask(immutable, data, mask, parent) {
       data[k] = mask[k].get();
 
       if (immutable)
-        deepFreeze(parent);
+        deepFreeze(data[k]);
     }
     else {
-      data[k] = shallowClone(data[k]);
-
-      if (immutable && parent)
-        freeze(parent);
-
       solveMask(immutable, data[k], mask[k], data);
     }
   }
@@ -375,7 +389,7 @@ export function getIn(object, path, mask=null, opts={}) {
 
   // If the mask is still relevant, we solve it down to the leaves
   if (cm && Object.keys(cm).length) {
-    let patchedData = solveMask(opts.immutable, {root: c}, {root: cm});
+    const patchedData = solveMask(opts.immutable, {root: c}, {root: cm});
     c = patchedData.root;
   }
 
