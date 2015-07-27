@@ -173,7 +173,7 @@ type.facetPath = function(path) {
  * @return {boolean}
  */
 type.readOnlyPath = function(path) {
-  return path.slice(0, -1).some(step => step[0] === '$');
+  return path.some(step => step[0] === '$');
 };
 
 /**

@@ -133,17 +133,14 @@ export default class Baobab extends Emitter {
     ].forEach(bootstrap);
 
     // Creating the computed data index for the first time
-    this._refreshComputedDataIndex();
+    this._initializeComputedDataIndex();
   }
 
   /**
-   * Private method used to refresh the internal computed data index of the
+   * Private method used to initialize the internal computed data index of the
    * tree.
-   *
-   * @param  {array}  [path] - Path to the modified node.
-   * @return {Baobab}        - The tree itself for chaining purposes.
    */
-  _refreshComputedDataIndex(path) {
+  _initializeComputedDataIndex() {
 
     // Refreshing the whole tree
     const walk = (data, p=[]) => {
@@ -175,19 +172,8 @@ export default class Baobab extends Emitter {
       }
     };
 
-    if (!path || !path.length) {
-
-      // Walk the whole tree
-      return walk(this._data);
-    }
-    else {
-
-      // Retrieving parent of affected node
-      const parentNode = getIn(this._data, path.slice(0, -1)).data;
-
-      // Walk the affected leaf
-      return walk(parentNode, path.slice(0, -1));
-    }
+    // Walking the whole tree
+    return walk(this._data);
   }
 
   /**
@@ -293,10 +279,6 @@ export default class Baobab extends Emitter {
     this._affectedPathsIndex[hash] = true;
     this._transaction.push({...operation, path: solvedPath});
 
-    // Refreshing facet index
-    // TODO: provide a setting to disable this or at least selectively for perf
-    this._refreshComputedDataIndex(solvedPath);
-
     // Emitting a `write` event
     this.emit('write', {path: solvedPath});
 
@@ -373,7 +355,12 @@ export default class Baobab extends Emitter {
       paths: affectedPaths,
       transaction,
       get previousData() {
-        return previousData;
+        return getIn(
+          previousData,
+          [],
+          self._computedDataIndex,
+          self.options
+        ).data;
       },
       get currentData() {
         return self.get();

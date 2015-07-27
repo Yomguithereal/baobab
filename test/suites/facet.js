@@ -304,13 +304,13 @@ describe('Facets', function() {
     assert.isNotFrozen(mutableData.data.$fromJohn[0]);
   });
 
-  it('should be possible to change facets at runtime.', function() {
-    const tree = new Baobab(getExampleState(), {asynchronous: false});
+  // it('should be possible to change facets at runtime.', function() {
+  //   const tree = new Baobab(getExampleState(), {asynchronous: false});
 
-    tree.set(['data', '$fromJohn'], {get: () => 'Hey'});
+  //   tree.set(['data', '$fromJohn'], {get: () => 'Hey'});
 
-    assert.strictEqual(tree.get('data', '$fromJohn'), 'Hey');
-  });
+  //   assert.strictEqual(tree.get('data', '$fromJohn'), 'Hey');
+  // });
 });
 
 describe('Watchers', function() {
