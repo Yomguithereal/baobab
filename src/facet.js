@@ -39,11 +39,6 @@ export default class Facet {
     this.computedData = null;
     this.type = definitionType;
 
-    // State
-    this.state = {
-      killed: false
-    };
-
     // Harmonizing
     if (definitionType === 'object') {
       this.getter = definition.get;
@@ -64,7 +59,8 @@ export default class Facet {
 
     // Internal state
     this.state = {
-      computed: false
+      computed: false,
+      killed: false
     };
 
     /**
