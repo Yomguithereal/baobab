@@ -161,9 +161,6 @@ function cloner(deep, item) {
   if (type.object(item)) {
     let k, o = {};
 
-    if (item.constructor && item.constructor !== Object)
-      o = Object.create(item.constructor.prototype);
-
     // NOTE: could be possible to erase computed properties through `null`.
     for (k in item)
       if (item.hasOwnProperty(k))
