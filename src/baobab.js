@@ -262,7 +262,7 @@ export default class Baobab extends Emitter {
 
     // Stashing previous data if this is the frame's first update
     if (!this._transaction.length)
-      this._previousData = this._data;
+      this._previousData = this.get();
 
     const hash = hashPath(solvedPath);
 
@@ -354,13 +354,7 @@ export default class Baobab extends Emitter {
     this.emit('update', {
       paths: affectedPaths,
       transaction,
-      get previousData() {
-        return getIn(
-          previousData,
-          [],
-          self._computedDataIndex
-        ).data;
-      },
+      previousData,
       get currentData() {
         return self.get();
       }

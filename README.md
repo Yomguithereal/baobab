@@ -569,8 +569,6 @@ tree.set(['data', '$fromJohn', 'txt'], 'Yay');
 
 The computed data node will of course automatically update whenever at least one of the watched paths is updated.
 
-Note that the getter function is lazy and that data won't be computed before you access it.
-
 It is not possible, at the time being, to modify facets' definition at runtime. It may however be allowed in further versions.
 
 #### Specialized getters
