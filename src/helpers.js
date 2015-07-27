@@ -164,9 +164,10 @@ function cloner(deep, item) {
     if (item.constructor && item.constructor !== Object)
       o = Object.create(item.constructor.prototype);
 
+    // NOTE: could be possible to erase computed properties through `null`.
     for (k in item)
-      if (item.hasOwnProperty(k) && k[0] !== '$')
-        o[k] = deep ? cloner(true, item[k]) : item[k];
+      if (item.hasOwnProperty(k))
+        o[k] = (deep && k[0] !== '$') ? cloner(true, item[k]) : item[k];
     return o;
   }
 
@@ -225,7 +226,7 @@ function partialFreeze(o) {
 
   for (k in o)
     if (k[0] !== '$')
-      Object.defineProperty(o, k, {writable: false});
+      Object.defineProperty(o, k, {writable: false, enumerable: true});
 }
 
 /**
@@ -293,8 +294,8 @@ export {freeze, deepFreeze};
  * Function used to solve a computed data mask by recursively walking a tree
  * and patching it.
  *
- * @param {mixed}  data       - Data to patch.
- * @param {object} mask       - Computed data mask.
+ * @param {mixed}  data - Data to patch.
+ * @param {object} mask - Computed data mask.
  */
 function solveMask(data, mask) {
   for (let k in mask) {
@@ -327,7 +328,7 @@ function solveMask(data, mask) {
  */
 const notFoundObject = {data: undefined, solvedPath: null, exists: false};
 
-export function getIn(object, path, mask=null) {
+export function getIn(object, path, mask=null, opts={}) {
   if (!path)
     return notFoundObject;
 

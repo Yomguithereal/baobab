@@ -527,6 +527,8 @@ export default class Cursor extends Emitter {
    * Method used to return raw data from the tree, by carefully avoiding
    * computed one.
    *
+   * @todo: should be more performant.
+   *
    * Arity (1):
    * @param  {path}   path           - Path to serialize in the tree.
    *
@@ -536,9 +538,22 @@ export default class Cursor extends Emitter {
    * @return {mixed}                 - The retrieved raw data.
    */
   serialize() {
-    const data = this.get.apply(this, arguments);
+    const data = deepClone(this.get.apply(this, arguments));
 
-    return deepClone(data);
+    const dropComputedData = function(d) {
+      if (!type.object(d))
+        return;
+
+      for (let k in d) {
+        if (k[0] === '$')
+          delete d[k];
+        else
+          dropComputedData(d[k]);
+      }
+    };
+
+    dropComputedData(data);
+    return data;
   }
 
   /**
