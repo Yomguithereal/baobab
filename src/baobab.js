@@ -358,8 +358,7 @@ export default class Baobab extends Emitter {
         return getIn(
           previousData,
           [],
-          self._computedDataIndex,
-          self.options
+          self._computedDataIndex
         ).data;
       },
       get currentData() {

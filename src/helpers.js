@@ -293,22 +293,18 @@ export {freeze, deepFreeze};
  * Function used to solve a computed data mask by recursively walking a tree
  * and patching it.
  *
- * @param {boolean} immutable - Is the data immutable?
  * @param {mixed}  data       - Data to patch.
  * @param {object} mask       - Computed data mask.
  */
-function solveMask(immutable, data, mask) {
+function solveMask(data, mask) {
   for (let k in mask) {
     if (k[0] === '$') {
 
       // Patching
       data[k] = mask[k].get();
-
-      if (immutable)
-        deepFreeze(data[k]);
     }
     else {
-      solveMask(immutable, data[k], mask[k]);
+      solveMask(data[k], mask[k]);
     }
   }
 
@@ -331,7 +327,7 @@ function solveMask(immutable, data, mask) {
  */
 const notFoundObject = {data: undefined, solvedPath: null, exists: false};
 
-export function getIn(object, path, mask=null, opts={}) {
+export function getIn(object, path, mask=null) {
   if (!path)
     return notFoundObject;
 
@@ -388,7 +384,7 @@ export function getIn(object, path, mask=null, opts={}) {
 
   // If the mask is still relevant, we solve it down to the leaves
   if (cm && Object.keys(cm).length) {
-    const patchedData = solveMask(opts.immutable, {root: c}, {root: cm});
+    const patchedData = solveMask({root: c}, {root: cm});
     c = patchedData.root;
   }
 
