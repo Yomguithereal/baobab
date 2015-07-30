@@ -64,14 +64,16 @@ export default function update(data, path, operation, opts={}) {
        * Set
        */
       if (operationType === 'set') {
-        p[s] = value;
+        p[s] = opts.persistent ? shallowClone(value) : value;
       }
 
       /**
        * Apply
        */
       else if (operationType === 'apply') {
-        p[s] = value(p[s]);
+        const result = value(p[s]);
+
+        p[s] = opts.persistent ? shallowClone(result) : result;
       }
 
       /**

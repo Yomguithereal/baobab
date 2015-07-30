@@ -191,6 +191,24 @@ describe('Baobab API', function() {
       assert(list !== tree.get('list'));
     });
 
+    it('the `set` operation should also shift the references.', function() {
+      const tree = new Baobab({test: {}}, {asynchronous: false}),
+            o = tree.get('test');
+
+      tree.set('test', o);
+
+      assert(o !== tree.get('test'));
+    });
+
+    it('the `apply` operation should also shift the references.', function() {
+      const tree = new Baobab({test: {}}, {asynchronous: false}),
+            o = tree.get('test');
+
+      tree.apply('test', () => o);
+
+      assert(o !== tree.get('test'));
+    });
+
     it('the tree should also shift parent references.', function() {
       const shiftingTree = new Baobab({root: {admin: {items: [1], other: [2]}}}, {asynchronous: false});
 
