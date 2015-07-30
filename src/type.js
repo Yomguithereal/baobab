@@ -127,7 +127,7 @@ type.splicer = function(target) {
 const ALLOWED_FOR_PATH = ['string', 'number', 'function', 'object'];
 
 type.path = function(target) {
-  if (!target && target !== 0)
+  if (!target && target !== 0 && target !== '')
     return false;
 
   return [].concat(target).every(step => anyOf(step, ALLOWED_FOR_PATH));

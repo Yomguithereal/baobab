@@ -353,6 +353,15 @@ describe('Cursor API', function() {
         assert.strictEqual(tree.get('hello'), false);
       });
 
+      it('should be possible to set values using a falsy path.', function() {
+        const tree = new Baobab({list: ['hey'], dict: {}}, {asynchronous: false});
+
+        tree.select('dict').set('', 'hello');
+        tree.select('list').set(0, 'ho');
+
+        assert.deepEqual(tree.get(), {list: ['ho'], dict: {'': 'hello'}});
+      });
+
       it('should throw errors when updating with wrong values.', function() {
         const cursor = (new Baobab()).root;
 

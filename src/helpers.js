@@ -180,6 +180,18 @@ const shallowClone = cloner.bind(null, false),
 export {shallowClone, deepClone};
 
 /**
+ * Coerce the given variable into a full-fledged path.
+ *
+ * @param  {mixed} target - The variable to coerce.
+ * @return {array}        - The array path.
+ */
+export function coercePath(target) {
+  if (target || target === 0 || target === '')
+    return target;
+  return [];
+}
+
+/**
  * Function comparing an object's properties to a given descriptive
  * object.
  *

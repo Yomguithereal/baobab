@@ -10,6 +10,7 @@ import {
   Archive,
   arrayFrom,
   before,
+  coercePath,
   deepClone,
   getIn,
   makeError,
@@ -488,7 +489,7 @@ export default class Cursor extends Emitter {
    * @return {boolean}               - Does the given path exists?
    */
   exists(path) {
-    path = path || path === 0 ? path : [];
+    path = coercePath(path);
 
     if (arguments.length > 1)
       path = arrayFrom(arguments);
@@ -510,7 +511,7 @@ export default class Cursor extends Emitter {
    * @return {mixed}                 - Data at path.
    */
   get(path) {
-    path = path || path === 0 ? path : [];
+    path = coercePath(path);
 
     if (arguments.length > 1)
       path = arrayFrom(arguments);
@@ -779,7 +780,7 @@ function makeSetter(name, typeChecker) {
     }
 
     // Coerce path
-    path = path || path === 0 ? path : [];
+    path = coercePath(path);
 
     // Checking the path's validity
     if (!type.path(path))

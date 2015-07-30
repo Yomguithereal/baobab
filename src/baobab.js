@@ -11,6 +11,7 @@ import type from './type';
 import update from './update';
 import {
   arrayFrom,
+  coercePath,
   deepFreeze,
   getIn,
   makeError,
@@ -235,7 +236,7 @@ export default class Baobab extends Emitter {
   update(path, operation) {
 
     // Coercing path
-    path = path || path === 0 ? path : [];
+    path = coercePath(path);
 
     if (!type.operationType(operation.type))
       throw makeError(
