@@ -6,6 +6,7 @@
  */
 import Emitter from 'emmett';
 import Cursor from './cursor';
+import Watcher from './watcher';
 import Facet from './facet';
 import type from './type';
 import update from './update';
@@ -214,7 +215,7 @@ export default class Baobab extends Emitter {
     let cursor = this._cursors[hash];
 
     if (!cursor) {
-      cursor = new Cursor(this, path, {hash});
+      cursor = new Cursor(this, path, hash);
       this._cursors[hash] = cursor;
     }
 
@@ -368,14 +369,11 @@ export default class Baobab extends Emitter {
    * Method used to watch a collection of paths within the tree. Very useful
    * to bind UI components and such to the tree.
    *
-   * @param  {object|array} definition - Paths to listen.
-   * @return {Cursor}                  - A special cursor that can be listened.
+   * @param  {object} mapping - Mapping of paths to listen.
+   * @return {Cursor}         - The created watcher.
    */
-  watch(definition) {
-    if (!type.watcherDefinition(definition))
-      throw makeError('Baobab.watch: wrong definition.', {definition});
-
-    return new Cursor(this, null, {watched: definition});
+  watch(mapping) {
+    return new Watcher(this, mapping);
   }
 
   /**

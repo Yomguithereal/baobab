@@ -328,16 +328,17 @@ function solveMask(data, mask) {
  * @todo: work if dynamic path hit objects also.
  * @todo: memoized perfgetters.
  *
- * @param  {object} object - The object we need to get data from.
- * @param  {array}  path   - The path to follow.
- * @param  {object} [mask] - An optional computed data index.
- * @return {object} result            - The result.
- * @return {mixed}  result.data       - The data at path, or `undefined`.
- * @return {array}  result.solvedPath - The solved path or `null`.
+ * @param  {object}  object - The object we need to get data from.
+ * @param  {array}   path   - The path to follow.
+ * @param  {object}  [mask] - An optional computed data index.
+ * @return {object}  result            - The result.
+ * @return {mixed}   result.data       - The data at path, or `undefined`.
+ * @return {array}   result.solvedPath - The solved path or `null`.
+ * @return {boolean} result.exists     - Does the path exists in the tree?
  */
 const notFoundObject = {data: undefined, solvedPath: null, exists: false};
 
-export function getIn(object, path, mask=null, opts={}) {
+export function getIn(object, path, mask=null) {
   if (!path)
     return notFoundObject;
 

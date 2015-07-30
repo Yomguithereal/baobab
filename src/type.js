@@ -186,14 +186,15 @@ type.facetDefinition = function(definition) {
 
   if (type.object(definition)) {
     if (!type.function(definition.get) ||
-        (definition.cursors && !(type.watcherDefinition(definition.cursors))))
+        (definition.cursors &&
+         !(Object.keys(definition).every(k => type.path(definition[k])))))
       return null;
     else
       return 'object';
   }
   else if (type.array(definition)) {
     if (!type.function(definition[definition.length - 1]) ||
-        !type.watcherDefinition(definition.slice(0, -1)))
+        !definition.slice(0, -1).every(p => type.path(p)))
       return null;
     else
       return 'array';
@@ -208,14 +209,9 @@ type.facetDefinition = function(definition) {
  * @param  {mixed}   definition - The definition to check.
  * @return {boolean}
  */
-type.watcherDefinition = function(definition) {
-
-  if (type.object(definition))
-    return Object.keys(definition).every(k => type.path(definition[k]));
-  else if (type.array(definition))
-    return definition.every(type.path);
-
-  return false;
+type.watcherMapping = function(definition) {
+  return type.object(definition) &&
+         Object.keys(definition).every(k => type.path(definition[k]));
 };
 
 /**

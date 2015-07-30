@@ -14,7 +14,6 @@ import {
   deepClone,
   getIn,
   makeError,
-  shallowClone,
   solveUpdate
 } from './helpers';
 
@@ -38,19 +37,13 @@ function checkPossibilityOfDynamicTraversal(method, solvedPath) {
 /**
  * Cursor class
  *
- * Note: opts.watched is not called opts.watch not to tamper with experimental
- * `Object.prototype.watch`.
- *
  * @constructor
  * @param {Baobab} tree   - The cursor's root.
  * @param {array}  path   - The cursor's path in the tree.
- * @param {object} [opts] - Options
- * @param {string} [opts.hash]    - The path's hash computed ahead by the tree.
- * @param {array}  [opts.watched] - Parts of the tree the cursor is meant to
- *                                  watch over.
+ * @param {string} hash   - The path's hash computed ahead by the tree.
  */
 export default class Cursor extends Emitter {
-  constructor(tree, path, opts={}) {
+  constructor(tree, path, hash) {
     super();
 
     // If no path were to be provided, we fallback to an empty path (root)
@@ -63,7 +56,7 @@ export default class Cursor extends Emitter {
     // Properties
     this.tree = tree;
     this.path = path;
-    this.hash = opts.hash;
+    this.hash = hash;
 
     // State
     this.state = {
@@ -71,24 +64,6 @@ export default class Cursor extends Emitter {
       recording: false,
       undoing: false
     };
-
-    // Checking whether the cursor is a watcher
-    if (opts.watched) {
-      this._watched = shallowClone(opts.watched);
-
-      // Normalizing path
-      for (let k in this._watched)
-        if (this._watched[k] instanceof Cursor)
-          this._watched[k] = this._watched[k].path;
-
-      // Keeping track of watched paths
-      this._watchedPaths = opts.watched && (!type.array(this._watched) ?
-        Object.keys(this._watched).map(k => this._watched[k]) :
-        this._watched);
-
-      // Overriding the cursor's get method
-      this.get = this.tree.project.bind(this.tree, this._watched);
-    }
 
     // Checking whether the given path is dynamic or not
     this._dynamicPath = type.dynamicPath(this.path);
@@ -123,9 +98,6 @@ export default class Cursor extends Emitter {
      */
     const fireUpdate = (previousData) => {
       const self = this;
-
-      if (this._watched)
-        return this.emit('update');
 
       const eventData = {
         get previousData() {
@@ -219,41 +191,15 @@ export default class Cursor extends Emitter {
    * @return {array} - Array of paths to compare with a given update.
    */
   _getComparedPaths() {
-    let comparedPaths;
 
-    // Standard cursor
-    if (!this._watched) {
+    // Checking whether we should keep track of some dependencies
+    const additionalPaths = this._facetPath ?
+      getIn(this.tree._computedDataIndex, this._facetPath)
+        .data
+        .relatedPaths() :
+      [];
 
-      // Checking whether we should keep track of some dependencies
-      const additionalPaths = this._facetPath ?
-        getIn(this.tree._computedDataIndex, this._facetPath)
-          .data
-          .relatedPaths() :
-        [];
-
-      comparedPaths = [this.solvedPath].concat(additionalPaths);
-    }
-
-    // Watcher cursor
-    else {
-      comparedPaths = this._watchedPaths.reduce((cp, p) => {
-        if (type.dynamicPath(p))
-          p = this._getIn(p).solvedPath;
-
-        if (!p)
-          return cp;
-
-        const facetPath = type.facetPath(p);
-
-        if (facetPath)
-          return cp.concat(
-            getIn(this.tree._computedDataIndex, p).data.relatedPaths());
-
-        return cp.concat([p]);
-      }, []);
-    }
-
-    return comparedPaths;
+    return [this.solvedPath].concat(additionalPaths);
   }
 
   /**

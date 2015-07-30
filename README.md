@@ -631,6 +631,12 @@ var watcher = tree.watch({
 watcher.on('update', function(e) {
   // One of the watched paths was updated!
 });
+
+watcher.get();
+>>> {
+  name: 'John',
+  surname: 'Smith'
+}
 ```
 
 **tree/cursor.project**
