@@ -39,6 +39,9 @@ const DEFAULTS = {
   // Should the tree be persistent?
   persistent: true,
 
+  // Should the tree's update be pure?
+  pure: true,
+
   // Validation specifications
   validate: null,
 
