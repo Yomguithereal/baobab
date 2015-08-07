@@ -96,7 +96,7 @@ module.exports = function(data, spec, opts) {
           v = spec.$splice;
 
           if (!type.Array(o[lastKey]))
-            throw makeError(path, 'using command $push to a non array');
+            throw makeError(path, 'using command $splice to a non array');
 
           for (i = 0, l = v.length; i < l; i++)
             o[lastKey] = helpers.splice.apply(null, [o[lastKey]].concat(v[i]));
