@@ -140,7 +140,7 @@ Rather, the tree will stack and merge every update order you give it and will on
 
 This enables the tree to perform efficient mutations and to be able to notify any relevant cursors that the data they are watching over has changed.
 
-**Important**: Note that the tree will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using things as such as React's [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
+**Important**: Note that the tree will shift the references of the objects it stores in order to enable *immutable* comparisons between one version of the state and another (this is especially useful when using things as such as React's [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html)).
 
 *Example*
 
