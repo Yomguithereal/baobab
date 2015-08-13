@@ -71,7 +71,7 @@ export default class Watcher extends Emitter {
 
       // Dynamic path?
       if (type.dynamicPath(p))
-        p = getIn(this.tree._data, p, this.tree._computedDataIndex).solvedPath;
+        p = getIn(this.tree._data, p, this.tree._facets).solvedPath;
 
       if (!p)
         return cp;
@@ -81,7 +81,7 @@ export default class Watcher extends Emitter {
 
       if (facetPath)
         return cp.concat(
-          getIn(this.tree._computedDataIndex, p).data.relatedPaths()
+          getIn(this.tree._facets, p).data.relatedPaths()
         );
 
       return cp.concat([p]);

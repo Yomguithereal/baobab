@@ -173,14 +173,15 @@ export default class Cursor extends Emitter {
    * Curried version of the `getIn` helper and ready to serve a cursor instance
    * purpose without having to write endlessly the same args over and over.
    *
+   * @todo: probably useless now...
+   *
    * @param  {array} path - The path to get in the tree.
    * @return {object}     - The result of the `getIn` helper.
    */
   _getIn(path) {
     return getIn(
       this.tree._data,
-      path,
-      this.tree._computedDataIndex
+      path
     );
   }
 
@@ -194,7 +195,7 @@ export default class Cursor extends Emitter {
 
     // Checking whether we should keep track of some dependencies
     const additionalPaths = this._facetPath ?
-      getIn(this.tree._computedDataIndex, this._facetPath)
+      getIn(this.tree._facets, this._facetPath)
         .data
         .relatedPaths() :
       [];

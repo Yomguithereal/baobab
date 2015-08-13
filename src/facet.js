@@ -5,6 +5,7 @@
  * A class in charge of tree's computed data node.
  */
 import type from './type';
+import update from './update';
 import {
   deepFreeze,
   getIn,
@@ -36,6 +37,7 @@ export default class Facet {
 
     // Properties
     this.tree = tree;
+    this.path = pathInTree;
     this.computedData = null;
     this.type = definitionType;
 
@@ -69,6 +71,8 @@ export default class Facet {
      * When the tree writes, this listener will check whether the updated paths
      * are of any use to the facet and, if so, will clean any computed data
      * so that the data may be recomputed when needed.
+     *
+     * In addition, the Facet will replace the according node within the tree.
      */
     this.listener = ({data: {path}}) => {
       if (this.state.killed)
@@ -80,11 +84,16 @@ export default class Facet {
       if (concerned) {
         this.computedData = null;
         this.state.computed = false;
+
+        this.update();
       }
     };
 
     // Binding listener
     tree.on('write', this.listener);
+
+    // Updating the tree's data
+    this.update();
   }
 
   /**
@@ -97,7 +106,7 @@ export default class Facet {
 
     if (this._hasDynamicPaths)
       paths = this.paths.map(
-        p => getIn(this.tree._data, p, this.tree._computedDataIndex).solvedPath
+        p => getIn(this.tree._data, p, this.tree._facets).solvedPath
       );
     else
       paths = this.paths;
@@ -111,12 +120,28 @@ export default class Facet {
           return accumulatedPaths.concat([path]);
 
         // Solving recursive path
-        const relatedFacet = getIn(this.tree._computedDataIndex, facetPath).data;
+        const relatedFacet = getIn(this.tree._facets, facetPath).data;
 
         return accumulatedPaths.concat(relatedFacet.relatedPaths());
       }, []);
   }
 
+  /**
+   * Method used to update the tree's internal data with the Facet's freshly
+   * computed data.
+   *
+   * @return {Facet} - Returns itself.
+   */
+  update() {
+    this.tree._data = update(
+      this.tree._data,
+      this.path,
+      {type: 'set', value: this.get()},
+      this.tree.options
+    ).data;
+
+    return this;
+  }
 
   /**
    * Getter method

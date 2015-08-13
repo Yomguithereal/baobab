@@ -4,7 +4,6 @@
  *
  * Miscellaneous helper functions.
  */
-import Facet from './facet';
 import type from './type';
 
 /**
@@ -225,20 +224,6 @@ function compare(object, description) {
 }
 
 /**
- * Function to partially freeze an object by carefully avoiding the `$`
- * keys indicating the presence of facets.
- *
- * @param {object} o - The object to partially freeze.
- */
-function partialFreeze(o) {
-  let k;
-
-  for (k in o)
-    if (k[0] !== '$')
-      Object.defineProperty(o, k, {writable: false, enumerable: true});
-}
-
-/**
  * Function freezing the given variable if possible.
  *
  * @param  {boolean} deep - Should we recursively freeze the given objects?
@@ -249,18 +234,12 @@ function freezer(deep, o) {
   if (typeof o !== 'object' || o === null)
     return;
 
-  const isArray = Array.isArray(o),
-        anyFacet = !isArray && Object.keys(o).some(k => k[0] === '$');
-
-  if (anyFacet)
-    partialFreeze(o);
-  else
-    Object.freeze(o);
+  Object.freeze(o);
 
   if (!deep)
     return;
 
-  if (isArray) {
+  if (Array.isArray(o)) {
 
     // Iterating through the elements
     let i,
@@ -300,28 +279,6 @@ const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
 export {freeze, deepFreeze};
 
 /**
- * Function used to solve a computed data mask by recursively walking a tree
- * and patching it.
- *
- * @param {mixed}  data - Data to patch.
- * @param {object} mask - Computed data mask.
- */
-function solveMask(data, mask) {
-  for (let k in mask) {
-    if (k[0] === '$') {
-
-      // Patching
-      data[k] = mask[k].get();
-    }
-    else {
-      solveMask(data[k], mask[k]);
-    }
-  }
-
-  return data;
-}
-
-/**
  * Function retrieving nested data within the given object and according to
  * the given path.
  *
@@ -330,7 +287,6 @@ function solveMask(data, mask) {
  *
  * @param  {object}  object - The object we need to get data from.
  * @param  {array}   path   - The path to follow.
- * @param  {object}  [mask] - An optional computed data index.
  * @return {object}  result            - The result.
  * @return {mixed}   result.data       - The data at path, or `undefined`.
  * @return {array}   result.solvedPath - The solved path or `null`.
@@ -338,13 +294,12 @@ function solveMask(data, mask) {
  */
 const notFoundObject = {data: undefined, solvedPath: null, exists: false};
 
-export function getIn(object, path, mask=null) {
+export function getIn(object, path) {
   if (!path)
     return notFoundObject;
 
   let solvedPath = [],
       c = object,
-      cm = mask,
       idx,
       i,
       l;
@@ -377,26 +332,8 @@ export function getIn(object, path, mask=null) {
     }
     else {
       solvedPath.push(path[i]);
-
-      // Solving data from a facet if needed
-      if (cm && path[i][0] === '$') {
-        c = cm[path[i]].get();
-        cm = null;
-      }
-      else {
-        c = c[path[i]];
-
-        // Walking the mask
-        if (cm)
-          cm = cm[path[i]] || null;
-      }
+      c = c[path[i]];
     }
-  }
-
-  // If the mask is still relevant, we solve it down to the leaves
-  if (cm && Object.keys(cm).length) {
-    const patchedData = solveMask({root: c}, {root: cm});
-    c = patchedData.root;
   }
 
   return {data: c, solvedPath, exists: c !== undefined};

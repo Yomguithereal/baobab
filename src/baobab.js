@@ -103,7 +103,7 @@ export default class Baobab extends Emitter {
     this._future = null;
     this._transaction = [];
     this._affectedPathsIndex = {};
-    this._computedDataIndex = {};
+    this._facets = {};
     this._previousData = null;
     this._data = initialData;
 
@@ -150,10 +150,6 @@ export default class Baobab extends Emitter {
     // Refreshing the whole tree
     const walk = (data, p=[]) => {
 
-      // Have we reached the end?
-      if (type.primitive(data))
-        return;
-
       // Object iteration
       // TODO: handle arrays?
       if (type.object(data)) {
@@ -166,7 +162,7 @@ export default class Baobab extends Emitter {
             const facet = new Facet(this, p.concat(k), data[k]);
 
             deepMerge(
-              this._computedDataIndex,
+              this._facets,
               pathObject(p, {[k]: facet})
             );
           }
@@ -251,8 +247,7 @@ export default class Baobab extends Emitter {
     // Solving the given path
     const {solvedPath, exists} = getIn(
       this._data,
-      path,
-      this._computedDataIndex
+      path
     );
 
     // If we couldn't solve the path, we throw
@@ -311,7 +306,6 @@ export default class Baobab extends Emitter {
    * @return {Baobab} - The tree instance for chaining purposes.
    */
   commit() {
-    const self = this;
 
     // Clearing timeout if one was defined
     if (this._future)
@@ -358,11 +352,9 @@ export default class Baobab extends Emitter {
     // Emitting update event
     this.emit('update', {
       paths: affectedPaths,
+      currentData: this._data,
       transaction,
-      previousData,
-      get currentData() {
-        return self.get();
-      }
+      previousData
     });
 
     return this;
@@ -386,8 +378,10 @@ export default class Baobab extends Emitter {
     let k;
 
     delete this._data;
+    delete this._previousData;
     delete this._transaction;
     delete this._affectedPathsIndex;
+    delete this._facets;
 
     // Releasing cursors
     for (k in this._cursors)
