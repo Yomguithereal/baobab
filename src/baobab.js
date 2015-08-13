@@ -415,7 +415,7 @@ export default class Baobab extends Emitter {
  * Version
  */
 Object.defineProperty(Baobab, 'version', {
-  value: '2.0.0-dev13'
+  value: '2.0.0-rc1'
 });
 
 /**
