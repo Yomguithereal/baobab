@@ -139,7 +139,7 @@ A *baobab* tree can obviously be updated. However, one has to understand that, e
 
 If you really need to fire an update synchronously (typically if you store a form's state within your app's state, for instance), your remain free to use the `tree.commit()` method or tweak the tree's [options](#options) to fit your needs.
 
-**Important**: Note that the tree, being a persistent data structure, will shift the references of the objects it stores in order to enable *immutabley* comparisons between one version of the state and another (this is especially useful when using strategies as such as React's [pure rendering](https://facebook.github.io/react/docs/pure-render-mixin.html)).
+**Important**: Note that the tree, being a persistent data structure, will shift the references of the objects it stores in order to enable *immutable* comparisons between one version of the state and another (this is especially useful when using strategies as such as React's [pure rendering](https://facebook.github.io/react/docs/pure-render-mixin.html)).
 
 *Example*
 
