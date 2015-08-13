@@ -13,7 +13,7 @@
     "babelify": "^6.1.2",
     "benchmark": "^1.0.0",
     "browserify": "^11.0.1",
-    "eslint": "^0.24.0",
+    "eslint": "^1.1.0",
     "gulp": "^3.8.10",
     "gulp-header": "^1.2.2",
     "gulp-rename": "^1.2.2",
