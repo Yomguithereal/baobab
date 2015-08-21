@@ -432,9 +432,11 @@ Object.defineProperty(Baobab, 'version', {
 });
 
 /**
- * Exposing the Cursor class
+ * Exposing some internals for convenience
  */
 Baobab.Cursor = Cursor;
+Baobab.Facet = Facet;
+Baobab.type = type;
 
 /**
  * Exporting
