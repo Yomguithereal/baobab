@@ -10,7 +10,9 @@ import Watcher from './watcher';
 import Facet from './facet';
 import type from './type';
 import update from './update';
-import {
+import * as helpers from './helpers';
+
+const {
   arrayFrom,
   coercePath,
   deepFreeze,
@@ -20,7 +22,7 @@ import {
   pathObject,
   shallowMerge,
   uniqid
-} from './helpers';
+} = helpers;
 
 /**
  * Baobab defaults
@@ -437,6 +439,7 @@ Object.defineProperty(Baobab, 'version', {
 Baobab.Cursor = Cursor;
 Baobab.Facet = Facet;
 Baobab.type = type;
+Baobab.helpers = helpers;
 
 /**
  * Exporting
