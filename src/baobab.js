@@ -93,9 +93,11 @@ export default class Baobab extends Emitter {
     // Merging given options with defaults
     this.options = shallowMerge({}, DEFAULTS, opts);
 
-    // Disabling immutability if persistence if disabled
-    if (!this.options.persistent)
+    // Disabling immutability & persistence if persistence if disabled
+    if (!this.options.persistent) {
       this.options.immutable = false;
+      this.options.pure = false;
+    }
 
     // Privates
     this._identity = '[object Baobab]';
@@ -265,12 +267,18 @@ export default class Baobab extends Emitter {
       this._previousData = this.get();
 
     // Applying the operation
-    const {data, node} = update(
+    const result = update(
       this._data,
       solvedPath,
       operation,
       this.options
     );
+
+    const {data, node} = result;
+
+    // If because of purity, the update was moot, we stop here
+    if (!('data' in result))
+      return node;
 
     // If the operation is push, the affected path is slightly different
     let affectedPath = solvedPath.concat(

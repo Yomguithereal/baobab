@@ -192,7 +192,7 @@ describe('Baobab API', function() {
     });
 
     it('the `set` operation should also shift the references.', function() {
-      const tree = new Baobab({test: {}}, {asynchronous: false}),
+      const tree = new Baobab({test: {}}, {asynchronous: false, pure: false}),
             o = tree.get('test');
 
       tree.set('test', o);
@@ -452,6 +452,25 @@ describe('Baobab API', function() {
 
       assert.deepEqual(tree.get('object'), {one: 1, two: 2});
       assert.strictEqual(tree.get('object'), initialObject);
+    });
+
+    it('should be possible to enforce purity.', function() {
+      const tree = new Baobab({nb: 2}, {asynchronous: false}),
+            impureTree = new Baobab({nb: 2}, {asynchronous: false, pure: false});
+
+      let updated = false,
+          impureUpdated = false;
+
+      let listener = () => updated = true,
+          impureListener = (e) => impureUpdated = true;
+
+      tree.on('update', listener);
+      impureTree.on('update', impureListener);
+
+      tree.set('nb', 2);
+      impureTree.set('nb', 2);
+
+      assert(!updated && impureUpdated);
     });
   });
 });

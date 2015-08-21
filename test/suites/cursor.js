@@ -803,8 +803,8 @@ describe('Cursor API', function() {
       assert.strictEqual(cursor.get(), 4);
       assert.deepEqual(cursor.getHistory(), [2, 3].reverse());
 
-      cursor.set(4)
       cursor.set(5);
+      cursor.set(6);
 
       cursor.undo(3);
 

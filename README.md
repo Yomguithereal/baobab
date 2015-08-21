@@ -752,6 +752,7 @@ var baobab = new Baobab(
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
 * **immutable** *boolean* [`true`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze` and should be disabled in production for performance reasons.
 * **persistent** *boolean* [`true`]: should the tree be persistent. Know that disabling this option, while bringing a significant performance boost on heavy data, will make you lose the benefits of your tree's history and `O(1)` comparisons of objects.
+* **pure** *boolean* [`true`]: by default, on `set` and `apply` operations, the tree will check if the given value and the target node are stricly equal. If they indeed are, the tree won't update.
 * **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.
 * **validationBehavior** *string* [`rollback`]: validation behavior of the tree. If `rollback`, the tree won't apply the current update and fire an `invalid` event while `notify` will only emit the event and let the tree enter the invalid state anyway.
 

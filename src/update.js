@@ -64,6 +64,11 @@ export default function update(data, path, operation, opts={}) {
        * Set
        */
       if (operationType === 'set') {
+
+        // Purity check
+        if (opts.pure && p[s] === value)
+          return {node: p[s]};
+
         p[s] = opts.persistent ? shallowClone(value) : value;
       }
 
@@ -72,6 +77,10 @@ export default function update(data, path, operation, opts={}) {
        */
       else if (operationType === 'apply') {
         const result = value(p[s]);
+
+        // Purity check
+        if (opts.pure && result === value)
+          return  {node: p[s]};
 
         p[s] = opts.persistent ? shallowClone(result) : result;
       }
