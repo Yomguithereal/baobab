@@ -383,7 +383,7 @@ export function makeError(message, data) {
  * @param  {...object} objects - Objects to merge.
  * @return {object}            - The merged object.
  */
-export function merger(deep, ...objects) {
+function merger(deep, ...objects) {
   let o = objects[0],
       t,
       i,
