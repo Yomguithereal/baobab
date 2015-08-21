@@ -264,8 +264,6 @@ export default class Baobab extends Emitter {
     if (!this._transaction.length)
       this._previousData = this.get();
 
-    const hash = hashPath(solvedPath);
-
     // Applying the operation
     const {data, node} = update(
       this._data,
@@ -274,13 +272,20 @@ export default class Baobab extends Emitter {
       this.options
     );
 
+    // If the operation is push, the affected path is slightly different
+    let affectedPath = solvedPath.concat(
+      operation.type === 'push' ? node.length - 1 : []
+    );
+
+    const hash = hashPath(affectedPath);
+
     // Updating data and transaction
     this._data = data;
     this._affectedPathsIndex[hash] = true;
-    this._transaction.push({...operation, path: solvedPath});
+    this._transaction.push({...operation, path: affectedPath});
 
     // Emitting a `write` event
-    this.emit('write', {path: solvedPath});
+    this.emit('write', {path: affectedPath});
 
     // Should we let the user commit?
     if (!this.options.autoCommit)

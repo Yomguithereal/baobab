@@ -490,6 +490,21 @@ describe('Cursor API', function() {
       leaf1.set('tada');
     });
 
+    it('should not notify siblings in an array when pushing.', function() {
+      const tree = new Baobab({list: ['one']}, {asynchronous: false}),
+            cursor = tree.select('list', 0);
+
+      let count = 0,
+          listener = () => count++;
+
+      cursor.on('update', listener);
+
+      tree.push('list', 'two');
+      tree.set('list', ['three']);
+
+      assert.strictEqual(count, 1);
+    });
+
     it('should be possible to listen to changes in an array.', function(done) {
       const tree = new Baobab({list: ['hello', 'world']}),
             cursor = tree.select('list', 1);
