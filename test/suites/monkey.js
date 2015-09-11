@@ -229,4 +229,29 @@ describe('Monkeys', function() {
       }
     );
   });
+
+  it('should work recursively.', function(done) {
+    const inc = x => x + 1;
+
+    const tree = new Baobab({
+      data: {
+        number: 1
+      },
+      computed: {
+        one: monkey(['data', 'number'], inc),
+        two: monkey(['computed', 'one'], inc)
+      }
+    });
+
+    assert.strictEqual(tree.get('computed', 'one'), 2);
+    assert.strictEqual(tree.get('computed', 'two'), 3);
+
+    tree.select('data', 'number').on('update', () => {
+      assert.strictEqual(tree.get('computed', 'one'), 6);
+      assert.strictEqual(tree.get('computed', 'two'), 7);
+      done();
+    });
+
+    tree.set(['data', 'number'], 5);
+  });
 });

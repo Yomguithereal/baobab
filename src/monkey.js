@@ -47,9 +47,6 @@ export class MonkeyDefinition {
     }
 
     this.hasDynamicPaths = this.paths.some(type.dynamicPath);
-
-    // TODO...
-    this.isRecursive = false;
   }
 }
 
@@ -67,6 +64,10 @@ export class Monkey {
     this.tree = tree;
     this.path = pathInTree;
     this.definition = definition;
+
+    this.isRecursive = definition.paths.some(
+      p => !!type.monkeyPath(this.tree._monkeys, p)
+    );
 
     // Internal state
     this.state = {
@@ -115,7 +116,7 @@ export class Monkey {
     else
       paths = def.paths;
 
-    if (!def.isRecursive)
+    if (!this.isRecursive)
       return paths;
     else
       return paths.reduce((accumulatedPaths, path) => {
