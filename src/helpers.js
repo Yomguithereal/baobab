@@ -164,7 +164,7 @@ function cloner(deep, item) {
     // NOTE: could be possible to erase computed properties through `null`.
     for (k in item)
       if (item.hasOwnProperty(k))
-        o[k] = (deep && k[0] !== '$') ? cloner(true, item[k]) : item[k];
+        o[k] = (deep && !(item[k] instanceof Monkey)) ? cloner(true, item[k]) : item[k];
     return o;
   }
 
@@ -377,8 +377,7 @@ export function makeError(message, data) {
  * Function taking n objects to merge them together.
  * Note 1): the latter object will take precedence over the first one.
  * Note 2): the first object will be mutated to allow for perf scenarios.
- * Note 3): this function will take not `$.` keys into account and should only
- * be used by Baobab's internal and would be unsuited in any other case.
+ * Note 3): this function will consider monkeys as leaves.
  *
  * @param  {boolean}   deep    - Whether the merge should be deep or not.
  * @param  {...object} objects - Objects to merge.
