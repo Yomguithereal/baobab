@@ -68,8 +68,8 @@ export default class Cursor extends Emitter {
     // Checking whether the given path is dynamic or not
     this._dynamicPath = type.dynamicPath(this.path);
 
-    // Checking whether the given will meet a facet
-    this._facetPath = type.facetPath(this.path);
+    // Checking whether the given path will meet a monkey
+    this._monkeyPath = type.monkeyPath(this.tree._monkeys, this.path);
 
     if (!this._dynamicPath)
       this.solvedPath = this.path;
@@ -194,8 +194,8 @@ export default class Cursor extends Emitter {
   _getComparedPaths() {
 
     // Checking whether we should keep track of some dependencies
-    const additionalPaths = this._facetPath ?
-      getIn(this.tree._facets, this._facetPath)
+    const additionalPaths = this._monkeyPath ?
+      getIn(this.tree._monkeys, this._monkeyPath)
         .data
         .relatedPaths() :
       [];

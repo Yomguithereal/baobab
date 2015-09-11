@@ -546,29 +546,29 @@ describe('Cursor API', function() {
       tree.set(['one', 'hello'], 'monde');
     });
 
-    it('update events should expose previous computed data.', function(done) {
-      const tree = new Baobab({
-        list: ['hey', 'ho'],
-        currentItem: 0,
-        $current: [
-          ['list'],
-          ['currentItem'],
-          function(list, i) {
-            return list[i];
-          }
-        ]
-      });
+    // it('update events should expose previous computed data.', function(done) {
+    //   const tree = new Baobab({
+    //     list: ['hey', 'ho'],
+    //     currentItem: 0,
+    //     $current: [
+    //       ['list'],
+    //       ['currentItem'],
+    //       function(list, i) {
+    //         return list[i];
+    //       }
+    //     ]
+    //   });
 
-      const cursor = tree.select('$current');
+    //   const cursor = tree.select('$current');
 
-      cursor.on('update', function({data}) {
-        assert.strictEqual(data.currentData, 'ho');
-        assert.strictEqual(data.previousData, 'hey');
-        done();
-      });
+    //   cursor.on('update', function({data}) {
+    //     assert.strictEqual(data.currentData, 'ho');
+    //     assert.strictEqual(data.previousData, 'hey');
+    //     done();
+    //   });
 
-      tree.set('currentItem', 1);
-    });
+    //   tree.set('currentItem', 1);
+    // });
 
     it('dynamic cursors should see their solvedPath correctly update on writes.', function(done) {
       const tree = new Baobab({colors: []}),

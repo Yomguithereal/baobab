@@ -6,6 +6,8 @@
  * tests at runtime.
  *
  */
+import {Monkey} from './monkey';
+
 const type = {};
 
 /**
@@ -144,21 +146,28 @@ type.dynamicPath = function(path) {
 };
 
 /**
- * Retrieve any facet subpath in the given path or null if the path never comes
+ * Retrieve any monkey subpath in the given path or null if the path never comes
  * across computed data.
  *
- * @param  {mixed} path - The path to test.
+ * @param  {mixed} data - The data to test.
+ * @param  {array} path - The path to test.
  * @return {boolean}
  */
-type.facetPath = function(path) {
+type.monkeyPath = function(data, path) {
   let subpath = [],
+      c = data,
       i,
       l;
 
   for (i = 0, l = path.length; i < l; i++) {
     subpath.push(path[i]);
 
-    if (path[i][0] === '$')
+    if (typeof c !== 'object')
+      return null;
+
+    c = c[path[i]];
+
+    if (c instanceof Monkey)
       return subpath;
   }
 
@@ -177,17 +186,18 @@ type.readOnlyPath = function(path) {
 };
 
 /**
- * Returns the type of the given facet definition or `null` if invalid.
+ * Returns the type of the given monkey definition or `null` if invalid.
  *
  * @param  {mixed} definition - The definition to check.
  * @return {string|null}
  */
-type.facetDefinition = function(definition) {
+type.monkeyDefinition = function(definition) {
 
   if (type.object(definition)) {
     if (!type.function(definition.get) ||
         (definition.cursors &&
-         !(Object.keys(definition).every(k => type.path(definition[k])))))
+         (!type.object(definition.cursors) ||
+          !(Object.keys(definition.cursors).every(k => type.path(definition.cursors[k]))))))
       return null;
     else
       return 'object';

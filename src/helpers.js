@@ -4,6 +4,7 @@
  *
  * Miscellaneous helper functions.
  */
+import {Monkey} from './monkey';
 import type from './type';
 
 /**
@@ -396,7 +397,7 @@ function merger(deep, ...objects) {
     for (k in t) {
       if (deep &&
           typeof t[k] === 'object' &&
-          k[0] !== '$') {
+          !(t[k] instanceof Monkey)) {
         o[k] = merger(true, o[k] || {}, t[k]);
       }
       else {

@@ -6,8 +6,8 @@
  */
 import Emitter from 'emmett';
 import Cursor from './cursor';
+import {MonkeyDefinition, Monkey} from './monkey';
 import Watcher from './watcher';
-import Facet from './facet';
 import type from './type';
 import update from './update';
 import * as helpers from './helpers';
@@ -77,6 +77,8 @@ function hashPath(path) {
  * @param {boolean}      [opts.asynchronous] - Should the tree's transactions
  *                                             handled asynchronously?
  * @param {boolean}      [opts.immutable]    - Should the tree be immutable?
+ * @param {boolean}      [opts.persistent]   - Should the tree be persistent?
+ * @param {boolean}      [opts.pure]         - Should the tree be pure?
  * @param {function}     [opts.validate]     - Validation function.
  * @param {string}       [opts.validationBehaviour] - "rollback" or "notify".
  */
@@ -107,7 +109,7 @@ export default class Baobab extends Emitter {
     this._future = null;
     this._transaction = [];
     this._affectedPathsIndex = {};
-    this._facets = {};
+    this._monkeys = {};
     this._previousData = null;
     this._data = initialData;
 
@@ -141,33 +143,37 @@ export default class Baobab extends Emitter {
       'unshift'
     ].forEach(bootstrap);
 
-    // Creating the computed data index for the first time
-    this._initializeComputedDataIndex();
+    // Registering the initial monkeys
+    this._refreshMonkeys();
   }
 
   /**
-   * Private method used to initialize the internal computed data index of the
-   * tree.
+   * Internal method used to refresh the tree's monkey register on every
+   * update.
+   * Note 1) For the time being, placing monkeys beneath array nodes is not
+   * allowed for performance reasons.
+   *
+   * @param  {mixed}   node - The starting node.
+   * @param  {array}   path - The starting node's path.
+   * @return {Baobab}       - The tree instance for chaining purposes.
    */
-  _initializeComputedDataIndex() {
+  _refreshMonkeys(node=null, path=null) {
 
-    // Refreshing the whole tree
     const walk = (data, p=[]) => {
 
       // Object iteration
-      // TODO: handle arrays?
       if (type.object(data)) {
         let k;
 
         for (k in data) {
 
-          // Creating a facet if needed
-          if (k[0] === '$') {
-            const facet = new Facet(this, p.concat(k), data[k]);
+          // Should we sit a monkey in the tree?
+          if (data[k] instanceof MonkeyDefinition) {
+            const monkey = new Monkey(this, p.concat(k), data[k]);
 
             deepMerge(
-              this._facets,
-              pathObject(p, {[k]: facet})
+              this._monkeys,
+              pathObject(p, {[k]: monkey})
             );
           }
           else {
@@ -178,7 +184,10 @@ export default class Baobab extends Emitter {
     };
 
     // Walking the whole tree
-    return walk(this._data);
+    if (!node)
+      walk(this._data);
+
+    return this;
   }
 
   /**
@@ -396,7 +405,7 @@ export default class Baobab extends Emitter {
     delete this._previousData;
     delete this._transaction;
     delete this._affectedPathsIndex;
-    delete this._facets;
+    delete this._monkeys;
 
     // Releasing cursors
     for (k in this._cursors)
@@ -427,19 +436,29 @@ export default class Baobab extends Emitter {
 }
 
 /**
+ * Creating statics
+ */
+Baobab.monkey = function(definition) {
+  return new MonkeyDefinition(definition);
+};
+Baobab.dynamicNode = Baobab.monkey;
+
+/**
+ * Exposing some internals for convenience
+ */
+Baobab.Cursor = Cursor;
+Baobab.MonkeyDefinition = MonkeyDefinition;
+Baobab.Monkey = Monkey;
+Baobab.type = type;
+Baobab.helpers = helpers;
+
+/**
  * Version
  */
 Object.defineProperty(Baobab, 'version', {
   value: '2.0.0-rc1'
 });
 
-/**
- * Exposing some internals for convenience
- */
-Baobab.Cursor = Cursor;
-Baobab.Facet = Facet;
-Baobab.type = type;
-Baobab.helpers = helpers;
 
 /**
  * Exporting

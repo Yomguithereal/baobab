@@ -73,6 +73,13 @@ export default function update(data, path, operation, opts={}) {
       }
 
       /**
+       * Monkey
+       */
+      else if (operationType === 'monkey') {
+        Object.defineProperty(p, s, {get: value});
+      }
+
+      /**
        * Apply
        */
       else if (operationType === 'apply') {
