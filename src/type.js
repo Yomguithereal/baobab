@@ -175,17 +175,6 @@ type.monkeyPath = function(data, path) {
 };
 
 /**
- * Checking whether the given path is read-only.
- * Note: this should of course apply to a solved path and not a dynamic one.
- *
- * @param  {mixed} path - The path to test.
- * @return {boolean}
- */
-type.readOnlyPath = function(path) {
-  return path.some(step => step[0] === '$');
-};
-
-/**
  * Returns the type of the given monkey definition or `null` if invalid.
  *
  * @param  {mixed} definition - The definition to check.

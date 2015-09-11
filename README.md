@@ -8,8 +8,6 @@ It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip
 
 It aims at providing a centralized model holding an application's state and can be paired with **React** easily through mixins, higher order components, wrapper components or decorators (available [there](https://github.com/Yomguithereal/baobab-react)).
 
-For a concise introduction about the library and how it can be used in a React/Flux application, you can head toward **@christianalfoni**'s [article](http://christianalfoni.github.io/javascript/2015/02/06/plant-a-baobab-tree-in-your-flux-application.html) on the subject.
-
 **Fun fact**: A [Baobab](http://en.wikipedia.org/wiki/Adansonia_digitata), or *Adansonia digitata*, is a very big and magnificient African tree.
 
 ## Summary
@@ -81,7 +79,7 @@ Or install with bower:
 bower install baobab
 ```
 
-The library (as a standalone) currently weights ~25ko minified and ~7ko gzipped.
+The library (as a standalone) currently weights ~8ko gzipped.
 
 ## Usage
 

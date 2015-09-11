@@ -739,13 +739,6 @@ function makeSetter(name, typeChecker) {
 
     const fullPath = this.solvedPath.concat(path);
 
-    // Checking we are not trying to update a read-only path
-    if (type.readOnlyPath(fullPath))
-      throw makeError(
-        `Baobab.Cursor.${name}: trying to update a read-only path.`,
-        {path: fullPath}
-      );
-
     // Filing the update to the tree
     return this.tree.update(
       fullPath,

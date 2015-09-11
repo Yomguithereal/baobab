@@ -90,4 +90,24 @@ describe('Watchers', function() {
 
     assert.strictEqual(count, 1);
   });
+
+  it('should be possible to watch over monkeys.', function(done) {
+    const tree = new Baobab({
+      data: {
+        colors: ['yellow', 'blue'],
+        phrase: monkey(['data', 'colors', 1], (color) => color + ' jasmine')
+      }
+    });
+
+    const watcher = tree.watch({
+      phrase: ['data', 'phrase']
+    });
+
+    watcher.on('update', function() {
+      assert.deepEqual(watcher.get(), {phrase: 'yellow jasmine'});
+      done();
+    });
+
+    tree.unshift(['data', 'colors'], 'purple');
+  });
 });
