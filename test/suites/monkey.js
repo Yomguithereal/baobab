@@ -61,4 +61,32 @@ describe('Monkeys', function() {
       [{from: 'John', message: 'Hey'}]
     );
   });
+
+  it('should be possible to create facets using a shorthand.', function() {
+    const tree = new Baobab({
+      data: {
+        messages: [
+          {from: 'John', message: 'Hey'},
+          {from: 'Jack', message: 'Ho'}
+        ],
+        greeting: 'Hello',
+        custom: monkey(
+          ['data', 'messages'],
+          ['data', 'greeting'],
+          function(messages, greeting) {
+            return greeting + ' ' + messages[0].from;
+          }
+        )
+      }
+    });
+
+    assert.strictEqual(tree.get('data', 'custom'), 'Hello John');
+  });
+
+  it('computed data should be immutable.', function() {
+    const tree = new Baobab(getExampleState()),
+          computedData = tree.get('data', 'fromJohn');
+
+    assert.isFrozen(computedData);
+  });
 });

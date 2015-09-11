@@ -8,6 +8,7 @@ import type from './type';
 import update from './update';
 import {
   arrayFrom,
+  deepFreeze,
   getIn,
   makeError,
   solveUpdate
@@ -140,13 +141,27 @@ export class Monkey {
     const deps = this.tree.project(this.definition.projection);
 
     const lazyGetter = (function(tree, def, data) {
+      let cache = null,
+          alreadyComputed = false;
+
       return function() {
-        return def.getter.apply(
-          tree,
-          def.type === 'object' ?
-            [data] :
-            data
-        );
+
+        if (!alreadyComputed) {
+          cache = def.getter.apply(
+            tree,
+            def.type === 'object' ?
+              [data] :
+              data
+          );
+
+          // Freezing if required
+          if (tree.options.immutable)
+            deepFreeze(cache);
+
+          alreadyComputed = true;
+        }
+
+        return cache;
       };
     })(this.tree, this.definition, deps);
 

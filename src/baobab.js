@@ -438,8 +438,15 @@ export default class Baobab extends Emitter {
 /**
  * Creating statics
  */
-Baobab.monkey = function(definition) {
-  return new MonkeyDefinition(definition);
+Baobab.monkey = function(...args) {
+
+  if (!args.length)
+    throw new Error('Baobab.monkey: missing definition.');
+
+  if (args.length === 1)
+    return new MonkeyDefinition(args[0]);
+  else
+    return new MonkeyDefinition(args);
 };
 Baobab.dynamicNode = Baobab.monkey;
 
