@@ -157,35 +157,32 @@ export default class Baobab extends Emitter {
    * @param  {array}   path - The starting node's path.
    * @return {Baobab}       - The tree instance for chaining purposes.
    */
-  _refreshMonkeys(node=null, path=null) {
+  _refreshMonkeys(node, path) {
 
     const walk = (data, p=[]) => {
 
+      // Should we sit a monkey in the tree?
+      if (data instanceof MonkeyDefinition) {
+        const monkey = new Monkey(this, p, data);
+
+        deepMerge(
+          this._monkeys,
+          pathObject(p, monkey)
+        );
+      }
+
       // Object iteration
       if (type.object(data)) {
-        let k;
-
-        for (k in data) {
-
-          // Should we sit a monkey in the tree?
-          if (data[k] instanceof MonkeyDefinition) {
-            const monkey = new Monkey(this, p.concat(k), data[k]);
-
-            deepMerge(
-              this._monkeys,
-              pathObject(p, {[k]: monkey})
-            );
-          }
-          else {
-            walk(data[k], p.concat(k));
-          }
-        }
+        for (let k in data)
+          walk(data[k], p.concat(k), k);
       }
     };
 
     // Walking the whole tree
-    if (!node)
+    if (!arguments.length)
       walk(this._data);
+    else
+      walk(node, path);
 
     return this;
   }
@@ -309,6 +306,9 @@ export default class Baobab extends Emitter {
     this._data = data;
     this._affectedPathsIndex[hash] = true;
     this._transaction.push({...operation, path: affectedPath});
+
+    // Updating the monkeys
+    this._refreshMonkeys(node, solvedPath);
 
     // Emitting a `write` event
     this.emit('write', {path: affectedPath});

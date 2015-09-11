@@ -313,4 +313,26 @@ describe('Monkeys', function() {
       tree.set(['data', 'fromJohn', 0, 'text'], 'Shawarma');
     }, /read-only/);
   });
+
+  it('should be possible to add new monkeys at runtime.', function() {
+    const tree = new Baobab(
+      {
+        data: {
+          colors: ['yellow', 'blue', 'purple']
+        }
+      },
+      {asynchronous: false}
+    );
+
+    const final = monkey(['data', 'colors'], cl => cl.filter(c => c.slice(-1)[0] === 'e')),
+          leading = monkey(['data', 'colors'], cl => cl.filter(c => c[0] === 'y'));
+
+    tree.set(['data', 'filtered'], final);
+
+    assert.deepEqual(tree.get('data', 'filtered'), ['blue', 'purple']);
+
+    tree.set(['data', 'computed', 'leader'], leading);
+
+    assert.deepEqual(tree.get('data', 'computed', 'leader'), ['yellow']);
+  });
 });

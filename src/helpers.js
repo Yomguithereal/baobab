@@ -4,7 +4,7 @@
  *
  * Miscellaneous helper functions.
  */
-import {Monkey} from './monkey';
+import {Monkey, MonkeyDefinition} from './monkey';
 import type from './type';
 
 /**
@@ -133,6 +133,7 @@ function cloner(deep, item) {
   if (!item ||
       typeof item !== 'object' ||
       item instanceof Error ||
+      item instanceof MonkeyDefinition ||
       ('ArrayBuffer' in global && item instanceof ArrayBuffer))
     return item;
 
@@ -164,7 +165,7 @@ function cloner(deep, item) {
     // NOTE: could be possible to erase computed properties through `null`.
     for (k in item)
       if (item.hasOwnProperty(k))
-        o[k] = (deep && !(item[k] instanceof Monkey)) ? cloner(true, item[k]) : item[k];
+        o[k] = deep ? cloner(true, item[k]) : item[k];
     return o;
   }
 
