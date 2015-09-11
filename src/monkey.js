@@ -10,7 +10,7 @@ import {
   arrayFrom,
   getIn,
   makeError,
-  solveUpate
+  solveUpdate
 } from './helpers';
 
 /**
@@ -84,7 +84,7 @@ export class Monkey {
         return;
 
       // Is the monkey affected by the current write event?
-      const concerned = solveUpate([path], this.relatedPaths());
+      const concerned = solveUpdate([path], this.relatedPaths());
 
       if (concerned)
         this.update();
