@@ -305,4 +305,12 @@ describe('Monkeys', function() {
     assert.isNotFrozen(mutableData.data.fromJohn);
     assert.isNotFrozen(mutableData.data.fromJohn[0]);
   });
+
+  it('should warn the user when he attempts to update a path beneath a monkey.', function() {
+    const tree = new Baobab(getExampleState());
+
+    assert.throws(function() {
+      tree.set(['data', 'fromJohn', 0, 'text'], 'Shawarma');
+    }, /read-only/);
+  });
 });

@@ -269,6 +269,13 @@ export default class Baobab extends Emitter {
         path: solvedPath
       });
 
+    // Read-only path?
+    const monkeyPath = type.monkeyPath(this._monkeys, solvedPath);
+    if (monkeyPath && solvedPath.length > monkeyPath.length)
+      throw makeError('Baobab.update: attempting to update a read-only path.', {
+        path: solvedPath
+      });
+
     // We don't unset irrelevant paths
     if (operation.type === 'unset' && !exists)
       return;
