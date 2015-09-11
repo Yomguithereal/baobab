@@ -76,7 +76,7 @@ export default function update(data, path, operation, opts={}) {
        * Monkey
        */
       else if (operationType === 'monkey') {
-        Object.defineProperty(p, s, {get: value});
+        Object.defineProperty(p, s, {get: value, enumerable: true});
       }
 
       /**

@@ -5,6 +5,7 @@
  * Cursors created by selecting some data within a Baobab tree.
  */
 import Emitter from 'emmett';
+import {Monkey} from './monkey';
 import type from './type';
 import {
   Archive,
@@ -74,7 +75,7 @@ export default class Cursor extends Emitter {
     if (!this._dynamicPath)
       this.solvedPath = this.path;
     else
-      this.solvedPath = this._getIn(this.path).solvedPath;
+      this.solvedPath = getIn(this.tree._data, this.path).solvedPath;
 
     /**
      * Listener bound to the tree's writes so that cursors with dynamic paths
@@ -87,7 +88,7 @@ export default class Cursor extends Emitter {
           !solveUpdate([data.path], this._getComparedPaths()))
         return;
 
-      this.solvedPath = this._getIn(this.path).solvedPath;
+      this.solvedPath = getIn(this.tree._data, this.path).solvedPath;
     };
 
     /**
@@ -168,22 +169,6 @@ export default class Cursor extends Emitter {
    * Internal helpers
    * -----------------
    */
-
-  /**
-   * Curried version of the `getIn` helper and ready to serve a cursor instance
-   * purpose without having to write endlessly the same args over and over.
-   *
-   * @todo: probably useless now...
-   *
-   * @param  {array} path - The path to get in the tree.
-   * @return {object}     - The result of the `getIn` helper.
-   */
-  _getIn(path) {
-    return getIn(
-      this.tree._data,
-      path
-    );
-  }
 
   /**
    * Method returning the paths of the tree watched over by the cursor and that
@@ -420,7 +405,7 @@ export default class Cursor extends Emitter {
     if (!this.solvedPath)
       return {data: undefined, solvedPath: null, exists: false};
 
-    return this._getIn(this.solvedPath.concat(path));
+    return getIn(this.tree._data, this.solvedPath.concat(path));
   }
 
   /**
@@ -475,7 +460,8 @@ export default class Cursor extends Emitter {
    * Method used to return raw data from the tree, by carefully avoiding
    * computed one.
    *
-   * @todo: should be more performant.
+   * @todo: should be more performant as the cloning should happen as well as
+   * when dropping computed data.
    *
    * Arity (1):
    * @param  {path}   path           - Path to serialize in the tree.
@@ -485,22 +471,36 @@ export default class Cursor extends Emitter {
    *
    * @return {mixed}                 - The retrieved raw data.
    */
-  serialize() {
-    const data = deepClone(this.get.apply(this, arguments));
+  serialize(path) {
+    path = coercePath(path);
 
-    const dropComputedData = function(d) {
-      if (!type.object(d))
+    if (arguments.length > 1)
+      path = arrayFrom(arguments);
+
+    if (!type.path(path))
+      throw makeError('Baobab.Cursor.getters: invalid path.', {path});
+
+    if (!this.solvedPath)
+      return undefined;
+
+    const fullPath = this.solvedPath.concat(path);
+
+    const data = deepClone(getIn(this.tree._data, fullPath).data),
+          monkeys = getIn(this.tree._monkeys, fullPath).data;
+
+    const dropComputedData = (d, m) => {
+      if (!type.object(m) || !type.object(d))
         return;
 
-      for (let k in d) {
-        if (k[0] === '$')
+      for (let k in m) {
+        if (m[k] instanceof Monkey)
           delete d[k];
         else
-          dropComputedData(d[k]);
+          dropComputedData(d[k], m[k]);
       }
     };
 
-    dropComputedData(data);
+    dropComputedData(data, monkeys);
     return data;
   }
 
