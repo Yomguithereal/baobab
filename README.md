@@ -22,7 +22,7 @@ It aims at providing a centralized model holding an application's state and can 
     * [Events](#events)
   * [Advanced](#advanced)
     * [Polymorphisms](#polymorphisms)
-    * [Computed data](#computed-data)
+    * [Computed data](#computed-data-or-monkey-business)
     * [Specialized getters](#specialized-getters)
     * [Traversal](#traversal)
     * [Options](#options)
@@ -477,22 +477,31 @@ var blankTree = new Baobab();
 
 **Note**: when using a function or a descriptor object in a path, you are not filtering but rather selecting the first matching element. (It's actually the same as using something like [lodash](https://lodash.com/docs#find)'s `_.find`).
 
-#### Computed data (facets)
+#### Computed data or "Monkey Business"
 
 For convenience, **Baobab** allows you to store computed data within the tree.
 
-Computed data node can be considered as a "view" or "facet" over some parts of the data stored within your tree (a filtered version of an array, for instance).
+It does so by letting you create "monkeys" that you should really consider as dynamic nodes within your tree (*v1 users*: "monkeys" are merely the evolution of "facets").
 
-Those specific nodes must have, by convention, a key starting with `$` and can define dependencies to some paths within the tree.
+As such, while monkeys represent reduction of the current state (a filtered list used by multiple component throughout your app, for instance), they do have a physical existence within the tree.
+
+This means that you can add / modify / move / remove monkeys from the tree at runtime and place them wherever you want.
+
+The reason why computed data now sits within the tree itself is so that components don't need to know from which kind of data, static or computed, they must draw their dependencies and so that read/select API might stay the same across the whole library.
 
 *Example*
 
 ```js
+var monkey = Baobab.monkey;
+// Or if you hate similes and fancy naming
+var dynamicNode = Baobab.dynamicNode;
+
+// Declarative definition syntax
 var tree = new Baobab({
   user: {
     name: 'John',
     surname: 'Smith',
-    $fullname: {
+    fullname: monkey({
       cursors: {
         name: ['user', 'name'],
         surname: ['user', 'surname']
@@ -500,14 +509,14 @@ var tree = new Baobab({
       get: function(data) {
         return data.name + ' ' + data.surname;
       }
-    }
+    })
   },
   data: {
     messages: [
       {from: 'John', txt: 'Hey'},
       {from: 'Jack', txt: 'Ho'}
     ],
-    $fromJohn: {
+    fromJohn: monkey({
       cursors: {
         messages: ['data', 'messages'],
       },
@@ -516,7 +525,7 @@ var tree = new Baobab({
           return m.from === 'John';
         });
       }
-    }
+    })
   }
 });
 
@@ -525,49 +534,67 @@ var tree = new Baobab({
   user: {
     name: 'John',
     surname: 'Smith',
-    $fullname: [
+    fullname: monkey(
       ['user', 'name'],
       ['user', 'surname'],
       function(name, surname) {
         return name + ' ' + surname;
       }
-    ]
+    )
   },
   data: {
     messages: [
       {from: 'John', txt: 'Hey'},
       {from: 'Jack', txt: 'Ho'}
     ],
-    $fromJohn: [
+    fromJohn: monkey(
       ['data', 'messages'],
       function(messages) {
         return messages.filter(function(m) {
           return m.from === 'John';
         });
       }
-    ]
+    )
   }
 });
 
 // You can then access or select data naturally
-tree.get('user', '$fullname');
+tree.get('user', 'fullname');
 >>> 'John Smith'
 
-tree.get('data', '$fromJohn');
+tree.get('data', 'fromJohn');
 >>> [{from: 'John', txt: 'Hey'}]
 
-tree.get('data', '$fromJohn', 'txt');
+// You can also access/select data beneath a monkey
+tree.get('data', 'fromJohn', 'txt');
 >>> 'Hey'
+
+var cursor = tree.select('data', 'fromJohn', 'txt');
 
 // Just note that computed data node is read-only and that the tree
 // will throw if you try to update a path lying beyond a computed node
-tree.set(['data', '$fromJohn', 'txt'], 'Yay');
+tree.set(['data', 'fromJohn', 'txt'], 'Yay');
 >>> Error!
+
+// You can add / remove / modify a monkey at runtime using the same API
+tree.set(['data', 'fromJack'], monkey({
+  cursors: {
+    messages: ['data', 'messages'],
+    function(messages) {
+      return messages.filter(function(m) {
+        return m.from === 'Jack';
+      });
+    }
+  }
+}));
 ```
 
-The computed data node will of course automatically update whenever at least one of the watched paths is updated.
+*Notes*
 
-It is not possible, at the time being, to modify facets' definition at runtime. It may however be allowed in further versions.
+* The dynamic nodes will of course automatically update whenever at least one of the watched paths is updated.
+* The dynamic nodes are lazy and won't actually be computed before you get them (plus they will only compute once before they need to change, so if you get the same dynamic node twice, the computation won't rerun).
+* There are cases where it is clearly overkill to rely on a dynamic node. For instance, if only a single component of your app needs to access a computed version of the central state, then compute this version into the rendering logic of said component for simplicity's sake (a React component's render function for instance). Dynamic nodes are somewhat part of an optimization scheme.
+* Know that the `tree/cursor.serialize` method exists would you need to retrieve data stripped of dynamic nodes from your tree.
 
 #### Specialized getters
 
@@ -873,8 +900,8 @@ That is to say the data you insert into the tree should logically be JSON-serial
 * Writing to the tree is now synchronous for convenience. Updates remain asynchronous for obvious performance reasons.
 * You cannot chain update methods now since those will return the affected node's data to better tackle immutability.
 * The strange concat-like behavior of the `push` and `unshift` method was dropped in favor of the `concat` method.
-* Facets are now full-fledged computed data node sitting within the tree itself.
-* The weird `$cursor` sugar has now been dropped.
+* Facets are now full-fledged dynamic nodes called monkeys.
+* The weird `$cursor` sugar has been dropped.
 * The update specifications have been dropped.
 
 **From v0.4.x to v1**
