@@ -181,11 +181,12 @@ export class Monkey {
    */
   release() {
 
+    // Unbinding events
+    this.tree.off('write', this.listener);
+    this.state.killed = true;
+
     // Deleting properties
     delete this.tree;
     delete this.definition;
-
-    this.tree.off('write', this.listener);
-    this.state.killed = true;
   }
 }

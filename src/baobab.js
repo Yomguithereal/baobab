@@ -153,11 +153,35 @@ export default class Baobab extends Emitter {
    * Note 1) For the time being, placing monkeys beneath array nodes is not
    * allowed for performance reasons.
    *
-   * @param  {mixed}   node - The starting node.
-   * @param  {array}   path - The starting node's path.
-   * @return {Baobab}       - The tree instance for chaining purposes.
+   * @param  {mixed}   node      - The starting node.
+   * @param  {array}   path      - The starting node's path.
+   * @param  {string}  operation - The operation that lead to a refreshment.
+   * @return {Baobab}            - The tree instance for chaining purposes.
    */
-  _refreshMonkeys(node, path) {
+  _refreshMonkeys(node, path, operation) {
+
+    const clean = (data, p=[]) => {
+      if (data instanceof Monkey) {
+        data.release();
+        update(
+          this._monkeys,
+          p,
+          {type: 'unset'},
+          {
+            immutable: false,
+            persistent: false,
+            pure: false
+          }
+        );
+
+        return;
+      }
+
+      if (type.object(data)) {
+        for (let k in data)
+          clean(data[k], p.concat(k));
+      }
+    };
 
     const walk = (data, p=[]) => {
 
@@ -165,24 +189,41 @@ export default class Baobab extends Emitter {
       if (data instanceof MonkeyDefinition) {
         const monkey = new Monkey(this, p, data);
 
-        deepMerge(
+        update(
           this._monkeys,
-          pathObject(p, monkey)
+          p,
+          {type: 'set', value: monkey},
+          {
+            immutable: false,
+            persistent: false,
+            pure: false
+          }
         );
+
+        return;
       }
 
       // Object iteration
       if (type.object(data)) {
         for (let k in data)
-          walk(data[k], p.concat(k), k);
+          walk(data[k], p.concat(k));
       }
     };
 
     // Walking the whole tree
     if (!arguments.length)
       walk(this._data);
-    else
-      walk(node, path);
+    else {
+      const monkeysNode = getIn(this._monkeys, path).data;
+
+      // Is this required that we clean some already existing monkeys?
+      if (monkeysNode)
+        clean(monkeysNode, path);
+
+      // Let's walk the tree only from the updated point
+      if (operation !== 'unset')
+        walk(node, path);
+    }
 
     return this;
   }
@@ -308,7 +349,7 @@ export default class Baobab extends Emitter {
     this._transaction.push({...operation, path: affectedPath});
 
     // Updating the monkeys
-    this._refreshMonkeys(node, solvedPath);
+    this._refreshMonkeys(node, solvedPath, operation.type);
 
     // Emitting a `write` event
     this.emit('write', {path: affectedPath});
@@ -407,6 +448,8 @@ export default class Baobab extends Emitter {
    */
   release() {
     let k;
+
+    this.emit('release');
 
     delete this._data;
     delete this._previousData;

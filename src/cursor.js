@@ -95,6 +95,9 @@ export default class Cursor extends Emitter {
      * Function in charge of actually trigger the cursor's updates and
      * deal with the archived records.
      *
+     * @note: probably should wrap the current solvedPath in closure to avoid
+     * for tricky cases where it would fail.
+     *
      * @param {mixed} previousData - the tree's previous data.
      */
     const fireUpdate = (previousData) => {
