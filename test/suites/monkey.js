@@ -352,5 +352,28 @@ describe('Monkeys', function() {
     tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));
 
     assert.strictEqual(tree.get('data', 'selected'), 'blue');
+
+    tree.set(['data', 'colors', 1], 'purple');
+
+    assert.strictEqual(tree.get('data', 'selected'), 'purple');
+  });
+
+  it('should be possible to drop monkeys somehow.', function() {
+    const tree = new Baobab(
+      {
+        data: {
+          colors: ['yellow', 'blue'],
+          selected: monkey(['data', 'colors'], c => c[0])
+        }
+      },
+      {asynchronous: false}
+    );
+
+    tree.unset(['data', 'selected']);
+
+    assert.deepEqual(
+      tree.get('data'),
+      {colors: ['yellow', 'blue']}
+    );
   });
 });
