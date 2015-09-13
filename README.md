@@ -47,10 +47,8 @@ var tree = new Baobab({
 
 var colorsCursor = tree.select('palette', 'colors');
 
-colorsCursor.on('update', function(e) {
-  var eventData = e.data;
-
-  console.log('Selected colors have updated:', eventData.data);
+colorsCursor.on('update', function() {
+  console.log('Selected colors have updated!');
 });
 
 colorsCursor.push('orange');
@@ -489,7 +487,7 @@ This means that you can add / modify / move / remove monkeys from the tree at ru
 
 The reason why computed data now sits within the tree itself is so that components don't need to know from which kind of data, static or computed, they must draw their dependencies and so that read/select API might stay the same across the whole library.
 
-*Example*
+**Example**
 
 ```js
 var monkey = Baobab.monkey;
@@ -589,7 +587,7 @@ tree.set(['data', 'fromJack'], monkey({
 }));
 ```
 
-*Notes*
+**Notes**
 
 * The dynamic nodes will of course automatically update whenever at least one of the watched paths is updated.
 * The dynamic nodes are lazy and won't actually be computed before you get them (plus they will only compute once before they need to change, so if you get the same dynamic node twice, the computation won't rerun).
