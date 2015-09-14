@@ -4,6 +4,7 @@
  */
 import assert from 'assert';
 import Baobab, {monkey} from '../../src/baobab';
+import Cursor from '../../src/cursor';
 
 describe('Watchers', function() {
 
@@ -109,5 +110,25 @@ describe('Watchers', function() {
     });
 
     tree.unshift(['data', 'colors'], 'purple');
+  });
+
+  it('should be possible to retrieve a mapping of the watcher\'s cursors.', function() {
+    const tree = new Baobab({
+      one: 1,
+      two: 2
+    });
+
+    const watcher = tree.watch({
+      one: ['one'],
+      two: tree.select('two')
+    });
+
+    const cursors = watcher.getCursors();
+
+    assert(Object.keys(cursors).length, 2);
+    assert(Object.keys(cursors).every(k => cursors[k] instanceof Cursor));
+
+    assert.strictEqual(cursors.one.get(), 1);
+    assert.strictEqual(cursors.two.get(), 2);
   });
 });

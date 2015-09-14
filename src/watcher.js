@@ -89,6 +89,26 @@ export default class Watcher extends Emitter {
   }
 
   /**
+   * Method used to return a map of the watcher's cursors.
+   *
+   * @return {object} - TMap of relevant cursors.
+   */
+  getCursors() {
+    const cursors = {};
+
+    Object.keys(this.mapping).forEach(k => {
+      const path = this.mapping[k];
+
+      if (path instanceof Cursor)
+        cursors[k] = path;
+      else
+        cursors[k] = this.tree.select(path);
+    });
+
+    return cursors;
+  }
+
+  /**
    * Method used to refresh the watcher's mapping.
    *
    * @param  {object}  mapping  - The new mapping to apply.
