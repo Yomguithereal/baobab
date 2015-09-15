@@ -262,7 +262,7 @@ var newData = cursor.apply('number', inc)
 var newData = cursor.apply(['one', 'two'], inc);
 ```
 
-*Shallowly merging objects*
+*Shallow merging objects*
 
 Obviously this will fail if the value at cursor is not an object.
 
@@ -274,6 +274,20 @@ var newObject = cursor.merge('object', {hello: 'world'})
 
 // Nested path
 var newObject = cursor.merge(['one', 'two'], {hello: 'world'});
+```
+
+*Deep merging objects*
+
+Obviously this will fail if the value at cursor is not an object.
+
+```js
+var newObject = cursor.deepMerge({hello: 'world'});
+
+// At key
+var newObject = cursor.deepMerge('object', {hello: 'world'})
+
+// Nested path
+var newObject = cursor.deepMerge(['one', 'two'], {hello: 'world'});
 ```
 
 ##### Tree level
@@ -301,6 +315,7 @@ tree.unshift
 tree.splice
 tree.concat
 tree.merge
+tree.deepMerge
 ```
 
 #### Events
