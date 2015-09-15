@@ -764,3 +764,4 @@ makeSetter('concat', type.array);
 makeSetter('unshift');
 makeSetter('splice', type.splicer);
 makeSetter('merge', type.object);
+makeSetter('deepMerge', type.object);

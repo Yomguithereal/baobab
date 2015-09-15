@@ -8,6 +8,7 @@ import type from './type';
 import {
   freeze,
   deepFreeze,
+  deepMerge,
   makeError,
   shallowClone,
   shallowMerge,
@@ -186,6 +187,23 @@ export default function update(data, path, operation, opts={}) {
           p[s] = shallowMerge({}, p[s], value);
         else
           p[s] = shallowMerge(p[s], value);
+      }
+
+      /**
+       * Deep merge
+       */
+      else if (operationType === 'deepMerge') {
+        if (!type.object(p[s]))
+          throw err(
+            'deepMerge',
+            'object',
+            currentPath
+          );
+
+        if (opts.persistent)
+          p[s] = deepMerge({}, p[s], value);
+        else
+          p[s] = deepMerge(p[s], value);
       }
 
       if (opts.immutable)

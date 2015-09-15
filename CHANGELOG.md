@@ -5,6 +5,7 @@
 * The tree is now immutable by default.
 * Cursor's setters method won't return themselves but rather the affected node now.
 * Adding `cursor.concat`.
+* Adding `cursor.deepMerge`.
 * Adding `cursor.serialize`.
 * Adding `cursor.project`.
 * Adding `cursor.exists`.

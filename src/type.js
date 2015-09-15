@@ -227,6 +227,7 @@ const VALID_OPERATIONS = [
   'push',
   'unshift',
   'concat',
+  'deepMerge',
   'merge',
   'splice',
   'unset'

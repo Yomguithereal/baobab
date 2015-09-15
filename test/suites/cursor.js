@@ -284,6 +284,37 @@ describe('Cursor API', function() {
         });
       });
 
+      it('should be possible to deep merge two objects.', function(done) {
+        const tree = new Baobab({
+          data: {
+            items: {
+              one: 1
+            }
+          }
+        });
+
+        const cursor = tree.select('data');
+        cursor.deepMerge({items: {two: 2}, hello: 'world'});
+
+        tree.on('update', function(e) {
+
+          assert.strictEqual(e.data.transaction[0].type, 'deepMerge');
+
+          assert.deepEqual(
+            cursor.get(),
+            {
+              items: {
+                one: 1,
+                two: 2
+              },
+              hello: 'world'
+            }
+          );
+
+          done();
+        });
+      });
+
       it('should be possible to remove keys from a cursor.', function() {
         const tree = new Baobab({one: 1, two: {subone: 1, subtwo: 2}}, {asynchronous: false}),
               cursor = tree.select('two');

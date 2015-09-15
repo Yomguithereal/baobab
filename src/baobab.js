@@ -132,6 +132,7 @@ export default class Baobab extends Emitter {
     [
       'apply',
       'concat',
+      'deepMerge',
       'exists',
       'get',
       'push',
@@ -327,12 +328,17 @@ export default class Baobab extends Emitter {
       return;
 
     // If we merge data, we need to acknowledge monkeys
+    let realOperation = operation;
     if (/merge/.test(operation.type)) {
       const monkeysNode = getIn(this._monkeys, solvedPath).data;
 
       if (type.object(monkeysNode)) {
-        operation = shallowClone(operation);
-        operation.value = shallowMerge({}, monkeysNode, operation.value);
+        realOperation = shallowClone(realOperation);
+
+        if (/deep/.test(realOperation.type))
+          realOperation.value = deepMerge({}, monkeysNode, realOperation.value);
+        else
+          realOperation.value = shallowMerge({}, monkeysNode, realOperation.value);
       }
     }
 
@@ -344,7 +350,7 @@ export default class Baobab extends Emitter {
     const result = update(
       this._data,
       solvedPath,
-      operation,
+      realOperation,
       this.options
     );
 
