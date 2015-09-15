@@ -233,7 +233,7 @@ function compare(object, description) {
  * @return {object}    - The merged object.
  */
 function freezer(deep, o) {
-  if (typeof o !== 'object' || o === null)
+  if (typeof o !== 'object' || o === null || o instanceof Monkey)
     return;
 
   Object.freeze(o);

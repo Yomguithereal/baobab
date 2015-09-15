@@ -187,6 +187,5 @@ export class Monkey {
 
     // Deleting properties
     delete this.tree;
-    delete this.definition;
   }
 }

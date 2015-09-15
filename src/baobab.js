@@ -20,6 +20,7 @@ const {
   makeError,
   deepMerge,
   pathObject,
+  shallowClone,
   shallowMerge,
   uniqid
 } = helpers;
@@ -186,8 +187,15 @@ export default class Baobab extends Emitter {
     const walk = (data, p=[]) => {
 
       // Should we sit a monkey in the tree?
-      if (data instanceof MonkeyDefinition) {
-        const monkey = new Monkey(this, p, data);
+      if (data instanceof MonkeyDefinition ||
+          data instanceof Monkey) {
+        const monkey = new Monkey(
+          this,
+          p,
+          data instanceof Monkey ?
+            data.definition :
+            data
+        );
 
         update(
           this._monkeys,
@@ -317,6 +325,16 @@ export default class Baobab extends Emitter {
     // We don't unset irrelevant paths
     if (operation.type === 'unset' && !exists)
       return;
+
+    // If we merge data, we need to acknowledge monkeys
+    if (/merge/.test(operation.type)) {
+      const monkeysNode = getIn(this._monkeys, solvedPath).data;
+
+      if (type.object(monkeysNode)) {
+        operation = shallowClone(operation);
+        operation.value = shallowMerge({}, monkeysNode, operation.value);
+      }
+    }
 
     // Stashing previous data if this is the frame's first update
     if (!this._transaction.length)

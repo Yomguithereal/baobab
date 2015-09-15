@@ -376,4 +376,56 @@ describe('Monkeys', function() {
       {colors: ['yellow', 'blue']}
     );
   });
+
+  it('merging should not disturb monkeys.', function() {
+    const tree = new Baobab(
+      {
+        user: {
+          name: 'Jack',
+          surname: 'White',
+          fullname: monkey({
+            cursors: {
+              name: ['user', 'name'],
+              surname: ['user', 'surname']
+            },
+            get: ({name, surname}) => `${name} ${surname}`
+          })
+        }
+      },
+      {
+        asynchronous: false
+      }
+    );
+
+    assert.strictEqual(tree.get('user', 'fullname'), 'Jack White');
+
+    tree.merge('user', {name: 'John', surname: 'Black'});
+
+    assert.strictEqual(tree.get('user', 'fullname'), 'John Black');
+
+    const altTree = new Baobab(
+      {
+        user: {
+          name: 'Jack',
+          surname: 'White',
+          fullname: monkey({
+            cursors: {
+              name: ['user', 'name'],
+              surname: ['user', 'surname']
+            },
+            get: ({name, surname}) => `${name} ${surname}`
+          })
+        }
+      },
+      {
+        asynchronous: false
+      }
+    );
+
+    assert.strictEqual(altTree.get('user', 'fullname'), 'Jack White');
+
+    altTree.merge('user', {fullname: monkey(['user', 'name'], name => 'Hello ' + name)});
+
+    assert.strictEqual(altTree.get('user', 'fullname'), 'Hello Jack');
+  });
 });
