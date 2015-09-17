@@ -537,7 +537,7 @@ Baobab.helpers = helpers;
  * Version
  */
 Object.defineProperty(Baobab, 'version', {
-  value: '2.0.0-dev14'
+  value: '2.0.0-dev15'
 });
 
 
