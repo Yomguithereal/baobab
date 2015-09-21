@@ -396,7 +396,7 @@ function merger(deep, ...objects) {
 
     for (k in t) {
       if (deep &&
-          typeof t[k] === 'object' &&
+          type.object(t[k]) &&
           !(t[k] instanceof Monkey)) {
         o[k] = merger(true, o[k] || {}, t[k]);
       }

@@ -85,6 +85,13 @@ describe('Helpers', function() {
         {a: 5, b: {c: 2, $facet: 'test'}}
       );
     });
+
+    it('should consider arrays are values.', function() {
+      assert.deepEqual(
+        deepMerge({}, {one: {two: [1, 2]}, three: 3}, {one: {two: [3, 4]}}),
+        {one: {two: [3, 4]}, three: 3}
+      );
+    });
   });
 
   /**
