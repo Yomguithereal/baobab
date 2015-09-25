@@ -255,6 +255,36 @@ describe('Monkeys', function() {
     tree.set(['data', 'number'], 5);
   });
 
+  it('should handle selections beyond monkeys and recursivity.', function() {
+    const tree = new Baobab({
+      defaultLocale: 'en',
+      locale: monkey(
+        ['user', 'locale'],
+        ['defaultLocale'],
+        (userLocale, locale) => {
+          return userLocale || locale;
+        }
+      ),
+      userId: null,
+      user: monkey(
+        ['users'],
+        ['userId'],
+        (users, id) => users[id]
+      ),
+      users: {}
+    });
+
+    assert.strictEqual(tree.get('locale'), 'en');
+
+    tree.set(['users', 1], {id: 1, locale: 'de'});
+    tree.set('userId', 1);
+    tree.commit();
+
+    assert.strictEqual(tree.get('users', 1, 'locale'), 'de');
+    assert.strictEqual(tree.get('user', 'locale'), 'de');
+    assert.strictEqual(tree.get('locale'), 'de');
+  });
+
   it('recursivity should take updates into account.', function() {
     let count = 0;
 

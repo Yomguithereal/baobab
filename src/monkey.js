@@ -64,10 +64,7 @@ export class Monkey {
     this.tree = tree;
     this.path = pathInTree;
     this.definition = definition;
-
-    this.isRecursive = definition.paths.some(
-      p => !!type.monkeyPath(this.tree._monkeys, p)
-    );
+    this.isRecursive = false;
 
     // Internal state
     this.state = {
@@ -97,6 +94,26 @@ export class Monkey {
 
     // Updating relevant node
     this.update();
+  }
+
+  /**
+   * Method triggering a recursivity check.
+   *
+   * @return {Monkey} - Returns itself for chaining purposes.
+   */
+  checkRecursivity() {
+    this.isRecursive = this.definition.paths.some(
+      p => !!type.monkeyPath(this.tree._monkeys, p)
+    );
+
+    // Putting the recursive monkeys' listeners at the end of the stack
+    // NOTE: this is a dirty hack and a more thorough solution should be found
+    if (this.isRecursive) {
+      this.tree.off('write', this.listener);
+      this.tree.on('write', this.listener);
+    }
+
+    return this;
   }
 
   /**

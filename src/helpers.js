@@ -469,6 +469,8 @@ function slice(array) {
  *           can be simplified to a complex twofold one.
  *        2) A regex version could also work but I am not confident it would
  *           be faster.
+ *        3) Another solution would be to keep a register of cursors like with
+ *           the monkeys and update along this tree.
  *
  * @param  {array} affectedPaths - The paths that were updated.
  * @param  {array} comparedPaths - The paths that we are actually interested in.
