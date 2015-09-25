@@ -190,13 +190,13 @@ export default class Baobab extends Emitter {
     const walk = (data, p=[]) => {
 
       // Should we sit a monkey in the tree?
-      if (data instanceof Monkey) {
-        register.push(data);
-        return;
-      }
-
-      if (data instanceof MonkeyDefinition) {
-        const monkey = new Monkey(this, p, data);
+      if (data instanceof MonkeyDefinition ||
+          data instanceof Monkey) {
+        const monkey = new Monkey(
+          this,
+          p,
+          data instanceof Monkey ? data.definition : data
+        );
 
         register.push(monkey);
 
@@ -224,14 +224,13 @@ export default class Baobab extends Emitter {
     // Walking the whole tree
     if (!arguments.length) {
       walk(this._data);
-
       register.forEach(m => m.checkRecursivity());
     }
     else {
       const monkeysNode = getIn(this._monkeys, path).data;
 
       // Is this required that we clean some already existing monkeys?
-      if (monkeysNode && operation === 'unset')
+      if (monkeysNode)
         clean(monkeysNode, path);
 
       // Let's walk the tree only from the updated point
