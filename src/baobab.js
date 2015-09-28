@@ -48,7 +48,7 @@ const DEFAULTS = {
   // Validation specifications
   validate: null,
 
-  // Validation behaviour 'rollback' or 'notify'
+  // Validation behavior 'rollback' or 'notify'
   validationBehavior: 'rollback'
 };
 
@@ -244,6 +244,41 @@ export default class Baobab extends Emitter {
   }
 
   /**
+   * Method used to validate the tree's data.
+   *
+   * @return {boolean} - Is the tree valid?
+   */
+  validate(affectedPaths) {
+    const {validate, validationBehavior: behavior} = this.options;
+
+    if (typeof validate !== 'function')
+      return true;
+
+    const error = validate.call(
+      this,
+      this._previousData,
+      this._data,
+      affectedPaths
+    );
+
+    if (error instanceof Error) {
+
+      if (behavior === 'rollback') {
+        this._data = this._previousData;
+        this._affectedPathsIndex = {};
+        this._transaction = [];
+        this._previousData = this._data;
+      }
+
+      this.emit('invalid', {error});
+
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
    * Method used to select data within the tree by creating a cursor. Cursors
    * are kept as singletons by the tree for performance and hygiene reasons.
    *
@@ -419,29 +454,11 @@ export default class Baobab extends Emitter {
         [];
     });
 
-    // Validation?
-    const {validate, validationBehavior: behavior} = this.options;
+    // Is the tree still valid?
+    const isValid = this.validate(affectedPaths);
 
-    if (typeof validate === 'function') {
-      const error = validate.call(
-        this,
-        this._previousData,
-        this._data,
-        affectedPaths
-      );
-
-      if (error instanceof Error) {
-        this.emit('invalid', {error});
-
-        if (behavior === 'rollback') {
-          this._data = this._previousData;
-          this._affectedPathsIndex = {};
-          this._transaction = [];
-          this._previousData = this._data;
-          return this;
-        }
-      }
-    }
+    if (!isValid)
+      return this;
 
     // Caching to keep original references before we change them
     const transaction = this._transaction,
