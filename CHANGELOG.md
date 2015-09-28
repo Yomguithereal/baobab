@@ -9,7 +9,7 @@
 * Adding `cursor.serialize`.
 * Adding `cursor.project`.
 * Adding `cursor.exists`.
-* Adding `cursor.watch`.
+* Adding `tree.watch`.
 * Adding the `pure` option.
 * Changing the way you can define computed data in the tree, aka "facets". Facets are now to be defined within the tree itself, are called "monkeys", and can be accessed using the exact same API as normal data.
 * Adding an alternative dynamic node definition syntax for convenience.

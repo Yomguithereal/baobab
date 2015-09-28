@@ -566,7 +566,7 @@ Baobab.helpers = helpers;
  * Version
  */
 Object.defineProperty(Baobab, 'version', {
-  value: '2.0.0-rc3'
+  value: '2.0.0'
 });
 
 
