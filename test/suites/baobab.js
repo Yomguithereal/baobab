@@ -254,7 +254,7 @@ describe('Baobab API', function() {
       let invalidCount = 0;
 
       function v(state, nextState, paths) {
-        assert(this === tree);
+        assert(this instanceof Baobab);
 
         if (typeof nextState.hello !== 'string')
           return new Error('Invalid tree!');
@@ -284,7 +284,7 @@ describe('Baobab API', function() {
       let invalidCount = 0;
 
       function v(state, nextState, paths) {
-        assert(this === tree);
+        assert(this instanceof Baobab);
 
         if (typeof nextState.hello !== 'string')
           return new Error('Invalid tree!');
@@ -308,6 +308,23 @@ describe('Baobab API', function() {
 
       assert.strictEqual(invalidCount, 1);
       assert.strictEqual(tree.get('hello'), 4);
+    });
+
+    it('should be possible to validate the initial data of the tree.', function() {
+      function validate(state, nextState, paths) {
+        assert.deepEqual(paths, [[]]);
+
+        if (nextState.one !== 1)
+          return new Error('Invalid tree!');
+      }
+
+      const tree = new Baobab({one: 1}, {validate});
+
+      assert.strictEqual(tree.get('one'), 1);
+
+      assert.throws(function() {
+        const failingTree = new Baobab({one: 2}, {validate});
+      }, /invalid/);
     });
 
     it('the tree should be immutable by default.', function() {

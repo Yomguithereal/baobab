@@ -147,6 +147,12 @@ export default class Baobab extends Emitter {
 
     // Registering the initial monkeys
     this._refreshMonkeys();
+
+    // Initial validation
+    const validationError = this.validate();
+
+    if (validationError)
+      throw Error('Baobab: invalid data.', {error: validationError});
   }
 
   /**
@@ -252,13 +258,13 @@ export default class Baobab extends Emitter {
     const {validate, validationBehavior: behavior} = this.options;
 
     if (typeof validate !== 'function')
-      return true;
+      return null;
 
     const error = validate.call(
       this,
       this._previousData,
       this._data,
-      affectedPaths
+      affectedPaths || [[]]
     );
 
     if (error instanceof Error) {
@@ -272,10 +278,10 @@ export default class Baobab extends Emitter {
 
       this.emit('invalid', {error});
 
-      return false;
+      return error;
     }
 
-    return true;
+    return null;
   }
 
   /**
@@ -455,9 +461,9 @@ export default class Baobab extends Emitter {
     });
 
     // Is the tree still valid?
-    const isValid = this.validate(affectedPaths);
+    const validationError = this.validate(affectedPaths);
 
-    if (!isValid)
+    if (validationError)
       return this;
 
     // Caching to keep original references before we change them
