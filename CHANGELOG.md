@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.0.0 (provisonal)
+## v2.0.0
 
 * The tree is now immutable by default.
 * Cursor's setters method won't return themselves but rather the affected node now.
