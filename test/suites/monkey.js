@@ -403,7 +403,7 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
-    it('with persistent tree', function() {
+    it('with non-persistent tree', function() {
       const tree = new Baobab(
         {
           data: {
@@ -420,6 +420,43 @@ describe('Monkeys', function() {
       tree.set(['data', 'colors', 1], 'purple');
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
+
+    it('with impure tree', function() {
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false, pure: false}
+      );
+    
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');  
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));  
+      assert.strictEqual(tree.get('data', 'selected'), 'blue');
+      tree.set(['data', 'colors', 1], 'purple');
+      assert.strictEqual(tree.get('data', 'selected'), 'purple');
+    });
+
+	it('with mutable, non-persistent, impure tree', function() {
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false, immutable: false, persistent: false, pure: false}
+      );
+    
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');  
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));  
+      assert.strictEqual(tree.get('data', 'selected'), 'blue');
+      tree.set(['data', 'colors', 1], 'purple');
+      assert.strictEqual(tree.get('data', 'selected'), 'purple');
+    });
+
   });
 
   it('should be possible to drop monkeys somehow.', function() {
