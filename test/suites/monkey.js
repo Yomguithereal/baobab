@@ -366,26 +366,60 @@ describe('Monkeys', function() {
     assert.deepEqual(tree.get('data', 'computed', 'leader'), ['yellow']);
   });
 
-  it('should be possible to replace monkeys at runtime.', function() {
-    const tree = new Baobab(
-      {
-        data: {
-          colors: ['yellow', 'blue'],
-          selected: monkey(['data', 'colors'], c => c[0])
-        }
-      },
-      {asynchronous: false}
-    );
+  describe('should be possible to replace monkeys at runtime.', function() {
+    it('with default tree', function() {
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false}
+      );
+  
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');  
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));  
+      assert.strictEqual(tree.get('data', 'selected'), 'blue');
+      tree.set(['data', 'colors', 1], 'purple');
+      assert.strictEqual(tree.get('data', 'selected'), 'purple');
+    });
 
-    assert.strictEqual(tree.get('data', 'selected'), 'yellow');
+    it('with mutable tree', function() {
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false, immutable: false}
+      );
+  
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');  
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));  
+      assert.strictEqual(tree.get('data', 'selected'), 'blue');
+      tree.set(['data', 'colors', 1], 'purple');
+      assert.strictEqual(tree.get('data', 'selected'), 'purple');
+    });
 
-    tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));
-
-    assert.strictEqual(tree.get('data', 'selected'), 'blue');
-
-    tree.set(['data', 'colors', 1], 'purple');
-
-    assert.strictEqual(tree.get('data', 'selected'), 'purple');
+    it('with persistent tree', function() {
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false, persistent: false}
+      );
+  
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');  
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));  
+      assert.strictEqual(tree.get('data', 'selected'), 'blue');
+      tree.set(['data', 'colors', 1], 'purple');
+      assert.strictEqual(tree.get('data', 'selected'), 'purple');
+    });
   });
 
   it('should be possible to drop monkeys somehow.', function() {
