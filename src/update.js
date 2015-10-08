@@ -84,7 +84,7 @@ export default function update(data, path, operation, opts={}) {
        * Monkey
        */
       else if (operationType === 'monkey') {
-        Object.defineProperty(p, s, {get: value, enumerable: true});
+        Object.defineProperty(p, s, {get: function lazyGetter() { return value(); }, enumerable: true, configurable: true});
       }
 
       /**
@@ -237,5 +237,10 @@ export default function update(data, path, operation, opts={}) {
   }
 
   // Returning new data object
+
+  var descriptor = Object.getOwnPropertyDescriptor(p, s);
+  if(descriptor && descriptor.get && descriptor.get.name == 'lazyGetter')
+    return { data: dummy.root };
+
   return {data: dummy.root, node: p[s]};
 }
