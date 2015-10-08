@@ -510,10 +510,10 @@ describe('Monkeys', function() {
       assert.strictEqual('yellow', yellow);
 
       tree.set(['data', 'selected'], monkey(['data', 'colors'], function(c) {
-                if(shouldHaveBeenCalled)
-                  return c[1];
-                else
-                  throw new Error('should not be called');
+        if(shouldHaveBeenCalled)
+          return c[1];
+        else
+          throw new Error('should not be called');
       }));
       shouldHaveBeenCalled = true;
       var blue = tree.get('data','selected');
@@ -560,10 +560,10 @@ describe('Monkeys', function() {
       assert.strictEqual('yellow', yellow);
 
       tree.set(['data', 'selected'], monkey(['data', 'colors'], function(c) {
-                if(shouldHaveBeenCalled)
-                  return c[1];
-                else
-                  throw new Error('should not be called');
+        if(shouldHaveBeenCalled)
+          return c[1];
+        else
+          throw new Error('should not be called');
       }));
       shouldHaveBeenCalled = true;
       var blue = tree.get('data','selected');
