@@ -492,4 +492,104 @@ describe('Monkeys', function() {
 
     assert.strictEqual(altTree.get('user', 'fullname'), 'Hello Jack');
   });
+  
+  describe('with immutable and persistent tree', function () {
+    it('should be lazy if added at runtime', function() {
+      var shouldHaveBeenCalled = false;
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false, immutable: true, persistent: true}
+      );
+
+      var yellow = tree.get('data','selected');
+      assert.strictEqual('yellow', yellow);
+
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], function(c) {
+                if(shouldHaveBeenCalled)
+                  return c[1];
+                else
+                  throw new Error('should not be called');
+      }));
+      shouldHaveBeenCalled = true;
+      var blue = tree.get('data','selected');
+      assert.strictEqual('blue', blue);
+    });
+
+    it('should be lazy', function() {
+      var shouldHaveBeenCalled = false;
+      const tree = new Baobab(
+          {
+            data: {
+              colors: ['yellow', 'blue'],
+              selected: monkey(['data', 'colors'], function(c) {
+                if(shouldHaveBeenCalled)
+                  return c[0];
+                else
+                  throw new Error('should not be called');
+              })
+            }
+          },
+          {asynchronous: false, immutable: true, persistent: true}
+        );
+
+        shouldHaveBeenCalled = true;
+        var yellow = tree.get('data', 'selected');
+        assert.strictEqual('yellow', yellow);
+    });
+  });
+
+  describe('without immutability or persistance', function() {
+    it('should be lazy if added at runtime', function() {
+      var shouldHaveBeenCalled = false;
+      const tree = new Baobab(
+        {
+          data: {
+            colors: ['yellow', 'blue'],
+            selected: monkey(['data', 'colors'], c => c[0])
+          }
+        },
+        {asynchronous: false, immutable: false, persistent: false}
+      );
+
+      var yellow = tree.get('data','selected');
+      assert.strictEqual('yellow', yellow);
+
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], function(c) {
+                if(shouldHaveBeenCalled)
+                  return c[1];
+                else
+                  throw new Error('should not be called');
+      }));
+      shouldHaveBeenCalled = true;
+      var blue = tree.get('data','selected');
+      assert.strictEqual('blue', blue);
+    });
+
+    it('should be lazy', function() {
+      var shouldHaveBeenCalled = false;
+      const tree = new Baobab(
+          {
+            data: {
+              colors: ['yellow', 'blue'],
+              selected: monkey(['data', 'colors'], function(c) {
+                if(shouldHaveBeenCalled)
+                  return c[0];
+                else
+                  throw new Error('should not be called');
+              })
+            }
+          },
+          {asynchronous: false, immutable: false, persistent: false}
+        );
+
+        shouldHaveBeenCalled = true;
+        var yellow = tree.get('data', 'selected');
+        assert.strictEqual('yellow', yellow);
+    });
+  });
 });
