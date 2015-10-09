@@ -392,7 +392,7 @@ export default class Baobab extends Emitter {
 
     // Stashing previous data if this is the frame's first update
     if (!this._transaction.length)
-      this._previousData = this.get();
+      this._previousData = this._data;
 
     // Applying the operation
     const result = update(
