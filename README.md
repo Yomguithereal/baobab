@@ -756,6 +756,19 @@ twoCursor.rightmost().get();
 >>> 'four'
 ```
 
+*Mapping cursors over a list node*
+
+```js
+var tree = new Baobab({list: [1, 2, 3]});
+
+tree.select('list').map(function(cursor, i) {
+  console.log(cursor.get());
+});
+>>> 1
+>>> 2
+>>> 3
+```
+
 *Getting information about the cursor's location in the tree*
 
 ```js
