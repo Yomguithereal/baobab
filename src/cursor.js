@@ -234,7 +234,7 @@ export default class Cursor extends Emitter {
    * @return {Baobab} - The root cursor.
    */
   root() {
-    return this.tree.root;
+    return this.tree.select();
   }
 
   /**

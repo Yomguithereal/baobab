@@ -115,7 +115,8 @@ export default class Baobab extends Emitter {
     this._data = initialData;
 
     // Properties
-    this.root = this.select();
+    this.root = new Cursor(this, [], '/');
+    delete this.root.release;
 
     // Does the user want an immutable tree?
     if (this.options.immutable)
@@ -503,6 +504,8 @@ export default class Baobab extends Emitter {
     let k;
 
     this.emit('release');
+
+    delete this.root;
 
     delete this._data;
     delete this._previousData;

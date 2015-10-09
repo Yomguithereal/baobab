@@ -743,7 +743,7 @@ describe('Cursor API', function() {
 
       assert.deepEqual(cursor.up().path, ['one', 'subtwo', 'colors']);
       assert.deepEqual(cursor.select('test').path, ['one', 'subtwo', 'colors', {id: 23}, 'test']);
-      assert.strictEqual(cursor.root(), tree.root);
+      assert.deepEqual(cursor.root().get(), tree.root.get());
 
       assert.throws(function() {
         cursor.left();

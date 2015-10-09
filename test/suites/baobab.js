@@ -48,6 +48,13 @@ describe('Baobab API', function() {
 
       assert.deepEqual(cursor.get(), {id: 'one'});
     });
+
+    it('should be possible to select the tree\'s root safely.', function() {
+      const cursor = tree.select();
+      cursor.release();
+
+      tree.set('test', 3);
+    });
   });
 
   /**
