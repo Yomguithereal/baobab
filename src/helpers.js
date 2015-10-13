@@ -255,8 +255,7 @@ function freezer(deep, o) {
         k;
 
     for (k in o) {
-      const descriptor = Object.getOwnPropertyDescriptor(o, k);
-      if(type.isLazyGetter(descriptor))
+      if(type.lazyGetter(o, k))
         continue;
 
       p = o[k];

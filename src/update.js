@@ -238,8 +238,7 @@ export default function update(data, path, operation, opts={}) {
 
   // Returning new data object
 
-  var descriptor = Object.getOwnPropertyDescriptor(p, s);
-  if(type.isLazyGetter(descriptor))
+  if(type.lazyGetter(p, s))
     return { data: dummy.root };
 
   return {data: dummy.root, node: p[s]};

@@ -180,8 +180,10 @@ type.monkeyPath = function(data, path) {
  * @param  {mixed} data - The data to test.
  * @return {boolean}
  */
-type.isLazyGetter = function(propertyDescriptor) {
-      return propertyDescriptor && propertyDescriptor.get && propertyDescriptor.get.isLazyGetter === true;
+type.lazyGetter = function(o, propertyKey) {
+  var descriptor = Object.getOwnPropertyDescriptor(o, propertyKey);
+
+  return descriptor && descriptor.get && descriptor.get.isLazyGetter === true;
 };
 
 /**
