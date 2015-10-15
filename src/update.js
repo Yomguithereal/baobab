@@ -5,6 +5,7 @@
  * The tree's update scheme.
  */
 import type from './type';
+import {MonkeyDefinition} from './monkey';
 import {
   freeze,
   deepFreeze,
@@ -69,15 +70,21 @@ export default function update(data, path, operation, opts={}) {
         // Purity check
         if (opts.pure && p[s] === value)
           return {node: p[s]};
-
-        p[s] = opts.persistent ? shallowClone(value) : value;
+        
+        if(opts.persistent) {
+          p[s] = shallowClone(value);
+        } else if(value instanceof MonkeyDefinition) {
+          Object.defineProperty(p, s, {value: value, enumerable: true, configurable: true});
+        } else {
+          p[s] = value;
+        }
       }
 
       /**
        * Monkey
        */
       else if (operationType === 'monkey') {
-        Object.defineProperty(p, s, {get: value, enumerable: true});
+        Object.defineProperty(p, s, {get: value, enumerable: true, configurable: true});
       }
 
       /**
@@ -230,5 +237,9 @@ export default function update(data, path, operation, opts={}) {
   }
 
   // Returning new data object
+
+  if(type.lazyGetter(p, s))
+    return { data: dummy.root };
+
   return {data: dummy.root, node: p[s]};
 }

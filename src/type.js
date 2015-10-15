@@ -175,6 +175,18 @@ type.monkeyPath = function(data, path) {
 };
 
 /**
+ * Check if the data is a lazy getter for a monkey.
+ *
+ * @param  {mixed} data - The data to test.
+ * @return {boolean}
+ */
+type.lazyGetter = function(o, propertyKey) {
+  var descriptor = Object.getOwnPropertyDescriptor(o, propertyKey);
+
+  return descriptor && descriptor.get && descriptor.get.isLazyGetter === true;
+};
+
+/**
  * Returns the type of the given monkey definition or `null` if invalid.
  *
  * @param  {mixed} definition - The definition to check.

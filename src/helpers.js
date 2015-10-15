@@ -255,6 +255,9 @@ function freezer(deep, o) {
         k;
 
     for (k in o) {
+      if(type.lazyGetter(o, k))
+        continue;
+
       p = o[k];
 
       if (!p ||
