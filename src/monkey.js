@@ -182,7 +182,9 @@ export class Monkey {
         return cache;
       };
     })(this.tree, this.definition, deps);
+
     lazyGetter.isLazyGetter = true;
+
     this.tree._data = update(
       this.tree._data,
       this.path,

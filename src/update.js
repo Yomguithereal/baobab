@@ -70,12 +70,18 @@ export default function update(data, path, operation, opts={}) {
         // Purity check
         if (opts.pure && p[s] === value)
           return {node: p[s]};
-        
-        if(opts.persistent) {
+
+        if (opts.persistent) {
           p[s] = shallowClone(value);
-        } else if(value instanceof MonkeyDefinition) {
-          Object.defineProperty(p, s, {value: value, enumerable: true, configurable: true});
-        } else {
+        }
+        else if (value instanceof MonkeyDefinition) {
+          Object.defineProperty(p, s, {
+            value: value,
+            enumerable: true,
+            configurable: true
+          });
+        }
+        else {
           p[s] = value;
         }
       }
@@ -84,7 +90,11 @@ export default function update(data, path, operation, opts={}) {
        * Monkey
        */
       else if (operationType === 'monkey') {
-        Object.defineProperty(p, s, {get: value, enumerable: true, configurable: true});
+        Object.defineProperty(p, s, {
+          get: value,
+          enumerable: true,
+          configurable: true
+        });
       }
 
       /**
@@ -236,10 +246,10 @@ export default function update(data, path, operation, opts={}) {
     p = p[s];
   }
 
+  // If we are updating a dynamic node, we need not return the affected node
+  if (type.lazyGetter(p, s))
+    return {data: dummy.root};
+
   // Returning new data object
-
-  if(type.lazyGetter(p, s))
-    return { data: dummy.root };
-
   return {data: dummy.root, node: p[s]};
 }
