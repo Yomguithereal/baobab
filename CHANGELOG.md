@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.0.1
+
+* Fixing monkeys' laziness (**@Zache**).
+* Fixing issues related to the root cursor.
+* Fixing `get` event edge cases.
+
 ## v2.0.0
 
 * The tree is now immutable by default.
