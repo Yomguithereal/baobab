@@ -39,6 +39,9 @@ const DEFAULTS = {
   // Should the tree's data be immutable?
   immutable: true,
 
+  // Should the monkeys be lazy?
+  lazyMonkeys: true,
+
   // Should the tree be persistent?
   persistent: true,
 

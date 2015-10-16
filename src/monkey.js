@@ -185,12 +185,21 @@ export class Monkey {
 
     lazyGetter.isLazyGetter = true;
 
-    this.tree._data = update(
-      this.tree._data,
-      this.path,
-      {type: 'monkey', value: lazyGetter},
-      this.tree.options
-    ).data;
+    // If the tree does not accept lazy monkeys, we solve the lazy getter
+    if (this.tree.options.lazyMonkeys)
+      this.tree._data = update(
+        this.tree._data,
+        this.path,
+        {type: 'monkey', value: lazyGetter},
+        this.tree.options
+      ).data;
+    else
+      this.tree._data = update(
+        this.tree._data,
+        this.path,
+        {type: 'set', value: lazyGetter()},
+        this.tree.options
+      ).data;
 
     return this;
   }

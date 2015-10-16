@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0 (provisional)
+
+* Adding the `lazyMonkeys` option.
+
 ## v2.0.1
 
 * Fixing monkeys' laziness (**@Zache**).

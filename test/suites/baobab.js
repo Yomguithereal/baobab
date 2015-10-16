@@ -3,8 +3,9 @@
  * =======================
  */
 import assert from 'assert';
-import Baobab from '../../src/baobab';
+import Baobab, {monkey} from '../../src/baobab';
 import Cursor from '../../src/cursor';
+import type from '../../src/type';
 import state from '../state';
 
 describe('Baobab API', function() {
@@ -495,6 +496,26 @@ describe('Baobab API', function() {
       impureTree.set('nb', 2);
 
       assert(!updated && impureUpdated);
+    });
+
+    it('should be possible to disable monkeys\'s laziness.', function() {
+      const tree = new Baobab({
+        hey: {
+          ho: monkey([], () => 'ho')
+        }
+      });
+
+      assert.strictEqual(tree.get('hey', 'ho'), 'ho');
+      assert(type.lazyGetter(tree.get('hey'), 'ho'));
+
+      const eagerTree = new Baobab({
+        hey: {
+          ho: monkey([], () => 'ho')
+        }
+      }, {lazyMonkeys: false});
+
+      assert.strictEqual(eagerTree.get('hey', 'ho'), 'ho');
+      assert(!type.lazyGetter(eagerTree.get('hey'), 'ho'));
     });
   });
 });
