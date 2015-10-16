@@ -11,7 +11,8 @@ import {
   deepFreeze,
   getIn,
   makeError,
-  solveUpdate
+  solveUpdate,
+  solveRelativePath
 } from './helpers';
 
 /**
@@ -66,6 +67,23 @@ export class Monkey {
     this.definition = definition;
     this.isRecursive = false;
 
+    // Adapting the definition's paths & projection to this monkey's case
+    const projection = definition.projection,
+          relative = solveRelativePath.bind(null, pathInTree.slice(0, -1));
+
+    if (definition.type === 'object') {
+      this.projection = Object.keys(projection).reduce(function(acc, k) {
+        acc[k] = relative(projection[k]);
+        return acc;
+      }, {});
+      this.depPaths = Object.keys(this.projection)
+        .map(k => this.projection[k]);
+    }
+    else {
+      this.projection = projection.map(relative);
+      this.depPaths = this.projection;
+    }
+
     // Internal state
     this.state = {
       killed: false
@@ -102,7 +120,7 @@ export class Monkey {
    * @return {Monkey} - Returns itself for chaining purposes.
    */
   checkRecursivity() {
-    this.isRecursive = this.definition.paths.some(
+    this.isRecursive = this.depPaths.some(
       p => !!type.monkeyPath(this.tree._monkeys, p)
     );
 
@@ -122,16 +140,14 @@ export class Monkey {
    * @return {array} - An array of related paths.
    */
   relatedPaths() {
-    const def = this.definition;
-
     let paths;
 
-    if (def.hasDynamicPaths)
-      paths = def.paths.map(
+    if (this.definition.hasDynamicPaths)
+      paths = this.depPaths.map(
         p => getIn(this.tree._data, p).solvedPath
       );
     else
-      paths = def.paths;
+      paths = this.depPaths;
 
     if (!this.isRecursive)
       return paths;
@@ -156,7 +172,7 @@ export class Monkey {
    * @return {Monkey} - Returns itself for chaining purposes.
    */
   update() {
-    const deps = this.tree.project(this.definition.projection);
+    const deps = this.tree.project(this.projection);
 
     const lazyGetter = (function(tree, def, data) {
       let cache = null,
@@ -214,6 +230,10 @@ export class Monkey {
     this.state.killed = true;
 
     // Deleting properties
+    // NOTE: not deleting this.definition because some strange things happen
+    // in the _refreshMonkeys method. See #372.
+    delete this.projection;
+    delete this.depPaths;
     delete this.tree;
   }
 }

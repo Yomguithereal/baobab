@@ -25,7 +25,6 @@ assert.isNotFrozen = function(v) {
 
 // Requiring the tests
 require('./suites/helpers.js');
-require('./suites/type.js');
 require('./suites/baobab.js');
 require('./suites/cursor.js');
 require('./suites/monkey.js');

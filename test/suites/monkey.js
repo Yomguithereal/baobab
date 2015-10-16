@@ -530,6 +530,42 @@ describe('Monkeys', function() {
     assert.strictEqual(altTree.get('user', 'fullname'), 'Hello Jack');
   });
 
+  it('should be possible to use relative paths when defining monkeys\' dependencies.', function() {
+    const fullname = (name, surname) => `${name} ${surname}`;
+
+    const tree = new Baobab({
+      data: {
+        user: {
+          name: 'John',
+          surname: 'Doe',
+          fullnameArray: monkey(
+            ['.', 'name'],
+            ['.', 'surname'],
+            fullname
+          ),
+          fullnameObject: monkey({
+            cursors: {
+              name: ['.', 'name'],
+              surname: ['.', 'surname']
+            },
+            get: ({name, surname}) => fullname(name, surname)
+          }),
+          nested: {
+            fullnameNested: monkey(
+              ['..', 'name'],
+              ['..', 'surname'],
+              fullname
+            )
+          }
+        }
+      }
+    });
+
+    assert.strictEqual(tree.get('data', 'user', 'fullnameArray'), 'John Doe');
+    assert.strictEqual(tree.get('data', 'user', 'fullnameObject'), 'John Doe');
+    assert.strictEqual(tree.get('data', 'user', 'nested', 'fullnameNested'), 'John Doe');
+  });
+
   describe('with immutable and persistent tree', function () {
     it('should be lazy if added at runtime', function() {
       let shouldHaveBeenCalled = false;
