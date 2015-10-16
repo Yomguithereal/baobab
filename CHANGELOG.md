@@ -3,6 +3,7 @@
 ## v2.1.0 (provisional)
 
 * Adding the `lazyMonkeys` option.
+* Adding relative paths for monkeys' dependencies.
 
 ## v2.0.1
 

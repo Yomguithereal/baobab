@@ -571,6 +571,32 @@ var tree = new Baobab({
   }
 });
 
+// Finally, know that you can use relative paths for convenience
+var tree = new Baobab({
+  data: {
+    user: {
+      name: 'John',
+      surname: 'Smith',
+      fullname: monkey(
+        ['.', 'name'],
+        ['.', 'surname'],
+        function(name, surname) {
+          return name + ' ' + surname;
+        }
+      ),
+      evenMoreNested: {
+        fullname: monkey(
+          ['..', 'name'],
+          ['..', 'surname'],
+          function(name, surname) {
+            return name + ' ' + surname;
+          }
+        )
+      }
+    }
+  }
+});
+
 // You can then access or select data naturally
 tree.get('user', 'fullname');
 >>> 'John Smith'
