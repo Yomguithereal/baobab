@@ -146,6 +146,16 @@ type.dynamicPath = function(path) {
 };
 
 /**
+ * Checking whether the given path is a relative.
+ *
+ * @param  {mixed} path - The path to test.
+ * @return {boolean}
+ */
+type.relativePath = function(path) {
+  return path.some(step => step === '.' || step === '..');
+};
+
+/**
  * Retrieve any monkey subpath in the given path or null if the path never comes
  * across computed data.
  *

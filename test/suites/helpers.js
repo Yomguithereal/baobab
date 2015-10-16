@@ -7,7 +7,8 @@ import {
   deepMerge,
   getIn,
   shallowMerge,
-  splice
+  splice,
+  solveRelativePath
 } from '../../src/helpers';
 
 describe('Helpers', function() {
@@ -156,6 +157,26 @@ describe('Helpers', function() {
         splice(array, 1, 1, 'gold'),
         ['yellow', 'gold', 'purple']
       );
+    });
+  });
+
+  /**
+   * Solving relative paths
+   */
+  describe('Relative paths solving', function() {
+    it('should work for every cases.', function() {
+      const cases = [
+        [['one', 'two'], ['one', 'two']],
+        [['.', 'one', 'two'], ['base', 'sub', 'one', 'two']],
+        [['.', 'one', '.', 'two'], ['base', 'sub', 'one', 'two']],
+        [['one', 'two', '.'], ['one', 'two']],
+        [['..', 'one'], ['base', 'one']],
+        [['..', 'one', '..'], ['base']],
+        [['..', '..', '..', '..'], []],
+        [['..', '..', '..', 'base', '..', 'base'], ['base']]
+      ];
+
+      cases.forEach(([path, expected], i) => assert.deepEqual(solveRelativePath(['base', 'sub'], path), expected, 'N° ' + i));
     });
   });
 });

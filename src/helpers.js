@@ -463,6 +463,34 @@ function slice(array) {
 }
 
 /**
+ * Solving a potentially relative path.
+ *
+ * @param  {array} base - The base path from which to solve the path.
+ * @param  {array} to   - The subpath to reach.
+ * @param  {array}      - The solved absolute path.
+ */
+export function solveRelativePath(base, to) {
+  let solvedPath = [];
+
+  for (let i = 0, l = to.length; i < l; i++) {
+    let step = to[i];
+
+    if (step === '.') {
+      if (!i)
+        solvedPath = base.slice(0);
+    }
+    else if (step === '..') {
+      solvedPath = (!i ? base : solvedPath).slice(0, -1);
+    }
+    else {
+      solvedPath.push(step);
+    }
+  }
+
+  return solvedPath;
+}
+
+/**
  * Function determining whether some paths in the tree were affected by some
  * updates that occurred at the given paths. This helper is mainly used at
  * cursor level to determine whether the cursor is concerned by the updates
