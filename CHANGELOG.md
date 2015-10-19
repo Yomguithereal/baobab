@@ -1,6 +1,6 @@
 # Changelog
 
-## v2.1.0 (provisional)
+## v2.1.0
 
 * Adding the `lazyMonkeys` option.
 * Adding relative paths for monkeys' dependencies.
