@@ -54,7 +54,9 @@ type.object = function(target) {
          typeof target === 'object' &&
          !Array.isArray(target) &&
          !(target instanceof Date) &&
-         !(target instanceof RegExp);
+         !(target instanceof RegExp) && 
+         !(typeof Map === 'function' && target instanceof Map) &&
+         !(typeof Set === 'function' && target instanceof Set);
 };
 
 /**
