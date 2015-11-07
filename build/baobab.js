@@ -1535,6 +1535,38 @@ var Cursor = (function (_Emitter) {
   };
 
   /**
+   * Method used to allow iterating over cursors containing list-type data.
+   *
+   * e.g. for(let i of cursor) { ... }
+   *
+   * @returns {Object}        -  Each item sequentially
+   */
+
+  Cursor.prototype[Symbol.iterator] = function () {
+    var array = this._get().data;
+
+    if (!_type2['default'].array(array)) throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
+
+    var i = 0;
+    var cursor = this;
+    var length = array.length;
+
+    return {
+      next: function next() {
+        if (i < length) {
+          return {
+            value: cursor.select(i++)
+          };
+        } else {
+          return {
+            done: true
+          };
+        }
+      }
+    };
+  };
+
+  /**
    * Getter Methods
    * ---------------
    */

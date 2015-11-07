@@ -386,6 +386,39 @@ export default class Cursor extends Emitter {
   }
 
   /**
+   * Method used to allow iterating over cursors containing list-type data.
+   *
+   * e.g. for(let i of cursor) { ... }
+   *
+   * @returns {Object}        -  Each item sequentially
+   */
+  [Symbol.iterator]() {
+    let array = this._get().data;
+
+    if (!type.array(array))
+      throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
+
+    let i = 0;
+    const cursor = this;
+    const length = array.length;
+
+    return {
+      next: function(){
+        if(i < length){
+          return {
+            value: cursor.select(i++)
+          };
+        }
+        else {
+          return {
+            done: true
+          };
+        }
+      }
+    };
+  }
+
+  /**
    * Getter Methods
    * ---------------
    */
