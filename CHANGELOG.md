@@ -3,6 +3,7 @@
 ## v2.1.1 (provisional)
 
 * Fixing existence checking of `undefined` values.
+* Fixing the `lazyMonkeys` option.
 
 ## v2.1.0
 
