@@ -56,7 +56,7 @@ colorsCursor.push('orange');
 
 ## Installation
 
-If you want to use **Baobab** with node.js/io.js or browserify/webpack etc., you can use npm.
+If you want to use **Baobab** with node.js or browserify/webpack etc., you can use npm.
 
 ```sh
 npm install baobab
