@@ -4,6 +4,7 @@
 
 * Fixing existence checking of `undefined` values.
 * Fixing the `lazyMonkeys` option.
+* Fixing the tree's behavior regarding ES6 collections ([@askmatey](https://github.com/askmatey)).
 
 ## v2.1.0
 
@@ -12,7 +13,7 @@
 
 ## v2.0.1
 
-* Fixing monkeys' laziness (**@Zache**).
+* Fixing monkeys' laziness ([@Zache](https://github.com/Zache)).
 * Fixing issues related to the root cursor.
 * Fixing `get` event edge cases.
 
@@ -58,7 +59,7 @@
 
 ## v1.0.3
 
-* Exposing `Cursor` and `Facet` classes for type checking (**@charlieschwabacher**).
+* Exposing `Cursor` and `Facet` classes for type checking ([@charlieschwabacher](https://github.com/charlieschwabacher)).
 * Fixing `type.Object`.
 * Fixing root updates.
 
@@ -106,13 +107,13 @@
 
 ## v0.4.3
 
-* Adding React mixins function polymorphisms thanks to **@denisw**.
-* Fixing `cursor.chain` thanks to **@jonypawks**.
-* Fixing transaction flow issues thanks to **@jmisterka**.
+* Adding React mixins function polymorphisms thanks to [@denisw](https://github.com/denisw).
+* Fixing `cursor.chain` thanks to [@jonypawks](https://github.com/jonypawks).
+* Fixing transaction flow issues thanks to [@jmisterka](https://github.com/jmisterka).
 
 ## v0.4.2
 
-* Fixing deep object comparison and dynamic paths matching thanks to **@angus-c**.
+* Fixing deep object comparison and dynamic paths matching thanks to [@angus-c](https://github.com/angus-c).
 
 ## v0.4.1
 
@@ -136,8 +137,8 @@
 
 ## v0.3.2
 
-* Bug fixes thanks to **@jacomyal**, **@jondot**.
-* Better perfs thanks to **@christianalfoni**.
+* Bug fixes thanks to [@jacomyal](https://github.com/jacomyal), [@jondot](https://github.com/jondot).
+* Better perfs thanks to [@christianalfoni](https://github.com/christianalfoni).
 * `release` method for the tree.
 
 ## v0.3.1
