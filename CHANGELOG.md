@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.1 (provisional)
+
+* Fixing existence checking of `undefined` values.
+
 ## v2.1.0
 
 * Adding the `lazyMonkeys` option.

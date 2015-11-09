@@ -5,6 +5,7 @@
  * Sample data used throughout the unit tests to hydrate the trees easily.
  */
 export default {
+  undefinedValue: undefined,
   primitive: 3,
   one: {
     subone: {

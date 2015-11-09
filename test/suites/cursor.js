@@ -114,6 +114,11 @@ describe('Cursor API', function() {
         assert.strictEqual(tree.exists('one', 'subtwo'), true);
         assert.strictEqual(tree.exists('one', 'subthree'), false);
       });
+
+      it('should be possible to assess whether an undefined value exists.', function() {
+        assert.strictEqual(tree.exists('undefinedValue'), true);
+        assert.strictEqual(tree.exists('setLater'), true);
+      });
     });
 
     /**
@@ -348,6 +353,20 @@ describe('Cursor API', function() {
         tree.unset(['one', 'two']);
 
         assert.deepEqual(tree.get(), {});
+      });
+
+      it('should be possible to unset null/undefined values.', function() {
+        const tree = new Baobab({nullValue: null, undefinedValue: null});
+
+        assert(tree.exists('nullValue'));
+        assert(tree.exists('undefinedValue'));
+
+        tree.unset('nullValue');
+        tree.unset('undefinedValue');
+
+        assert.deepEqual(tree.get(), {});
+        assert(!tree.exists('nullValue'));
+        assert(!tree.exists('undefinedValue'));
       });
 
       it('should be possible to push/unshift/concat to an array.', function() {

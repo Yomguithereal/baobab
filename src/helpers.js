@@ -233,7 +233,9 @@ function compare(object, description) {
  * @return {object}    - The merged object.
  */
 function freezer(deep, o) {
-  if (typeof o !== 'object' || o === null || o instanceof Monkey)
+  if (typeof o !== 'object' ||
+      o === null ||
+      o instanceof Monkey)
     return;
 
   Object.freeze(o);
@@ -304,6 +306,7 @@ export function getIn(object, path) {
     return notFoundObject;
 
   let solvedPath = [],
+      exists = true,
       c = object,
       idx,
       i,
@@ -337,11 +340,12 @@ export function getIn(object, path) {
     }
     else {
       solvedPath.push(path[i]);
+      exists = typeof c === 'object' && path[i] in c;
       c = c[path[i]];
     }
   }
 
-  return {data: c, solvedPath, exists: c !== undefined};
+  return {data: c, solvedPath, exists};
 }
 
 /**
