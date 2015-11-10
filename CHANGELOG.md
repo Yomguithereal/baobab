@@ -1,10 +1,11 @@
 # Changelog
 
-## v2.1.1 (provisional)
+## v2.1.1
 
 * Fixing existence checking of `undefined` values.
 * Fixing the `lazyMonkeys` option.
 * Fixing the tree's behavior regarding ES6 collections ([@askmatey](https://github.com/askmatey)).
+* Fixing the `splice` method ([@SaphuA](https://github.com/SaphuA)).
 
 ## v2.1.0
 
