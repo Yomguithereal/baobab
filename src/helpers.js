@@ -561,7 +561,7 @@ export function splice(array, startIndex, nb, ...elements) {
   return array
     .slice(0, startIndex)
     .concat(elements)
-    .concat(array.slice(startIndex + nb));
+    .concat(array.slice(startIndex + Math.max(0, nb)));
 }
 
 /**

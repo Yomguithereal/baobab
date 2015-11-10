@@ -158,6 +158,14 @@ describe('Helpers', function() {
         ['yellow', 'gold', 'purple']
       );
     });
+	
+    it('should treat a negative nb argument as 0.', function() {
+      const array = ['yellow', 'blue', 'purple'];
+      assert.deepEqual(
+        splice(array, 0, -1, 'gold'),
+        ['gold', 'yellow', 'blue', 'purple']
+      );
+    });
   });
 
   /**
