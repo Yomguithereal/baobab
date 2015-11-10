@@ -160,7 +160,7 @@ describe('Helpers', function() {
     });
 	
     it('should treat a negative nb argument as 0.', function() {
-      var array = ['yellow', 'blue', 'purple'];
+      const array = ['yellow', 'blue', 'purple'];
       assert.deepEqual(
         splice(array, 0, -1, 'gold'),
         ['gold', 'yellow', 'blue', 'purple']
