@@ -77,7 +77,7 @@ Or install with bower:
 bower install baobab
 ```
 
-The library (as a standalone) currently weights ~8ko gzipped.
+The library (as a standalone) currently weighs ~8kb gzipped.
 
 ## Usage
 
