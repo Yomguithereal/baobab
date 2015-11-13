@@ -556,6 +556,8 @@ export default class Cursor extends Emitter {
         value: maxRecords
       });
 
+    this.state.recording = true;
+
     if (this.archive)
       return this;
 
@@ -563,7 +565,6 @@ export default class Cursor extends Emitter {
     this._lazyBind();
 
     this.archive = new Archive(maxRecords);
-    this.state.recording = true;
     return this;
   }
 
