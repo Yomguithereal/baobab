@@ -732,6 +732,20 @@ describe('Cursor API', function() {
       assert.strictEqual(listItem.rightmost().get(), 4);
     });
 
+    it('should be possible to iterate over an array.', function() {
+      const result = [];
+
+      for (let i of colorCursor) {
+        result.push(i.get());
+      }
+
+      assert.deepEqual(result, state.one.subtwo.colors);
+
+      assert.throws(function() {
+        for(let i of oneCursor){}
+      }, /non-list/);
+    });
+
     it('should be possible to map an array.', function() {
       let count = 0;
 
