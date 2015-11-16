@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.0 (provisional)
+
+* Cursors are now ES6 iterables ([@kirjs](https://github.com/kirjs)).
+
 ## v2.1.1
 
 * Fixing existence checking of `undefined` values.
