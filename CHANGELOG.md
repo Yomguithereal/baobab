@@ -3,6 +3,7 @@
 ## v2.2.0 (provisional)
 
 * Cursors are now ES6 iterables ([@kirjs](https://github.com/kirjs)).
+* Storing hashed paths using `λ` as delimiter instead of `/` to enable some edge cases ([@nivekmai](https://github.com/nivekmai)).
 
 ## v2.1.1
 
