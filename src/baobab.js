@@ -63,12 +63,12 @@ const DEFAULTS = {
  * @return {string} string - The resultant hash.
  */
 function hashPath(path) {
-  return '/' + path.map(step => {
+  return 'λ' + path.map(step => {
     if (type.function(step) || type.object(step))
       return `#${uniqid()}#`;
     else
       return step;
-  }).join('/');
+  }).join('λ');
 }
 
 /**
@@ -118,7 +118,7 @@ export default class Baobab extends Emitter {
     this._data = initialData;
 
     // Properties
-    this.root = new Cursor(this, [], '/');
+    this.root = new Cursor(this, [], 'λ');
     delete this.root.release;
 
     // Does the user want an immutable tree?
@@ -459,8 +459,8 @@ export default class Baobab extends Emitter {
       this._future = clearTimeout(this._future);
 
     const affectedPaths = Object.keys(this._affectedPathsIndex).map(h => {
-      return h !== '/' ?
-        h.split('/').slice(1) :
+      return h !== 'λ' ?
+        h.split('λ').slice(1) :
         [];
     });
 
