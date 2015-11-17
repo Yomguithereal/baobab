@@ -881,6 +881,19 @@ describe('Cursor API', function() {
     });
   });
 
+  it('should be possible to restart a history after having stopped it before.', function() {
+    const tree = new Baobab({item: 1}, {asynchronous: false}),
+          cursor = tree.select('item');
+
+    cursor.startRecording();
+    cursor.stopRecording();
+    cursor.startRecording();
+    cursor.set(2);
+
+    assert(cursor.state.recording);
+    assert.deepEqual(cursor.getHistory(), [1]);
+  });
+
   /**
    * Advanced issues
    */
