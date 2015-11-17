@@ -1732,13 +1732,14 @@ var Cursor = (function (_Emitter) {
       value: maxRecords
     });
 
+    this.state.recording = true;
+
     if (this.archive) return this;
 
     // Lazy binding
     this._lazyBind();
 
     this.archive = new _helpers.Archive(maxRecords);
-    this.state.recording = true;
     return this;
   };
 
