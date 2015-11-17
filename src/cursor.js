@@ -390,7 +390,7 @@ export default class Cursor extends Emitter {
    *
    * e.g. for(let i of cursor) { ... }
    *
-   * @returns {Object}        -  Each item sequentially
+   * @returns {object} -  Each item sequentially.
    */
   [Symbol.iterator]() {
     let array = this._get().data;
