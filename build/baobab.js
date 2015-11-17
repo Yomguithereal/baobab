@@ -650,9 +650,9 @@ var DEFAULTS = {
  * @return {string} string - The resultant hash.
  */
 function hashPath(path) {
-  return '/' + path.map(function (step) {
+  return 'λ' + path.map(function (step) {
     if (_type2['default']['function'](step) || _type2['default'].object(step)) return '#' + uniqid() + '#';else return step;
-  }).join('/');
+  }).join('λ');
 }
 
 /**
@@ -707,7 +707,7 @@ var Baobab = (function (_Emitter) {
     this._data = initialData;
 
     // Properties
-    this.root = new _cursor2['default'](this, [], '/');
+    this.root = new _cursor2['default'](this, [], 'λ');
     delete this.root.release;
 
     // Does the user want an immutable tree?
@@ -1011,7 +1011,7 @@ var Baobab = (function (_Emitter) {
     if (this._future) this._future = clearTimeout(this._future);
 
     var affectedPaths = Object.keys(this._affectedPathsIndex).map(function (h) {
-      return h !== '/' ? h.split('/').slice(1) : [];
+      return h !== 'λ' ? h.split('λ').slice(1) : [];
     });
 
     // Is the tree still valid?
