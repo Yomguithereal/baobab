@@ -19,7 +19,7 @@ import {
 function err(operation, expectedTarget, path) {
   return makeError(
     `Baobab.update: cannot apply the "${operation}" on ` +
-    `a non ${expectedTarget} (path: /${path.join('λ')}).`,
+    `a non ${expectedTarget} (path: /${path.join('/')}).`,
     {path}
   );
 }
