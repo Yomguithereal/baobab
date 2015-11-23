@@ -366,8 +366,31 @@ describe('Monkeys', function() {
     assert.deepEqual(tree.get('data', 'computed', 'leader'), ['yellow']);
   });
 
+  // it('should be lazy by default.', function() {
+  //   let count = 0;
+
+  //   const tree = new Baobab({
+  //     items: [],
+  //     string: monkey(['items'], function(items) {
+  //       count++;
+  //       return items.join(',');
+  //     })
+  //   })
+
+  //   const cursor = tree.select('items');
+  //   cursor.push(1);
+  //   cursor.push(2);
+
+  //   assert.strictEqual(count, 0);
+
+  //   cursor.push(3);
+
+  //   assert.strictEqual(count, 1);
+  //   assert.strictEqual(tree.get('string'), '1,2,3');
+  // });
+
   describe('should be possible to replace monkeys at runtime.', function() {
-    it('with default tree', function() {
+    it('with default tree.', function() {
       const tree = new Baobab(
         {
           data: {
@@ -385,7 +408,7 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
-    it('with mutable tree', function() {
+    it('with mutable tree.', function() {
       const tree = new Baobab(
         {
           data: {
@@ -403,7 +426,7 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
-    it('with non-persistent tree', function() {
+    it('with non-persistent tree.', function() {
       const tree = new Baobab(
         {
           data: {
@@ -421,7 +444,7 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
-    it('with impure tree', function() {
+    it('with impure tree.', function() {
       const tree = new Baobab(
         {
           data: {
@@ -439,7 +462,7 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
-	it('with mutable, non-persistent, impure tree', function() {
+	it('with mutable, non-persistent, impure tree.', function() {
       const tree = new Baobab(
         {
           data: {
@@ -567,7 +590,7 @@ describe('Monkeys', function() {
   });
 
   describe('with immutable and persistent tree', function () {
-    it('should be lazy if added at runtime', function() {
+    it('should be lazy if added at runtime.', function() {
       let shouldHaveBeenCalled = false;
 
       const tree = new Baobab(
@@ -596,7 +619,7 @@ describe('Monkeys', function() {
       assert.strictEqual('blue', blue);
     });
 
-    it('should be lazy', function() {
+    it('should be lazy.', function() {
       let shouldHaveBeenCalled = false;
 
       const tree = new Baobab(
@@ -622,7 +645,7 @@ describe('Monkeys', function() {
   });
 
   describe('without immutability or persistence', function() {
-    it('should be lazy if added at runtime', function() {
+    it('should be lazy if added at runtime.', function() {
       let shouldHaveBeenCalled = false;
 
       const tree = new Baobab(
@@ -651,7 +674,7 @@ describe('Monkeys', function() {
       assert.strictEqual('blue', blue);
     });
 
-    it('should be lazy', function() {
+    it('should be lazy.', function() {
       let shouldHaveBeenCalled = false;
 
       const tree = new Baobab(
