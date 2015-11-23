@@ -112,6 +112,24 @@ describe('Watchers', function() {
     tree.unshift(['data', 'colors'], 'purple');
   });
 
+  it('should be possible to watch over paths beneath monkeys.', function(done) {
+    const tree = new Baobab({
+      object: {
+        hello: 'Jack'
+      },
+      dynamic: Baobab.monkey(['object'], o => o)
+    });
+
+    const watcher = tree.watch({d: ['dynamic', 'hello']});
+
+    watcher.on('update', function() {
+      assert.deepEqual(watcher.get(), {d: 'John'});
+      done();
+    });
+
+    tree.set('object', {hello: 'John'});
+  });
+
   it('should be possible to retrieve a mapping of the watcher\'s cursors.', function() {
     const tree = new Baobab({
       one: 1,

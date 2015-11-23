@@ -81,7 +81,7 @@ export default class Watcher extends Emitter {
 
       if (monkeyPath)
         return cp.concat(
-          getIn(this.tree._monkeys, p).data.relatedPaths()
+          getIn(this.tree._monkeys, monkeyPath).data.relatedPaths()
         );
 
       return cp.concat([p]);

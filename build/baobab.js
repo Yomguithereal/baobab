@@ -3331,7 +3331,7 @@ var Watcher = (function (_Emitter) {
       // Facet path?
       var monkeyPath = _type2['default'].monkeyPath(_this2.tree._monkeys, p);
 
-      if (monkeyPath) return cp.concat(_helpers.getIn(_this2.tree._monkeys, p).data.relatedPaths());
+      if (monkeyPath) return cp.concat(_helpers.getIn(_this2.tree._monkeys, monkeyPath).data.relatedPaths());
 
       return cp.concat([p]);
     }, []);
