@@ -17,7 +17,7 @@ import {
 
 /**
  * Monkey Definition class
- * Note: The only reason why this is a class is to be able to spot it whithin
+ * Note: The only reason why this is a class is to be able to spot it within
  * otherwise ordinary data.
  *
  * @constructor
