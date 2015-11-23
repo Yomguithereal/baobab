@@ -220,7 +220,6 @@ export class Monkey {
 
       if ('data' in result)
         this.tree._data = result.data;
-
     }
 
     return this;
