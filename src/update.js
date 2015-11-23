@@ -71,15 +71,15 @@ export default function update(data, path, operation, opts={}) {
         if (opts.pure && p[s] === value)
           return {node: p[s]};
 
-        if (opts.persistent) {
-          p[s] = shallowClone(value);
-        }
-        else if (value instanceof MonkeyDefinition) {
+        if (type.lazyGetter(p, s)) {
           Object.defineProperty(p, s, {
-            value: value,
+            value,
             enumerable: true,
             configurable: true
           });
+        }
+        else if (opts.persistent) {
+          p[s] = shallowClone(value);
         }
         else {
           p[s] = value;

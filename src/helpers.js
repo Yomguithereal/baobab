@@ -163,9 +163,18 @@ function cloner(deep, item) {
     let k, o = {};
 
     // NOTE: could be possible to erase computed properties through `null`.
-    for (k in item)
-      if (item.hasOwnProperty(k))
+    for (k in item) {
+      if (type.lazyGetter(item, k)) {
+        Object.defineProperty(o, k, {
+          get: Object.getOwnPropertyDescriptor(item, k).get,
+          enumerable: true,
+          configurable: true
+        });
+      }
+      else if (item.hasOwnProperty(k)) {
         o[k] = deep ? cloner(true, item[k]) : item[k];
+      }
+    }
     return o;
   }
 

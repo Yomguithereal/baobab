@@ -366,28 +366,27 @@ describe('Monkeys', function() {
     assert.deepEqual(tree.get('data', 'computed', 'leader'), ['yellow']);
   });
 
-  // it('should be lazy by default.', function() {
-  //   let count = 0;
+  it('should be lazy by default.', function() {
+    let count = 0;
 
-  //   const tree = new Baobab({
-  //     items: [],
-  //     string: monkey(['items'], function(items) {
-  //       count++;
-  //       return items.join(',');
-  //     })
-  //   })
+    const tree = new Baobab({
+      items: [],
+      string: monkey(['items'], function(items) {
+        count++;
+        return items.join(',');
+      })
+    })
 
-  //   const cursor = tree.select('items');
-  //   cursor.push(1);
-  //   cursor.push(2);
+    const cursor = tree.select('items');
+    cursor.push(1);
+    cursor.push(2);
 
-  //   assert.strictEqual(count, 0);
+    assert.strictEqual(count, 0);
 
-  //   cursor.push(3);
-
-  //   assert.strictEqual(count, 1);
-  //   assert.strictEqual(tree.get('string'), '1,2,3');
-  // });
+    cursor.push(3);
+    assert.strictEqual(tree.get('string'), '1,2,3');
+    assert.strictEqual(count, 1);
+  });
 
   describe('should be possible to replace monkeys at runtime.', function() {
     it('with default tree.', function() {

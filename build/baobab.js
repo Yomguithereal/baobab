@@ -1539,7 +1539,7 @@ var Cursor = (function (_Emitter) {
    *
    * e.g. for(let i of cursor) { ... }
    *
-   * @returns {Object}        -  Each item sequentially
+   * @returns {object} -  Each item sequentially.
    */
 
   Cursor.prototype[Symbol.iterator] = function () {
@@ -2123,7 +2123,17 @@ function cloner(deep, item) {
         o = {};
 
     // NOTE: could be possible to erase computed properties through `null`.
-    for (k in item) if (item.hasOwnProperty(k)) o[k] = deep ? cloner(true, item[k]) : item[k];
+    for (k in item) {
+      if (_type2['default'].lazyGetter(item, k)) {
+        Object.defineProperty(o, k, {
+          get: Object.getOwnPropertyDescriptor(item, k).get,
+          enumerable: true,
+          configurable: true
+        });
+      } else if (item.hasOwnProperty(k)) {
+        o[k] = deep ? cloner(true, item[k]) : item[k];
+      }
+    }
     return o;
   }
 
@@ -2551,7 +2561,7 @@ var _helpers = require('./helpers');
 
 /**
  * Monkey Definition class
- * Note: The only reason why this is a class is to be able to spot it whithin
+ * Note: The only reason why this is a class is to be able to spot it within
  * otherwise ordinary data.
  *
  * @constructor
@@ -3085,14 +3095,14 @@ function update(data, path, operation) {
         // Purity check
         if (opts.pure && p[s] === value) return { node: p[s] };
 
-        if (opts.persistent) {
-          p[s] = _helpers.shallowClone(value);
-        } else if (value instanceof _monkey.MonkeyDefinition) {
+        if (_type2['default'].lazyGetter(p, s)) {
           Object.defineProperty(p, s, {
             value: value,
             enumerable: true,
             configurable: true
           });
+        } else if (opts.persistent) {
+          p[s] = _helpers.shallowClone(value);
         } else {
           p[s] = value;
         }
