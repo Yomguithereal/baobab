@@ -17,7 +17,8 @@ describe('Baobab API', function() {
 
     it('should throw an error when trying to instantiate an baobab with incorrect data.', function() {
       assert.throws(function() {
-        new Baobab(undefined);
+        const tree = new Baobab(undefined);
+        tree.set('hello', 'world');
       }, /invalid data/);
     });
   });
@@ -78,8 +79,8 @@ describe('Baobab API', function() {
     });
 
     it('should only fire updates once when committing synchronously but when not in synchronous mode.', function(done) {
-      let tree = new Baobab({hello: 'world'}),
-          count = 0;
+      const tree = new Baobab({hello: 'world'});
+      let count = 0;
 
       tree.on('update', () => count++);
 
@@ -94,8 +95,8 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to listen to new selections.', function(done) {
-      let tree = new Baobab({one: {two: 'hello'}}),
-          count = 0;
+      const tree = new Baobab({one: {two: 'hello'}});
+      let count = 0;
 
       tree.on('select', function(e) {
         assert.deepEqual(e.data.path, ['one', 'two']);
@@ -112,8 +113,8 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to listen to get events.', function(done) {
-      let tree = new Baobab({one: {two: 'hello'}}),
-          count = 0;
+      const tree = new Baobab({one: {two: 'hello'}});
+      let count = 0;
 
       tree.on('get', function(e) {
         assert.deepEqual(e.data.path, ['one', 'two']);
@@ -261,7 +262,7 @@ describe('Baobab API', function() {
     it('should be possible to validate the tree and rollback on fail.', function() {
       let invalidCount = 0;
 
-      function v(state, nextState, paths) {
+      function v(previousState, nextState) {
         assert(this instanceof Baobab);
 
         if (typeof nextState.hello !== 'string')
@@ -291,7 +292,7 @@ describe('Baobab API', function() {
     it('should be possible to validate the tree and let the tree update on fail.', function() {
       let invalidCount = 0;
 
-      function v(state, nextState, paths) {
+      function v(previousState, nextState) {
         assert(this instanceof Baobab);
 
         if (typeof nextState.hello !== 'string')
@@ -319,7 +320,7 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to validate the initial data of the tree.', function() {
-      function validate(state, nextState, paths) {
+      function validate(previousState, nextState, paths) {
         assert.deepEqual(paths, [[]]);
 
         if (nextState.one !== 1)
@@ -332,6 +333,7 @@ describe('Baobab API', function() {
 
       assert.throws(function() {
         const failingTree = new Baobab({one: 2}, {validate});
+        failingTree.set('one', 1);
       }, /invalid/);
     });
 
@@ -450,8 +452,8 @@ describe('Baobab API', function() {
         }
       );
 
-      var initialList = tree.get('list'),
-          initialObject = tree.get('object');
+      const initialList = tree.get('list'),
+            initialObject = tree.get('object');
 
       tree.push('list', 2);
 
@@ -486,8 +488,8 @@ describe('Baobab API', function() {
       let updated = false,
           impureUpdated = false;
 
-      let listener = () => updated = true,
-          impureListener = (e) => impureUpdated = true;
+      const listener = () => updated = true,
+            impureListener = () => impureUpdated = true;
 
       tree.on('update', listener);
       impureTree.on('update', impureListener);

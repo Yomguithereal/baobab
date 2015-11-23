@@ -5,7 +5,6 @@
 import assert from 'assert';
 import async from 'async';
 import Baobab, {monkey} from '../../src/baobab';
-import Cursor from '../../src/cursor';
 import state from '../state';
 
 describe('Cursor API', function() {
@@ -57,8 +56,7 @@ describe('Cursor API', function() {
 
       it('should be possible to retrieve items with a descriptor object.', function() {
         const firstItem = tree.get('items', {id: 'one'}),
-              secondItem = tree.get('items', {id: 'two', user: {name: 'John'}}),
-              thirdItem = tree.get('items', {id: ['one', 'two']});
+              secondItem = tree.get('items', {id: 'two', user: {name: 'John'}});
 
         assert.deepEqual(firstItem, {id: 'one'});
         assert.deepEqual(secondItem, {id: 'two', user: {name: 'John', surname: 'Talbot'}});
@@ -386,7 +384,7 @@ describe('Cursor API', function() {
         assert.deepEqual(cursor.get(), [1, 2, 3]);
 
         cursor.splice([0, 1]);
-        cursor.splice([1, 1, 4])
+        cursor.splice([1, 1, 4]);
 
         assert.deepEqual(cursor.get(), [2, 4]);
       });
@@ -516,8 +514,8 @@ describe('Cursor API', function() {
             leaf1 = parent.select('leaf1'),
             leaf2 = parent.select('leaf2');
 
-      let count = 0,
-          handler = () => count++;
+      let count = 0;
+      const handler = () => count++;
 
       async.parallel({
         node: function(next) {
@@ -544,8 +542,8 @@ describe('Cursor API', function() {
       const tree = new Baobab({list: ['one']}, {asynchronous: false}),
             cursor = tree.select('list', 0);
 
-      let count = 0,
-          listener = () => count++;
+      let count = 0;
+      const listener = () => count++;
 
       cursor.on('update', listener);
 
@@ -735,14 +733,16 @@ describe('Cursor API', function() {
     it('should be possible to iterate over an array.', function() {
       const result = [];
 
-      for (let i of colorCursor) {
+      for (const i of colorCursor) {
         result.push(i.get());
       }
 
       assert.deepEqual(result, state.one.subtwo.colors);
 
       assert.throws(function() {
-        for(let i of oneCursor){}
+        for (const i of oneCursor) {
+          result.push(i);
+        }
       }, /non-list/);
     });
 
@@ -762,7 +762,7 @@ describe('Cursor API', function() {
       );
 
       const scope = {hello: 'world'};
-      colorCursor.map(function(cursor, i) {
+      colorCursor.map(function() {
         assert(this === scope);
       }, scope);
 
@@ -822,7 +822,7 @@ describe('Cursor API', function() {
       assert(cursor.state.recording);
 
       [1, 2, 3, 4, 5, 6].forEach(function() {
-        cursor.apply(function(e) { return e + 1; });
+        cursor.apply(e => e + 1);
       });
 
       assert(cursor.hasHistory());
@@ -853,7 +853,7 @@ describe('Cursor API', function() {
       cursor.startRecording(5);
 
       [1, 2, 3, 4, 5, 6].forEach(function() {
-        cursor.apply(function(e) { return e + 1; });
+        cursor.apply(e => e + 1);
       });
 
       assert.strictEqual(cursor.get(), 7);

@@ -26,7 +26,7 @@ describe('Helpers', function() {
       );
     });
 
-    it('should also work with dynamic paths.', function() {
+    it('should also work with dynamic paths.', function() {
       const data = {a: {b: [null, {id: 34}]}};
 
       assert.deepEqual(
@@ -101,7 +101,7 @@ describe('Helpers', function() {
   describe('Splice', function() {
 
     it('should work in a non-mutative fashion.', function() {
-      var array = ['yellow', 'blue', 'purple'];
+      const array = ['yellow', 'blue', 'purple'];
 
       assert.deepEqual(
         splice(array, 0, 0),
@@ -158,7 +158,7 @@ describe('Helpers', function() {
         ['yellow', 'gold', 'purple']
       );
     });
-	
+
     it('should treat a negative nb argument as 0.', function() {
       const array = ['yellow', 'blue', 'purple'];
       assert.deepEqual(

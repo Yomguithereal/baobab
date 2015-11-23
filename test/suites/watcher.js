@@ -21,8 +21,8 @@ describe('Watchers', function() {
       name: ['data', 'name']
     });
 
-    let count = 0,
-        inc = () => count++;
+    let count = 0;
+    const inc = () => count++;
 
     watcher.on('update', inc);
 
@@ -51,8 +51,8 @@ describe('Watchers', function() {
       name: tree.select(['data', 'name'])
     });
 
-    let count = 0,
-        inc = () => count++;
+    let count = 0;
+    const inc = () => count++;
 
     watcher.on('update', inc);
 
@@ -78,8 +78,8 @@ describe('Watchers', function() {
       two: ['data', x => x.id === 1, 'txt']
     });
 
-    let count = 0,
-        inc = () => count++;
+    let count = 0;
+    const inc = () => count++;
 
     watcher.on('update', inc);
 

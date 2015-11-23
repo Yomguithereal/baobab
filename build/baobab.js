@@ -607,7 +607,6 @@ var deepFreeze = helpers.deepFreeze;
 var getIn = helpers.getIn;
 var makeError = helpers.makeError;
 var deepMerge = helpers.deepMerge;
-var pathObject = helpers.pathObject;
 var shallowClone = helpers.shallowClone;
 var shallowMerge = helpers.shallowMerge;
 var uniqid = helpers.uniqid;
@@ -651,7 +650,9 @@ var DEFAULTS = {
  */
 function hashPath(path) {
   return 'λ' + path.map(function (step) {
-    if (_type2['default']['function'](step) || _type2['default'].object(step)) return '#' + uniqid() + '#';else return step;
+    if (_type2['default']['function'](step) || _type2['default'].object(step)) return '#' + uniqid() + '#';
+
+    return step;
   }).join('λ');
 }
 
@@ -1106,7 +1107,9 @@ Baobab.monkey = function () {
 
   if (!args.length) throw new Error('Baobab.monkey: missing definition.');
 
-  if (args.length === 1) return new _monkey.MonkeyDefinition(args[0]);else return new _monkey.MonkeyDefinition(args);
+  if (args.length === 1) return new _monkey.MonkeyDefinition(args[0]);
+
+  return new _monkey.MonkeyDefinition(args);
 };
 Baobab.dynamicNode = Baobab.monkey;
 
@@ -1424,7 +1427,9 @@ var Cursor = (function (_Emitter) {
    */
 
   Cursor.prototype.up = function up() {
-    if (!this.isRoot()) return this.tree.select(this.path.slice(0, -1));else return null;
+    if (!this.isRoot()) return this.tree.select(this.path.slice(0, -1));
+
+    return null;
   };
 
   /**
@@ -1558,11 +1563,11 @@ var Cursor = (function (_Emitter) {
           return {
             value: cursor.select(i++)
           };
-        } else {
-          return {
-            done: true
-          };
         }
+
+        return {
+          done: true
+        };
       }
     };
   };
@@ -1933,6 +1938,8 @@ module.exports = exports['default'];
 
 },{"./helpers":4,"./monkey":5,"./type":6,"emmett":1}],4:[function(require,module,exports){
 (function (global){
+/* eslint eqeqeq: 0 */
+
 /**
  * Baobab Helpers
  * ===============
@@ -1947,7 +1954,6 @@ exports.before = before;
 exports.coercePath = coercePath;
 exports.getIn = getIn;
 exports.makeError = makeError;
-exports.pathObject = pathObject;
 exports.solveRelativePath = solveRelativePath;
 exports.solveUpdate = solveUpdate;
 exports.splice = splice;
@@ -1966,6 +1972,40 @@ var _type2 = _interopRequireDefault(_type);
  * Noop function
  */
 var noop = Function.prototype;
+
+/**
+ * Function returning the index of the first element of a list matching the
+ * given predicate.
+ *
+ * @param  {array}     a  - The target array.
+ * @param  {function}  fn - The predicate function.
+ * @return {mixed}        - The index of the first matching item or -1.
+ */
+function index(a, fn) {
+  var i = undefined,
+      l = undefined;
+  for (i = 0, l = a.length; i < l; i++) {
+    if (fn(a[i])) return i;
+  }
+  return -1;
+}
+
+/**
+ * Efficient slice function used to clone arrays or parts of them.
+ *
+ * @param  {array} array - The array to slice.
+ * @return {array}       - The sliced array.
+ */
+function slice(array) {
+  var newArray = new Array(array.length);
+
+  var i = undefined,
+      l = undefined;
+
+  for (i = 0, l = array.length; i < l; i++) newArray[i] = array[i];
+
+  return newArray;
+}
 
 /**
  * Archive abstraction
@@ -2074,8 +2114,9 @@ function before(decorator, fn) {
  * @return {RegExp}    - The cloned regular expression.
  */
 function cloneRegexp(re) {
-  var pattern = re.source,
-      flags = '';
+  var pattern = re.source;
+
+  var flags = '';
 
   if (re.global) flags += 'g';
   if (re.multiline) flags += 'm';
@@ -2101,14 +2142,16 @@ function cloner(deep, item) {
   // Array
   if (_type2['default'].array(item)) {
     if (deep) {
+      var a = [];
+
       var i = undefined,
-          l = undefined,
-          a = [];
+          l = undefined;
+
       for (i = 0, l = item.length; i < l; i++) a.push(cloner(true, item[i]));
       return a;
-    } else {
-      return slice(item);
     }
+
+    return slice(item);
   }
 
   // Date
@@ -2119,8 +2162,9 @@ function cloner(deep, item) {
 
   // Object
   if (_type2['default'].object(item)) {
-    var k = undefined,
-        o = {};
+    var o = {};
+
+    var k = undefined;
 
     // NOTE: could be possible to erase computed properties through `null`.
     for (k in item) {
@@ -2259,8 +2303,9 @@ var notFoundObject = { data: undefined, solvedPath: null, exists: false };
 function getIn(object, path) {
   if (!path) return notFoundObject;
 
-  var solvedPath = [],
-      exists = true,
+  var solvedPath = [];
+
+  var exists = true,
       c = object,
       idx = undefined,
       i = undefined,
@@ -2298,23 +2343,6 @@ function getIn(object, path) {
 }
 
 /**
- * Function returning the index of the first element of a list matching the
- * given predicate.
- *
- * @param  {array}     a  - The target array.
- * @param  {function}  fn - The predicate function.
- * @return {mixed}        - The index of the first matching item or -1.
- */
-function index(a, fn) {
-  var i = undefined,
-      l = undefined;
-  for (i = 0, l = a.length; i < l; i++) {
-    if (fn(a[i])) return i;
-  }
-  return -1;
-}
-
-/**
  * Little helper returning a JavaScript error carrying some data with it.
  *
  * @param  {string} message - The error message.
@@ -2345,8 +2373,9 @@ function merger(deep) {
     objects[_key - 1] = arguments[_key];
   }
 
-  var o = objects[0],
-      t = undefined,
+  var o = objects[0];
+
+  var t = undefined,
       i = undefined,
       l = undefined,
       k = undefined;
@@ -2374,47 +2403,6 @@ var shallowMerge = merger.bind(null, false),
 
 exports.shallowMerge = shallowMerge;
 exports.deepMerge = deepMerge;
-
-/**
- * Function returning a nested object according to the given path and the
- * given leaf.
- *
- * @param  {array}  path - The path to follow.
- * @param  {mixed}  leaf - The leaf to append at the end of the path.
- * @return {object}      - The nested object.
- */
-
-function pathObject(path, leaf) {
-  var l = path.length,
-      o = {},
-      c = o,
-      i = undefined;
-
-  if (!l) o = leaf;
-
-  for (i = 0; i < l; i++) {
-    c[path[i]] = i + 1 === l ? leaf : {};
-    c = c[path[i]];
-  }
-
-  return o;
-}
-
-/**
- * Efficient slice function used to clone arrays or parts of them.
- *
- * @param  {array} array - The array to slice.
- * @return {array}       - The sliced array.
- */
-function slice(array) {
-  var newArray = new Array(array.length),
-      i = undefined,
-      l = undefined;
-
-  for (i = 0, l = array.length; i < l; i++) newArray[i] = array[i];
-
-  return newArray;
-}
 
 /**
  * Solving a potentially relative path.
@@ -2526,6 +2514,7 @@ function splice(array, startIndex, nb) {
  */
 var uniqid = (function () {
   var i = 0;
+
   return function () {
     return i++;
   };
@@ -2702,7 +2691,9 @@ var Monkey = (function () {
       return _helpers.getIn(_this4.tree._data, p).solvedPath;
     });else paths = this.depPaths;
 
-    if (!this.isRecursive) return paths;else return paths.reduce(function (accumulatedPaths, path) {
+    if (!this.isRecursive) return paths;
+
+    return paths.reduce(function (accumulatedPaths, path) {
       var monkeyPath = _type2['default'].monkeyPath(_this4.tree._monkeys, path);
 
       if (!monkeyPath) return accumulatedPaths.concat([path]);
@@ -2940,8 +2931,9 @@ type.dynamicPath = function (path) {
  * @return {boolean}
  */
 type.monkeyPath = function (data, path) {
-  var subpath = [],
-      c = data,
+  var subpath = [];
+
+  var c = data,
       i = undefined,
       l = undefined;
 
@@ -2982,11 +2974,15 @@ type.monkeyDefinition = function (definition) {
   if (type.object(definition)) {
     if (!type['function'](definition.get) || definition.cursors && (!type.object(definition.cursors) || !Object.keys(definition.cursors).every(function (k) {
       return type.path(definition.cursors[k]);
-    }))) return null;else return 'object';
+    }))) return null;
+
+    return 'object';
   } else if (type.array(definition)) {
     if (!type['function'](definition[definition.length - 1]) || !definition.slice(0, -1).every(function (p) {
       return type.path(p);
-    })) return null;else return 'array';
+    })) return null;
+
+    return 'array';
   }
 
   return null;
@@ -3039,8 +3035,6 @@ var _type = require('./type');
 
 var _type2 = _interopRequireDefault(_type);
 
-var _monkey = require('./monkey');
-
 var _helpers = require('./helpers');
 
 function err(operation, expectedTarget, path) {
@@ -3065,11 +3059,11 @@ function update(data, path, operation) {
 
   // Dummy root, so we can shift and alter the root
   var dummy = { root: data },
-      dummyPath = ['root'].concat(path);
+      dummyPath = ['root'].concat(path),
+      currentPath = [];
 
   // Walking the path
   var p = dummy,
-      currentPath = [],
       i = undefined,
       l = undefined,
       s = undefined;
@@ -3232,7 +3226,7 @@ function update(data, path, operation) {
 
 module.exports = exports['default'];
 
-},{"./helpers":4,"./monkey":5,"./type":6}],8:[function(require,module,exports){
+},{"./helpers":4,"./type":6}],8:[function(require,module,exports){
 /**
  * Baobab Watchers
  * ================
@@ -3318,7 +3312,9 @@ var Watcher = (function (_Emitter) {
       var v = _this2.mapping[k];
 
       // Watcher mappings can accept a cursor
-      if (v instanceof _cursor2['default']) return v.solvedPath;else return _this2.mapping[k];
+      if (v instanceof _cursor2['default']) return v.solvedPath;
+
+      return _this2.mapping[k];
     });
 
     return rawPaths.reduce(function (cp, p) {

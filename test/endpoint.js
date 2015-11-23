@@ -18,7 +18,7 @@ assert.isFrozen = function(v) {
 
 assert.isNotFrozen = function(v) {
   assert(
-    type.primitive(v) || !Object.isFrozen(v),
+    type.primitive(v) || !Object.isFrozen(v),
     util.inspect(v) + ' is frozen.'
   );
 };

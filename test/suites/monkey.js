@@ -132,7 +132,7 @@ describe('Monkeys', function() {
 
     assert.strictEqual(tree.get('greeting'), 'Hello John');
 
-    tree.set(['list', 0, 'name'], 'Jack')
+    tree.set(['list', 0, 'name'], 'Jack');
 
     assert.strictEqual(tree.get('greeting'), 'Hello Jack');
   });
@@ -141,7 +141,7 @@ describe('Monkeys', function() {
     const tree = new Baobab(getExampleState()),
           cursor = tree.select('data', 'fromJohn');
 
-    cursor.on('update', e => done());
+    cursor.on('update', () => done());
 
     assert.deepEqual(
       cursor.get(),
@@ -314,7 +314,7 @@ describe('Monkeys', function() {
     }, {asynchronous: false});
 
     tree.get('visibleRowsData');
-    tree.select('visibleRows').set({start:1, end:4});
+    tree.select('visibleRows').set({start: 1, end: 4});
     tree.get('visibleRowsData');
 
     assert.strictEqual(count, 2);
@@ -375,7 +375,7 @@ describe('Monkeys', function() {
         count++;
         return items.join(',');
       })
-    })
+    });
 
     const cursor = tree.select('items');
     cursor.push(1);
@@ -588,7 +588,7 @@ describe('Monkeys', function() {
     assert.strictEqual(tree.get('data', 'user', 'nested', 'fullnameNested'), 'John Doe');
   });
 
-  describe('with immutable and persistent tree', function () {
+  describe('with immutable and persistent tree', function() {
     it('should be lazy if added at runtime.', function() {
       let shouldHaveBeenCalled = false;
 
@@ -602,19 +602,18 @@ describe('Monkeys', function() {
         {asynchronous: false, immutable: true, persistent: true}
       );
 
-      const yellow = tree.get('data','selected');
+      const yellow = tree.get('data', 'selected');
       assert.strictEqual('yellow', yellow);
 
       tree.set(['data', 'selected'], monkey(['data', 'colors'], function(c) {
         if (shouldHaveBeenCalled)
           return c[1];
-        else
-          throw new Error('should not be called');
+        throw new Error('should not be called');
       }));
 
       shouldHaveBeenCalled = true;
 
-      const blue = tree.get('data','selected');
+      const blue = tree.get('data', 'selected');
       assert.strictEqual('blue', blue);
     });
 
@@ -628,8 +627,7 @@ describe('Monkeys', function() {
               selected: monkey(['data', 'colors'], function(c) {
                 if (shouldHaveBeenCalled)
                   return c[0];
-                else
-                  throw new Error('should not be called');
+                throw new Error('should not be called');
               })
             }
           },
@@ -657,19 +655,18 @@ describe('Monkeys', function() {
         {asynchronous: false, immutable: false, persistent: false}
       );
 
-      const yellow = tree.get('data','selected');
+      const yellow = tree.get('data', 'selected');
       assert.strictEqual('yellow', yellow);
 
       tree.set(['data', 'selected'], monkey(['data', 'colors'], function(c) {
         if (shouldHaveBeenCalled)
           return c[1];
-        else
-          throw new Error('should not be called');
+        throw new Error('should not be called');
       }));
 
       shouldHaveBeenCalled = true;
 
-      const blue = tree.get('data','selected');
+      const blue = tree.get('data', 'selected');
       assert.strictEqual('blue', blue);
     });
 
@@ -681,10 +678,9 @@ describe('Monkeys', function() {
           data: {
             colors: ['yellow', 'blue'],
             selected: monkey(['data', 'colors'], function(c) {
-              if(shouldHaveBeenCalled)
+              if (shouldHaveBeenCalled)
                 return c[0];
-              else
-                throw new Error('should not be called');
+              throw new Error('should not be called');
             })
           }
         },

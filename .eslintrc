@@ -1,4 +1,7 @@
 {
+  "env": {
+    "mocha": true
+  },
   "extends": "airbnb/base",
   "parser": "babel-eslint",
   "rules": {
@@ -8,7 +11,7 @@
     "curly": 0,
     "func-names": 0,
     "guard-for-in": 0,
-    "indent": [2, 2, {"VariableDeclarator": {"var": 2, "let": 2, "const": 3}}],
+    "indent": 0,
     "no-loop-func": 0,
     "no-param-reassign": 0,
     "one-var": 0,

@@ -28,7 +28,7 @@
   "scripts": {
     "benchmark": "babel-node benchmark.js",
     "build": "gulp build && babel ./src --out-dir dist",
-    "lint": "eslint ./src",
+    "lint": "eslint ./src ./test",
     "prepublish": "npm run build",
     "test": "mocha -R spec --compilers js:babel/register ./test/endpoint.js"
   },
