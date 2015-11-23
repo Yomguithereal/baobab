@@ -174,16 +174,11 @@ export default class Baobab extends Emitter {
     const clean = (data, p = []) => {
       if (data instanceof Monkey) {
         data.release();
-        update(
-          this._monkeys,
-          p,
-          {type: 'unset'},
-          {
-            immutable: false,
-            persistent: false,
-            pure: false
-          }
-        );
+        update(this._monkeys, p, {type: 'unset'}, {
+          immutable: false,
+          persistent: false,
+          pure: false
+        });
 
         return;
       }
@@ -209,16 +204,11 @@ export default class Baobab extends Emitter {
 
         register.push(monkey);
 
-        update(
-          this._monkeys,
-          p,
-          {type: 'set', value: monkey},
-          {
-            immutable: false,
-            persistent: false,
-            pure: false
-          }
-        );
+        update(this._monkeys, p, {type: 'set', value: monkey}, {
+          immutable: false,
+          persistent: false,
+          pure: false
+        });
 
         return;
       }
