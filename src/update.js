@@ -104,10 +104,22 @@ export default function update(data, path, operation, opts={}) {
         const result = value(p[s]);
 
         // Purity check
-        if (opts.pure && result === value)
+        if (opts.pure && p[s] === result)
           return  {node: p[s]};
 
-        p[s] = opts.persistent ? shallowClone(result) : result;
+        if (type.lazyGetter(p, s)) {
+          Object.defineProperty(p, s, {
+            value: result,
+            enumerable: true,
+            configurable: true
+          });
+        }
+        else if (opts.persistent) {
+          p[s] = shallowClone(result);
+        }
+        else {
+          p[s] = result;
+        }
       }
 
       /**

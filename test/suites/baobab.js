@@ -209,7 +209,7 @@ describe('Baobab API', function() {
     });
 
     it('the `apply` operation should also shift the references.', function() {
-      const tree = new Baobab({test: {}}, {asynchronous: false}),
+      const tree = new Baobab({test: {}}, {asynchronous: false, pure: false}),
             o = tree.get('test');
 
       tree.apply('test', () => o);

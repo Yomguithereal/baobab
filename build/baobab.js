@@ -3126,9 +3126,19 @@ function update(data, path, operation) {
             var result = value(p[s]);
 
             // Purity check
-            if (opts.pure && result === value) return { node: p[s] };
+            if (opts.pure && p[s] === result) return { node: p[s] };
 
-            p[s] = opts.persistent ? _helpers.shallowClone(result) : result;
+            if (_type2['default'].lazyGetter(p, s)) {
+              Object.defineProperty(p, s, {
+                value: result,
+                enumerable: true,
+                configurable: true
+              });
+            } else if (opts.persistent) {
+              p[s] = _helpers.shallowClone(result);
+            } else {
+              p[s] = result;
+            }
           }
 
           /**
