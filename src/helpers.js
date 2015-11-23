@@ -1,3 +1,5 @@
+/* eslint eqeqeq: 0 */
+
 /**
  * Baobab Helpers
  * ===============
@@ -11,6 +13,41 @@ import type from './type';
  * Noop function
  */
 const noop = Function.prototype;
+
+/**
+ * Function returning the index of the first element of a list matching the
+ * given predicate.
+ *
+ * @param  {array}     a  - The target array.
+ * @param  {function}  fn - The predicate function.
+ * @return {mixed}        - The index of the first matching item or -1.
+ */
+function index(a, fn) {
+  let i, l;
+  for (i = 0, l = a.length; i < l; i++) {
+    if (fn(a[i]))
+      return i;
+  }
+  return -1;
+}
+
+/**
+ * Efficient slice function used to clone arrays or parts of them.
+ *
+ * @param  {array} array - The array to slice.
+ * @return {array}       - The sliced array.
+ */
+function slice(array) {
+  const newArray = new Array(array.length);
+
+  let i,
+      l;
+
+  for (i = 0, l = array.length; i < l; i++)
+    newArray[i] = array[i];
+
+  return newArray;
+}
 
 /**
  * Archive abstraction
@@ -108,8 +145,9 @@ export function before(decorator, fn) {
  * @return {RegExp}    - The cloned regular expression.
  */
 function cloneRegexp(re) {
-  let pattern = re.source,
-      flags = '';
+  const pattern = re.source;
+
+  let flags = '';
 
   if (re.global) flags += 'g';
   if (re.multiline) flags += 'm';
@@ -140,14 +178,17 @@ function cloner(deep, item) {
   // Array
   if (type.array(item)) {
     if (deep) {
-      let i, l, a = [];
+      const a = [];
+
+      let i,
+          l;
+
       for (i = 0, l = item.length; i < l; i++)
         a.push(cloner(true, item[i]));
       return a;
     }
-    else {
-      return slice(item);
-    }
+
+    return slice(item);
   }
 
   // Date
@@ -160,7 +201,9 @@ function cloner(deep, item) {
 
   // Object
   if (type.object(item)) {
-    let k, o = {};
+    const o = {};
+
+    let k;
 
     // NOTE: could be possible to erase computed properties through `null`.
     for (k in item) {
@@ -314,8 +357,9 @@ export function getIn(object, path) {
   if (!path)
     return notFoundObject;
 
-  let solvedPath = [],
-      exists = true,
+  const solvedPath = [];
+
+  let exists = true,
       c = object,
       idx,
       i,
@@ -358,23 +402,6 @@ export function getIn(object, path) {
 }
 
 /**
- * Function returning the index of the first element of a list matching the
- * given predicate.
- *
- * @param  {array}     a  - The target array.
- * @param  {function}  fn - The predicate function.
- * @return {mixed}        - The index of the first matching item or -1.
- */
-function index(a, fn) {
-  let i, l;
-  for (i = 0, l = a.length; i < l; i++) {
-    if (fn(a[i]))
-      return i;
-  }
-  return -1;
-}
-
-/**
  * Little helper returning a JavaScript error carrying some data with it.
  *
  * @param  {string} message - The error message.
@@ -384,7 +411,7 @@ function index(a, fn) {
 export function makeError(message, data) {
   const err = new Error(message);
 
-  for (let k in data)
+  for (const k in data)
     err[k] = data[k];
 
   return err;
@@ -401,8 +428,9 @@ export function makeError(message, data) {
  * @return {object}            - The merged object.
  */
 function merger(deep, ...objects) {
-  let o = objects[0],
-      t,
+  const o = objects[0];
+
+  let t,
       i,
       l,
       k;
@@ -434,48 +462,6 @@ const shallowMerge = merger.bind(null, false),
 export {shallowMerge, deepMerge};
 
 /**
- * Function returning a nested object according to the given path and the
- * given leaf.
- *
- * @param  {array}  path - The path to follow.
- * @param  {mixed}  leaf - The leaf to append at the end of the path.
- * @return {object}      - The nested object.
- */
-export function pathObject(path, leaf) {
-  let l = path.length,
-      o = {},
-      c = o,
-      i;
-
-  if (!l)
-    o = leaf;
-
-  for (i = 0; i < l; i++) {
-    c[path[i]] = (i + 1 === l) ? leaf : {};
-    c = c[path[i]];
-  }
-
-  return o;
-}
-
-/**
- * Efficient slice function used to clone arrays or parts of them.
- *
- * @param  {array} array - The array to slice.
- * @return {array}       - The sliced array.
- */
-function slice(array) {
-  let newArray = new Array(array.length),
-      i,
-      l;
-
-  for (i = 0, l = array.length; i < l; i++)
-    newArray[i] = array[i];
-
-  return newArray;
-}
-
-/**
  * Solving a potentially relative path.
  *
  * @param  {array} base - The base path from which to solve the path.
@@ -486,7 +472,7 @@ export function solveRelativePath(base, to) {
   let solvedPath = [];
 
   for (let i = 0, l = to.length; i < l; i++) {
-    let step = to[i];
+    const step = to[i];
 
     if (step === '.') {
       if (!i)
@@ -579,7 +565,8 @@ export function splice(array, startIndex, nb, ...elements) {
  * @return {integer} - The latest unique id.
  */
 const uniqid = (function() {
-  var i = 0;
+  let i = 0;
+
   return function() {
     return i++;
   };

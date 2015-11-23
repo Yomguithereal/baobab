@@ -14,6 +14,7 @@
     "benchmark": "^1.0.0",
     "browserify": "^12.0.1",
     "eslint": "^1.1.0",
+    "eslint-config-airbnb": "^1.0.0",
     "gulp": "^3.8.10",
     "gulp-header": "^1.2.2",
     "gulp-rename": "^1.2.2",
@@ -27,7 +28,7 @@
   "scripts": {
     "benchmark": "babel-node benchmark.js",
     "build": "gulp build && babel ./src --out-dir dist",
-    "lint": "eslint ./*.js && eslint ./src",
+    "lint": "eslint ./src",
     "prepublish": "npm run build",
     "test": "mocha -R spec --compilers js:babel/register ./test/endpoint.js"
   },

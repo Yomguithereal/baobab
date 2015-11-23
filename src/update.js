@@ -5,7 +5,6 @@
  * The tree's update scheme.
  */
 import type from './type';
-import {MonkeyDefinition} from './monkey';
 import {
   freeze,
   deepFreeze,
@@ -34,16 +33,16 @@ function err(operation, expectedTarget, path) {
  * @param  {object} [opts]    - Optional options.
  * @return {mixed}            - Both the new tree's data and the updated node.
  */
-export default function update(data, path, operation, opts={}) {
+export default function update(data, path, operation, opts = {}) {
   const {type: operationType, value} = operation;
 
   // Dummy root, so we can shift and alter the root
   const dummy = {root: data},
-        dummyPath = ['root', ...path];
+        dummyPath = ['root', ...path],
+        currentPath = [];
 
   // Walking the path
   let p = dummy,
-      currentPath = [],
       i,
       l,
       s;
@@ -105,7 +104,7 @@ export default function update(data, path, operation, opts={}) {
 
         // Purity check
         if (opts.pure && p[s] === result)
-          return  {node: p[s]};
+          return {node: p[s]};
 
         if (type.lazyGetter(p, s)) {
           Object.defineProperty(p, s, {

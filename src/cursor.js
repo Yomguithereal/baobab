@@ -264,8 +264,8 @@ export default class Cursor extends Emitter {
   up() {
     if (!this.isRoot())
       return this.tree.select(this.path.slice(0, -1));
-    else
-      return null;
+
+    return null;
   }
 
   /**
@@ -369,8 +369,8 @@ export default class Cursor extends Emitter {
   map(fn, scope) {
     checkPossibilityOfDynamicTraversal('map', this.solvedPath);
 
-    let array = this._get().data,
-        l = arguments.length;
+    const array = this._get().data,
+          l = arguments.length;
 
     if (!type.array(array))
       throw Error('baobab.Cursor.map: cannot map a non-list type.');
@@ -393,7 +393,7 @@ export default class Cursor extends Emitter {
    * @returns {object} -  Each item sequentially.
    */
   [Symbol.iterator]() {
-    let array = this._get().data;
+    const array = this._get().data;
 
     if (!type.array(array))
       throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
@@ -410,11 +410,10 @@ export default class Cursor extends Emitter {
             value: cursor.select(i++)
           };
         }
-        else {
-          return {
-            done: true
-          };
-        }
+
+        return {
+          done: true
+        };
       }
     };
   }
@@ -434,7 +433,7 @@ export default class Cursor extends Emitter {
    * @return {mixed}  info.data       - Data at path.
    * @return {array}  info.solvedPath - The path solved when getting.
    */
-  _get(path=[]) {
+  _get(path = []) {
 
     if (!type.path(path))
       throw makeError('Baobab.Cursor.getters: invalid path.', {path});
@@ -529,7 +528,7 @@ export default class Cursor extends Emitter {
       if (!type.object(m) || !type.object(d))
         return;
 
-      for (let k in m) {
+      for (const k in m) {
         if (m[k] instanceof Monkey)
           delete d[k];
         else
@@ -551,7 +550,7 @@ export default class Cursor extends Emitter {
     if (type.object(projection)) {
       const data = {};
 
-      for (let k in projection)
+      for (const k in projection)
         data[k] = this.get(projection[k]);
 
       return data;
@@ -618,7 +617,7 @@ export default class Cursor extends Emitter {
    * @param  {integer} [steps=1] - The number of steps to rollback.
    * @return {Cursor}            - The cursor instance for chaining purposes.
    */
-  undo(steps=1) {
+  undo(steps = 1) {
     if (!this.state.recording)
       throw new Error('Baobab.Cursor.undo: cursor is not recording.');
 

@@ -63,8 +63,8 @@ export default class Watcher extends Emitter {
         // Watcher mappings can accept a cursor
         if (v instanceof Cursor)
           return v.solvedPath;
-        else
-          return this.mapping[k];
+
+        return this.mapping[k];
       });
 
     return rawPaths.reduce((cp, p) => {
@@ -122,9 +122,9 @@ export default class Watcher extends Emitter {
     this.mapping = mapping;
 
     // Creating the get method
-    let projection = {};
+    const projection = {};
 
-    for (let k in mapping)
+    for (const k in mapping)
       projection[k] = mapping[k] instanceof Cursor ?
         mapping[k].path :
         mapping[k];

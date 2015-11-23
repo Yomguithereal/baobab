@@ -19,7 +19,6 @@ const {
   getIn,
   makeError,
   deepMerge,
-  pathObject,
   shallowClone,
   shallowMerge,
   uniqid
@@ -66,8 +65,8 @@ function hashPath(path) {
   return 'λ' + path.map(step => {
     if (type.function(step) || type.object(step))
       return `#${uniqid()}#`;
-    else
-      return step;
+
+    return step;
   }).join('λ');
 }
 
@@ -172,7 +171,7 @@ export default class Baobab extends Emitter {
    */
   _refreshMonkeys(node, path, operation) {
 
-    const clean = (data, p=[]) => {
+    const clean = (data, p = []) => {
       if (data instanceof Monkey) {
         data.release();
         update(
@@ -190,14 +189,14 @@ export default class Baobab extends Emitter {
       }
 
       if (type.object(data)) {
-        for (let k in data)
+        for (const k in data)
           clean(data[k], p.concat(k));
       }
     };
 
     const register = [];
 
-    const walk = (data, p=[]) => {
+    const walk = (data, p = []) => {
 
       // Should we sit a monkey in the tree?
       if (data instanceof MonkeyDefinition ||
@@ -226,7 +225,7 @@ export default class Baobab extends Emitter {
 
       // Object iteration
       if (type.object(data)) {
-        for (let k in data)
+        for (const k in data)
           walk(data[k], p.concat(k));
       }
     };
@@ -412,7 +411,7 @@ export default class Baobab extends Emitter {
       return node;
 
     // If the operation is push, the affected path is slightly different
-    let affectedPath = solvedPath.concat(
+    const affectedPath = solvedPath.concat(
       operation.type === 'push' ? node.length - 1 : []
     );
 
@@ -554,8 +553,8 @@ Baobab.monkey = function(...args) {
 
   if (args.length === 1)
     return new MonkeyDefinition(args[0]);
-  else
-    return new MonkeyDefinition(args);
+
+  return new MonkeyDefinition(args);
 };
 Baobab.dynamicNode = Baobab.monkey;
 

@@ -7,7 +7,6 @@
 import type from './type';
 import update from './update';
 import {
-  arrayFrom,
   deepFreeze,
   getIn,
   makeError,
@@ -151,18 +150,18 @@ export class Monkey {
 
     if (!this.isRecursive)
       return paths;
-    else
-      return paths.reduce((accumulatedPaths, path) => {
-        const monkeyPath = type.monkeyPath(this.tree._monkeys, path);
 
-        if (!monkeyPath)
-          return accumulatedPaths.concat([path]);
+    return paths.reduce((accumulatedPaths, path) => {
+      const monkeyPath = type.monkeyPath(this.tree._monkeys, path);
 
-        // Solving recursive path
-        const relatedMonkey = getIn(this.tree._monkeys, monkeyPath).data;
+      if (!monkeyPath)
+        return accumulatedPaths.concat([path]);
 
-        return accumulatedPaths.concat(relatedMonkey.relatedPaths());
-      }, []);
+      // Solving recursive path
+      const relatedMonkey = getIn(this.tree._monkeys, monkeyPath).data;
+
+      return accumulatedPaths.concat(relatedMonkey.relatedPaths());
+    }, []);
   }
 
   /**

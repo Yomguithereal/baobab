@@ -54,7 +54,7 @@ type.object = function(target) {
          typeof target === 'object' &&
          !Array.isArray(target) &&
          !(target instanceof Date) &&
-         !(target instanceof RegExp) && 
+         !(target instanceof RegExp) &&
          !(typeof Map === 'function' && target instanceof Map) &&
          !(typeof Set === 'function' && target instanceof Set);
 };
@@ -156,8 +156,9 @@ type.dynamicPath = function(path) {
  * @return {boolean}
  */
 type.monkeyPath = function(data, path) {
-  let subpath = [],
-      c = data,
+  const subpath = [];
+
+  let c = data,
       i,
       l;
 
@@ -205,15 +206,15 @@ type.monkeyDefinition = function(definition) {
          (!type.object(definition.cursors) ||
           !(Object.keys(definition.cursors).every(k => type.path(definition.cursors[k]))))))
       return null;
-    else
-      return 'object';
+
+    return 'object';
   }
   else if (type.array(definition)) {
     if (!type.function(definition[definition.length - 1]) ||
         !definition.slice(0, -1).every(p => type.path(p)))
       return null;
-    else
-      return 'array';
+
+    return 'array';
   }
 
   return null;
