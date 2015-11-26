@@ -561,7 +561,7 @@ Baobab.helpers = helpers;
  * Version
  */
 Object.defineProperty(Baobab, 'version', {
-  value: '2.1.1'
+  value: '2.1.2'
 });
 
 

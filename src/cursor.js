@@ -391,32 +391,32 @@ export default class Cursor extends Emitter {
    * e.g. for(let i of cursor) { ... }
    *
    * @returns {object} -  Each item sequentially.
-   */
-  [Symbol.iterator]() {
-    const array = this._get().data;
+  //  */
+  // [Symbol.iterator]() {
+  //   const array = this._get().data;
 
-    if (!type.array(array))
-      throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
+  //   if (!type.array(array))
+  //     throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
 
-    let i = 0;
+  //   let i = 0;
 
-    const cursor = this,
-          length = array.length;
+  //   const cursor = this,
+  //         length = array.length;
 
-    return {
-      next: function() {
-        if (i < length) {
-          return {
-            value: cursor.select(i++)
-          };
-        }
+  //   return {
+  //     next: function() {
+  //       if (i < length) {
+  //         return {
+  //           value: cursor.select(i++)
+  //         };
+  //       }
 
-        return {
-          done: true
-        };
-      }
-    };
-  }
+  //       return {
+  //         done: true
+  //       };
+  //     }
+  //   };
+  // }
 
   /**
    * Getter Methods

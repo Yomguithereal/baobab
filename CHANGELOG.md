@@ -3,6 +3,9 @@
 ## v2.2.0 (provisional)
 
 * Cursors are now ES6 iterables ([@kirjs](https://github.com/kirjs)).
+
+## v2.1.2
+
 * Storing hashed paths using `λ` as delimiter instead of `/` to enable some edge cases ([@nivekmai](https://github.com/nivekmai)).
 * Fixing an issue with cursors where a stopped history wouldn't restart correctly ([@nikvm](https://github.com/nikvm)).
 * Fixing monkeys' laziness.

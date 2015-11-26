@@ -1,4 +1,4 @@
-/* baobab.js - Version: 2.1.1 - Author: Yomguithereal (Guillaume Plique) */
+/* baobab.js - Version: 2.1.2 - Author: Yomguithereal (Guillaume Plique) */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Baobab = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
   'use strict';
@@ -1126,7 +1126,7 @@ Baobab.helpers = helpers;
  * Version
  */
 Object.defineProperty(Baobab, 'version', {
-  value: '2.1.1'
+  value: '2.1.2'
 });
 
 /**
@@ -1545,32 +1545,32 @@ var Cursor = (function (_Emitter) {
    * e.g. for(let i of cursor) { ... }
    *
    * @returns {object} -  Each item sequentially.
-   */
+  //  */
+  // [Symbol.iterator]() {
+  //   const array = this._get().data;
 
-  Cursor.prototype[Symbol.iterator] = function () {
-    var array = this._get().data;
+  //   if (!type.array(array))
+  //     throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
 
-    if (!_type2['default'].array(array)) throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
+  //   let i = 0;
 
-    var i = 0;
+  //   const cursor = this,
+  //         length = array.length;
 
-    var cursor = this,
-        length = array.length;
+  //   return {
+  //     next: function() {
+  //       if (i < length) {
+  //         return {
+  //           value: cursor.select(i++)
+  //         };
+  //       }
 
-    return {
-      next: function next() {
-        if (i < length) {
-          return {
-            value: cursor.select(i++)
-          };
-        }
-
-        return {
-          done: true
-        };
-      }
-    };
-  };
+  //       return {
+  //         done: true
+  //       };
+  //     }
+  //   };
+  // }
 
   /**
    * Getter Methods
