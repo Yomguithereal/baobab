@@ -1317,18 +1317,11 @@ var Cursor = (function (_Emitter) {
   }
 
   /**
-   * Setter Methods
-   * ---------------
+   * Method used to allow iterating over cursors containing list-type data.
    *
-   * Those methods are dynamically assigned to the class for DRY reasons.
-   */
-
-  /**
-   * Function creating a setter method for the Cursor class.
+   * e.g. for(let i of cursor) { ... }
    *
-   * @param {string}   name          - the method's name.
-   * @param {function} [typeChecker] - a function checking that the given value is
-   *                                   valid for the given operation.
+   * @returns {object} -  Each item sequentially.
    */
 
   /**
@@ -1538,39 +1531,6 @@ var Cursor = (function (_Emitter) {
       return fn.call(l > 1 ? scope : this, this.select(i), i, array);
     }, this);
   };
-
-  /**
-   * Method used to allow iterating over cursors containing list-type data.
-   *
-   * e.g. for(let i of cursor) { ... }
-   *
-   * @returns {object} -  Each item sequentially.
-  //  */
-  // [Symbol.iterator]() {
-  //   const array = this._get().data;
-
-  //   if (!type.array(array))
-  //     throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
-
-  //   let i = 0;
-
-  //   const cursor = this,
-  //         length = array.length;
-
-  //   return {
-  //     next: function() {
-  //       if (i < length) {
-  //         return {
-  //           value: cursor.select(i++)
-  //         };
-  //       }
-
-  //       return {
-  //         done: true
-  //       };
-  //     }
-  //   };
-  // }
 
   /**
    * Getter Methods
@@ -1871,6 +1831,47 @@ var Cursor = (function (_Emitter) {
 })(_emmett2['default']);
 
 exports['default'] = Cursor;
+if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
+  Cursor.prototype[Symbol.iterator] = function () {
+    var array = this._get().data;
+
+    if (!_type2['default'].array(array)) throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
+
+    var i = 0;
+
+    var cursor = this,
+        length = array.length;
+
+    return {
+      next: function next() {
+        if (i < length) {
+          return {
+            value: cursor.select(i++)
+          };
+        }
+
+        return {
+          done: true
+        };
+      }
+    };
+  };
+}
+
+/**
+ * Setter Methods
+ * ---------------
+ *
+ * Those methods are dynamically assigned to the class for DRY reasons.
+ */
+
+/**
+ * Function creating a setter method for the Cursor class.
+ *
+ * @param {string}   name          - the method's name.
+ * @param {function} [typeChecker] - a function checking that the given value is
+ *                                   valid for the given operation.
+ */
 function makeSetter(name, typeChecker) {
 
   /**
