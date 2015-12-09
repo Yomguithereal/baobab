@@ -386,39 +386,6 @@ export default class Cursor extends Emitter {
   }
 
   /**
-   * Method used to allow iterating over cursors containing list-type data.
-   *
-   * e.g. for(let i of cursor) { ... }
-   *
-   * @returns {object} -  Each item sequentially.
-  //  */
-  // [Symbol.iterator]() {
-  //   const array = this._get().data;
-
-  //   if (!type.array(array))
-  //     throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
-
-  //   let i = 0;
-
-  //   const cursor = this,
-  //         length = array.length;
-
-  //   return {
-  //     next: function() {
-  //       if (i < length) {
-  //         return {
-  //           value: cursor.select(i++)
-  //         };
-  //       }
-
-  //       return {
-  //         done: true
-  //       };
-  //     }
-  //   };
-  // }
-
-  /**
    * Getter Methods
    * ---------------
    */
@@ -714,6 +681,41 @@ export default class Cursor extends Emitter {
   toString() {
     return this._identity;
   }
+}
+
+/**
+ * Method used to allow iterating over cursors containing list-type data.
+ *
+ * e.g. for(let i of cursor) { ... }
+ *
+ * @returns {object} -  Each item sequentially.
+ */
+if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
+  Cursor.prototype[Symbol.iterator] = function() {
+    const array = this._get().data;
+
+    if (!type.array(array))
+      throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
+
+    let i = 0;
+
+    const cursor = this,
+          length = array.length;
+
+    return {
+      next: function() {
+        if (i < length) {
+          return {
+            value: cursor.select(i++)
+          };
+        }
+
+        return {
+          done: true
+        };
+      }
+    };
+  };
 }
 
 /**
