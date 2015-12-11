@@ -9,5 +9,6 @@ gulpfile.js
 benchmark.js
 *.log
 .eslintrc
+.babelrc
 TODO.md
 bower.json
