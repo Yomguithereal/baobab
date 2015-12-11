@@ -1,8 +1,9 @@
 # Changelog
 
-## v2.2.0 (provisional)
+## v2.2.0
 
 * Cursors are now ES6 iterables ([@kirjs](https://github.com/kirjs)).
+* Dropping the `.babelrc` file from the npm build.
 
 ## v2.1.2
 
