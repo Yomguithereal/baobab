@@ -68,6 +68,21 @@ describe('Watchers', function() {
     assert.strictEqual(count, 2);
   });
 
+  it('should be possible to pass paths following usual polymorphisms.', function() {
+    const tree = new Baobab({name: 'John', surname: 'Talbot'}, {asynchronous: false});
+
+    const watcher = tree.watch({
+      name: 'name',
+      surname: 'surname'
+    });
+
+    assert.deepEqual(watcher.get(), {name: 'John', surname: 'Talbot'});
+
+    tree.set('name', 'Jack');
+
+    assert.deepEqual(watcher.get(), {name: 'Jack', surname: 'Talbot'});
+  });
+
   it('should be possible to use dynamic paths.', function() {
     const tree = new Baobab({
       data: [{id: 0, txt: 'Hello'}, {id: 1, txt: 'World'}]

@@ -3320,6 +3320,9 @@ var Watcher = (function (_Emitter) {
 
     return rawPaths.reduce(function (cp, p) {
 
+      // Handling path polymorphisms
+      p = [].concat(p);
+
       // Dynamic path?
       if (_type2['default'].dynamicPath(p)) p = _helpers.getIn(_this2.tree._data, p).solvedPath;
 

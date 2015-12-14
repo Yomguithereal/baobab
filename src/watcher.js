@@ -69,6 +69,9 @@ export default class Watcher extends Emitter {
 
     return rawPaths.reduce((cp, p) => {
 
+      // Handling path polymorphisms
+      p = [].concat(p);
+
       // Dynamic path?
       if (type.dynamicPath(p))
         p = getIn(this.tree._data, p).solvedPath;
