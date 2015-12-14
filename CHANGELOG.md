@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.2.1
+
+* Fixing a bug with watcher not able to handle path polymorphisms.
+
 ## v2.2.0
 
 * Cursors are now ES6 iterables ([@kirjs](https://github.com/kirjs)).
