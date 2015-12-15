@@ -2,7 +2,6 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     babelify = require('babelify'),
     header = require('gulp-header'),
-    replace = require('gulp-replace'),
     rename = require('gulp-rename'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
@@ -10,18 +9,10 @@ var gulp = require('gulp'),
     pkg = require('./package.json');
 
 // Files
-var files = ['./index.js', './src/*.js', './test/**/*.js'],
-    banner = '/* baobab.js - Version: ' + pkg.version + ' - Author: Yomguithereal (Guillaume Plique) */\n';
-
-// Gremlins
-gulp.task('gremlins', function() {
-  return gulp.src(files[1])
-    .pipe(replace(' ', ' '))
-    .pipe(gulp.dest('./src'));
-});
+var banner = '/* baobab.js - Version: ' + pkg.version + ' - Author: Yomguithereal (Guillaume Plique) */\n';
 
 // Building
-gulp.task('build', ['gremlins'], function() {
+gulp.task('build', function() {
   return browserify({
     entries: './src/baobab.js',
     standalone: 'Baobab',
