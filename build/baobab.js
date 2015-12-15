@@ -567,6 +567,8 @@ exports.__esModule = true;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+exports.monkey = monkey;
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
@@ -734,7 +736,7 @@ var Baobab = (function (_Emitter) {
   }
 
   /**
-   * Creating statics
+   * Monkey helper.
    */
 
   /**
@@ -780,11 +782,11 @@ var Baobab = (function (_Emitter) {
 
       // Should we sit a monkey in the tree?
       if (data instanceof _monkey.MonkeyDefinition || data instanceof _monkey.Monkey) {
-        var monkey = new _monkey.Monkey(_this2, p, data instanceof _monkey.Monkey ? data.definition : data);
+        var monkeyInstance = new _monkey.Monkey(_this2, p, data instanceof _monkey.Monkey ? data.definition : data);
 
-        register.push(monkey);
+        register.push(monkeyInstance);
 
-        _update3['default'](_this2._monkeys, p, { type: 'set', value: monkey }, {
+        _update3['default'](_this2._monkeys, p, { type: 'set', value: monkeyInstance }, {
           immutable: false,
           persistent: false,
           pure: false
@@ -1100,7 +1102,8 @@ var Baobab = (function (_Emitter) {
 })(_emmett2['default']);
 
 exports['default'] = Baobab;
-Baobab.monkey = function () {
+
+function monkey() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
@@ -1110,30 +1113,30 @@ Baobab.monkey = function () {
   if (args.length === 1) return new _monkey.MonkeyDefinition(args[0]);
 
   return new _monkey.MonkeyDefinition(args);
-};
-Baobab.dynamicNode = Baobab.monkey;
+}
 
+var dynamicNode = monkey;
+
+exports.dynamicNode = dynamicNode;
 /**
  * Exposing some internals for convenience
  */
-Baobab.Cursor = _cursor2['default'];
-Baobab.MonkeyDefinition = _monkey.MonkeyDefinition;
-Baobab.Monkey = _monkey.Monkey;
-Baobab.type = _type2['default'];
-Baobab.helpers = helpers;
+exports.Cursor = _cursor2['default'];
+exports.MonkeyDefinition = _monkey.MonkeyDefinition;
+exports.Monkey = _monkey.Monkey;
+exports.type = _type2['default'];
+exports.helpers = helpers;
 
 /**
  * Version
  */
-Object.defineProperty(Baobab, 'version', {
-  value: '2.2.1'
-});
+var VERSION = '2.2.1';
 
+exports.VERSION = VERSION;
 /**
  * Exporting
  */
 exports['default'] = Baobab;
-module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
 /**

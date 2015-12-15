@@ -132,7 +132,7 @@ describe('Watchers', function() {
       object: {
         hello: 'Jack'
       },
-      dynamic: Baobab.monkey(['object'], o => o)
+      dynamic: monkey(['object'], o => o)
     });
 
     const watcher = tree.watch({d: ['dynamic', 'hello']});

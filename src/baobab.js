@@ -196,15 +196,15 @@ export default class Baobab extends Emitter {
       // Should we sit a monkey in the tree?
       if (data instanceof MonkeyDefinition ||
           data instanceof Monkey) {
-        const monkey = new Monkey(
+        const monkeyInstance = new Monkey(
           this,
           p,
           data instanceof Monkey ? data.definition : data
         );
 
-        register.push(monkey);
+        register.push(monkeyInstance);
 
-        update(this._monkeys, p, {type: 'set', value: monkey}, {
+        update(this._monkeys, p, {type: 'set', value: monkeyInstance}, {
           immutable: false,
           persistent: false,
           pure: false
@@ -534,9 +534,9 @@ export default class Baobab extends Emitter {
 }
 
 /**
- * Creating statics
+ * Monkey helper.
  */
-Baobab.monkey = function(...args) {
+export function monkey(...args) {
 
   if (!args.length)
     throw new Error('Baobab.monkey: missing definition.');
@@ -545,25 +545,25 @@ Baobab.monkey = function(...args) {
     return new MonkeyDefinition(args[0]);
 
   return new MonkeyDefinition(args);
-};
-Baobab.dynamicNode = Baobab.monkey;
+}
+
+export const dynamicNode = monkey;
 
 /**
  * Exposing some internals for convenience
  */
-Baobab.Cursor = Cursor;
-Baobab.MonkeyDefinition = MonkeyDefinition;
-Baobab.Monkey = Monkey;
-Baobab.type = type;
-Baobab.helpers = helpers;
+export {
+  Cursor,
+  MonkeyDefinition,
+  Monkey,
+  type,
+  helpers
+};
 
 /**
  * Version
  */
-Object.defineProperty(Baobab, 'version', {
-  value: '2.2.1'
-});
-
+export const VERSION = '2.2.1';
 
 /**
  * Exporting
