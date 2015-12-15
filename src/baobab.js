@@ -410,7 +410,7 @@ export default class Baobab extends Emitter {
     // Updating data and transaction
     this._data = data;
     this._affectedPathsIndex[hash] = true;
-    this._transaction.push({...operation, path: affectedPath});
+    this._transaction.push(shallowMerge({}, operation, {path: affectedPath}));
 
     // Updating the monkeys
     this._refreshMonkeys(node, solvedPath, operation.type);
