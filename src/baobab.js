@@ -536,7 +536,7 @@ export default class Baobab extends Emitter {
 /**
  * Monkey helper.
  */
-export function monkey(...args) {
+Baobab.monkey = function(...args) {
 
   if (!args.length)
     throw new Error('Baobab.monkey: missing definition.');
@@ -545,27 +545,19 @@ export function monkey(...args) {
     return new MonkeyDefinition(args[0]);
 
   return new MonkeyDefinition(args);
-}
-
-export const dynamicNode = monkey;
+};
+Baobab.dynamicNode = Baobab.monkey;
 
 /**
  * Exposing some internals for convenience
  */
-export {
-  Cursor,
-  MonkeyDefinition,
-  Monkey,
-  type,
-  helpers
-};
+Baobab.Cursor = Cursor;
+Baobab.MonkeyDefinition = MonkeyDefinition;
+Baobab.Monkey = Monkey;
+Baobab.type = type;
+Baobab.helpers = helpers;
 
 /**
  * Version
  */
-export const VERSION = '2.2.1';
-
-/**
- * Exporting
- */
-export default Baobab;
+Baobab.VERSION = '2.2.1';

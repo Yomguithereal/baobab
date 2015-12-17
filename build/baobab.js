@@ -564,7 +564,6 @@
 'use strict';
 
 exports.__esModule = true;
-exports.monkey = monkey;
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -1099,8 +1098,7 @@ var Baobab = (function (_Emitter) {
 })(_emmett2['default']);
 
 exports['default'] = Baobab;
-
-function monkey() {
+Baobab.monkey = function () {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
@@ -1110,30 +1108,23 @@ function monkey() {
   if (args.length === 1) return new _monkey.MonkeyDefinition(args[0]);
 
   return new _monkey.MonkeyDefinition(args);
-}
+};
+Baobab.dynamicNode = Baobab.monkey;
 
-var dynamicNode = monkey;
-
-exports.dynamicNode = dynamicNode;
 /**
  * Exposing some internals for convenience
  */
-exports.Cursor = _cursor2['default'];
-exports.MonkeyDefinition = _monkey.MonkeyDefinition;
-exports.Monkey = _monkey.Monkey;
-exports.type = _type2['default'];
-exports.helpers = helpers;
+Baobab.Cursor = _cursor2['default'];
+Baobab.MonkeyDefinition = _monkey.MonkeyDefinition;
+Baobab.Monkey = _monkey.Monkey;
+Baobab.type = _type2['default'];
+Baobab.helpers = helpers;
 
 /**
  * Version
  */
-var VERSION = '2.2.1';
-
-exports.VERSION = VERSION;
-/**
- * Exporting
- */
-exports['default'] = Baobab;
+Baobab.VERSION = '2.2.1';
+module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
 /**
