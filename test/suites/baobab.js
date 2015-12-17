@@ -170,6 +170,20 @@ describe('Baobab API', function() {
 
       tree.set('hello', 'monde');
     });
+
+    it('moot updates should not trigger an update of the tree.', function() {
+      const tree = new Baobab({items: [{id: 1}]}, {asynchronous: false});
+
+      let triggered = false;
+
+      tree.on('update', function({data}) {
+        triggered = true;
+      });
+
+      tree.set(['items', 0, 'id'], 1);
+
+      assert(!triggered);
+    });
   });
 
   /**
