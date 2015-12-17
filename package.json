@@ -26,9 +26,10 @@
   },
   "scripts": {
     "benchmark": "babel-node benchmark.js",
-    "build": "gulp build && babel ./src --out-dir dist",
+    "build": "gulp build",
+    "dist": "babel ./src --out-dir dist",
     "lint": "eslint ./src ./test",
-    "prepublish": "npm run build",
+    "prepublish": "npm run dist",
     "test": "mocha -R spec --compilers js:babel/register ./test/endpoint.js"
   },
   "repository": {
