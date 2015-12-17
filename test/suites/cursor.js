@@ -134,6 +134,21 @@ describe('Cursor API', function() {
         assert.deepEqual(colors, state.one.subtwo.colors);
       });
 
+      it('should be possible to shallow clone data at cursor.', function() {
+        const clonedData = colorCursor.clone();
+
+        assert(clonedData !== colorCursor.get());
+        assert(clonedData !== colorCursor.clone());
+        assert(tree.clone().one === tree.get().one);
+      });
+
+      it('should be possible to deep clone data at cursor.', function() {
+        const clonedData = tree.deepClone();
+
+        assert(clonedData !== tree.get());
+        assert(tree.deepClone().one !== tree.get().one);
+      });
+
       it('should be possible to retrieve data with a 0 key.', function() {
         const specificTree = new Baobab([1, 2]);
         assert.strictEqual(specificTree.get(0), 1);

@@ -15,6 +15,7 @@ import {
   deepClone,
   getIn,
   makeError,
+  shallowClone,
   solveUpdate
 } from './helpers';
 
@@ -457,6 +458,40 @@ export default class Cursor extends Emitter {
     this.tree.emit('get', {data, solvedPath, path: this.path.concat(path)});
 
     return data;
+  }
+
+  /**
+   * Method used to shallow clone data from the tree.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to get in the tree.
+   *
+   * Arity (2):
+   * @param  {..step} path           - Path to get in the tree.
+   *
+   * @return {mixed}                 - Cloned data at path.
+   */
+  clone(...args) {
+    const data = this.get(...args);
+
+    return shallowClone(data);
+  }
+
+  /**
+   * Method used to deep clone data from the tree.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to get in the tree.
+   *
+   * Arity (2):
+   * @param  {..step} path           - Path to get in the tree.
+   *
+   * @return {mixed}                 - Cloned data at path.
+   */
+  deepClone(...args) {
+    const data = this.get(...args);
+
+    return deepClone(data);
   }
 
   /**

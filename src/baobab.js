@@ -134,7 +134,9 @@ export default class Baobab extends Emitter {
 
     [
       'apply',
+      'clone',
       'concat',
+      'deepClone',
       'deepMerge',
       'exists',
       'get',

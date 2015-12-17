@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.0
+
+* Adding the `tree/cursor.clone` and `tree/cursor.deepClone` methods.
+
 ## v2.2.1
 
 * Fixing a bug with watcher not able to handle path polymorphisms.

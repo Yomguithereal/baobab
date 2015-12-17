@@ -720,7 +720,7 @@ var Baobab = (function (_Emitter) {
       };
     };
 
-    ['apply', 'concat', 'deepMerge', 'exists', 'get', 'push', 'merge', 'project', 'serialize', 'set', 'splice', 'unset', 'unshift'].forEach(bootstrap);
+    ['apply', 'clone', 'concat', 'deepClone', 'deepMerge', 'exists', 'get', 'push', 'merge', 'project', 'serialize', 'set', 'splice', 'unset', 'unshift'].forEach(bootstrap);
 
     // Registering the initial monkeys
     this._refreshMonkeys();
@@ -1598,6 +1598,42 @@ var Cursor = (function (_Emitter) {
     this.tree.emit('get', { data: data, solvedPath: solvedPath, path: this.path.concat(path) });
 
     return data;
+  };
+
+  /**
+   * Method used to shallow clone data from the tree.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to get in the tree.
+   *
+   * Arity (2):
+   * @param  {..step} path           - Path to get in the tree.
+   *
+   * @return {mixed}                 - Cloned data at path.
+   */
+
+  Cursor.prototype.clone = function clone() {
+    var data = this.get.apply(this, arguments);
+
+    return _helpers.shallowClone(data);
+  };
+
+  /**
+   * Method used to deep clone data from the tree.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to get in the tree.
+   *
+   * Arity (2):
+   * @param  {..step} path           - Path to get in the tree.
+   *
+   * @return {mixed}                 - Cloned data at path.
+   */
+
+  Cursor.prototype.deepClone = function deepClone() {
+    var data = this.get.apply(this, arguments);
+
+    return _helpers.deepClone(data);
   };
 
   /**
