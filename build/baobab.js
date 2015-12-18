@@ -1943,6 +1943,9 @@ function makeSetter(name, typeChecker) {
     // Checking the value's validity
     if (typeChecker && !typeChecker(value)) throw _helpers.makeError('Baobab.Cursor.' + name + ': invalid value.', { path: path, value: value });
 
+    // Checking the solvability of the cursor's dynamic path
+    if (!this.solvedPath) throw _helpers.makeError('Baobab.Cursor.' + name + ': the dynamic path of the cursor cannot be solved.', { path: this.path });
+
     var fullPath = this.solvedPath.concat(path);
 
     // Filing the update to the tree

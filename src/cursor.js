@@ -811,6 +811,13 @@ function makeSetter(name, typeChecker) {
     if (typeChecker && !typeChecker(value))
       throw makeError(`Baobab.Cursor.${name}: invalid value.`, {path, value});
 
+    // Checking the solvability of the cursor's dynamic path
+    if (!this.solvedPath)
+      throw makeError(
+        `Baobab.Cursor.${name}: the dynamic path of the cursor cannot be solved.`,
+        {path: this.path}
+      );
+
     const fullPath = this.solvedPath.concat(path);
 
     // Filing the update to the tree

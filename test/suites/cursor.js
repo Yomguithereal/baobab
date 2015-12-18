@@ -290,6 +290,18 @@ describe('Cursor API', function() {
         }, /solve/);
       });
 
+      it('should fail consistently across possibilities when setting a nonexistent dynamic path.', function() {
+        const tree = new Baobab({items: [{id: 1}]}, {asynchronous: true});
+
+        assert.throws(function() {
+          tree.set(['items', {id: 2}, 'id'], 3);
+        }, /solve/);
+
+        assert.throws(function() {
+          tree.select('items', {id: 2}).set('id', 3);
+        }, /solve/);
+      });
+
       it('should be possible to shallow merge two objects.', function(done) {
         const tree = new Baobab({o: {hello: 'world'}, string: 'test'});
 
