@@ -445,6 +445,10 @@ export default class Baobab extends Emitter {
    */
   commit() {
 
+    // Do not fire update if the transaction is empty
+    if (!this._transaction.length)
+      return this;
+
     // Clearing timeout if one was defined
     if (this._future)
       this._future = clearTimeout(this._future);

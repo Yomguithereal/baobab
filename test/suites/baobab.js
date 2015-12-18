@@ -176,11 +176,26 @@ describe('Baobab API', function() {
 
       let triggered = false;
 
-      tree.on('update', function({data}) {
+      tree.on('update', function() {
         triggered = true;
       });
 
       tree.set(['items', 0, 'id'], 1);
+
+      assert(!triggered);
+    });
+
+    it('manual commit should not trigger an update if the transaction is empty.', function() {
+      const tree = new Baobab({items: [{id: 1}]});
+
+      let triggered = false;
+
+      tree.on('update', function() {
+        triggered = true;
+      });
+
+      tree.set(['items', 0, 'id'], 1);
+      tree.commit();
 
       assert(!triggered);
     });
