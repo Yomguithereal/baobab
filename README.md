@@ -236,8 +236,11 @@ Obviously this will fail if the value at cursor is not an array.
 ```js
 var newArray = cursor.splice([1, 1]);
 
-// Applying splice n times with different arguments
-var newArray = cursor.splice([[1, 2], [3, 2, 'hello']]);
+// Inserting an item
+var newArray = cursor.splice([1, 0, 'newItem']);
+
+// Inserting multiple items
+var newArray = cursor.splice([1, 0, 'newItem1', 'newItem2']);
 
 // At key
 var newArray = cursor.splice('list', [1, 1])
