@@ -2,7 +2,8 @@
 
 ## v2.3.0
 
-* Adding the `tree/cursor.clone` and `tree/cursor.deepClone` methods.
+* Adding the `tree/cursor.clone` and the `tree/cursor.deepClone` methods.
+* Adding the `tree/cursor.pop` and the `tree/cursor.shift` methods;
 * Fixing an issue where the `tree.commit` method would fire a useless update.
 * Fixing an issue related to updates and dynamic paths.
 * Fixing the `tree/cursor.splice` to correctly handle negative indexes.

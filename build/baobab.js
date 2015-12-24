@@ -720,7 +720,7 @@ var Baobab = (function (_Emitter) {
       };
     };
 
-    ['apply', 'clone', 'concat', 'deepClone', 'deepMerge', 'exists', 'get', 'push', 'merge', 'project', 'serialize', 'set', 'splice', 'unset', 'unshift'].forEach(bootstrap);
+    ['apply', 'clone', 'concat', 'deepClone', 'deepMerge', 'exists', 'get', 'push', 'merge', 'pop', 'project', 'serialize', 'set', 'shift', 'splice', 'unset', 'unshift'].forEach(bootstrap);
 
     // Registering the initial monkeys
     this._refreshMonkeys();
@@ -1895,6 +1895,13 @@ if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
  * Those methods are dynamically assigned to the class for DRY reasons.
  */
 
+// Not using a Set so that ES5 consumers don't pay a bundle size price
+var INTRANSITIVE_SETTERS = {
+  unset: true,
+  pop: true,
+  shift: true
+};
+
 /**
  * Function creating a setter method for the Cursor class.
  *
@@ -1929,7 +1936,7 @@ function makeSetter(name, typeChecker) {
     if (arguments.length > 2) throw _helpers.makeError('Baobab.Cursor.' + name + ': too many arguments.');
 
     // Handling arities
-    if (arguments.length === 1 && name !== 'unset') {
+    if (arguments.length === 1 && !INTRANSITIVE_SETTERS[name]) {
       value = path;
       path = [];
     }
@@ -1965,6 +1972,8 @@ makeSetter('apply', _type2['default']['function']);
 makeSetter('push');
 makeSetter('concat', _type2['default'].array);
 makeSetter('unshift');
+makeSetter('pop');
+makeSetter('shift');
 makeSetter('splice', _type2['default'].splicer);
 makeSetter('merge', _type2['default'].object);
 makeSetter('deepMerge', _type2['default'].object);
@@ -2777,7 +2786,7 @@ var Monkey = (function () {
 
     lazyGetter.isLazyGetter = true;
 
-    // If the tree does not accept lazy monkeys, we solve the lazy getter
+    // Should we write the lazy getter in the tree or solve it right now?
     if (this.tree.options.lazyMonkeys) {
       this.tree._data = _update3['default'](this.tree._data, this.path, { type: 'monkey', value: lazyGetter }, this.tree.options).data;
     } else {
@@ -3049,7 +3058,7 @@ type.watcherMapping = function (definition) {
  */
 
 // Ordered by likeliness
-var VALID_OPERATIONS = ['set', 'apply', 'push', 'unshift', 'concat', 'deepMerge', 'merge', 'splice', 'unset'];
+var VALID_OPERATIONS = ['set', 'apply', 'push', 'unshift', 'concat', 'pop', 'shift', 'deepMerge', 'merge', 'splice', 'unset'];
 
 type.operationType = function (string) {
   return typeof string === 'string' && !! ~VALID_OPERATIONS.indexOf(string);
@@ -3213,29 +3222,47 @@ function update(data, path, operation) {
                   }
 
                   /**
-                   * Unset
+                   * Pop
                    */
-                  else if (operationType === 'unset') {
-                      if (_type2['default'].object(p)) delete p[s];else if (_type2['default'].array(p)) p.splice(s, 1);
+                  else if (operationType === 'pop') {
+                      if (!_type2['default'].array(p[s])) throw err('pop', 'array', currentPath);
+
+                      if (opts.persistent) p[s] = _helpers.splice(p[s], -1, 1);else p[s].pop();
                     }
 
                     /**
-                     * Merge
+                     * Shift
                      */
-                    else if (operationType === 'merge') {
-                        if (!_type2['default'].object(p[s])) throw err('merge', 'object', currentPath);
+                    else if (operationType === 'shift') {
+                        if (!_type2['default'].array(p[s])) throw err('shift', 'array', currentPath);
 
-                        if (opts.persistent) p[s] = _helpers.shallowMerge({}, p[s], value);else p[s] = _helpers.shallowMerge(p[s], value);
+                        if (opts.persistent) p[s] = _helpers.splice(p[s], 0, 1);else p[s].shift();
                       }
 
                       /**
-                       * Deep merge
+                       * Unset
                        */
-                      else if (operationType === 'deepMerge') {
-                          if (!_type2['default'].object(p[s])) throw err('deepMerge', 'object', currentPath);
-
-                          if (opts.persistent) p[s] = _helpers.deepMerge({}, p[s], value);else p[s] = _helpers.deepMerge(p[s], value);
+                      else if (operationType === 'unset') {
+                          if (_type2['default'].object(p)) delete p[s];else if (_type2['default'].array(p)) p.splice(s, 1);
                         }
+
+                        /**
+                         * Merge
+                         */
+                        else if (operationType === 'merge') {
+                            if (!_type2['default'].object(p[s])) throw err('merge', 'object', currentPath);
+
+                            if (opts.persistent) p[s] = _helpers.shallowMerge({}, p[s], value);else p[s] = _helpers.shallowMerge(p[s], value);
+                          }
+
+                          /**
+                           * Deep merge
+                           */
+                          else if (operationType === 'deepMerge') {
+                              if (!_type2['default'].object(p[s])) throw err('deepMerge', 'object', currentPath);
+
+                              if (opts.persistent) p[s] = _helpers.deepMerge({}, p[s], value);else p[s] = _helpers.deepMerge(p[s], value);
+                            }
 
       if (opts.immutable) _helpers.deepFreeze(p);
 

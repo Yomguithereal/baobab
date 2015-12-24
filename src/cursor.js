@@ -760,6 +760,13 @@ if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
  * Those methods are dynamically assigned to the class for DRY reasons.
  */
 
+// Not using a Set so that ES5 consumers don't pay a bundle size price
+const INTRANSITIVE_SETTERS = {
+  unset: true,
+  pop: true,
+  shift: true
+};
+
 /**
  * Function creating a setter method for the Cursor class.
  *
@@ -795,7 +802,7 @@ function makeSetter(name, typeChecker) {
       throw makeError(`Baobab.Cursor.${name}: too many arguments.`);
 
     // Handling arities
-    if (arguments.length === 1 && name !== 'unset') {
+    if (arguments.length === 1 && !INTRANSITIVE_SETTERS[name]) {
       value = path;
       path = [];
     }
@@ -840,6 +847,8 @@ makeSetter('apply', type.function);
 makeSetter('push');
 makeSetter('concat', type.array);
 makeSetter('unshift');
+makeSetter('pop');
+makeSetter('shift');
 makeSetter('splice', type.splicer);
 makeSetter('merge', type.object);
 makeSetter('deepMerge', type.object);

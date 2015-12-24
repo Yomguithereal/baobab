@@ -190,6 +190,40 @@ export default function update(data, path, operation, opts = {}) {
       }
 
       /**
+       * Pop
+       */
+      else if (operationType === 'pop') {
+        if (!type.array(p[s]))
+          throw err(
+            'pop',
+            'array',
+            currentPath
+          );
+
+        if (opts.persistent)
+          p[s] = splice(p[s], -1, 1);
+        else
+          p[s].pop();
+      }
+
+      /**
+       * Shift
+       */
+      else if (operationType === 'shift') {
+        if (!type.array(p[s]))
+          throw err(
+            'shift',
+            'array',
+            currentPath
+          );
+
+        if (opts.persistent)
+          p[s] = splice(p[s], 0, 1);
+        else
+          p[s].shift();
+      }
+
+      /**
        * Unset
        */
       else if (operationType === 'unset') {

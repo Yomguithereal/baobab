@@ -416,6 +416,42 @@ describe('Cursor API', function() {
         assert.deepEqual(cursor.get(), [2, 4]);
       });
 
+      it('should be possible to pop an array.', function() {
+        const ptree = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
+              tree = new Baobab({list: [1, 2, 3]}, {asynchronous: false, persistent: false});
+
+        ptree.pop('list');
+        tree.pop('list');
+
+        assert.deepEqual(
+          ptree.get('list'),
+          [1, 2]
+        );
+
+        assert.deepEqual(
+          tree.get('list'),
+          [1, 2]
+        );
+      });
+
+      it('should be possible to shift an array.', function() {
+        const ptree = new Baobab({list: [1, 2, 3]}, {asynchronous: false}),
+              tree = new Baobab({list: [1, 2, 3]}, {asynchronous: false, persistent: false});
+
+        ptree.shift('list');
+        tree.shift('list');
+
+        assert.deepEqual(
+          ptree.get('list'),
+          [2, 3]
+        );
+
+        assert.deepEqual(
+          tree.get('list'),
+          [2, 3]
+        );
+      });
+
       it('should be possible to set a falsy value.', function() {
         const tree = new Baobab({hello: 'world'}, {asynchronous: false});
 

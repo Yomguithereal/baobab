@@ -142,9 +142,11 @@ export default class Baobab extends Emitter {
       'get',
       'push',
       'merge',
+      'pop',
       'project',
       'serialize',
       'set',
+      'shift',
       'splice',
       'unset',
       'unshift'
