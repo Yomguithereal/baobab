@@ -27,6 +27,7 @@
   "scripts": {
     "benchmark": "babel-node benchmark.js",
     "build": "gulp build",
+    "check": "npm test && npm run lint && npm run build",
     "dist": "babel ./src --out-dir dist",
     "lint": "eslint ./src ./test",
     "prepublish": "npm run dist",
