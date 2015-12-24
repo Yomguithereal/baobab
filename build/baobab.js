@@ -2526,19 +2526,26 @@ function solveUpdate(affectedPaths, comparedPaths) {
 /**
  * Non-mutative version of the splice array method.
  *
- * @param {array}    array        - The array to splice.
- * @param {integer}  startIndex   - The start index.
- * @param {integer}  nb           - Number of elements to remove.
- * @param {...mixed} elements     - Elements to append after splicing.
- * @return {array}                - The spliced array.
+ * @param  {array}    array        - The array to splice.
+ * @param  {integer}  startIndex   - The start index.
+ * @param  {integer}  nb           - Number of elements to remove.
+ * @param  {...mixed} elements     - Elements to append after splicing.
+ * @return {array}                 - The spliced array.
  */
 
 function splice(array, startIndex, nb) {
+  nb = Math.max(0, nb);
+
+  // Positive index
+
   for (var _len2 = arguments.length, elements = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
     elements[_key2 - 3] = arguments[_key2];
   }
 
-  return array.slice(0, startIndex).concat(elements).concat(array.slice(startIndex + Math.max(0, nb)));
+  if (startIndex >= 0) return array.slice(0, startIndex).concat(elements).concat(array.slice(startIndex + nb));
+
+  // Negative index
+  return array.slice(0, array.length + startIndex).concat(elements).concat(array.slice(array.length + startIndex + nb));
 }
 
 /**

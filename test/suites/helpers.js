@@ -161,9 +161,49 @@ describe('Helpers', function() {
 
     it('should treat a negative nb argument as 0.', function() {
       const array = ['yellow', 'blue', 'purple'];
+
       assert.deepEqual(
         splice(array, 0, -1, 'gold'),
         ['gold', 'yellow', 'blue', 'purple']
+      );
+    });
+
+    it('should properly handle negative indexes.', function() {
+      const array = [1, 2, 3, 4];
+
+      assert.deepEqual(
+        splice(array, -1, 1),
+        [1, 2, 3]
+      );
+
+      assert.deepEqual(
+        splice(array, -1, 0),
+        [1, 2, 3, 4]
+      );
+
+      assert.deepEqual(
+        splice(array, -2, 2),
+        [1, 2]
+      );
+
+      assert.deepEqual(
+        splice(array, -1, 1, 5),
+        [1, 2, 3, 5]
+      );
+
+      assert.deepEqual(
+        splice(array, -2, 1, 5),
+        [1, 2, 5, 4]
+      );
+
+      assert.deepEqual(
+        splice(array, -2, 1),
+        [1, 2, 4]
+      );
+
+      assert.deepEqual(
+        splice(['yellow', 'purple'], -1, 1),
+        ['yellow']
       );
     });
   });
