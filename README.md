@@ -930,6 +930,7 @@ Thus, any tree or cursor object can be cleared from memory by using the `release
 ```js
 tree.release();
 cursor.release();
+watcher.release();
 ```
 
 Note also that releasing a tree will consequently and automatically release every of its cursors and computed data nodes.
