@@ -200,7 +200,7 @@ export class Monkey {
 
     lazyGetter.isLazyGetter = true;
 
-    // If the tree does not accept lazy monkeys, we solve the lazy getter
+    // Should we write the lazy getter in the tree or solve it right now?
     if (this.tree.options.lazyMonkeys) {
       this.tree._data = update(
         this.tree._data,
