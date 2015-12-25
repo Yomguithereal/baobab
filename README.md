@@ -574,6 +574,26 @@ var tree = new Baobab({
   }
 });
 
+// Possibility to disable a single monkey's immutability
+var tree = new Baobab({
+  data: {
+    users: ['Jack', 'John'],
+    onlyJack: monkey({
+      cursors: {
+        users: ['data', 'users'],
+        get: function(data) {
+          return data.users.filter(function(user) {
+            return user === 'Jack';
+          });
+        },
+        options: {
+          immutable: false
+        }
+      }
+    })
+  }
+});
+
 // Finally, know that you can use relative paths for convenience
 var tree = new Baobab({
   data: {
