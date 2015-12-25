@@ -707,4 +707,13 @@ describe('Monkeys', function() {
     assert.isNotFrozen(tree.get('node'));
     assert.deepEqual(tree.get('node'), {hello: 'world'});
   });
+
+  it('should be possible to disable a single monkey\'s immutability using the shorthand method.', function() {
+    const tree = new Baobab({
+      node: monkey(() => ({hello: 'world'}), {immutable: false})
+    });
+
+    assert.isNotFrozen(tree.get('node'));
+    assert.deepEqual(tree.get('node'), {hello: 'world'});
+  });
 });

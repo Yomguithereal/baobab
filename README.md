@@ -590,7 +590,18 @@ var tree = new Baobab({
           immutable: false
         }
       }
-    })
+    }),
+
+    // Using the shorthand
+    onlyJohn: monkey(
+      ['data', 'users'],
+      function(users) {
+        return users.filter(function(user) {
+          return user === 'John';
+        });
+      },
+      {immutable: false}
+    )
   }
 });
 

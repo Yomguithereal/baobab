@@ -210,8 +210,13 @@ type.monkeyDefinition = function(definition) {
     return 'object';
   }
   else if (type.array(definition)) {
-    if (!type.function(definition[definition.length - 1]) ||
-        !definition.slice(0, -1).every(p => type.path(p)))
+    let offset = 1;
+
+    if (type.object(definition[definition.length - 1]))
+      offset++;
+
+    if (!type.function(definition[definition.length - offset]) ||
+        !definition.slice(0, -offset).every(p => type.path(p)))
       return null;
 
     return 'array';

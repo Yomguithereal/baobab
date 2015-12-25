@@ -42,10 +42,18 @@ export class MonkeyDefinition {
       this.options = definition.options || {};
     }
     else {
-      this.getter = definition[definition.length - 1];
-      this.projection = definition.slice(0, -1);
+      let offset = 1,
+          options = {};
+
+      if (type.object(definition[definition.length - 1])) {
+        offset++;
+        options = definition[definition.length - 1];
+      }
+
+      this.getter = definition[definition.length - offset];
+      this.projection = definition.slice(0, -offset);
       this.paths = this.projection;
-      this.options = {};
+      this.options = options;
     }
 
     this.hasDynamicPaths = this.paths.some(type.dynamicPath);

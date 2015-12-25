@@ -1115,7 +1115,7 @@ Baobab.monkey = function () {
 
   if (!args.length) throw new Error('Baobab.monkey: missing definition.');
 
-  if (args.length === 1) return new _monkey.MonkeyDefinition(args[0]);
+  if (args.length === 1 && typeof args[0] !== 'function') return new _monkey.MonkeyDefinition(args[0]);
 
   return new _monkey.MonkeyDefinition(args);
 };
@@ -2633,10 +2633,18 @@ var MonkeyDefinition = function MonkeyDefinition(definition) {
     });
     this.options = definition.options || {};
   } else {
-    this.getter = definition[definition.length - 1];
-    this.projection = definition.slice(0, -1);
+    var offset = 1,
+        options = {};
+
+    if (_type2['default'].object(definition[definition.length - 1])) {
+      offset++;
+      options = definition[definition.length - 1];
+    }
+
+    this.getter = definition[definition.length - offset];
+    this.projection = definition.slice(0, -offset);
     this.paths = this.projection;
-    this.options = {};
+    this.options = options;
   }
 
   this.hasDynamicPaths = this.paths.some(_type2['default'].dynamicPath);
@@ -3036,7 +3044,11 @@ type.monkeyDefinition = function (definition) {
 
     return 'object';
   } else if (type.array(definition)) {
-    if (!type['function'](definition[definition.length - 1]) || !definition.slice(0, -1).every(function (p) {
+    var offset = 1;
+
+    if (type.object(definition[definition.length - 1])) offset++;
+
+    if (!type['function'](definition[definition.length - offset]) || !definition.slice(0, -offset).every(function (p) {
       return type.path(p);
     })) return null;
 

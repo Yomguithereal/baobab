@@ -549,7 +549,7 @@ Baobab.monkey = function(...args) {
   if (!args.length)
     throw new Error('Baobab.monkey: missing definition.');
 
-  if (args.length === 1)
+  if (args.length === 1 && typeof args[0] !== 'function')
     return new MonkeyDefinition(args[0]);
 
   return new MonkeyDefinition(args);
