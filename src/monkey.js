@@ -39,11 +39,13 @@ export class MonkeyDefinition {
       this.projection = definition.cursors || {};
       this.paths = Object.keys(this.projection)
         .map(k => this.projection[k]);
+      this.options = definition.options || {};
     }
     else {
       this.getter = definition[definition.length - 1];
       this.projection = definition.slice(0, -1);
       this.paths = this.projection;
+      this.options = {};
     }
 
     this.hasDynamicPaths = this.paths.some(type.dynamicPath);
@@ -187,8 +189,7 @@ export class Monkey {
               data
           );
 
-          // Freezing if required
-          if (tree.options.immutable)
+          if (tree.options.immutable && def.options.immutable !== false)
             deepFreeze(cache);
 
           alreadyComputed = true;

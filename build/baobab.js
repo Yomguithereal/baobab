@@ -2631,10 +2631,12 @@ var MonkeyDefinition = function MonkeyDefinition(definition) {
     this.paths = Object.keys(this.projection).map(function (k) {
       return _this.projection[k];
     });
+    this.options = definition.options || {};
   } else {
     this.getter = definition[definition.length - 1];
     this.projection = definition.slice(0, -1);
     this.paths = this.projection;
+    this.options = {};
   }
 
   this.hasDynamicPaths = this.paths.some(_type2['default'].dynamicPath);
@@ -2781,8 +2783,7 @@ var Monkey = (function () {
         if (!alreadyComputed) {
           cache = def.getter.apply(tree, def.type === 'object' ? [data] : data);
 
-          // Freezing if required
-          if (tree.options.immutable) _helpers.deepFreeze(cache);
+          if (tree.options.immutable && def.options.immutable !== false) _helpers.deepFreeze(cache);
 
           alreadyComputed = true;
         }

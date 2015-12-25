@@ -693,4 +693,18 @@ describe('Monkeys', function() {
       assert.strictEqual('yellow', yellow);
     });
   });
+
+  it('should be possible to disable a single monkey\'s immutability.', function() {
+    const tree = new Baobab({
+      node: monkey({
+        get: () => ({hello: 'world'}),
+        options: {
+          immutable: false
+        }
+      })
+    });
+
+    assert.isNotFrozen(tree.get('node'));
+    assert.deepEqual(tree.get('node'), {hello: 'world'});
+  });
 });
