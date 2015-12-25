@@ -1,13 +1,17 @@
-var banner = require('write-banner'),
-    path = require('path');
+var banner = require('add-banner'),
+    path = require('path'),
+    fs = require('fs');
 
-var built = path.join(__dirname, '..', 'build', 'baobab.js'),
-    minified = path.join(__dirname, '..', 'build', 'baobab.min.js');
+var builtPath = path.join(__dirname, '..', 'build', 'baobab.js'),
+    minifiedPath = path.join(__dirname, '..', 'build', 'baobab.min.js');
+
+var built = fs.readFileSync(builtPath, 'utf-8'),
+    minified = fs.readFileSync(minifiedPath, 'utf-8');
 
 var options = {
   banner: path.join(__dirname, 'banner.tmpl'),
   name: 'Baobab'
 };
 
-banner(built, built, options);
-banner(minified, minified, options);
+fs.writeFileSync(builtPath, banner(built, options));
+fs.writeFileSync(minifiedPath, banner(minified, options));
