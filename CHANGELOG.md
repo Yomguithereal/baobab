@@ -8,6 +8,7 @@
 * Fixing an issue where the `tree.commit` method would fire a useless update.
 * Fixing an issue related to updates and dynamic paths.
 * Fixing the `tree/cursor.splice` to correctly handle negative indexes.
+* Fixing a bug related to eager monkeys and immutability.
 
 ## v2.2.1
 
