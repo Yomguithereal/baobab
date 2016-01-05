@@ -2804,9 +2804,18 @@ var Monkey = (function () {
 
     // Should we write the lazy getter in the tree or solve it right now?
     if (this.tree.options.lazyMonkeys) {
-      this.tree._data = _update3['default'](this.tree._data, this.path, { type: 'monkey', value: lazyGetter }, this.tree.options).data;
+      this.tree._data = _update3['default'](this.tree._data, this.path, {
+        type: 'monkey',
+        value: lazyGetter
+      }, this.tree.options).data;
     } else {
-      var result = _update3['default'](this.tree._data, this.path, { type: 'set', value: lazyGetter() }, this.tree.options);
+      var result = _update3['default'](this.tree._data, this.path, {
+        type: 'set',
+        value: lazyGetter(),
+        options: {
+          mutableLeaf: !this.definition.options.immutable
+        }
+      }, this.tree.options);
 
       if ('data' in result) this.tree._data = result.data;
     }
@@ -3126,6 +3135,8 @@ function update(data, path, operation) {
   var opts = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var operationType = operation.type;
   var value = operation.value;
+  var _operation$options = operation.options;
+  var operationOptions = _operation$options === undefined ? {} : _operation$options;
 
   // Dummy root, so we can shift and alter the root
   var dummy = { root: data },
@@ -3165,7 +3176,7 @@ function update(data, path, operation) {
             enumerable: true,
             configurable: true
           });
-        } else if (opts.persistent) {
+        } else if (opts.persistent && !operationOptions.mutableLeaf) {
           p[s] = _helpers.shallowClone(value);
         } else {
           p[s] = value;
@@ -3284,7 +3295,8 @@ function update(data, path, operation) {
                               if (opts.persistent) p[s] = _helpers.deepMerge({}, p[s], value);else p[s] = _helpers.deepMerge(p[s], value);
                             }
 
-      if (opts.immutable) _helpers.deepFreeze(p);
+      // Deep freezing the resulting value
+      if (opts.immutable && !operationOptions.mutableLeaf) _helpers.deepFreeze(p);
 
       break;
     }

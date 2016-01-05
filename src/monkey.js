@@ -214,7 +214,10 @@ export class Monkey {
       this.tree._data = update(
         this.tree._data,
         this.path,
-        {type: 'monkey', value: lazyGetter},
+        {
+          type: 'monkey',
+          value: lazyGetter
+        },
         this.tree.options
       ).data;
     }
@@ -222,7 +225,13 @@ export class Monkey {
       const result = update(
         this.tree._data,
         this.path,
-        {type: 'set', value: lazyGetter()},
+        {
+          type: 'set',
+          value: lazyGetter(),
+          options: {
+            mutableLeaf: !this.definition.options.immutable
+          }
+        },
         this.tree.options
       );
 

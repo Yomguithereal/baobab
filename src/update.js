@@ -34,7 +34,7 @@ function err(operation, expectedTarget, path) {
  * @return {mixed}            - Both the new tree's data and the updated node.
  */
 export default function update(data, path, operation, opts = {}) {
-  const {type: operationType, value} = operation;
+  const {type: operationType, value, options: operationOptions = {}} = operation;
 
   // Dummy root, so we can shift and alter the root
   const dummy = {root: data},
@@ -77,7 +77,7 @@ export default function update(data, path, operation, opts = {}) {
             configurable: true
           });
         }
-        else if (opts.persistent) {
+        else if (opts.persistent && !operationOptions.mutableLeaf) {
           p[s] = shallowClone(value);
         }
         else {
@@ -269,7 +269,7 @@ export default function update(data, path, operation, opts = {}) {
       }
 
       // Deep freezing the resulting value
-      if (opts.immutable)
+      if (opts.immutable && !operationOptions.mutableLeaf)
         deepFreeze(p);
 
       break;

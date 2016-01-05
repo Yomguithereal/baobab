@@ -716,4 +716,32 @@ describe('Monkeys', function() {
     assert.isNotFrozen(tree.get('node'));
     assert.deepEqual(tree.get('node'), {hello: 'world'});
   });
+
+  it.only('monkey\'s laziness should not mess things up when a monkey\'s immutability is disabled.', function() {
+    class Record {
+      constructor() {
+        this.list = [];
+      }
+
+      add(nb) {
+        this.list.push(nb);
+      }
+    }
+
+    const tree = new Baobab({
+      record: monkey(() => {
+        return new Record();
+      }, {immutable: false})
+    }, {asynchronous: false, lazyMonkeys: false});
+
+    const record = tree.get('record');
+
+    assert(record instanceof Record);
+
+    assert.deepEqual(record.list, []);
+
+    record.add(45);
+
+    assert.deepEqual(record.list, [45]);
+  });
 });
