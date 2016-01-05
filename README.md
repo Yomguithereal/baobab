@@ -19,6 +19,17 @@ It aims at providing a centralized model holding an application's state and can 
     * [Instantiation](#instantiation)
     * [Cursors](#cursors)
     * [Updates](#updates)
+      * [set](#set)
+      * [unset](#unset)
+      * [push](#push)
+      * [unshift](#unshift)
+      * [concat](#concat)
+      * [pop](#pop)
+      * [shift](#shift)
+      * [splice](#splice)
+      * [apply](#apply)
+      * [merge](#merge)
+      * [deepMerge](#deepMerge)
     * [Events](#events)
   * [Advanced](#advanced)
     * [Polymorphisms](#polymorphisms)
@@ -149,176 +160,219 @@ tree.set('hello', 'monde');
 assert(initialState !== tree.get());
 ```
 
-##### Cursor level
+---
 
-Since **Baobab** is immutable by default, note that all the methods below will return the data of the updated node for convenience and so you don't have to use `.get` afterwards to continue what you were doing.
+* [tree/cursor.set](#set)
+* [tree/cursor.unset](#unset)
+* [tree/cursor.push](#push)
+* [tree/cursor.unshift](#unshift)
+* [tree/cursor.concat](#concat)
+* [tree/cursor.pop](#pop)
+* [tree/cursor.shift](#shift)
+* [tree/cursor.splice](#splice)
+* [tree/cursor.apply](#apply)
+* [tree/cursor.merge](#merge)
+* [tree/cursor.deepMerge](#deepMerge)
 
-*Replacing data at cursor*
+---
+
+<h5 id="set">tree/cursor.set</h5>
+
+Replaces value at the given key or the cursor's value altogether if no value is supplied.
+
+It will also work if you want to replace a list's item.
 
 ```js
-var newData = cursor.set({hello: 'world'});
+// Replacing the cursor's value
+var newValue = cursor.set(newValue);
+
+// Setting a precise key
+var newValue = cursor.set('key', newValue);
+
+// Setting a nested key
+var newValue = cursor.set(['one', 'two'], newValue);
+var newValue = cursor.select('one', 'two').set(newValue);
+var newValue = cursor.select('one').set('two', newValue);
 ```
 
-*Setting a key*
+<h5 id="unset">tree/cursor.unset</h5>
+
+Unsets the given key.
+
+It will also work if you want to delete a list's item.
 
 ```js
-var newData = cursor.set('hello', 'world');
-
-// Nested path
-var newData = cursor.set(['one', 'two'], 'world');
-// Same as
-var newData = cursor.select('one', 'two').set('world');
-// Or
-var newData = cursor.select('one').set('two', 'world');
-```
-
-*Removing data at cursor*
-
-```js
+// Removing data at cursor
 cursor.unset();
-```
 
-*Unsetting a key*
+// Removing a precise key
+cursor.unset('key');
 
-```js
-cursor.unset('hello');
-
-// Nested path
+// Removing a nested key
 cursor.unset(['one', 'two']);
 ```
 
-*Pushing values*
+<h5 id="push">tree/cursor.push</h5>
 
-Obviously this will fail if the value at cursor is not an array.
+Pushes a value into the selected list. This will of course fail if the selected node is not a list.
 
 ```js
-var newArray = cursor.push('purple');
+// Pushing a value
+var newList = cursor.push(newValue);
 
-// At key
-var newArray = cursor.push('list', 'orange')
+// Pushing a value in the list at key
+var newList = cursor.push('key', newValue);
 
-// Nested path
-var newArray = cursor.push(['one', 'two'], 'orange');
+// Pushing into a nested path
+var newList = cursor.push(['one', 'two'], newValue);
+var newList = cursor.select('one', 'two').push(newValue);
+var newList = cursor.select('one').push('two', 'world');
 ```
 
-*Unshifting values*
+<h5 id="unshift">tree/cursor.unshift</h5>
 
-Obviously this will fail if the value at cursor is not an array.
+Unshifts a value into the selected list. This will of course fail if the selected node is not a list.
 
 ```js
-var newArray = cursor.unshift('purple');
+// Unshifting a value
+var newList = cursor.unshift(newValue);
 
-// At key
-var newArray = cursor.unshift('list', 'orange')
+// Unshifting a value in the list at key
+var newList = cursor.unshift('key', newValue);
 
-// Nested path
-var newArray = cursor.unshift(['one', 'two'], 'orange');
+// Unshifting into a nested path
+var newList = cursor.unshift(['one', 'two'], newValue);
+var newList = cursor.select('one', 'two').unshift(newValue);
+var newList = cursor.select('one').unshift('two', newValue);
 ```
 
-*Concatenating*
+<h5 id="concat">tree/cursor.concat</h5>
 
-Obviously this will fail if the value at cursor is not an array.
+Concatenates a list into the selected list. This will of course fail if the selected node is not a list.
 
 ```js
-var newArray = cursor.concat(['purple', 'yellow']);
+// Concatenating a list
+var newList = cursor.concat(list);
 
-// At key
-var newArray = cursor.concat('list', ['purple', 'yellow'])
+// Concatenating a list in the list at key
+var newList = cursor.concat('key', list);
 
-// Nested path
-var newArray = cursor.concat(['one', 'two'], ['purple', 'yellow']);
+// Concatenating into a nested path
+var newList = cursor.concat(['one', 'two'], list);
+var newList = cursor.select('one', 'two').concat(list);
+var newList = cursor.select('one').concat('two', list);
 ```
 
-*Splicing an array*
+<h5 id="pop">tree/cursor.pop</h5>
 
-Obviously this will fail if the value at cursor is not an array.
+Removes the last item of the selected list. This will of course fail if the selected node is not a list.
 
 ```js
-var newArray = cursor.splice([1, 1]);
+// Popping the list
+var newList = cursor.pop();
 
-// Inserting an item
-var newArray = cursor.splice([1, 0, 'newItem']);
+// Popping the list at key
+var newList = cursor.pop('key');
 
-// Inserting multiple items
-var newArray = cursor.splice([1, 0, 'newItem1', 'newItem2']);
-
-// At key
-var newArray = cursor.splice('list', [1, 1])
-
-// Nested path
-var newArray = cursor.splice(['one', 'two'], [1, 1]);
+// Popping list at path
+var newList = cursor.pop(['one', 'two']);
+var newList = cursor.select('one', 'two').pop();
+var newList = cursor.select('one').pop('two');
 ```
 
-*Applying a function*
+<h5 id="shift">tree/cursor.shift</h5>
+
+Removes the first item of the selected list. This will of course fail if the selected node is not a list.
 
 ```js
-var inc = function(currentData) {
-  return currentData + 1;
+// Shifting the list
+var newList = cursor.shift();
+
+// Shifting the list at key
+var newList = cursor.shift('key');
+
+// Shifting list at path
+var newList = cursor.shift(['one', 'two']);
+var newList = cursor.select('one', 'two').shift();
+var newList = cursor.select('one').shift('two');
+```
+
+<h5 id="splice">tree/cursor.splice</h5>
+
+Splices the selected list. This will of course fail if the selected node is not a list.
+
+The `splice` specifications works the same as for [`Array.prototype.splice`](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/splice).
+
+```js
+// Splicing the list
+var newList = cursor.splice([1, 1]);
+
+// Inserting an item etc.
+var newList = cursor.splice([1, 0, 'newItem']);
+var newList = cursor.splice([1, 0, 'newItem1', 'newItem2']);
+
+// Splicing the list at key
+var newList = cursor.splice('key', [1, 1]);
+
+// Splicing list at path
+var newList = cursor.splice(['one', 'two'], [1, 1]);
+var newList = cursor.select('one', 'two').splice([1, 1]);
+var newList = cursor.select('one').splice('two', [1, 1]);
+```
+
+<h5 id="apply">tree/cursor.apply</h5>
+
+Applies the given function to the selected value.
+
+```js
+var inc = function(nb) {
+  return inc + 1;
 };
 
-var newData = cursor.apply(inc);
+// Applying the function
+var newList = cursor.apply(inc);
 
-// At key
-var newData = cursor.apply('number', inc)
+// Applying the function at key
+var newList = cursor.apply('key', inc);
 
-// Nested path
-var newData = cursor.apply(['one', 'two'], inc);
+// Applying the function at path
+var newList = cursor.apply(['one', 'two'], inc);
+var newList = cursor.select('one', 'two').apply(inc);
+var newList = cursor.select('one').apply('two', inc);
 ```
 
-*Shallow merging objects*
+<h5 id="merge">tree/cursor.merge</h5>
 
-Obviously this will fail if the value at cursor is not an object.
+Shallow merges the selected object with another one. This will of course fail if the selected node is not an object.
 
 ```js
-var newObject = cursor.merge({hello: 'world'});
+// Merging
+var newList = cursor.merge({name: 'John'});
 
-// At key
-var newObject = cursor.merge('object', {hello: 'world'})
+// Merging at key
+var newList = cursor.merge('key', {name: 'John'});
 
-// Nested path
-var newObject = cursor.merge(['one', 'two'], {hello: 'world'});
+// Merging at path
+var newList = cursor.merge(['one', 'two'], {name: 'John'});
+var newList = cursor.select('one', 'two').merge({name: 'John'});
+var newList = cursor.select('one').merge('two', {name: 'John'});
 ```
 
-*Deep merging objects*
+<h5 id="deepMerge">tree/cursor.deepMerge</h5>
 
-Obviously this will fail if the value at cursor is not an object.
-
-```js
-var newObject = cursor.deepMerge({hello: 'world'});
-
-// At key
-var newObject = cursor.deepMerge('object', {hello: 'world'})
-
-// Nested path
-var newObject = cursor.deepMerge(['one', 'two'], {hello: 'world'});
-```
-
-##### Tree level
-
-Note that you can use any of the above methods on the tree itself for convenience:
-
-*Example*
+Deep merges the selected object with another one. This will of course fail if the selected node is not an object.
 
 ```js
-// Completely replacing the tree's data
-tree.set({hello: 'world'});
+// Merging
+var newList = cursor.deepMerge({user: {name: 'John'}});
 
-// Setting value at key
-tree.set('hello', 'world');
+// Merging at key
+var newList = cursor.deepMerge('key', {user: {name: 'John'}});
 
-// Nested path
-tree.set(['message', 'hello'], 'world');
-
-// Every other methods also work
-tree.set
-tree.unset
-tree.apply
-tree.push
-tree.unshift
-tree.splice
-tree.concat
-tree.merge
-tree.deepMerge
+// Merging at path
+var newList = cursor.deepMerge(['one', 'two'], {user: {name: 'John'}});
+var newList = cursor.select('one', 'two').deepMerge({user: {name: 'John'}});
+var newList = cursor.select('one').deepMerge('two', {user: {name: 'John'}});
 ```
 
 #### Events
@@ -687,6 +741,21 @@ tree.exists('hello');
 tree.exists('hello', 'message');
 tree.exists(['hello', 'message']);
 ```
+
+**tree/cursor.clone**
+
+Shallow clone the cursor's data. The method takes an optional nested path.
+
+```js
+var tree = new Baobab({user: {name: 'John'}}),
+    cursor = tree.select('user');
+
+assert(cursor.get() !== cursor.clone());
+```
+
+**tree/cursor.deepClone**
+
+Same as the `tree/cursor.clone` except that it will deep clone the data.
 
 **tree/cursor.serialize**
 
