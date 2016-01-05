@@ -717,7 +717,7 @@ describe('Monkeys', function() {
     assert.deepEqual(tree.get('node'), {hello: 'world'});
   });
 
-  it.only('monkey\'s laziness should not mess things up when a monkey\'s immutability is disabled.', function() {
+  it('monkey\'s laziness should not mess things up when a monkey\'s immutability is disabled.', function() {
     class Record {
       constructor() {
         this.list = [];
