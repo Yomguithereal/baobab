@@ -268,6 +268,7 @@ export default function update(data, path, operation, opts = {}) {
           p[s] = deepMerge(p[s], value);
       }
 
+      // Deep freezing the resulting value
       if (opts.immutable)
         deepFreeze(p);
 
