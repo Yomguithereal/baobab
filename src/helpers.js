@@ -351,11 +351,11 @@ export {freeze, deepFreeze};
  * @return {array}   result.solvedPath - The solved path or `null`.
  * @return {boolean} result.exists     - Does the path exists in the tree?
  */
-const notFoundObject = {data: undefined, solvedPath: null, exists: false};
+const NOT_FOUND_OBJECT = {data: undefined, solvedPath: null, exists: false};
 
 export function getIn(object, path) {
   if (!path)
-    return notFoundObject;
+    return NOT_FOUND_OBJECT;
 
   const solvedPath = [];
 
@@ -371,22 +371,22 @@ export function getIn(object, path) {
 
     if (typeof path[i] === 'function') {
       if (!type.array(c))
-        return notFoundObject;
+        return NOT_FOUND_OBJECT;
 
       idx = index(c, path[i]);
       if (!~idx)
-        return notFoundObject;
+        return NOT_FOUND_OBJECT;
 
       solvedPath.push(idx);
       c = c[idx];
     }
     else if (typeof path[i] === 'object') {
       if (!type.array(c))
-        return notFoundObject;
+        return NOT_FOUND_OBJECT;
 
       idx = index(c, e => compare(e, path[i]));
       if (!~idx)
-        return notFoundObject;
+        return NOT_FOUND_OBJECT;
 
       solvedPath.push(idx);
       c = c[idx];
