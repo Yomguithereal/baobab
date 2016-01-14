@@ -2369,7 +2369,11 @@ function getIn(object, path) {
       l = undefined;
 
   for (i = 0, l = path.length; i < l; i++) {
-    if (!c) return { data: undefined, solvedPath: path, exists: false };
+    if (!c) return {
+      data: undefined,
+      solvedPath: solvedPath.concat(path.slice(i)),
+      exists: false
+    };
 
     if (typeof path[i] === 'function') {
       if (!_type2['default'].array(c)) return NOT_FOUND_OBJECT;

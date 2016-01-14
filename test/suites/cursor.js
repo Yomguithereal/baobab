@@ -206,6 +206,26 @@ describe('Cursor API', function() {
         assert.strictEqual(tree.get().items[1].user.age, 34);
       });
 
+      it('should', function() {
+        const tree = new Baobab({
+          list: [{id: 10, hello: 'world'}]
+        }, {asynchronous: false});
+
+        tree.set(['list', {id: 10}, 'one', 'two'], 'monde');
+
+        assert.deepEqual(tree.get(), {
+          list: [
+            {
+              id: 10,
+              hello: 'world',
+              one: {
+                two: 'monde'
+              }
+            }
+          ]
+        });
+      });
+
       it('should fail when setting a nonexistent dynamic path.', function() {
         const tree = new Baobab(state, {asynchronous: false});
 

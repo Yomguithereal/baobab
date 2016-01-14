@@ -367,7 +367,11 @@ export function getIn(object, path) {
 
   for (i = 0, l = path.length; i < l; i++) {
     if (!c)
-      return {data: undefined, solvedPath: path, exists: false};
+      return {
+        data: undefined,
+        solvedPath: solvedPath.concat(path.slice(i)),
+        exists: false
+      };
 
     if (typeof path[i] === 'function') {
       if (!type.array(c))

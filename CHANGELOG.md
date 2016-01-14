@@ -4,6 +4,7 @@
 
 * Adding internal `tree.getMonkey`.
 * Fixing issue concerning monkey's recursivity.
+* Fixing a bug concerning setters & dynamic paths.
 
 ## v2.3.0
 
