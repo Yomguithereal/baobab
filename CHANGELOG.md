@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.3.1
+
+* Adding internal `tree.getMonkey`.
+* Fixing issue concerning monkey's recursivity.
+
 ## v2.3.0
 
 * Adding the `tree/cursor.clone` and the `tree/cursor.deepClone` methods.
