@@ -4,7 +4,7 @@
  */
 import assert from 'assert';
 import Baobab, {monkey} from '../../src/baobab';
-import {MonkeyDefinition} from '../../src/monkey';
+import {Monkey, MonkeyDefinition} from '../../src/monkey';
 import type from '../../src/type';
 import _ from 'lodash';
 
@@ -81,6 +81,15 @@ describe('Monkeys', function() {
     });
 
     assert.strictEqual(tree.get('data', 'custom'), 'Hello John');
+  });
+
+  it('should be possible to get monkeys from the tree.', function() {
+    const tree = new Baobab({
+      dynamic: monkey(() => 'John')
+    });
+
+    assert(tree.getMonkey('dynamic') instanceof Monkey);
+    assert(tree.getMonkey('whatever') === null);
   });
 
   it('computed data should be immutable.', function() {

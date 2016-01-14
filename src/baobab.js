@@ -487,6 +487,23 @@ export default class Baobab extends Emitter {
   }
 
   /**
+   * Method returning a monkey at the given path or else `null`.
+   *
+   * @param  {path}        path - Path of the monkey to retrieve.
+   * @return {Monkey|null}      - The Monkey instance of `null`.
+   */
+  getMonkey(path) {
+    path = coercePath(path);
+
+    const monkey = getIn(this._monkeys, [].concat(path)).data;
+
+    if (monkey instanceof Monkey)
+      return monkey;
+
+    return null;
+  }
+
+  /**
    * Method used to watch a collection of paths within the tree. Very useful
    * to bind UI components and such to the tree.
    *

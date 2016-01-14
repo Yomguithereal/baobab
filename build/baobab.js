@@ -1048,6 +1048,23 @@ var Baobab = (function (_Emitter) {
   };
 
   /**
+   * Method returning a monkey at the given path or else `null`.
+   *
+   * @param  {path}        path - Path of the monkey to retrieve.
+   * @return {Monkey|null}      - The Monkey instance of `null`.
+   */
+
+  Baobab.prototype.getMonkey = function getMonkey(path) {
+    path = coercePath(path);
+
+    var monkey = getIn(this._monkeys, [].concat(path)).data;
+
+    if (monkey instanceof _monkey.Monkey) return monkey;
+
+    return null;
+  };
+
+  /**
    * Method used to watch a collection of paths within the tree. Very useful
    * to bind UI components and such to the tree.
    *
@@ -2348,10 +2365,10 @@ exports.deepFreeze = deepFreeze;
  * @return {array}   result.solvedPath - The solved path or `null`.
  * @return {boolean} result.exists     - Does the path exists in the tree?
  */
-var notFoundObject = { data: undefined, solvedPath: null, exists: false };
+var NOT_FOUND_OBJECT = { data: undefined, solvedPath: null, exists: false };
 
 function getIn(object, path) {
-  if (!path) return notFoundObject;
+  if (!path) return NOT_FOUND_OBJECT;
 
   var solvedPath = [];
 
@@ -2365,20 +2382,20 @@ function getIn(object, path) {
     if (!c) return { data: undefined, solvedPath: path, exists: false };
 
     if (typeof path[i] === 'function') {
-      if (!_type2['default'].array(c)) return notFoundObject;
+      if (!_type2['default'].array(c)) return NOT_FOUND_OBJECT;
 
       idx = index(c, path[i]);
-      if (! ~idx) return notFoundObject;
+      if (! ~idx) return NOT_FOUND_OBJECT;
 
       solvedPath.push(idx);
       c = c[idx];
     } else if (typeof path[i] === 'object') {
-      if (!_type2['default'].array(c)) return notFoundObject;
+      if (!_type2['default'].array(c)) return NOT_FOUND_OBJECT;
 
       idx = index(c, function (e) {
         return compare(e, path[i]);
       });
-      if (! ~idx) return notFoundObject;
+      if (! ~idx) return NOT_FOUND_OBJECT;
 
       solvedPath.push(idx);
       c = c[idx];
