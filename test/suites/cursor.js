@@ -215,7 +215,7 @@ describe('Cursor API', function() {
       });
 
       it('should be possible to write the tree synchronously.', function(done) {
-        const tree = new Baobab({hello: 'John'}, {syncwrite: true});
+        const tree = new Baobab({hello: 'John'});
 
         tree.on('update', function() {
           done();
