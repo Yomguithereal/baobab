@@ -294,6 +294,57 @@ describe('Monkeys', function() {
     assert.strictEqual(tree.get('locale'), 'de');
   });
 
+  it('should even work with complex recursivity.', function() {
+    const tree = new Baobab({
+      activePageNumber: 1,
+      products: {
+        genes: {
+          howManyGenes: null,
+          customVectorRequired: true,
+          completed: monkey(
+            ['.', 'customVectorRequired'],
+            ['.', 'howManyGenes'],
+            (customVectorRequired, howManyGenes) => (
+              customVectorRequired !== null &&
+              howManyGenes !== null
+            )
+          )
+        }
+      },
+      pages: {
+        UserInfoPage: {
+          number: 0,
+          completed: false
+        },
+        SelectProductPage: {
+          number: 1,
+          completed: monkey(
+            ['products'],
+            products => products.genes.completed
+          )
+        }
+      },
+      currentPage: monkey(
+        ['activePageNumber'],
+        ['pages'],
+        (activePageNumber, pages) => {
+          return _.find(pages, page => page.number === activePageNumber);
+        }
+      )
+    }, {asynchronous: false, lazyMonkeys: false});
+
+    assert(!tree.get('currentPage', 'completed'));
+
+    tree.set(['products', 'genes', 'howManyGenes'], 1);
+
+    assert.deepEqual(tree.get(['pages', 'SelectProductPage']), {
+      completed: true,
+      number: 1
+    });
+
+    assert(tree.get('currentPage', 'completed'));
+  });
+
   it('recursivity should take updates into account.', function() {
     let count = 0;
 

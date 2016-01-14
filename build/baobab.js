@@ -778,16 +778,12 @@ var Baobab = (function (_Emitter) {
       }
     };
 
-    var register = [];
-
     var walk = function walk(data) {
       var p = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
 
       // Should we sit a monkey in the tree?
       if (data instanceof _monkey.MonkeyDefinition || data instanceof _monkey.Monkey) {
         var monkeyInstance = new _monkey.Monkey(_this2, p, data instanceof _monkey.Monkey ? data.definition : data);
-
-        register.push(monkeyInstance);
 
         _update3['default'](_this2._monkeys, p, { type: 'set', value: monkeyInstance }, {
           immutable: false,
@@ -809,9 +805,6 @@ var Baobab = (function (_Emitter) {
     // Walking the whole tree
     if (!arguments.length) {
       walk(this._data);
-      register.forEach(function (m) {
-        return m.checkRecursivity();
-      });
     } else {
       var monkeysNode = getIn(this._monkeys, path).data;
 
@@ -821,9 +814,6 @@ var Baobab = (function (_Emitter) {
       // Let's walk the tree only from the updated point
       if (operation !== 'unset') {
         walk(node, path);
-        register.forEach(function (m) {
-          return m.checkRecursivity();
-        });
       }
     }
 
@@ -2688,7 +2678,6 @@ var Monkey = (function () {
     this.tree = tree;
     this.path = pathInTree;
     this.definition = definition;
-    this.isRecursive = false;
 
     // Adapting the definition's paths & projection to this monkey's case
     var projection = definition.projection,
@@ -2717,9 +2706,9 @@ var Monkey = (function () {
      *
      * When the tree writes, this listener will check whether the updated paths
      * are of any use to the monkey and, if so, will update the tree's node
-     * where the monkey sits with a lazy getter.
+     * where the monkey sits.
      */
-    this.listener = function (_ref) {
+    this.writeListener = function (_ref) {
       var path = _ref.data.path;
 
       if (_this2.state.killed) return;
@@ -2730,60 +2719,68 @@ var Monkey = (function () {
       if (concerned) _this2.update();
     };
 
-    // Binding listener
-    this.tree.on('write', this.listener);
+    /**
+     * Listener on the tree's `monkey` event.
+     *
+     * When another monkey updates, this listener will check whether the
+     * updated paths are of any use to the monkey and, if so, will update the
+     * tree's node where the monkey sits.
+     */
+    this.recursiveListener = function (_ref2) {
+      var _ref2$data = _ref2.data;
+      var monkey = _ref2$data.monkey;
+      var path = _ref2$data.path;
+
+      if (_this2.state.killed) return;
+
+      // Breaking if this is the same monkey
+      if (_this2 === monkey) return;
+
+      // Is the monkey affected by the current monkey event?
+      var concerned = _helpers.solveUpdate([path], _this2.relatedPaths(false));
+
+      if (concerned) _this2.update();
+    };
+
+    // Binding listeners
+    this.tree.on('write', this.writeListener);
+    this.tree.on('_monkey', this.recursiveListener);
 
     // Updating relevant node
     this.update();
   }
 
   /**
-   * Method triggering a recursivity check.
-   *
-   * @return {Monkey} - Returns itself for chaining purposes.
-   */
-
-  Monkey.prototype.checkRecursivity = function checkRecursivity() {
-    var _this3 = this;
-
-    this.isRecursive = this.depPaths.some(function (p) {
-      return !!_type2['default'].monkeyPath(_this3.tree._monkeys, p);
-    });
-
-    // Putting the recursive monkeys' listeners at the end of the stack
-    // NOTE: this is a dirty hack and a more thorough solution should be found
-    if (this.isRecursive) {
-      this.tree.off('write', this.listener);
-      this.tree.on('write', this.listener);
-    }
-
-    return this;
-  };
-
-  /**
    * Method returning solved paths related to the monkey.
    *
-   * @return {array} - An array of related paths.
+   * @param  {boolean} recursive - Should we compute recursive paths?
+   * @return {array}             - An array of related paths.
    */
 
   Monkey.prototype.relatedPaths = function relatedPaths() {
-    var _this4 = this;
+    var _this3 = this;
+
+    var recursive = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
     var paths = undefined;
 
     if (this.definition.hasDynamicPaths) paths = this.depPaths.map(function (p) {
-      return _helpers.getIn(_this4.tree._data, p).solvedPath;
+      return _helpers.getIn(_this3.tree._data, p).solvedPath;
     });else paths = this.depPaths;
 
-    if (!this.isRecursive) return paths;
+    var isRecursive = recursive && this.depPaths.some(function (p) {
+      return !!_type2['default'].monkeyPath(_this3.tree._monkeys, p);
+    });
+
+    if (!isRecursive) return paths;
 
     return paths.reduce(function (accumulatedPaths, path) {
-      var monkeyPath = _type2['default'].monkeyPath(_this4.tree._monkeys, path);
+      var monkeyPath = _type2['default'].monkeyPath(_this3.tree._monkeys, path);
 
       if (!monkeyPath) return accumulatedPaths.concat([path]);
 
       // Solving recursive path
-      var relatedMonkey = _helpers.getIn(_this4.tree._monkeys, monkeyPath).data;
+      var relatedMonkey = _helpers.getIn(_this3.tree._monkeys, monkeyPath).data;
 
       return accumulatedPaths.concat(relatedMonkey.relatedPaths());
     }, []);
@@ -2837,6 +2834,9 @@ var Monkey = (function () {
       if ('data' in result) this.tree._data = result.data;
     }
 
+    // Notifying the monkey's update so we can handle recursivity
+    this.tree.emit('_monkey', { monkey: this, path: this.path });
+
     return this;
   };
 
@@ -2847,7 +2847,8 @@ var Monkey = (function () {
   Monkey.prototype.release = function release() {
 
     // Unbinding events
-    this.tree.off('write', this.listener);
+    this.tree.off('write', this.writeListener);
+    this.tree.off('_monkey', this.monkeyListener);
     this.state.killed = true;
 
     // Deleting properties
