@@ -193,8 +193,6 @@ export default class Baobab extends Emitter {
       }
     };
 
-    const register = [];
-
     const walk = (data, p = []) => {
 
       // Should we sit a monkey in the tree?
@@ -205,8 +203,6 @@ export default class Baobab extends Emitter {
           p,
           data instanceof Monkey ? data.definition : data
         );
-
-        register.push(monkeyInstance);
 
         update(this._monkeys, p, {type: 'set', value: monkeyInstance}, {
           immutable: false,
@@ -227,7 +223,6 @@ export default class Baobab extends Emitter {
     // Walking the whole tree
     if (!arguments.length) {
       walk(this._data);
-      register.forEach(m => m.checkRecursivity());
     }
     else {
       const monkeysNode = getIn(this._monkeys, path).data;
@@ -239,7 +234,6 @@ export default class Baobab extends Emitter {
       // Let's walk the tree only from the updated point
       if (operation !== 'unset') {
         walk(node, path);
-        register.forEach(m => m.checkRecursivity());
       }
     }
 

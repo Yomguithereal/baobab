@@ -74,7 +74,6 @@ export class Monkey {
     this.tree = tree;
     this.path = pathInTree;
     this.definition = definition;
-    this.isRecursive = false;
 
     // Adapting the definition's paths & projection to this monkey's case
     const projection = definition.projection,
@@ -103,9 +102,9 @@ export class Monkey {
      *
      * When the tree writes, this listener will check whether the updated paths
      * are of any use to the monkey and, if so, will update the tree's node
-     * where the monkey sits with a lazy getter.
+     * where the monkey sits.
      */
-    this.listener = ({data: {path}}) => {
+    this.writeListener = ({data: {path}}) => {
       if (this.state.killed)
         return;
 
@@ -116,39 +115,43 @@ export class Monkey {
         this.update();
     };
 
-    // Binding listener
-    this.tree.on('write', this.listener);
+    /**
+     * Listener on the tree's `monkey` event.
+     *
+     * When another monkey updates, this listener will check whether the
+     * updated paths are of any use to the monkey and, if so, will update the
+     * tree's node where the monkey sits.
+     */
+    this.recursiveListener = ({data: {monkey, path}}) => {
+      if (this.state.killed)
+        return;
+
+      // Breaking if this is the same monkey
+      if (this === monkey)
+        return;
+
+      // Is the monkey affected by the current monkey event?
+      const concerned = solveUpdate([path], this.relatedPaths(false));
+
+      if (concerned)
+        this.update();
+    };
+
+    // Binding listeners
+    this.tree.on('write', this.writeListener);
+    this.tree.on('_monkey', this.recursiveListener);
 
     // Updating relevant node
     this.update();
   }
 
   /**
-   * Method triggering a recursivity check.
-   *
-   * @return {Monkey} - Returns itself for chaining purposes.
-   */
-  checkRecursivity() {
-    this.isRecursive = this.depPaths.some(
-      p => !!type.monkeyPath(this.tree._monkeys, p)
-    );
-
-    // Putting the recursive monkeys' listeners at the end of the stack
-    // NOTE: this is a dirty hack and a more thorough solution should be found
-    if (this.isRecursive) {
-      this.tree.off('write', this.listener);
-      this.tree.on('write', this.listener);
-    }
-
-    return this;
-  }
-
-  /**
    * Method returning solved paths related to the monkey.
    *
-   * @return {array} - An array of related paths.
+   * @param  {boolean} recursive - Should we compute recursive paths?
+   * @return {array}             - An array of related paths.
    */
-  relatedPaths() {
+  relatedPaths(recursive = true) {
     let paths;
 
     if (this.definition.hasDynamicPaths)
@@ -158,7 +161,11 @@ export class Monkey {
     else
       paths = this.depPaths;
 
-    if (!this.isRecursive)
+    const isRecursive = recursive && this.depPaths.some(
+      p => !! type.monkeyPath(this.tree._monkeys, p)
+    );
+
+    if (!isRecursive)
       return paths;
 
     return paths.reduce((accumulatedPaths, path) => {
@@ -239,6 +246,9 @@ export class Monkey {
         this.tree._data = result.data;
     }
 
+    // Notifying the monkey's update so we can handle recursivity
+    this.tree.emit('_monkey', {monkey: this, path: this.path});
+
     return this;
   }
 
@@ -248,7 +258,8 @@ export class Monkey {
   release() {
 
     // Unbinding events
-    this.tree.off('write', this.listener);
+    this.tree.off('write', this.writeListener);
+    this.tree.off('_monkey', this.monkeyListener);
     this.state.killed = true;
 
     // Deleting properties
