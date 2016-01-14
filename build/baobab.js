@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.3.0
+ * Version: 2.3.1
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -1140,7 +1140,7 @@ Baobab.helpers = helpers;
 /**
  * Version
  */
-Baobab.VERSION = '2.3.0';
+Baobab.VERSION = '2.3.1';
 module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
