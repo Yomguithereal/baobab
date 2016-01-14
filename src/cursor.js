@@ -738,7 +738,7 @@ if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
           length = array.length;
 
     return {
-      next: function() {
+      next() {
         if (i < length) {
           return {
             value: cursor.select(i++)

@@ -20,7 +20,7 @@ const getExampleState = () => ({
       cursors: {
         messages: ['data', 'messages']
       },
-      get: function({messages}) {
+      get({messages}) {
         return _.filter(messages, {from: 'John'});
       }
     })

@@ -345,7 +345,7 @@ export default class Baobab extends Emitter {
     if (!type.operationType(operation.type))
       throw makeError(
         `Baobab.update: unknown operation type "${operation.type}".`,
-        {operation: operation}
+        {operation}
       );
 
     // Solving the given path

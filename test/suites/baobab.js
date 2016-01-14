@@ -222,7 +222,7 @@ describe('Baobab API', function() {
 
     it('the tree should shift references on updates.', function() {
       const list = [1],
-            tree = new Baobab({list: list}, {asynchronous: false});
+            tree = new Baobab({list}, {asynchronous: false});
 
       tree.select('list').push(2);
       assert.deepEqual(tree.get('list'), [1, 2]);

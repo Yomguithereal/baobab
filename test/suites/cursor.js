@@ -516,14 +516,14 @@ describe('Cursor API', function() {
       let count = 0;
 
       async.parallel({
-        parent: function(next) {
+        parent(next) {
           parent.on('update', function() {
             assert.deepEqual({firstname: 'Napoleon', lastname: 'Bonaparte'}, this.get());
             count++;
             next();
           });
         },
-        child: function(next) {
+        child(next) {
           child.on('update', function() {
             count++;
             next();
@@ -545,13 +545,13 @@ describe('Cursor API', function() {
       let count = 0;
 
       async.parallel({
-        parent: function(next) {
+        parent(next) {
           parent.on('update', function() {
             count++;
             next();
           });
         },
-        child: function(next) {
+        child(next) {
           child.on('update', function() {
             count++;
             next();
@@ -581,15 +581,15 @@ describe('Cursor API', function() {
       const handler = () => count++;
 
       async.parallel({
-        node: function(next) {
+        node(next) {
           parent.on('update', handler);
           setTimeout(next, 30);
         },
-        leaf1: function(next) {
+        leaf1(next) {
           leaf1.on('update', handler);
           setTimeout(next, 30);
         },
-        leaf2: function(next) {
+        leaf2(next) {
           leaf2.on('update', handler);
           setTimeout(next, 30);
         }
