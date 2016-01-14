@@ -206,6 +206,23 @@ describe('Helpers', function() {
         ['yellow']
       );
     });
+
+    it('should handle predicates & descriptors as start index.', function() {
+      const collection = [
+        {name: 'John'},
+        {name: 'Jack'}
+      ];
+
+      assert.deepEqual(
+        splice(collection, e => e.name === 'Jack', 1, {name: 'Paul'}),
+        [{name: 'John'}, {name: 'Paul'}]
+      );
+
+      assert.deepEqual(
+        splice(collection, {name: 'Jack'}, 1, {name: 'Paul'}),
+        [{name: 'John'}, {name: 'Paul'}]
+      );
+    });
   });
 
   /**

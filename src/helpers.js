@@ -559,6 +559,12 @@ export function solveUpdate(affectedPaths, comparedPaths) {
 export function splice(array, startIndex, nb, ...elements) {
   nb = Math.max(0, nb);
 
+  // Solving startIndex
+  if (type.function(startIndex))
+    startIndex = index(array, startIndex);
+  if (type.object(startIndex))
+    startIndex = index(array, e => compare(e, startIndex));
+
   // Positive index
   if (startIndex >= 0)
     return array

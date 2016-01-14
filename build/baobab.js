@@ -2563,6 +2563,12 @@ function solveUpdate(affectedPaths, comparedPaths) {
 function splice(array, startIndex, nb) {
   nb = Math.max(0, nb);
 
+  // Solving startIndex
+  if (_type2['default']['function'](startIndex)) startIndex = index(array, startIndex);
+  if (_type2['default'].object(startIndex)) startIndex = index(array, function (e) {
+    return compare(e, startIndex);
+  });
+
   // Positive index
 
   for (var _len2 = arguments.length, elements = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
