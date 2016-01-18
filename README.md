@@ -537,8 +537,8 @@ tree.get('palette', 'colors', function(color) {
 >>> 'green'
 
 // Retrieving or selecting data by passing a descriptor object in the path
-var complexCursor = tree.select('items', {id: 'one'}, 'value');
-tree.get('items', {id: 'one'}, 'value');
+var complexCursor = tree.select('palette', 'items', {id: 'one'}, 'value');
+tree.get('palette', 'items', {id: 'one'}, 'value');
 >>> 'Hey'
 
 // Creating a blank tree
