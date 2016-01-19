@@ -611,6 +611,7 @@ var coercePath = helpers.coercePath;
 var deepFreeze = helpers.deepFreeze;
 var getIn = helpers.getIn;
 var makeError = helpers.makeError;
+var deepClone = helpers.deepClone;
 var deepMerge = helpers.deepMerge;
 var shallowClone = helpers.shallowClone;
 var shallowMerge = helpers.shallowMerge;
@@ -945,7 +946,7 @@ var Baobab = (function (_Emitter) {
       if (_type2['default'].object(monkeysNode)) {
         realOperation = shallowClone(realOperation);
 
-        if (/deep/.test(realOperation.type)) realOperation.value = deepMerge({}, monkeysNode, realOperation.value);else realOperation.value = shallowMerge({}, monkeysNode, realOperation.value);
+        if (/deep/.test(realOperation.type)) realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);else realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);
       }
     }
 
@@ -2194,7 +2195,7 @@ function cloneRegexp(re) {
  * @return {mixed}        - The cloned variable.
  */
 function cloner(deep, item) {
-  if (!item || typeof item !== 'object' || item instanceof Error || item instanceof _monkey.MonkeyDefinition || 'ArrayBuffer' in global && item instanceof ArrayBuffer) return item;
+  if (!item || typeof item !== 'object' || item instanceof Error || item instanceof _monkey.MonkeyDefinition || item instanceof _monkey.Monkey || 'ArrayBuffer' in global && item instanceof ArrayBuffer) return item;
 
   // Array
   if (_type2['default'].array(item)) {

@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.2
+
+* Fixing issue concerning merging and monkeys.
+
 ## v2.3.1
 
 * Adding internal `tree.getMonkey`.

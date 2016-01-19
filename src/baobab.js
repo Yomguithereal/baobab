@@ -18,6 +18,7 @@ const {
   deepFreeze,
   getIn,
   makeError,
+  deepClone,
   deepMerge,
   shallowClone,
   shallowMerge,
@@ -374,9 +375,9 @@ export default class Baobab extends Emitter {
         realOperation = shallowClone(realOperation);
 
         if (/deep/.test(realOperation.type))
-          realOperation.value = deepMerge({}, monkeysNode, realOperation.value);
+          realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);
         else
-          realOperation.value = shallowMerge({}, monkeysNode, realOperation.value);
+          realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);
       }
     }
 
