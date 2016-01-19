@@ -326,7 +326,7 @@ Applies the given function to the selected value.
 
 ```js
 var inc = function(nb) {
-  return inc + 1;
+  return nb + 1;
 };
 
 // Applying the function
