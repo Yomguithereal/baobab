@@ -476,6 +476,9 @@ export {shallowMerge, deepMerge};
 export function solveRelativePath(base, to) {
   let solvedPath = [];
 
+  // Coercing to array
+  to = [].concat(to);
+
   for (let i = 0, l = to.length; i < l; i++) {
     const step = to[i];
 

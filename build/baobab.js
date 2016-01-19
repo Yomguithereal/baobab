@@ -2477,6 +2477,9 @@ exports.deepMerge = deepMerge;
 function solveRelativePath(base, to) {
   var solvedPath = [];
 
+  // Coercing to array
+  to = [].concat(to);
+
   for (var i = 0, l = to.length; i < l; i++) {
     var step = to[i];
 
@@ -2665,6 +2668,12 @@ var MonkeyDefinition = function MonkeyDefinition(definition) {
     this.options = options;
   }
 
+  // Coercing paths for convenience
+  this.paths = this.paths.map(function (p) {
+    return [].concat(p);
+  });
+
+  // Does the definition contain dynamic paths
   this.hasDynamicPaths = this.paths.some(_type2['default'].dynamicPath);
 }
 

@@ -56,6 +56,10 @@ export class MonkeyDefinition {
       this.options = options;
     }
 
+    // Coercing paths for convenience
+    this.paths = this.paths.map(p => [].concat(p));
+
+    // Does the definition contain dynamic paths
     this.hasDynamicPaths = this.paths.some(type.dynamicPath);
   }
 }

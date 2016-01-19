@@ -83,6 +83,15 @@ describe('Monkeys', function() {
     assert.strictEqual(tree.get('data', 'custom'), 'Hello John');
   });
 
+  it('should be possible to use path polymorphism.', function() {
+    const tree = new Baobab({
+      name: 'John',
+      greeting: monkey('name', name => `Hello ${name}!`)
+    });
+
+    assert.strictEqual(tree.get('greeting'), 'Hello John!');
+  });
+
   it('should be possible to get monkeys from the tree.', function() {
     const tree = new Baobab({
       dynamic: monkey(() => 'John')

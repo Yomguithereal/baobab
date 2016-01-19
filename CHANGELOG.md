@@ -3,6 +3,7 @@
 ## v2.3.2
 
 * Fixing issue concerning merging and monkeys.
+* Fixing path coercion in monkeys' dependencies.
 
 ## v2.3.1
 
