@@ -621,6 +621,34 @@ describe('Monkeys', function() {
     assert.strictEqual(altTree.get('user', 'fullname'), 'Hello Jack');
   });
 
+  it('merging should not drop keys around monkeys.', function() {
+    const tree = new Baobab(
+      {
+        user: {
+          name: 'Jack',
+          surname: 'White',
+          fullname: monkey({
+            cursors: {
+              name: ['user', 'name'],
+              surname: ['user', 'surname']
+            },
+            get: ({name, surname}) => `${name} ${surname}`
+          })
+        }
+      },
+      {
+        asynchronous: false
+      }
+    );
+
+    assert.strictEqual(tree.get('user', 'fullname'), 'Jack White');
+
+    tree.merge([], {});
+
+    assert.strictEqual(tree.get('user', 'name'), 'Jack');
+    assert.strictEqual(tree.get('user', 'surname'), 'White');
+  });
+
   it('should be possible to use relative paths when defining monkeys\' dependencies.', function() {
     const fullname = (name, surname) => `${name} ${surname}`;
 
