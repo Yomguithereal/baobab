@@ -368,13 +368,13 @@ export default class Baobab extends Emitter {
 
     // If we merge data, we need to acknowledge monkeys
     let realOperation = operation;
-    if (/merge/.test(operation.type)) {
+    if (/merge/i.test(operation.type)) {
       const monkeysNode = getIn(this._monkeys, solvedPath).data;
 
       if (type.object(monkeysNode)) {
         realOperation = shallowClone(realOperation);
 
-        if (/deep/.test(realOperation.type))
+        if (/deep/i.test(realOperation.type))
           realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);
         else
           realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);

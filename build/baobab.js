@@ -940,13 +940,13 @@ var Baobab = (function (_Emitter) {
 
     // If we merge data, we need to acknowledge monkeys
     var realOperation = operation;
-    if (/merge/.test(operation.type)) {
+    if (/merge/i.test(operation.type)) {
       var monkeysNode = getIn(this._monkeys, solvedPath).data;
 
       if (_type2['default'].object(monkeysNode)) {
         realOperation = shallowClone(realOperation);
 
-        if (/deep/.test(realOperation.type)) realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);else realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);
+        if (/deep/i.test(realOperation.type)) realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);else realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);
       }
     }
 
