@@ -261,7 +261,7 @@ describe('Cursor API', function() {
     describe('Standard cursor', function() {
       it('should warn the user when too many arguments are applied to a setter.', function() {
         const tree = new Baobab(state),
-            cursor = tree.select('items');
+              cursor = tree.select('items');
 
         assert.throws(function() {
           cursor.set('this', 'is', 'my', 'destiny!');
