@@ -813,4 +813,47 @@ describe('Monkeys', function() {
 
     assert.deepEqual(record.list, [45]);
   });
+
+  describe('Issue #430 - All non-monkey keys are lost during merge when monkey present', function () {
+
+    it.skip('should not drop data', function () {
+      const tree = new Baobab({
+        cat: {
+          alive: true,
+          meow: monkey(['cat', 'alive'], hasLife => hasLife ? 'Meeeoooow!' : '')
+        },
+        birdCage: {
+          canary: 'canary',
+          sound: monkey(['birdCage', 'canary'], hasLife => hasLife ? 'Tweet!' : '')
+        }
+      }, { asynchronous: false });
+
+      tree.merge({ cat: { alive: false } });
+      assert.ok(!tree.get('cat', 'alive'));
+      assert.strictEqual(tree.get('birdCage', 'canary'), 'canary');
+    });
+  });
+
+  describe('Issue #422 - nested monkey errors when listening to undefined path', function () {
+
+    it.skip('should not drop monkeys', function () {
+      const tree = new Baobab({
+        blubb: {
+          data: {
+              number: 1,
+              double: monkey(['.', 'number'], n => n => n * 2)
+          },
+          other: {
+             tripple: monkey(['..', 'data', 'number'], n => n * 3)
+          }
+        }
+      }, { asynchronous: false });
+
+      tree.merge(['blubb'], { data: { dummy: 2, number: 7 } });
+
+      assert.strictEqual(tree.get('blubb', 'data', 'dummy'), 2);
+      assert.strictEqual(tree.get('blubb', 'other', 'tripple'), 21);
+    });
+
+  });
 });
