@@ -826,9 +826,9 @@ describe('Monkeys', function() {
           canary: 'canary',
           sound: monkey(['birdCage', 'canary'], hasLife => hasLife ? 'Tweet!' : '')
         }
-      }, { asynchronous: false });
+      }, {asynchronous: false});
 
-      tree.merge({ cat: { alive: false } });
+      tree.merge({cat: {alive: false}});
       assert.ok(!tree.get('cat', 'alive'));
       assert.strictEqual(tree.get('birdCage', 'canary'), 'canary');
     });
@@ -847,9 +847,9 @@ describe('Monkeys', function() {
              tripple: monkey(['..', 'data', 'number'], n => n * 3)
           }
         }
-      }, { asynchronous: false });
+      }, {asynchronous: false});
 
-      tree.merge(['blubb'], { data: { dummy: 2, number: 7 } });
+      tree.merge(['blubb'], {data: {dummy: 2, number: 7}});
 
       assert.strictEqual(tree.get('blubb', 'data', 'dummy'), 2);
       assert.strictEqual(tree.get('blubb', 'other', 'tripple'), 21);
