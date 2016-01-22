@@ -816,7 +816,7 @@ describe('Monkeys', function() {
 
   describe('Issue #430 - All non-monkey keys are lost during merge when monkey present', function () {
 
-    it.skip('should not drop data', function () {
+    it('should not drop data', function () {
       const tree = new Baobab({
         cat: {
           alive: true,
@@ -829,14 +829,14 @@ describe('Monkeys', function() {
       }, {asynchronous: false});
 
       tree.merge({cat: {alive: false}});
-      assert.ok(!tree.get('cat', 'alive'));
+      assert.strictEqual(tree.get('cat', 'alive'), false);
       assert.strictEqual(tree.get('birdCage', 'canary'), 'canary');
     });
   });
 
   describe('Issue #422 - nested monkey errors when listening to undefined path', function () {
 
-    it.skip('should not drop monkeys', function () {
+    it('should not drop monkeys', function () {
       const tree = new Baobab({
         blubb: {
           data: {

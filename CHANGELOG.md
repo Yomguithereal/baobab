@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.3
+
+* Fixing again an issue concerning merging an monkeys (thanks to [@abalmos](https://github.com/abalmos) and [@Zache](https://github.com/Zache)).
+
 ## v2.3.2
 
 * Fixing issue concerning merging and monkeys.

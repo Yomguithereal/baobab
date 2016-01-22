@@ -372,12 +372,23 @@ export default class Baobab extends Emitter {
       const monkeysNode = getIn(this._monkeys, solvedPath).data;
 
       if (type.object(monkeysNode)) {
+
+        // Cloning the operation not to create weird behavior for the user
         realOperation = shallowClone(realOperation);
 
+        // Fetching the existing node in the current data
+        const currentNode = getIn(this._data, solvedPath).data;
+
         if (/deep/i.test(realOperation.type))
-          realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);
+          realOperation.value = deepMerge({},
+            deepMerge({}, currentNode, deepClone(monkeysNode)),
+            realOperation.value
+          );
         else
-          realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);
+          realOperation.value = shallowMerge({},
+            deepMerge({}, currentNode, deepClone(monkeysNode)),
+            realOperation.value
+          );
       }
     }
 

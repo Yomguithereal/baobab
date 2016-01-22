@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.3.2
+ * Version: 2.3.3
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -944,9 +944,14 @@ var Baobab = (function (_Emitter) {
       var monkeysNode = getIn(this._monkeys, solvedPath).data;
 
       if (_type2['default'].object(monkeysNode)) {
+
+        // Cloning the operation not to create weird behavior for the user
         realOperation = shallowClone(realOperation);
 
-        if (/deep/i.test(realOperation.type)) realOperation.value = deepMerge({}, deepClone(monkeysNode), realOperation.value);else realOperation.value = shallowMerge({}, deepClone(monkeysNode), realOperation.value);
+        // Fetching the existing node in the current data
+        var currentNode = getIn(this._data, solvedPath).data;
+
+        if (/deep/i.test(realOperation.type)) realOperation.value = deepMerge({}, deepMerge({}, currentNode, deepClone(monkeysNode)), realOperation.value);else realOperation.value = shallowMerge({}, deepMerge({}, currentNode, deepClone(monkeysNode)), realOperation.value);
       }
     }
 
