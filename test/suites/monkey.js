@@ -841,7 +841,7 @@ describe('Monkeys', function() {
         blubb: {
           data: {
               number: 1,
-              double: monkey(['.', 'number'], n => n => n * 2)
+              double: monkey(['.', 'number'], n => n * 2)
           },
           other: {
              tripple: monkey(['..', 'data', 'number'], n => n * 3)
