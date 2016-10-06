@@ -155,6 +155,22 @@ describe('Monkeys', function() {
     assert.strictEqual(tree.get('greeting'), 'Hello Jack');
   });
 
+  it('monkeys should be able to work with dynamic paths on empty collection', function() {
+    const tree = new Baobab({
+      elements: [],
+      computed: monkey(['elements'], elements => elements)
+    });
+
+    tree.set(['element'], monkey(
+      ['computed', {option: true}],
+      title => title
+    ));
+
+    const element = tree.get(['element']);
+
+    assert.equal(undefined, element);
+  });
+
   it('cursors with a monkey in the path should work correctly.', function(done) {
     const tree = new Baobab(getExampleState()),
           cursor = tree.select('data', 'fromJohn');
