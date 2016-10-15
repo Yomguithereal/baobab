@@ -483,6 +483,7 @@ Will fire if data watched over by the cursor has updated.
 
 ```js
 cursor.on('update', function(e) {
+  var eventData = e.data;
   console.log('Current data:', eventData.currentData);
   console.log('Previous data:', eventData.previousData);
 });
