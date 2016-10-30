@@ -2200,7 +2200,7 @@ function cloneRegexp(re) {
  * @return {mixed}        - The cloned variable.
  */
 function cloner(deep, item) {
-  if (!item || typeof item !== 'object' || item instanceof Error || item instanceof _monkey.MonkeyDefinition || item instanceof _monkey.Monkey || 'ArrayBuffer' in global && item instanceof ArrayBuffer) return item;
+  if (!item || typeof item !== 'object' || item instanceof Error || item instanceof _monkey.MonkeyDefinition || item instanceof _monkey.Monkey ||global && 'ArrayBuffer' in global && item instanceof ArrayBuffer) return item;
 
   // Array
   if (_type2['default'].array(item)) {
