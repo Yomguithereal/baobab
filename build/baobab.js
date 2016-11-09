@@ -2036,6 +2036,8 @@ var _type2 = _interopRequireDefault(_type);
  */
 var noop = Function.prototype;
 
+var hasOwnProp = ({}).hasOwnProperty;
+
 /**
  * Function returning the index of the first element of a list matching the
  * given predicate.
@@ -2237,7 +2239,7 @@ function cloner(deep, item) {
           enumerable: true,
           configurable: true
         });
-      } else if (item.hasOwnProperty(k)) {
+      } else if (hasOwnProp.call(item, k)) {
         o[k] = deep ? cloner(true, item[k]) : item[k];
       }
     }
@@ -2327,7 +2329,7 @@ function freezer(deep, o) {
 
       p = o[k];
 
-      if (!p || !o.hasOwnProperty(k) || typeof p !== 'object' || Object.isFrozen(p)) continue;
+      if (!p || !hasOwnProp.call(o, k) || typeof p !== 'object' || Object.isFrozen(p)) continue;
 
       freezer(true, p);
     }

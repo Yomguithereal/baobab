@@ -14,6 +14,8 @@ import type from './type';
  */
 const noop = Function.prototype;
 
+const hasOwnProp = {}.hasOwnProperty;
+
 /**
  * Function returning the index of the first element of a list matching the
  * given predicate.
@@ -215,7 +217,7 @@ function cloner(deep, item) {
           configurable: true
         });
       }
-      else if (item.hasOwnProperty(k)) {
+      else if (hasOwnProp.call(item, k)) {
         o[k] = deep ? cloner(true, item[k]) : item[k];
       }
     }
@@ -316,7 +318,7 @@ function freezer(deep, o) {
       p = o[k];
 
       if (!p ||
-          !o.hasOwnProperty(k) ||
+          !hasOwnProp.call(o, k) ||
           typeof p !== 'object' ||
           Object.isFrozen(p))
         continue;
