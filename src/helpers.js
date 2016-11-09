@@ -318,7 +318,7 @@ function freezer(deep, o) {
       p = o[k];
 
       if (!p ||
-          !o.hasOwnProperty(k) ||
+          !hasOwnProp.call(o, k) ||
           typeof p !== 'object' ||
           Object.isFrozen(p))
         continue;
