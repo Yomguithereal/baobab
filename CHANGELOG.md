@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.4
+
+* Fixing an issue concerning objects created through `Object.create(null)` ([@fmal](https://github.com/fmal)).
+
 ## v2.3.3
 
 * Fixing again an issue concerning merging an monkeys (thanks to [@abalmos](https://github.com/abalmos) and [@Zache](https://github.com/Zache)).
