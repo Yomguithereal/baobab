@@ -44,7 +44,7 @@ export default class Watcher extends Emitter {
       const watchedPaths = this.getWatchedPaths();
 
       if (solveUpdate(e.data.paths, watchedPaths))
-        return this.emit('update');
+        return this.emit('update', e);
     };
 
     this.tree.on('update', this.handler);
