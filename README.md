@@ -39,6 +39,7 @@ It aims at providing a centralized model holding an application's state and can 
     * [Options](#options)
     * [History](#history)
     * [Common pitfalls](#common-pitfalls)
+  * [TypeScript](#typescript)
 * [Philosophy](#philosophy)
 * [Migration](#migration)
 * [Contribution](#contribution)
@@ -1035,6 +1036,54 @@ watcher.release();
 ```
 
 Note also that releasing a tree will consequently and automatically release every of its cursors and computed data nodes.
+
+### TypeScript
+
+**Usage**
+
+1. Checking the `tsconfig.json` of your TypeScript project, and make sure the `compilerOptions` is using `node` module resolution.
+
+```js
+"compilerOptions": {
+  ...
+  "moduleResolution": "node",
+  ...
+}
+```
+
+2. Just importing the exported Classes as below example.
+
+3. Then you can use the imported Classes and APIs in your TypeScript codes.
+
+**Example**
+
+```js
+import { Baobab, Watcher, Cursor } from "baobab";
+
+const yourJSONDataObject = {
+  ...
+}
+
+class AdminDataStore {
+  private storeBackend: Baobab;
+
+  get tree(): Baobab {
+    return this.storeBackend;
+  }
+
+
+  public constructor() {
+    this.storeBackend = new Baobab(yourJSONDataObject, {autoCommit: false, immutable: true});
+  }
+
+  public getData(dataPath: Array<any>): any {
+    return this.storeBackend.select(dataPath).get();
+  }
+
+  ...
+
+}
+```
 
 ## Philosophy
 
