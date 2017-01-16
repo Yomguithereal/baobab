@@ -2,7 +2,133 @@
  * TypeScript Definitely Typed File for Baobab
  */
 
-declare module "baobab" {
+export as namespace Baobab;
+
+export = Baobab;
+
+
+/**
+   * Baobab class
+   *
+   * @constructor
+   * @param {object|array} [initialData={}]    - Initial data passed to the tree.
+   * @param {object}       [opts]              - Optional options.
+   * @param {boolean}      [opts.autoCommit]   - Should the tree auto-commit?
+   * @param {boolean}      [opts.asynchronous] - Should the tree's transactions
+   *                                             handled asynchronously?
+   * @param {boolean}      [opts.immutable]    - Should the tree be immutable?
+   * @param {boolean}      [opts.persistent]   - Should the tree be persistent?
+   * @param {boolean}      [opts.pure]         - Should the tree be pure?
+   * @param {function}     [opts.validate]     - Validation function.
+   * @param {string}       [opts.validationBehaviour] - "rollback" or "notify".
+   */
+declare class Baobab {
+  constructor(initialData: {}, opts: Baobab.Options);
+
+  /**
+   * Method used to select data within the tree by creating a cursor. Cursors
+   * are kept as singletons by the tree for performance and hygiene reasons.
+   *
+   * Arity (1):
+   * @param {path}    path - Path to select in the tree.
+   *
+   * Arity (*):
+   * @param {...step} path - Path to select in the tree.
+   *
+   * @return {Cursor}      - The resultant cursor.
+   */
+  public select(...path: Array<any>): Baobab.Cursor;
+
+  /**
+   * Method used to get data from the tree. Will fire a `get` event from the
+   * tree so that the user may sometimes react upon it to fetch data, for
+   * instance.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to get in the tree.
+   *
+   * Arity (2):
+   * @param  {..step} path           - Path to get in the tree.
+   *
+   * @return {mixed}                 - Data at path.
+   */
+  // tslint:disable: no-reserved-keywords
+  public get(): any;
+  public get(...path: Array<any>): any;
+
+  /**
+   * Method used to set data to the tree.
+   *
+   * Arity (1):
+   * @param  {mixed} value - New value to set at cursor's path.
+   *
+   * Arity (2):
+   * @param  {path}  path  - Subpath to update starting from cursor's.
+   * @param  {mixed} value - New value to set.
+   *
+   * @return {mixed}       - Data at path.
+   */
+  public set(newValue: any): any;
+  public set(path: Array<any>, newValue: any): any;
+
+  /**
+   * Method committing the updates of the tree and firing the tree's events.
+   *
+   * @return {Baobab} - The tree instance for chaining purposes.
+   */
+  public commit(): Baobab;
+
+  public on(eventType: Baobab.TreeEventType | Array<Baobab.TreeEventType>, cb: Baobab.FuncEventCallback): void;
+  public off(eventType: Baobab.TreeEventType | Array<Baobab.TreeEventType>, cb: Baobab.FuncEventCallback): void;
+
+  /**
+   * Method used to watch a collection of paths within the tree. Very useful
+   * to bind UI components and such to the tree.
+   *
+   * @param  {object} mapping - Mapping of paths to listen.
+   * @return {Cursor}         - The created watcher.
+   */
+  public watch(paths: Baobab.WatchedPaths): Baobab.Watcher;
+
+  /**
+   * Method releasing the tree and its attached data from memory.
+   */
+  public release(): void;
+
+  /**
+   * Overriding the `toJSON` method for convenient use with JSON.stringify.
+   *
+   * @return {mixed} - Data at cursor.
+   */
+  public toJSON(): any;
+
+  /**
+   * Method used to return raw data from the tree, by carefully avoiding
+   * computed one.
+   *
+   * @todo: should be more performant as the cloning should happen as well as
+   * when dropping computed data.
+   *
+   * Arity (1):
+   * @param  {path}   path           - Path to serialize in the tree.
+   *
+   * Arity (2):
+   * @param  {..step} path           - Path to serialize in the tree.
+   *
+   * @return {mixed}                 - The retrieved raw data.
+   */
+  public serialize(...path: Array<any>): any;
+
+  /**
+   * Overriding the `toString` method for debugging purposes.
+   *
+   * @return {string} - The baobab's identity.
+   */
+  public toString(): string;
+}
+
+
+declare namespace Baobab {
   interface WatchedPaths {
     [pathX: string]: Array<any>;
   }
@@ -59,126 +185,6 @@ declare module "baobab" {
 
     // Validation behavior 'rollback' or 'notify'
     validationBehavior?: ValidationBehavior;
-  }
-
-  /**
-   * Baobab class
-   *
-   * @constructor
-   * @param {object|array} [initialData={}]    - Initial data passed to the tree.
-   * @param {object}       [opts]              - Optional options.
-   * @param {boolean}      [opts.autoCommit]   - Should the tree auto-commit?
-   * @param {boolean}      [opts.asynchronous] - Should the tree's transactions
-   *                                             handled asynchronously?
-   * @param {boolean}      [opts.immutable]    - Should the tree be immutable?
-   * @param {boolean}      [opts.persistent]   - Should the tree be persistent?
-   * @param {boolean}      [opts.pure]         - Should the tree be pure?
-   * @param {function}     [opts.validate]     - Validation function.
-   * @param {string}       [opts.validationBehaviour] - "rollback" or "notify".
-   */
-  class Baobab {
-    constructor(initialData: {}, opts: Options);
-
-    /**
-     * Method used to select data within the tree by creating a cursor. Cursors
-     * are kept as singletons by the tree for performance and hygiene reasons.
-     *
-     * Arity (1):
-     * @param {path}    path - Path to select in the tree.
-     *
-     * Arity (*):
-     * @param {...step} path - Path to select in the tree.
-     *
-     * @return {Cursor}      - The resultant cursor.
-     */
-    public select(...path: Array<any>): Cursor;
-
-    /**
-     * Method used to get data from the tree. Will fire a `get` event from the
-     * tree so that the user may sometimes react upon it to fetch data, for
-     * instance.
-     *
-     * Arity (1):
-     * @param  {path}   path           - Path to get in the tree.
-     *
-     * Arity (2):
-     * @param  {..step} path           - Path to get in the tree.
-     *
-     * @return {mixed}                 - Data at path.
-     */
-    // tslint:disable: no-reserved-keywords
-    public get(): any;
-    public get(...path: Array<any>): any;
-
-    /**
-     * Method used to set data to the tree.
-     *
-     * Arity (1):
-     * @param  {mixed} value - New value to set at cursor's path.
-     *
-     * Arity (2):
-     * @param  {path}  path  - Subpath to update starting from cursor's.
-     * @param  {mixed} value - New value to set.
-     *
-     * @return {mixed}       - Data at path.
-     */
-    public set(newValue: any): any;
-    public set(path: Array<any>, newValue: any): any;
-
-    /**
-     * Method committing the updates of the tree and firing the tree's events.
-     *
-     * @return {Baobab} - The tree instance for chaining purposes.
-     */
-    public commit(): Baobab;
-
-    public on(eventType: TreeEventType | Array<TreeEventType>, cb: FuncEventCallback): void;
-    public off(eventType: TreeEventType | Array<TreeEventType>, cb: FuncEventCallback): void;
-
-    /**
-     * Method used to watch a collection of paths within the tree. Very useful
-     * to bind UI components and such to the tree.
-     *
-     * @param  {object} mapping - Mapping of paths to listen.
-     * @return {Cursor}         - The created watcher.
-     */
-    public watch(paths: WatchedPaths): Watcher;
-
-    /**
-     * Method releasing the tree and its attached data from memory.
-     */
-    public release(): void;
-
-    /**
-     * Overriding the `toJSON` method for convenient use with JSON.stringify.
-     *
-     * @return {mixed} - Data at cursor.
-     */
-    public toJSON(): any;
-
-    /**
-     * Method used to return raw data from the tree, by carefully avoiding
-     * computed one.
-     *
-     * @todo: should be more performant as the cloning should happen as well as
-     * when dropping computed data.
-     *
-     * Arity (1):
-     * @param  {path}   path           - Path to serialize in the tree.
-     *
-     * Arity (2):
-     * @param  {..step} path           - Path to serialize in the tree.
-     *
-     * @return {mixed}                 - The retrieved raw data.
-     */
-    public serialize(...path: Array<any>): any;
-
-    /**
-     * Overriding the `toString` method for debugging purposes.
-     *
-     * @return {string} - The baobab's identity.
-     */
-    public toString(): string;
   }
 
   /**
