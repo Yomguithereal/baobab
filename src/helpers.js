@@ -215,7 +215,7 @@ function cloner(deep, item) {
       if (type.lazyGetter(item, k)) {
         Object.defineProperty(o, k, {
           get: Object.getOwnPropertyDescriptor(item, k).get,
-          enumerable: Object.getOwnPropertyDescriptor(item, k).enumerable,
+          enumerable: true,
           configurable: true
         });
       }
