@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.4.0
+
+* Handling non-enumerable properties [@BrendanAnnable](https://github.com/BrendanAnnable).
+
 ## v2.3.4
 
 * Fixing an issue concerning objects created through `Object.create(null)` ([@fmal](https://github.com/fmal)).
