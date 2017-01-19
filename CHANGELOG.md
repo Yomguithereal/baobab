@@ -2,7 +2,7 @@
 
 ## v2.4.0
 
-* Handling non-enumerable properties [@BrendanAnnable](https://github.com/BrendanAnnable).
+* Handling non-enumerable properties ([@BrendanAnnable](https://github.com/BrendanAnnable)).
 
 ## v2.3.4
 
