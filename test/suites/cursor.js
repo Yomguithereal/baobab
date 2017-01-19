@@ -322,6 +322,45 @@ describe('Cursor API', function() {
         }, /solve/);
       });
 
+      it('should support setting non-enumerable properties', function() {
+        const tree = new Baobab(Object.create({}, {
+              id: {value: 2, writable: true, enumerable: true},
+              hello: {value: 'world', writable: true, enumerable: false}
+            })),
+            cursor = tree.select('hello');
+
+        cursor.set('universe');
+        assert.equal(cursor.get(), 'universe');
+        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'id').enumerable, true);
+        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'hello').enumerable, false);
+      });
+
+      it('should support setting deep non-enumerable properties', function() {
+        const tree = new Baobab(Object.create({}, {
+            id: {
+              value: 2,
+              writable: true,
+              enumerable: true
+            },
+            one: {
+              value: Object.create({}, {two: {
+                value: 'three',
+                writable: true,
+                enumerable: false
+              }}),
+              writable: true,
+              enumerable: false,
+            }
+          })),
+          cursor = tree.select(['one', 'two']);
+
+        cursor.set('four');
+        assert.equal(tree.get(['one', 'two']), 'four');
+        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'id').enumerable, true);
+        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'one').enumerable, false);
+        assert.equal(Object.getOwnPropertyDescriptor(tree.get('one'), 'two').enumerable, false);
+      });
+
       it('should be possible to shallow merge two objects.', function(done) {
         const tree = new Baobab({o: {hello: 'world'}, string: 'test'});
 
