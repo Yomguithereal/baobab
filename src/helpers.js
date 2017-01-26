@@ -107,11 +107,10 @@ export class Archive {
   back(steps) {
     if (this.records.length === 0) 
       throw new Error('Baobab.Cursor.undo: cannot find a relevant record.');
-    
-    const record = this.records[steps - 1];
 
-    if (record)
-      this.records = this.records.slice(steps);
+    const record = this.records[steps - 1];
+    this.records = this.records.slice(steps);
+    
     return record;
   }
 }
