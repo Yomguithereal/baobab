@@ -625,9 +625,6 @@ export default class Cursor extends Emitter {
 
     const record = this.archive.back(steps);
 
-    if (!record)
-      throw Error('Baobab.Cursor.undo: cannot find a relevant record.');
-
     this.state.undoing = true;
     this.set(record);
 
