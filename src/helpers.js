@@ -570,6 +570,9 @@ export function solveUpdate(affectedPaths, comparedPaths) {
  * @return {array}                 - The spliced array.
  */
 export function splice(array, startIndex, nb, ...elements) {
+  if (nb === undefined) {
+    nb = array.length - startIndex;
+  }
   nb = Math.max(0, nb);
 
   // Solving startIndex
