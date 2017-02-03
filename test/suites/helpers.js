@@ -231,6 +231,16 @@ describe('Helpers', function() {
         assert.deepEqual(splice(array, 2), [0, 1]);
 
         assert.deepEqual(splice(array, -2), [0, 1, 2]);
+
+        assert.deepEqual(splice(array, 2, null), [0, 1, 2, 3, 4]);
+      });
+
+      it('should delete no values when supplying an argument which is not parseable as number', function () {
+        const array = [0, 1, 2, 3, 4];
+
+        assert.deepEqual(splice(array, 2, "a"), [0, 1, 2, 3, 4]);
+
+        assert.deepEqual(splice(array, 2, {}), [0, 1, 2, 3, 4]);
       });
     });
   });

@@ -573,6 +573,9 @@ export function splice(array, startIndex, nb, ...elements) {
   if (nb === undefined) {
     nb = array.length - startIndex;
   }
+  else if (nb === null || Number.isNaN(Number.parseInt(nb))) {
+    nb = 0;
+  }
   nb = Math.max(0, nb);
 
   // Solving startIndex
