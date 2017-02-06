@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.4.1
+
+* Fixing `tree/cursor.splice` descriptor ([@Nimelrian](https://github.com/Nimelrian)).
+
 ## v2.4.0
 
 * Handling non-enumerable properties ([@BrendanAnnable](https://github.com/BrendanAnnable)).

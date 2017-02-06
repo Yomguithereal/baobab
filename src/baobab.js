@@ -591,4 +591,4 @@ Baobab.helpers = helpers;
 /**
  * Version
  */
-Baobab.VERSION = '2.4.0';
+Baobab.VERSION = '2.4.1';
