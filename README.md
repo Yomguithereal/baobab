@@ -302,10 +302,15 @@ var newList = cursor.select('one').shift('two');
 Splices the selected list. This will of course fail if the selected node is not a list.
 
 The `splice` specifications works the same as for [`Array.prototype.splice`](https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/Array/splice).
+There is one exception though: Per specification, splice deletes no values if the `deleteCount` argument is not parseable as a number.
+The `splice` implementation of Baobab instead throws an error, if the given `deleteCount` argument could not be parsed.
 
 ```js
 // Splicing the list
 var newList = cursor.splice([1, 1]);
+
+// Omitting the deleteCount argument makes splice delete no elements. 
+var newList = cursor.splice([1]);
 
 // Inserting an item etc.
 var newList = cursor.splice([1, 0, 'newItem']);
