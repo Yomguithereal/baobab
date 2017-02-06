@@ -225,7 +225,7 @@ describe('Helpers', function() {
     });
 
     describe('Issue #472 - tree/cursor.splice does not conform with the specification as of ES6 (ECMAScript 2015)', function () {
-      it('should be possible to splice an array when omitting the nb (deleteCount) argument', function () {
+      it('should be possible to splice an array when omitting the nb (deleteCount) argument or passing null', function () {
         const array = [0, 1, 2, 3, 4];
 
         assert.deepEqual(splice(array, 2), [0, 1]);
@@ -235,12 +235,16 @@ describe('Helpers', function() {
         assert.deepEqual(splice(array, 2, null), [0, 1, 2, 3, 4]);
       });
 
-      it('should delete no values when supplying an argument which is not parseable as number', function () {
+      it('should throw an error when supplying an argument for nb (deleteCount) which is not parseable as number', function () {
         const array = [0, 1, 2, 3, 4];
 
-        assert.deepEqual(splice(array, 2, "a"), [0, 1, 2, 3, 4]);
+        assert.throws(function () {
+			splice(array, 2, "a");
+		}, Error);
 
-        assert.deepEqual(splice(array, 2, {}), [0, 1, 2, 3, 4]);
+        assert.throws(function () {
+			splice(array, 2, {});
+		}, Error);
       });
     });
   });

@@ -114,6 +114,8 @@ type.primitive = function(target) {
 type.splicer = function(target) {
   if (!type.array(target) || target.length < 1)
     return false;
+  if(target.length > 1 && Number.isNaN(Number.parseInt(target[1])))
+    return false;
 
   return anyOf(target[0], ['number', 'function', 'object']);
 };
