@@ -239,12 +239,12 @@ describe('Helpers', function() {
         const array = [0, 1, 2, 3, 4];
 
         assert.throws(function () {
-			splice(array, 2, "a");
-		}, Error);
+          splice(array, 2, "a");
+        }, Error);
 
         assert.throws(function () {
-			splice(array, 2, {});
-		}, Error);
+            splice(array, 2, {});
+        }, Error);
       });
     });
   });
