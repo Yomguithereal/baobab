@@ -1029,7 +1029,11 @@ cursor.getHistory();
 
 **Releasing**
 
-In most complex use cases, you might need to release the manipulated objects, i.e. kill their event emitters and wipe their associated data.
+In most complex use cases, you might need to release the manipulated objects,
+i.e. kill their event emitters and wipe their associated data. For example,
+cursors with a dynamic path (e.g. `var cursor = tree.select(['items', { id: 5 }])`), will
+always create a cursor with listeners that need to be released when you are done
+using the cursor.
 
 Thus, any tree or cursor object can be cleared from memory by using the `release` method.
 
