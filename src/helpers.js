@@ -574,7 +574,7 @@ export function splice(array, startIndex, nb, ...elements) {
     nb = array.length - startIndex;
   else if (nb === null)
     nb = 0;
-  else if (Number.isNaN(Number.parseInt(nb)))
+  else if (Number.isNaN(Number.parseInt(nb, 10)))
     throw new Error(`argument nb ${nb} can not be parsed into a number!`);
   nb = Math.max(0, nb);
 

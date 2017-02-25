@@ -238,11 +238,11 @@ describe('Helpers', function() {
       it('should throw an error when supplying an argument for nb (deleteCount) which is not parseable as number', function () {
         const array = [0, 1, 2, 3, 4];
 
-        assert.throws(function () {
-          splice(array, 2, "a");
+        assert.throws(function() {
+          splice(array, 2, 'a');
         }, Error);
 
-        assert.throws(function () {
+        assert.throws(function() {
             splice(array, 2, {});
         }, Error);
       });
