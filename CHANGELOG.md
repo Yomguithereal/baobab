@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.4.2
+
+* Fixing monkey-related memory leak ([@jrust](https://github.com/jrust)).
+
 ## v2.4.1
 
 * Fixing `tree/cursor.splice` descriptor ([@Nimelrian](https://github.com/Nimelrian)).

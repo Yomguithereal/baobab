@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.4.1
+ * Version: 2.4.2
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -1146,7 +1146,7 @@ Baobab.helpers = helpers;
 /**
  * Version
  */
-Baobab.VERSION = '2.4.1';
+Baobab.VERSION = '2.4.2';
 module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
@@ -2581,7 +2581,7 @@ function solveUpdate(affectedPaths, comparedPaths) {
  */
 
 function splice(array, startIndex, nb) {
-  if (nb === undefined) nb = array.length - startIndex;else if (nb === null) nb = 0;else if (Number.isNaN(Number.parseInt(nb))) throw new Error('argument nb ' + nb + ' can not be parsed into a number!');
+  if (nb === undefined) nb = array.length - startIndex;else if (nb === null) nb = 0;else if (Number.isNaN(Number.parseInt(nb, 10))) throw new Error('argument nb ' + nb + ' can not be parsed into a number!');
   nb = Math.max(0, nb);
 
   // Solving startIndex
@@ -2885,7 +2885,7 @@ var Monkey = (function () {
 
     // Unbinding events
     this.tree.off('write', this.writeListener);
-    this.tree.off('_monkey', this.monkeyListener);
+    this.tree.off('_monkey', this.recursiveListener);
     this.state.killed = true;
 
     // Deleting properties
@@ -3017,7 +3017,7 @@ type.primitive = function (target) {
  */
 type.splicer = function (target) {
   if (!type.array(target) || target.length < 1) return false;
-  if (target.length > 1 && Number.isNaN(Number.parseInt(target[1]))) return false;
+  if (target.length > 1 && Number.isNaN(Number.parseInt(target[1], 10))) return false;
 
   return anyOf(target[0], ['number', 'function', 'object']);
 };
