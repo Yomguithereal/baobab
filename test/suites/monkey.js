@@ -530,7 +530,7 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
-	it('with mutable, non-persistent, impure tree.', function() {
+    it('with mutable, non-persistent, impure tree.', function() {
       const tree = new Baobab(
         {
           data: {
@@ -548,6 +548,29 @@ describe('Monkeys', function() {
       assert.strictEqual(tree.get('data', 'selected'), 'purple');
     });
 
+    it('releases all listeners from the existing monkey', function() {
+      const state = {
+        data: {
+          colors: ['yellow', 'blue'],
+          selected: monkey(['data', 'colors'], c => c[0])
+        }
+      };
+      const tree = new Baobab(state);
+
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');
+      assert.strictEqual(tree.listeners('write').length, 1);
+      assert.strictEqual(tree.listeners('_monkey').length, 1);
+
+      tree.set(['data', 'selected'], monkey(['data', 'colors'], c => c[1]));
+      assert.strictEqual(tree.get('data', 'selected'), 'blue');
+      assert.strictEqual(tree.listeners('write').length, 1);
+      assert.strictEqual(tree.listeners('_monkey').length, 1);
+
+      tree.set(state);
+      assert.strictEqual(tree.get('data', 'selected'), 'yellow');
+      assert.strictEqual(tree.listeners('write').length, 1);
+      assert.strictEqual(tree.listeners('_monkey').length, 1);
+    });
   });
 
   it('should be possible to drop monkeys somehow.', function() {
