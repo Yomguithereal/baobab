@@ -570,11 +570,11 @@ export function solveUpdate(affectedPaths, comparedPaths) {
  * @return {array}                 - The spliced array.
  */
 export function splice(array, startIndex, nb, ...elements) {
-  if (nb === undefined)
+  if (nb === undefined && arguments.length === 2)
     nb = array.length - startIndex;
-  else if (nb === null)
+  else if (nb === null || nb === undefined)
     nb = 0;
-  else if (Number.isNaN(Number.parseInt(nb, 10)))
+  else if (isNaN(+nb))
     throw new Error(`argument nb ${nb} can not be parsed into a number!`);
   nb = Math.max(0, nb);
 
