@@ -225,14 +225,40 @@ describe('Helpers', function() {
     });
 
     describe('Issue #472 - tree/cursor.splice does not conform with the specification as of ES6 (ECMAScript 2015)', function () {
-      it('should be possible to splice an array when omitting the nb (deleteCount) argument or passing null', function () {
+      it('should be possible to splice an array when omitting the nb (deleteCount) argument', function () {
         const array = [0, 1, 2, 3, 4];
 
         assert.deepEqual(splice(array, 2), [0, 1]);
 
         assert.deepEqual(splice(array, -2), [0, 1, 2]);
+      });
 
-        assert.deepEqual(splice(array, 2, null), [0, 1, 2, 3, 4]);
+      it('should ignore the nb (deleteCount) argument when passing null, undefined, empty string, or false', function () {
+        const array = [0, 1, 2, 3, 4];
+
+        assert.deepEqual(splice(array, 2, null), [0, 1, 2, 3, 4], 'null for nb');
+        assert.deepEqual(splice(array, 2, null, 5), [0, 1, 5, 2, 3, 4], 'null for nb with new item');
+
+        assert.deepEqual(splice(array, 2, undefined), [0, 1, 2, 3, 4], 'undefined for nb');
+        assert.deepEqual(splice(array, 2, undefined, 5), [0, 1, 5, 2, 3, 4], 'undefined for nb with new item');
+
+        assert.deepEqual(splice(array, 2, ''), [0, 1, 2, 3, 4], '"" for nb');
+        assert.deepEqual(splice(array, 2, '', 5), [0, 1, 5, 2, 3, 4], '"" for nb with new item');
+
+        assert.deepEqual(splice(array, 2, false), [0, 1, 2, 3, 4], 'false for nb');
+        assert.deepEqual(splice(array, 2, false, 5), [0, 1, 5, 2, 3, 4], 'false for nb with new item');
+      });
+
+      it('should allow for nb (deleteCount) argument to be true, a coereced string, a decimal, or Infinity', function () {
+        const array = [0, 1, 2, 3, 4];
+
+        assert.deepEqual(splice(array, 2, true), [0, 1, 3, 4], 'true for nb');
+
+        assert.deepEqual(splice(array, 2, '1'), [0, 1, 3, 4], '"1" for nb');
+
+        assert.deepEqual(splice(array, 2, 1.2), [0, 1, 3, 4], '1.2 for nb');
+
+        assert.deepEqual(splice(array, 2, Infinity), [0, 1], 'Infinity for nb');
       });
 
       it('should throw an error when supplying an argument for nb (deleteCount) which is not parseable as number', function () {
