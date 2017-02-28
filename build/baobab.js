@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.4.2
+ * Version: 2.4.3
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -1146,7 +1146,7 @@ Baobab.helpers = helpers;
 /**
  * Version
  */
-Baobab.VERSION = '2.4.2';
+Baobab.VERSION = '2.4.3';
 module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
@@ -2581,7 +2581,11 @@ function solveUpdate(affectedPaths, comparedPaths) {
  */
 
 function splice(array, startIndex, nb) {
-  if (nb === undefined) nb = array.length - startIndex;else if (nb === null) nb = 0;else if (Number.isNaN(Number.parseInt(nb, 10))) throw new Error('argument nb ' + nb + ' can not be parsed into a number!');
+  for (var _len2 = arguments.length, elements = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
+    elements[_key2 - 3] = arguments[_key2];
+  }
+
+  if (nb === undefined && arguments.length === 2) nb = array.length - startIndex;else if (nb === null || nb === undefined) nb = 0;else if (isNaN(+nb)) throw new Error('argument nb ' + nb + ' can not be parsed into a number!');
   nb = Math.max(0, nb);
 
   // Solving startIndex
@@ -2591,11 +2595,6 @@ function splice(array, startIndex, nb) {
   });
 
   // Positive index
-
-  for (var _len2 = arguments.length, elements = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
-    elements[_key2 - 3] = arguments[_key2];
-  }
-
   if (startIndex >= 0) return array.slice(0, startIndex).concat(elements).concat(array.slice(startIndex + nb));
 
   // Negative index
@@ -3017,7 +3016,7 @@ type.primitive = function (target) {
  */
 type.splicer = function (target) {
   if (!type.array(target) || target.length < 1) return false;
-  if (target.length > 1 && Number.isNaN(Number.parseInt(target[1], 10))) return false;
+  if (target.length > 1 && isNaN(+target[1])) return false;
 
   return anyOf(target[0], ['number', 'function', 'object']);
 };
