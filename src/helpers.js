@@ -175,7 +175,7 @@ function cloner(deep, item) {
       item instanceof Error ||
       item instanceof MonkeyDefinition ||
       item instanceof Monkey ||
-      ('ArrayBuffer' in global && item instanceof ArrayBuffer))
+      (typeof ArrayBuffer === 'function' && item instanceof ArrayBuffer))
     return item;
 
   // Array
