@@ -4,3 +4,5 @@ TODO.md
 benchmark.js
 *.log
 dist
+.idea/
+*.iml

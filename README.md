@@ -728,6 +728,7 @@ tree.set(['data', 'fromJack'], monkey({
 * The dynamic nodes are lazy and won't actually be computed before you get them (plus they will only compute once before they need to change, so if you get the same dynamic node twice, the computation won't rerun).
 * There are cases where it is clearly overkill to rely on a dynamic node. For instance, if only a single component of your app needs to access a computed version of the central state, then compute this version into the rendering logic of said component for simplicity's sake (a React component's render function for instance). Dynamic nodes are somewhat part of an optimization scheme.
 * Know that the `tree/cursor.serialize` method exists would you need to retrieve data stripped of dynamic nodes from your tree.
+* For the time being, placing monkeys beneath array nodes is not allowed for performance reasons.
 
 #### Specialized getters
 

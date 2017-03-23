@@ -1,5 +1,6 @@
 node_modules
 .DS_Store
+.editorconfig
 .gitignore
 .npmignore
 .travis.yml
@@ -12,3 +13,5 @@ benchmark.js
 .babelrc
 TODO.md
 bower.json
+.idea/
+*.iml
