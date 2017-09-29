@@ -309,7 +309,7 @@ The `splice` implementation of Baobab instead throws an error, if the given `del
 // Splicing the list
 var newList = cursor.splice([1, 1]);
 
-// Omitting the deleteCount argument makes splice delete no elements. 
+// Omitting the deleteCount argument makes splice delete no elements.
 var newList = cursor.splice([1]);
 
 // Inserting an item etc.
@@ -939,6 +939,7 @@ var baobab = new Baobab(
 * **asynchronous** *boolean* [`true`]: should the tree delay the update to the next frame or fire them synchronously?
 * **immutable** *boolean* [`true`]: should the tree's data be immutable? Note that immutability is performed through `Object.freeze` and should be disabled in production for performance reasons.
 * **lazyMonkeys** *boolean* [`true`]: should the monkeys be lazy? Disable this option for easier debugging in your console (getter functions are sometimes hard to read in the console).
+* **monkeyBusiness** *boolean* [`true`]: should the tree support monkeys? Disabling this yields significant performance boost for large trees without monkeys.
 * **persistent** *boolean* [`true`]: should the tree be persistent. Know that disabling this option, while bringing a significant performance boost on heavy data, will make you lose the benefits of your tree's history and `O(1)` comparisons of objects.
 * **pure** *boolean* [`true`]: by default, on `set` and `apply` operations, the tree will check if the given value and the target node are stricly equal. If they indeed are, the tree won't update.
 * **validate** *function*: a function in charge of validating the tree whenever it updates. See below for an example of such function.

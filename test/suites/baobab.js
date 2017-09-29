@@ -548,5 +548,30 @@ describe('Baobab API', function() {
       assert.strictEqual(eagerTree.get('hey', 'ho'), 'ho');
       assert(!type.lazyGetter(eagerTree.get('hey'), 'ho'));
     });
+
+    it('should handle monkeys as normal object when they are disabled', function() {
+      const monkeyObject = monkey([], () => 'ho');
+
+      const nonMonkeyTree = new Baobab({
+        hey: {
+          ho: monkeyObject
+        }
+      }, {
+        monkeyBusiness: false
+      });
+
+      const monkeyTree = new Baobab({
+        hey: {
+          ho: monkeyObject
+        }
+      }, {
+        monkeyBusiness: true
+      });
+
+      assert.strictEqual(nonMonkeyTree.get('hey', 'ho'), monkeyObject);
+      assert.notEqual(nonMonkeyTree.get('hey', 'ho'), 'ho');
+
+      assert.strictEqual(monkeyTree.get('hey', 'ho'), 'ho');
+    });
   });
 });

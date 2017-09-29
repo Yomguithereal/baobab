@@ -42,6 +42,9 @@ const DEFAULTS = {
   // Should the monkeys be lazy?
   lazyMonkeys: true,
 
+  // Should we evaluate monkeys?
+  monkeyBusiness: true,
+
   // Should the tree be persistent?
   persistent: true,
 
@@ -154,7 +157,9 @@ export default class Baobab extends Emitter {
     ].forEach(bootstrap);
 
     // Registering the initial monkeys
-    this._refreshMonkeys();
+    if (this.options.monkeyBusiness) {
+      this._refreshMonkeys();
+    }
 
     // Initial validation
     const validationError = this.validate();
@@ -423,7 +428,9 @@ export default class Baobab extends Emitter {
     this._transaction.push(shallowMerge({}, operation, {path: affectedPath}));
 
     // Updating the monkeys
-    this._refreshMonkeys(node, solvedPath, operation.type);
+    if (this.options.monkeyBusiness) {
+      this._refreshMonkeys(node, solvedPath, operation.type);
+    }
 
     // Emitting a `write` event
     this.emit('write', {path: affectedPath});
