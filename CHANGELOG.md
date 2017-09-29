@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.5.0
+
+* Adding the `monkeyBusiness` option ([@Tuhis](https://github.com/Tuhis)).
+
 ## v2.4.3
 
 * Better `tree/cursor.splice` ([@jrust](https://github.com/jrust)).
