@@ -559,7 +559,7 @@ For convenience, **Baobab** allows you to store computed data within the tree.
 
 It does so by letting you create "monkeys" that you should really consider as dynamic nodes within your tree (*v1 users*: "monkeys" are merely the evolution of "facets").
 
-As such, while monkeys represent reduction of the current state (a filtered list used by multiple component throughout your app, for instance), they do have a physical existence within the tree.
+As such, while monkeys represent reduction of the current state (a filtered list used by multiple components throughout your app, for instance), they do have a physical existence within the tree.
 
 This means that you can add / modify / move / remove monkeys from the tree at runtime and place them wherever you want.
 
