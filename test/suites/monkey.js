@@ -843,11 +843,15 @@ describe('Monkeys', function() {
       const tree = new Baobab({
         cat: {
           alive: true,
-          meow: monkey(['cat', 'alive'], hasLife => hasLife ? 'Meeeoooow!' : '')
+          meow: monkey(['cat', 'alive'], hasLife => {
+            return hasLife ? 'Meeeoooow!' : '';
+          })
         },
         birdCage: {
           canary: 'canary',
-          sound: monkey(['birdCage', 'canary'], hasLife => hasLife ? 'Tweet!' : '')
+          sound: monkey(['birdCage', 'canary'], hasLife => {
+            return hasLife ? 'Tweet!' : '';
+          })
         }
       }, {asynchronous: false});
 
