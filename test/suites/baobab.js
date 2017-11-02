@@ -517,8 +517,8 @@ describe('Baobab API', function() {
       let updated = false,
           impureUpdated = false;
 
-      const listener = () => updated = true,
-            impureListener = () => impureUpdated = true;
+      const listener = () => (updated = true),
+            impureListener = () => (impureUpdated = true);
 
       tree.on('update', listener);
       impureTree.on('update', impureListener);

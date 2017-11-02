@@ -7,18 +7,18 @@
     "emmett": "^3.1.1"
   },
   "devDependencies": {
-    "@yomguithereal/eslint-config": "^1.1.1",
+    "@yomguithereal/eslint-config": "^4.0.0",
     "add-banner": "^0.1.0",
-    "async": "^1.2.1",
+    "async": "^2.5.0",
     "babel": "^5.6.14",
     "babelify": "^6.1.2",
-    "benchmark": "^1.0.0",
-    "browserify": "^12.0.1",
-    "eslint": "^1.1.0",
-    "lodash": "^3.6.0",
+    "benchmark": "^2.1.4",
+    "browserify": "^14.5.0",
+    "eslint": "^4.10.0",
+    "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
-    "mocha": "^2.0.1",
-    "uglify-js": "^2.6.1"
+    "mocha": "^4.0.1",
+    "uglify-js": "^3.1.6"
   },
   "scripts": {
     "benchmark": "babel-node benchmark.js",
