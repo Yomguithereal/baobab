@@ -3,12 +3,13 @@
  * =========================
  */
 import assert from 'assert';
-import Baobab, {monkey} from '../../src/baobab';
+import Baobab from '../../src/baobab';
 import {Monkey, MonkeyDefinition} from '../../src/monkey';
 import type from '../../src/type';
 import _ from 'lodash';
 
 const noop = Function.prototype;
+const monkey = Baobab.monkey;
 
 const getExampleState = () => ({
   data: {

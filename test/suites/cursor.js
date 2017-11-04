@@ -4,7 +4,7 @@
  */
 import assert from 'assert';
 import async from 'async';
-import Baobab, {monkey} from '../../src/baobab';
+import Baobab from '../../src/baobab';
 import state from '../state';
 
 describe('Cursor API', function() {
@@ -720,7 +720,7 @@ describe('Cursor API', function() {
       const tree = new Baobab({
         list: ['hey', 'ho'],
         currentItem: 0,
-        current: monkey([
+        current: Baobab.monkey([
           ['list'],
           ['currentItem'],
           function(list, i) {

@@ -3,7 +3,7 @@
  * ===========================
  */
 import assert from 'assert';
-import Baobab, {monkey} from '../../src/baobab';
+import Baobab from '../../src/baobab';
 import Cursor from '../../src/cursor';
 
 describe('Watchers', function() {
@@ -111,7 +111,7 @@ describe('Watchers', function() {
     const tree = new Baobab({
       data: {
         colors: ['yellow', 'blue'],
-        phrase: monkey(['data', 'colors', 1], (color) => color + ' jasmine')
+        phrase: Baobab.monkey(['data', 'colors', 1], (color) => color + ' jasmine')
       }
     });
 
@@ -132,7 +132,7 @@ describe('Watchers', function() {
       object: {
         hello: 'Jack'
       },
-      dynamic: monkey(['object'], o => o)
+      dynamic: Baobab.monkey(['object'], o => o)
     });
 
     const watcher = tree.watch({d: ['dynamic', 'hello']});

@@ -3,7 +3,7 @@
  * =======================
  */
 import assert from 'assert';
-import Baobab, {monkey} from '../../src/baobab';
+import Baobab from '../../src/baobab';
 import Cursor from '../../src/cursor';
 import type from '../../src/type';
 import state from '../state';
@@ -532,7 +532,7 @@ describe('Baobab API', function() {
     it('should be possible to disable monkeys\'s laziness.', function() {
       const tree = new Baobab({
         hey: {
-          ho: monkey([], () => 'ho')
+          ho: Baobab.monkey([], () => 'ho')
         }
       });
 
@@ -541,7 +541,7 @@ describe('Baobab API', function() {
 
       const eagerTree = new Baobab({
         hey: {
-          ho: monkey([], () => 'ho')
+          ho: Baobab.monkey([], () => 'ho')
         }
       }, {lazyMonkeys: false});
 
@@ -550,7 +550,7 @@ describe('Baobab API', function() {
     });
 
     it('should handle monkeys as normal object when they are disabled', function() {
-      const monkeyObject = monkey([], () => 'ho');
+      const monkeyObject = Baobab.monkey([], () => 'ho');
 
       const nonMonkeyTree = new Baobab({
         hey: {
