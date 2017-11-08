@@ -9,11 +9,6 @@
 import {Monkey, MonkeyDefinition} from './monkey';
 import type from './type';
 
-/**
- * Noop function
- */
-const noop = Function.prototype;
-
 const hasOwnProp = {}.hasOwnProperty;
 
 /**
@@ -312,7 +307,7 @@ function freezer(deep, o) {
         l;
 
     for (i = 0, l = o.length; i < l; i++)
-      freezer(true, o[i]);
+      deepFreeze(o[i]);
   }
   else {
     let p,
@@ -330,20 +325,13 @@ function freezer(deep, o) {
           Object.isFrozen(p))
         continue;
 
-      freezer(true, p);
+      deepFreeze(p);
     }
   }
 }
 
-/**
- * Exporting both `freeze` and `deepFreeze` functions.
- * Note that if the engine does not support `Object.freeze` then this will
- * export noop functions instead.
- */
-const isFreezeSupported = (typeof Object.freeze === 'function');
-
-const freeze = isFreezeSupported ? freezer.bind(null, false) : noop,
-      deepFreeze = isFreezeSupported ? freezer.bind(null, true) : noop;
+const freeze = freezer.bind(null, false),
+      deepFreeze = freezer.bind(null, true);
 
 export {freeze, deepFreeze};
 
