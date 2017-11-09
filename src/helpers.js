@@ -176,13 +176,10 @@ function cloner(deep, item) {
   // Array
   if (type.array(item)) {
     if (deep) {
-      const a = [];
+      const a = new Array(item.length);
 
-      let i,
-          l;
-
-      for (i = 0, l = item.length; i < l; i++)
-        a.push(cloner(true, item[i]));
+      for (let i = 0, l = item.length; i < l; i++)
+        a[i] = cloner(true, item[i]);
       return a;
     }
 
