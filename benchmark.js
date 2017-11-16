@@ -1,5 +1,5 @@
 var Benchmark = require('benchmark'),
-    Baobab = require('./');
+    Baobab = require('./').default;
 
 var suite = new Benchmark.Suite();
 
