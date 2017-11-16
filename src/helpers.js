@@ -1,5 +1,5 @@
 /* eslint eqeqeq: 0 */
-
+/* eslint no-use-before-define: 0 */
 /**
  * Baobab Helpers
  * ===============
