@@ -42,8 +42,7 @@ export default function update(data, path, operation, opts = {}) {
 
   // Dummy root, so we can shift and alter the root
   const dummy = {root: data},
-        dummyPath = ['root', ...path],
-        currentPath = [];
+        dummyPath = ['root', ...path];
 
   // Walking the path
   let p = dummy,
@@ -57,10 +56,6 @@ export default function update(data, path, operation, opts = {}) {
     // is because we actually need to mutate the reference.
     s = dummyPath[i];
 
-    // Updating the path
-    if (i > 0)
-      currentPath.push(s);
-
     // If we reached the end of the path, we apply the operation
     if (i === l - 1) {
 
@@ -68,14 +63,14 @@ export default function update(data, path, operation, opts = {}) {
         throw err(
           operationType,
           'array',
-          currentPath
+          path
         );
       }
       if (operationType in objectMethods && !type.object(p[s])) {
         throw err(
           operationType,
           'object',
-          currentPath
+          path
         );
       }
       /**
