@@ -23,6 +23,10 @@ function err(operation, expectedTarget, path) {
   );
 }
 
+const tr = true;
+const arrayMethods = {push: tr, unshift: tr, concat: tr, splice: tr, pop: tr, shift: tr};
+const objectMethods = {merge: tr, deepMerge: tr};
+
 /**
  * Function aiming at applying a single update operation on the given tree's
  * data.
@@ -38,29 +42,37 @@ export default function update(data, path, operation, opts = {}) {
 
   // Dummy root, so we can shift and alter the root
   const dummy = {root: data},
-        dummyPath = ['root', ...path],
-        currentPath = [];
+        dummyPath = ['root', ...path];
 
   // Walking the path
   let p = dummy,
-      i,
-      l,
       s;
 
-  for (i = 0, l = dummyPath.length; i < l; i++) {
+  const l = dummyPath.length;
+  for (let i = 0; i < l; i++) {
 
     // Current item's reference is therefore p[s]
     // The reason why we don't create a variable here for convenience
     // is because we actually need to mutate the reference.
     s = dummyPath[i];
 
-    // Updating the path
-    if (i > 0)
-      currentPath.push(s);
-
     // If we reached the end of the path, we apply the operation
     if (i === l - 1) {
 
+      if (operationType in arrayMethods && !type.array(p[s])) {
+        throw err(
+          operationType,
+          'array',
+          path
+        );
+      }
+      if (operationType in objectMethods && !type.object(p[s])) {
+        throw err(
+          operationType,
+          'object',
+          path
+        );
+      }
       /**
        * Set
        */
@@ -125,13 +137,6 @@ export default function update(data, path, operation, opts = {}) {
        * Push
        */
       else if (operationType === 'push') {
-        if (!type.array(p[s]))
-          throw err(
-            'push',
-            'array',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = p[s].concat([value]);
         else
@@ -142,13 +147,6 @@ export default function update(data, path, operation, opts = {}) {
        * Unshift
        */
       else if (operationType === 'unshift') {
-        if (!type.array(p[s]))
-          throw err(
-            'unshift',
-            'array',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = [value].concat(p[s]);
         else
@@ -159,13 +157,6 @@ export default function update(data, path, operation, opts = {}) {
        * Concat
        */
       else if (operationType === 'concat') {
-        if (!type.array(p[s]))
-          throw err(
-            'concat',
-            'array',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = p[s].concat(value);
         else
@@ -176,13 +167,6 @@ export default function update(data, path, operation, opts = {}) {
        * Splice
        */
       else if (operationType === 'splice') {
-        if (!type.array(p[s]))
-          throw err(
-            'splice',
-            'array',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = splice.apply(null, [p[s]].concat(value));
         else
@@ -193,13 +177,6 @@ export default function update(data, path, operation, opts = {}) {
        * Pop
        */
       else if (operationType === 'pop') {
-        if (!type.array(p[s]))
-          throw err(
-            'pop',
-            'array',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = splice(p[s], -1, 1);
         else
@@ -210,13 +187,6 @@ export default function update(data, path, operation, opts = {}) {
        * Shift
        */
       else if (operationType === 'shift') {
-        if (!type.array(p[s]))
-          throw err(
-            'shift',
-            'array',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = splice(p[s], 0, 1);
         else
@@ -238,13 +208,6 @@ export default function update(data, path, operation, opts = {}) {
        * Merge
        */
       else if (operationType === 'merge') {
-        if (!type.object(p[s]))
-          throw err(
-            'merge',
-            'object',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = shallowMerge({}, p[s], value);
         else
@@ -255,13 +218,6 @@ export default function update(data, path, operation, opts = {}) {
        * Deep merge
        */
       else if (operationType === 'deepMerge') {
-        if (!type.object(p[s]))
-          throw err(
-            'deepMerge',
-            'object',
-            currentPath
-          );
-
         if (opts.persistent)
           p[s] = deepMerge({}, p[s], value);
         else
