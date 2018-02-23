@@ -22,7 +22,7 @@ const {
   deepMerge,
   shallowClone,
   shallowMerge,
-  uniqid
+  hashPath
 } = helpers;
 
 /**
@@ -58,21 +58,6 @@ const DEFAULTS = {
   validationBehavior: 'rollback'
 };
 
-/**
- * Function returning a string hash from a non-dynamic path expressed as an
- * array.
- *
- * @param  {array}  path - The path to hash.
- * @return {string} string - The resultant hash.
- */
-function hashPath(path) {
-  return 'λ' + path.map(step => {
-    if (type.function(step) || type.object(step))
-      return `#${uniqid()}#`;
-
-    return step;
-  }).join('λ');
-}
 
 /**
  * Baobab class

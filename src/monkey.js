@@ -11,7 +11,8 @@ import {
   getIn,
   makeError,
   solveUpdate,
-  solveRelativePath
+  solveRelativePath,
+  hashPath
 } from './helpers';
 
 /**
@@ -194,11 +195,11 @@ export class Monkey {
   update() {
     const deps = this.tree.project(this.projection);
 
-    const lazyGetter = (function(tree, def, data) {
+    const lazyGetter = ((tree, def, data) => {
       let cache = null,
           alreadyComputed = false;
 
-      return function() {
+      return () => {
 
         if (!alreadyComputed) {
           cache = def.getter.apply(
@@ -210,6 +211,10 @@ export class Monkey {
 
           if (tree.options.immutable && def.options.immutable !== false)
             deepFreeze(cache);
+
+          // update tree affected paths
+          const hash = hashPath(this.path);
+          tree._affectedPathsIndex[hash] = true;
 
           alreadyComputed = true;
         }
