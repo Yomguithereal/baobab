@@ -884,4 +884,28 @@ describe('Monkeys', function() {
     });
 
   });
+
+  describe('Issue #448 - Monkeys don\'t emit update events?', function () {
+    it('update events emitted by a monkey should also reach the parents of the monkey.', function (done) {
+      const tree = new Baobab({
+        value: 5,
+        monkeys: {
+          valueSquared: monkey(['value'], value => value * value)
+        }
+      }, {
+        lazyMonkeys: false
+      });
+
+      const newValue = 10;
+
+      const parentCursor = tree.select('monkeys');
+      parentCursor.on('update', () => {
+        assert.strictEqual(tree.get(['monkeys', 'valueSquared']), newValue * newValue);
+        done();
+      });
+
+      tree.set(['value'], newValue);
+    });
+  });
+
 });

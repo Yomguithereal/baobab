@@ -465,6 +465,22 @@ const shallowMerge = merger.bind(null, false),
 export {shallowMerge, deepMerge};
 
 /**
+ * Function returning a string hash from a non-dynamic path expressed as an
+ * array.
+ *
+ * @param  {array}  path - The path to hash.
+ * @return {string} string - The resultant hash.
+ */
+export function hashPath(path) {
+  return 'λ' + path.map(step => {
+    if (type.function(step) || type.object(step))
+      return `#${uniqid()}#`;
+
+    return step;
+  }).join('λ');
+}
+
+/**
  * Solving a potentially relative path.
  *
  * @param  {array} base - The base path from which to solve the path.
