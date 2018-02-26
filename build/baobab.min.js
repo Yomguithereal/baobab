@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.5.0
+ * Version: 2.5.1
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */

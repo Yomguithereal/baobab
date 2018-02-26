@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.5.1
+
+* Fixing issue related to monkey not firing the correct events ([@roark](https://github.com/roark)).
+
 ## v2.5.0
 
 * Adding the `monkeyBusiness` option ([@Tuhis](https://github.com/Tuhis)).
