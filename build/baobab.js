@@ -6,7 +6,7 @@
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Baobab = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Baobab = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
   'use strict';
 
@@ -1157,6 +1157,7 @@ Baobab.helpers = helpers;
  * Version
  */
 Baobab.VERSION = '2.5.0';
+module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
 'use strict';
@@ -2031,6 +2032,7 @@ makeSetter('shift');
 makeSetter('splice', _type2.default.splicer);
 makeSetter('merge', _type2.default.object);
 makeSetter('deepMerge', _type2.default.object);
+module.exports = exports['default'];
 
 },{"./helpers":4,"./monkey":5,"./type":6,"emmett":1}],4:[function(require,module,exports){
 (function (global){
@@ -3198,6 +3200,7 @@ type.operationType = function (string) {
 };
 
 exports.default = type;
+module.exports = exports['default'];
 
 },{"./monkey":5}],7:[function(require,module,exports){
 'use strict';
@@ -3426,6 +3429,7 @@ function update(data, path, operation) {
   // Returning new data object
   return { data: dummy.root, node: p[s] };
 }
+module.exports = exports['default'];
 
 },{"./helpers":4,"./type":6}],8:[function(require,module,exports){
 'use strict';
@@ -3597,6 +3601,7 @@ var Watcher = function (_Emitter) {
 }(_emmett2.default);
 
 exports.default = Watcher;
+module.exports = exports['default'];
 
 },{"./cursor":3,"./helpers":4,"./type":6,"emmett":1}]},{},[2])(2)
 });
