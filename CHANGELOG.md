@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.5.2
+
+* Fixing the library's export.
+
 ## v2.5.1
 
 * Fixing issue related to monkey not firing the correct events ([@roark](https://github.com/roark)).

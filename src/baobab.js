@@ -74,7 +74,7 @@ const DEFAULTS = {
  * @param {function}     [opts.validate]     - Validation function.
  * @param {string}       [opts.validationBehaviour] - "rollback" or "notify".
  */
-export default class Baobab extends Emitter {
+class Baobab extends Emitter {
   constructor(initialData, opts) {
     super();
 
@@ -581,6 +581,11 @@ Baobab.type = type;
 Baobab.helpers = helpers;
 
 /**
- * Version
+ * Version.
  */
-Baobab.VERSION = '2.5.0';
+Baobab.VERSION = '2.5.2';
+
+/**
+ * Exporting.
+ */
+module.exports = Baobab;

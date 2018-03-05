@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.5.1
+ * Version: 2.5.2
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -563,8 +563,6 @@
 
 },{}],2:[function(require,module,exports){
 'use strict';
-
-exports.__esModule = true;
 
 var _emmett = require('emmett');
 
@@ -1130,7 +1128,6 @@ var Baobab = function (_Emitter) {
  */
 
 
-exports.default = Baobab;
 Baobab.monkey = function () {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
@@ -1154,9 +1151,14 @@ Baobab.type = _type2.default;
 Baobab.helpers = helpers;
 
 /**
- * Version
+ * Version.
  */
-Baobab.VERSION = '2.5.0';
+Baobab.VERSION = '2.5.2';
+
+/**
+ * Exporting.
+ */
+module.exports = Baobab;
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
 'use strict';
