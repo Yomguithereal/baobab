@@ -8,7 +8,7 @@ It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip
 
 It aims at providing a centralized model holding an application's state and can be paired with **React** easily through mixins, higher order components, wrapper components or decorators (available [there](https://github.com/Yomguithereal/baobab-react)).
 
-**Fun fact**: A [Baobab](http://en.wikipedia.org/wiki/Adansonia_digitata), or *Adansonia digitata*, is a very big and magnificient African tree.
+**Fun fact**: A [Baobab](http://en.wikipedia.org/wiki/Adansonia_digitata), or *Adansonia digitata*, is a very big and magnificent African tree.
 
 ## Summary
 
@@ -1051,7 +1051,7 @@ Note also that releasing a tree will consequently and automatically release ever
 
 **User interfaces as pure functions**
 
-User interfacess should be, as far as possible, considered as pure functions. Baobab is just a way to provide the needed arguments, i.e. the data representing your app's state, to such a function.
+User interfaces should be, as far as possible, considered as pure functions. Baobab is just a way to provide the needed arguments, i.e. the data representing your app's state, to such a function.
 
 Considering your UIs like pure functions comes along with collateral advantages like easy undo/redo features, state storing (just save your tree in the `localStorage` and here you go) and easy usage in both client & server.
 
