@@ -6,7 +6,7 @@
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Baobab = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Baobab = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 (function() {
   'use strict';
 
@@ -487,7 +487,10 @@
             this._handlersComplex :
             this._handlersAll;
 
-        parent.splice(parent.indexOf(onces[j]), 1);
+        var onceIndex = parent.indexOf(onces[j]);
+        if (onceIndex !== -1) {
+          parent.splice(onceIndex, 1);
+        }
       }
     }
 
@@ -545,7 +548,7 @@
   /**
    * Version:
    */
-  Emitter.version = '3.1.1';
+  Emitter.version = '3.1.3';
 
 
   // Export:
@@ -562,49 +565,31 @@
 }).call(this);
 
 },{}],2:[function(require,module,exports){
-'use strict';
+"use strict";
 
-var _emmett = require('emmett');
+var _emmett = _interopRequireDefault(require("emmett"));
 
-var _emmett2 = _interopRequireDefault(_emmett);
+var _cursor = _interopRequireDefault(require("./cursor"));
 
-var _cursor = require('./cursor');
+var _monkey = require("./monkey");
 
-var _cursor2 = _interopRequireDefault(_cursor);
+var _watcher = _interopRequireDefault(require("./watcher"));
 
-var _monkey = require('./monkey');
+var _type = _interopRequireDefault(require("./type"));
 
-var _watcher = require('./watcher');
+var _update2 = _interopRequireDefault(require("./update"));
 
-var _watcher2 = _interopRequireDefault(_watcher);
+var helpers = _interopRequireWildcard(require("./helpers"));
 
-var _type = require('./type');
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
-var _type2 = _interopRequireDefault(_type);
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-var _update2 = require('./update');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _update3 = _interopRequireDefault(_update2);
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-var _helpers = require('./helpers');
-
-var helpers = _interopRequireWildcard(_helpers);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Baobab Data Structure
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * ======================
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * A handy data tree with cursors.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
-
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
 var arrayFrom = helpers.arrayFrom,
     coercePath = helpers.coercePath,
@@ -616,41 +601,30 @@ var arrayFrom = helpers.arrayFrom,
     shallowClone = helpers.shallowClone,
     shallowMerge = helpers.shallowMerge,
     hashPath = helpers.hashPath;
-
 /**
  * Baobab defaults
  */
 
 var DEFAULTS = {
-
   // Should the tree handle its transactions on its own?
   autoCommit: true,
-
   // Should the transactions be handled asynchronously?
   asynchronous: true,
-
   // Should the tree's data be immutable?
   immutable: true,
-
   // Should the monkeys be lazy?
   lazyMonkeys: true,
-
   // Should we evaluate monkeys?
   monkeyBusiness: true,
-
   // Should the tree be persistent?
   persistent: true,
-
   // Should the tree's update be pure?
   pure: true,
-
   // Validation specifications
   validate: null,
-
   // Validation behavior 'rollback' or 'notify'
   validationBehavior: 'rollback'
 };
-
 /**
  * Baobab class
  *
@@ -667,30 +641,30 @@ var DEFAULTS = {
  * @param {string}       [opts.validationBehaviour] - "rollback" or "notify".
  */
 
-var Baobab = function (_Emitter) {
-  _inherits(Baobab, _Emitter);
+var Baobab =
+/*#__PURE__*/
+function (_Emitter) {
+  _inheritsLoose(Baobab, _Emitter);
 
   function Baobab(initialData, opts) {
-    _classCallCheck(this, Baobab);
+    var _this;
 
-    // Setting initialData to an empty object if no data is provided by use
-    var _this = _possibleConstructorReturn(this, _Emitter.call(this));
+    _this = _Emitter.call(this) || this; // Setting initialData to an empty object if no data is provided by use
 
-    if (arguments.length < 1) initialData = {};
+    if (arguments.length < 1) initialData = {}; // Checking whether given initial data is valid
 
-    // Checking whether given initial data is valid
-    if (!_type2.default.object(initialData) && !_type2.default.array(initialData)) throw makeError('Baobab: invalid data.', { data: initialData });
+    if (!_type["default"].object(initialData) && !_type["default"].array(initialData)) throw makeError('Baobab: invalid data.', {
+      data: initialData
+    }); // Merging given options with defaults
 
-    // Merging given options with defaults
-    _this.options = shallowMerge({}, DEFAULTS, opts);
+    _this.options = shallowMerge({}, DEFAULTS, opts); // Disabling immutability & persistence if persistence if disabled
 
-    // Disabling immutability & persistence if persistence if disabled
     if (!_this.options.persistent) {
       _this.options.immutable = false;
       _this.options.pure = false;
-    }
+    } // Privates
 
-    // Privates
+
     _this._identity = '[object Baobab]';
     _this._cursors = {};
     _this._future = null;
@@ -698,37 +672,34 @@ var Baobab = function (_Emitter) {
     _this._affectedPathsIndex = {};
     _this._monkeys = {};
     _this._previousData = null;
-    _this._data = initialData;
+    _this._data = initialData; // Properties
 
-    // Properties
-    _this.root = new _cursor2.default(_this, [], 'λ');
-    delete _this.root.release;
+    _this.root = new _cursor["default"](_assertThisInitialized(_this), [], 'λ');
+    delete _this.root.release; // Does the user want an immutable tree?
 
-    // Does the user want an immutable tree?
-    if (_this.options.immutable) deepFreeze(_this._data);
+    if (_this.options.immutable) deepFreeze(_this._data); // Bootstrapping root cursor's getters and setters
 
-    // Bootstrapping root cursor's getters and setters
     var bootstrap = function bootstrap(name) {
       _this[name] = function () {
         var r = this.root[name].apply(this.root, arguments);
-        return r instanceof _cursor2.default ? this : r;
+        return r instanceof _cursor["default"] ? this : r;
       };
     };
 
-    ['apply', 'clone', 'concat', 'deepClone', 'deepMerge', 'exists', 'get', 'push', 'merge', 'pop', 'project', 'serialize', 'set', 'shift', 'splice', 'unset', 'unshift'].forEach(bootstrap);
+    ['apply', 'clone', 'concat', 'deepClone', 'deepMerge', 'exists', 'get', 'push', 'merge', 'pop', 'project', 'serialize', 'set', 'shift', 'splice', 'unset', 'unshift'].forEach(bootstrap); // Registering the initial monkeys
 
-    // Registering the initial monkeys
     if (_this.options.monkeyBusiness) {
       _this._refreshMonkeys();
-    }
+    } // Initial validation
 
-    // Initial validation
+
     var validationError = _this.validate();
 
-    if (validationError) throw Error('Baobab: invalid data.', { error: validationError });
+    if (validationError) throw Error('Baobab: invalid data.', {
+      error: validationError
+    });
     return _this;
   }
-
   /**
    * Internal method used to refresh the tree's monkey register on every
    * update.
@@ -742,92 +713,92 @@ var Baobab = function (_Emitter) {
    */
 
 
-  Baobab.prototype._refreshMonkeys = function _refreshMonkeys(node, path, operation) {
+  var _proto = Baobab.prototype;
+
+  _proto._refreshMonkeys = function _refreshMonkeys(node, path, operation) {
     var _this2 = this;
 
-    var clean = function clean(data) {
-      var p = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+    var clean = function clean(data, p) {
+      if (p === void 0) {
+        p = [];
+      }
 
       if (data instanceof _monkey.Monkey) {
         data.release();
-        (0, _update3.default)(_this2._monkeys, p, { type: 'unset' }, {
+        (0, _update2["default"])(_this2._monkeys, p, {
+          type: 'unset'
+        }, {
           immutable: false,
           persistent: false,
           pure: false
         });
-
         return;
       }
 
-      if (_type2.default.object(data)) {
+      if (_type["default"].object(data)) {
         for (var k in data) {
           clean(data[k], p.concat(k));
         }
       }
     };
 
-    var walk = function walk(data) {
-      var p = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
+    var walk = function walk(data, p) {
+      if (p === void 0) {
+        p = [];
+      }
 
       // Should we sit a monkey in the tree?
       if (data instanceof _monkey.MonkeyDefinition || data instanceof _monkey.Monkey) {
         var monkeyInstance = new _monkey.Monkey(_this2, p, data instanceof _monkey.Monkey ? data.definition : data);
-
-        (0, _update3.default)(_this2._monkeys, p, { type: 'set', value: monkeyInstance }, {
+        (0, _update2["default"])(_this2._monkeys, p, {
+          type: 'set',
+          value: monkeyInstance
+        }, {
           immutable: false,
           persistent: false,
           pure: false
         });
-
         return;
-      }
+      } // Object iteration
 
-      // Object iteration
-      if (_type2.default.object(data)) {
+
+      if (_type["default"].object(data)) {
         for (var k in data) {
           walk(data[k], p.concat(k));
         }
       }
-    };
+    }; // Walking the whole tree
 
-    // Walking the whole tree
+
     if (!arguments.length) {
       walk(this._data);
     } else {
-      var monkeysNode = getIn(this._monkeys, path).data;
+      var monkeysNode = getIn(this._monkeys, path).data; // Is this required that we clean some already existing monkeys?
 
-      // Is this required that we clean some already existing monkeys?
-      if (monkeysNode) clean(monkeysNode, path);
+      if (monkeysNode) clean(monkeysNode, path); // Let's walk the tree only from the updated point
 
-      // Let's walk the tree only from the updated point
       if (operation !== 'unset') {
         walk(node, path);
       }
     }
 
     return this;
-  };
-
+  }
   /**
    * Method used to validate the tree's data.
    *
    * @return {boolean} - Is the tree valid?
    */
+  ;
 
-
-  Baobab.prototype.validate = function validate(affectedPaths) {
-    var _options = this.options,
-        validate = _options.validate,
-        behavior = _options.validationBehavior;
-
-
+  _proto.validate = function validate(affectedPaths) {
+    var _this$options = this.options,
+        validate = _this$options.validate,
+        behavior = _this$options.validationBehavior;
     if (typeof validate !== 'function') return null;
-
     var error = validate.call(this, this._previousData, this._data, affectedPaths || [[]]);
 
     if (error instanceof Error) {
-
       if (behavior === 'rollback') {
         this._data = this._previousData;
         this._affectedPathsIndex = {};
@@ -835,14 +806,14 @@ var Baobab = function (_Emitter) {
         this._previousData = this._data;
       }
 
-      this.emit('invalid', { error: error });
-
+      this.emit('invalid', {
+        error: error
+      });
       return error;
     }
 
     return null;
-  };
-
+  }
   /**
    * Method used to select data within the tree by creating a cursor. Cursors
    * are kept as singletons by the tree for performance and hygiene reasons.
@@ -855,40 +826,38 @@ var Baobab = function (_Emitter) {
    *
    * @return {Cursor}      - The resultant cursor.
    */
+  ;
 
-
-  Baobab.prototype.select = function select(path) {
-
+  _proto.select = function select(path) {
     // If no path is given, we simply return the root
-    path = path || [];
+    path = path || []; // Variadic
 
-    // Variadic
-    if (arguments.length > 1) path = arrayFrom(arguments);
+    if (arguments.length > 1) path = arrayFrom(arguments); // Checking that given path is valid
 
-    // Checking that given path is valid
-    if (!_type2.default.path(path)) throw makeError('Baobab.select: invalid path.', { path: path });
+    if (!_type["default"].path(path)) throw makeError('Baobab.select: invalid path.', {
+      path: path
+    }); // Casting to array
 
-    // Casting to array
-    path = [].concat(path);
-
-    // Computing hash (done here because it would be too late to do it in the
+    path = [].concat(path); // Computing hash (done here because it would be too late to do it in the
     // cursor's constructor since we need to hit the cursors' index first).
-    var hash = hashPath(path);
 
-    // Creating a new cursor or returning the already existing one for the
+    var hash = hashPath(path); // Creating a new cursor or returning the already existing one for the
     // requested path.
+
     var cursor = this._cursors[hash];
 
     if (!cursor) {
-      cursor = new _cursor2.default(this, path, hash);
+      cursor = new _cursor["default"](this, path, hash);
       this._cursors[hash] = cursor;
-    }
+    } // Emitting an event to notify that a part of the tree was selected
 
-    // Emitting an event to notify that a part of the tree was selected
-    this.emit('select', { path: path, cursor: cursor });
+
+    this.emit('select', {
+      path: path,
+      cursor: cursor
+    });
     return cursor;
-  };
-
+  }
   /**
    * Method used to update the tree. Updates are simply expressed by a path,
    * dynamic or not, and an operation.
@@ -899,165 +868,138 @@ var Baobab = function (_Emitter) {
    * @param  {object} operation - The operation to apply.
    * @return {mixed} - Return the result of the update.
    */
+  ;
 
-
-  Baobab.prototype.update = function update(path, operation) {
+  _proto.update = function update(path, operation) {
     var _this3 = this;
 
     // Coercing path
     path = coercePath(path);
-
-    if (!_type2.default.operationType(operation.type)) throw makeError('Baobab.update: unknown operation type "' + operation.type + '".', { operation: operation });
-
-    // Solving the given path
+    if (!_type["default"].operationType(operation.type)) throw makeError("Baobab.update: unknown operation type \"" + operation.type + "\".", {
+      operation: operation
+    }); // Solving the given path
 
     var _getIn = getIn(this._data, path),
         solvedPath = _getIn.solvedPath,
-        exists = _getIn.exists;
-
-    // If we couldn't solve the path, we throw
+        exists = _getIn.exists; // If we couldn't solve the path, we throw
 
 
     if (!solvedPath) throw makeError('Baobab.update: could not solve the given path.', {
       path: solvedPath
-    });
+    }); // Read-only path?
 
-    // Read-only path?
-    var monkeyPath = _type2.default.monkeyPath(this._monkeys, solvedPath);
+    var monkeyPath = _type["default"].monkeyPath(this._monkeys, solvedPath);
+
     if (monkeyPath && solvedPath.length > monkeyPath.length) throw makeError('Baobab.update: attempting to update a read-only path.', {
       path: solvedPath
-    });
+    }); // We don't unset irrelevant paths
 
-    // We don't unset irrelevant paths
-    if (operation.type === 'unset' && !exists) return;
+    if (operation.type === 'unset' && !exists) return; // If we merge data, we need to acknowledge monkeys
 
-    // If we merge data, we need to acknowledge monkeys
     var realOperation = operation;
+
     if (/merge/i.test(operation.type)) {
       var monkeysNode = getIn(this._monkeys, solvedPath).data;
 
-      if (_type2.default.object(monkeysNode)) {
-
+      if (_type["default"].object(monkeysNode)) {
         // Cloning the operation not to create weird behavior for the user
-        realOperation = shallowClone(realOperation);
+        realOperation = shallowClone(realOperation); // Fetching the existing node in the current data
 
-        // Fetching the existing node in the current data
         var currentNode = getIn(this._data, solvedPath).data;
-
         if (/deep/i.test(realOperation.type)) realOperation.value = deepMerge({}, deepMerge({}, currentNode, deepClone(monkeysNode)), realOperation.value);else realOperation.value = shallowMerge({}, deepMerge({}, currentNode, deepClone(monkeysNode)), realOperation.value);
       }
-    }
+    } // Stashing previous data if this is the frame's first update
 
-    // Stashing previous data if this is the frame's first update
-    if (!this._transaction.length) this._previousData = this._data;
 
-    // Applying the operation
-    var result = (0, _update3.default)(this._data, solvedPath, realOperation, this.options);
+    if (!this._transaction.length) this._previousData = this._data; // Applying the operation
 
+    var result = (0, _update2["default"])(this._data, solvedPath, realOperation, this.options);
     var data = result.data,
-        node = result.node;
+        node = result.node; // If because of purity, the update was moot, we stop here
 
-    // If because of purity, the update was moot, we stop here
+    if (!('data' in result)) return node; // If the operation is push, the affected path is slightly different
 
-    if (!('data' in result)) return node;
-
-    // If the operation is push, the affected path is slightly different
     var affectedPath = solvedPath.concat(operation.type === 'push' ? node.length - 1 : []);
+    var hash = hashPath(affectedPath); // Updating data and transaction
 
-    var hash = hashPath(affectedPath);
-
-    // Updating data and transaction
     this._data = data;
     this._affectedPathsIndex[hash] = true;
-    this._transaction.push(shallowMerge({}, operation, { path: affectedPath }));
 
-    // Updating the monkeys
+    this._transaction.push(shallowMerge({}, operation, {
+      path: affectedPath
+    })); // Updating the monkeys
+
+
     if (this.options.monkeyBusiness) {
       this._refreshMonkeys(node, solvedPath, operation.type);
-    }
+    } // Emitting a `write` event
 
-    // Emitting a `write` event
-    this.emit('write', { path: affectedPath });
 
-    // Should we let the user commit?
-    if (!this.options.autoCommit) return node;
+    this.emit('write', {
+      path: affectedPath
+    }); // Should we let the user commit?
 
-    // Should we update asynchronously?
+    if (!this.options.autoCommit) return node; // Should we update asynchronously?
+
     if (!this.options.asynchronous) {
       this.commit();
       return node;
-    }
+    } // Updating asynchronously
 
-    // Updating asynchronously
+
     if (!this._future) this._future = setTimeout(function () {
       return _this3.commit();
-    }, 0);
+    }, 0); // Finally returning the affected node
 
-    // Finally returning the affected node
     return node;
-  };
-
+  }
   /**
    * Method committing the updates of the tree and firing the tree's events.
    *
    * @return {Baobab} - The tree instance for chaining purposes.
    */
+  ;
 
-
-  Baobab.prototype.commit = function commit() {
-
+  _proto.commit = function commit() {
     // Do not fire update if the transaction is empty
-    if (!this._transaction.length) return this;
+    if (!this._transaction.length) return this; // Clearing timeout if one was defined
 
-    // Clearing timeout if one was defined
     if (this._future) this._future = clearTimeout(this._future);
-
     var affectedPaths = Object.keys(this._affectedPathsIndex).map(function (h) {
       return h !== 'λ' ? h.split('λ').slice(1) : [];
-    });
+    }); // Is the tree still valid?
 
-    // Is the tree still valid?
     var validationError = this.validate(affectedPaths);
+    if (validationError) return this; // Caching to keep original references before we change them
 
-    if (validationError) return this;
-
-    // Caching to keep original references before we change them
     var transaction = this._transaction,
         previousData = this._previousData;
-
     this._affectedPathsIndex = {};
     this._transaction = [];
-    this._previousData = this._data;
+    this._previousData = this._data; // Emitting update event
 
-    // Emitting update event
     this.emit('update', {
       paths: affectedPaths,
       currentData: this._data,
       transaction: transaction,
       previousData: previousData
     });
-
     return this;
-  };
-
+  }
   /**
    * Method returning a monkey at the given path or else `null`.
    *
    * @param  {path}        path - Path of the monkey to retrieve.
    * @return {Monkey|null}      - The Monkey instance of `null`.
    */
+  ;
 
-
-  Baobab.prototype.getMonkey = function getMonkey(path) {
+  _proto.getMonkey = function getMonkey(path) {
     path = coercePath(path);
-
     var monkey = getIn(this._monkeys, [].concat(path)).data;
-
     if (monkey instanceof _monkey.Monkey) return monkey;
-
     return null;
-  };
-
+  }
   /**
    * Method used to watch a collection of paths within the tree. Very useful
    * to bind UI components and such to the tree.
@@ -1065,131 +1007,112 @@ var Baobab = function (_Emitter) {
    * @param  {object} mapping - Mapping of paths to listen.
    * @return {Cursor}         - The created watcher.
    */
+  ;
 
-
-  Baobab.prototype.watch = function watch(mapping) {
-    return new _watcher2.default(this, mapping);
-  };
-
+  _proto.watch = function watch(mapping) {
+    return new _watcher["default"](this, mapping);
+  }
   /**
    * Method releasing the tree and its attached data from memory.
    */
+  ;
 
-
-  Baobab.prototype.release = function release() {
-    var k = void 0;
-
+  _proto.release = function release() {
+    var k;
     this.emit('release');
-
     delete this.root;
-
     delete this._data;
     delete this._previousData;
     delete this._transaction;
     delete this._affectedPathsIndex;
-    delete this._monkeys;
+    delete this._monkeys; // Releasing cursors
 
-    // Releasing cursors
     for (k in this._cursors) {
       this._cursors[k].release();
-    }delete this._cursors;
+    }
 
-    // Killing event emitter
+    delete this._cursors; // Killing event emitter
+
     this.kill();
-  };
-
+  }
   /**
    * Overriding the `toJSON` method for convenient use with JSON.stringify.
    *
    * @return {mixed} - Data at cursor.
    */
+  ;
 
-
-  Baobab.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     return this.serialize();
-  };
-
+  }
   /**
    * Overriding the `toString` method for debugging purposes.
    *
    * @return {string} - The baobab's identity.
    */
+  ;
 
-
-  Baobab.prototype.toString = function toString() {
+  _proto.toString = function toString() {
     return this._identity;
   };
 
   return Baobab;
-}(_emmett2.default);
-
+}(_emmett["default"]);
 /**
  * Monkey helper.
  */
 
 
 Baobab.monkey = function () {
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+  for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
 
   if (!args.length) throw new Error('Baobab.monkey: missing definition.');
-
   if (args.length === 1 && typeof args[0] !== 'function') return new _monkey.MonkeyDefinition(args[0]);
-
   return new _monkey.MonkeyDefinition(args);
 };
-Baobab.dynamicNode = Baobab.monkey;
 
+Baobab.dynamicNode = Baobab.monkey;
 /**
  * Exposing some internals for convenience
  */
-Baobab.Cursor = _cursor2.default;
+
+Baobab.Cursor = _cursor["default"];
 Baobab.MonkeyDefinition = _monkey.MonkeyDefinition;
 Baobab.Monkey = _monkey.Monkey;
-Baobab.type = _type2.default;
+Baobab.type = _type["default"];
 Baobab.helpers = helpers;
-
 /**
  * Version.
  */
-Baobab.VERSION = '2.5.2';
 
+Baobab.VERSION = '2.5.2';
 /**
  * Exporting.
  */
+
 module.exports = Baobab;
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _emmett = require('emmett');
+var _emmett = _interopRequireDefault(require("emmett"));
 
-var _emmett2 = _interopRequireDefault(_emmett);
+var _monkey = require("./monkey");
 
-var _monkey = require('./monkey');
+var _type = _interopRequireDefault(require("./type"));
 
-var _type = require('./type');
+var _helpers = require("./helpers");
 
-var _type2 = _interopRequireDefault(_type);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _helpers = require('./helpers');
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Baobab Cursors
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * ===============
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Cursors created by selecting some data within a Baobab tree.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
-
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
 /**
  * Traversal helper function for dynamic cursors. Will throw a legible error
@@ -1199,9 +1122,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @param {array}  solvedPath - The cursor's solved path.
  */
 function checkPossibilityOfDynamicTraversal(method, solvedPath) {
-  if (!solvedPath) throw (0, _helpers.makeError)('Baobab.Cursor.' + method + ': ' + ('cannot use ' + method + ' on an unresolved dynamic path.'), { path: solvedPath });
+  if (!solvedPath) throw (0, _helpers.makeError)("Baobab.Cursor." + method + ": " + ("cannot use " + method + " on an unresolved dynamic path."), {
+    path: solvedPath
+  });
 }
-
 /**
  * Cursor class
  *
@@ -1211,55 +1135,48 @@ function checkPossibilityOfDynamicTraversal(method, solvedPath) {
  * @param {string} hash   - The path's hash computed ahead by the tree.
  */
 
-var Cursor = function (_Emitter) {
-  _inherits(Cursor, _Emitter);
+
+var Cursor =
+/*#__PURE__*/
+function (_Emitter) {
+  _inheritsLoose(Cursor, _Emitter);
 
   function Cursor(tree, path, hash) {
-    _classCallCheck(this, Cursor);
+    var _this;
 
-    // If no path were to be provided, we fallback to an empty path (root)
-    var _this = _possibleConstructorReturn(this, _Emitter.call(this));
+    _this = _Emitter.call(this) || this; // If no path were to be provided, we fallback to an empty path (root)
 
-    path = path || [];
+    path = path || []; // Privates
 
-    // Privates
     _this._identity = '[object Cursor]';
-    _this._archive = null;
+    _this._archive = null; // Properties
 
-    // Properties
     _this.tree = tree;
     _this.path = path;
-    _this.hash = hash;
+    _this.hash = hash; // State
 
-    // State
     _this.state = {
       killed: false,
       recording: false,
       undoing: false
-    };
+    }; // Checking whether the given path is dynamic or not
 
-    // Checking whether the given path is dynamic or not
-    _this._dynamicPath = _type2.default.dynamicPath(_this.path);
+    _this._dynamicPath = _type["default"].dynamicPath(_this.path); // Checking whether the given path will meet a monkey
 
-    // Checking whether the given path will meet a monkey
-    _this._monkeyPath = _type2.default.monkeyPath(_this.tree._monkeys, _this.path);
-
+    _this._monkeyPath = _type["default"].monkeyPath(_this.tree._monkeys, _this.path);
     if (!_this._dynamicPath) _this.solvedPath = _this.path;else _this.solvedPath = (0, _helpers.getIn)(_this.tree._data, _this.path).solvedPath;
-
     /**
      * Listener bound to the tree's writes so that cursors with dynamic paths
      * may update their solved path correctly.
      *
      * @param {object} event - The event fired by the tree.
      */
+
     _this._writeHandler = function (_ref) {
       var data = _ref.data;
-
       if (_this.state.killed || !(0, _helpers.solveUpdate)([data.path], _this._getComparedPaths())) return;
-
       _this.solvedPath = (0, _helpers.getIn)(_this.tree._data, _this.path).solvedPath;
     };
-
     /**
      * Function in charge of actually trigger the cursor's updates and
      * deal with the archived records.
@@ -1269,25 +1186,25 @@ var Cursor = function (_Emitter) {
      *
      * @param {mixed} previousData - the tree's previous data.
      */
+
+
     var fireUpdate = function fireUpdate(previousData) {
-      var self = _this;
+      var self = _assertThisInitialized(_this);
 
       var eventData = {
         get previousData() {
           return (0, _helpers.getIn)(previousData, self.solvedPath).data;
         },
+
         get currentData() {
           return self.get();
         }
+
       };
-
       if (_this.state.recording && !_this.state.undoing) _this.archive.add(eventData.previousData);
-
       _this.state.undoing = false;
-
       return _this.emit('update', eventData);
     };
-
     /**
      * Listener bound to the tree's updates and determining whether the
      * cursor is affected and should react accordingly.
@@ -1298,42 +1215,41 @@ var Cursor = function (_Emitter) {
      *
      * @param {object} event - The event fired by the tree.
      */
+
+
     _this._updateHandler = function (event) {
       if (_this.state.killed) return;
 
       var _event$data = event.data,
           paths = _event$data.paths,
           previousData = _event$data.previousData,
-          update = fireUpdate.bind(_this, previousData),
+          update = fireUpdate.bind(_assertThisInitialized(_this), previousData),
           comparedPaths = _this._getComparedPaths();
 
       if ((0, _helpers.solveUpdate)(paths, comparedPaths)) return update();
-    };
+    }; // Lazy binding
 
-    // Lazy binding
+
     var bound = false;
+
     _this._lazyBind = function () {
       if (bound) return;
-
       bound = true;
-
       if (_this._dynamicPath) _this.tree.on('write', _this._writeHandler);
-
       return _this.tree.on('update', _this._updateHandler);
-    };
+    }; // If the path is dynamic, we actually need to listen to the tree
 
-    // If the path is dynamic, we actually need to listen to the tree
+
     if (_this._dynamicPath) {
       _this._lazyBind();
     } else {
-
       // Overriding the emitter `on` and `once` methods
-      _this.on = (0, _helpers.before)(_this._lazyBind, _this.on.bind(_this));
-      _this.once = (0, _helpers.before)(_this._lazyBind, _this.once.bind(_this));
+      _this.on = (0, _helpers.before)(_this._lazyBind, _this.on.bind(_assertThisInitialized(_this)));
+      _this.once = (0, _helpers.before)(_this._lazyBind, _this.once.bind(_assertThisInitialized(_this)));
     }
+
     return _this;
   }
-
   /**
    * Internal helpers
    * -----------------
@@ -1347,14 +1263,13 @@ var Cursor = function (_Emitter) {
    */
 
 
-  Cursor.prototype._getComparedPaths = function _getComparedPaths() {
+  var _proto = Cursor.prototype;
 
+  _proto._getComparedPaths = function _getComparedPaths() {
     // Checking whether we should keep track of some dependencies
     var additionalPaths = this._monkeyPath ? (0, _helpers.getIn)(this.tree._monkeys, this._monkeyPath).data.relatedPaths() : [];
-
     return [this.solvedPath].concat(additionalPaths);
-  };
-
+  }
   /**
    * Predicates
    * -----------
@@ -1365,34 +1280,31 @@ var Cursor = function (_Emitter) {
    *
    * @return {boolean} - Is the cursor the root?
    */
+  ;
 
-
-  Cursor.prototype.isRoot = function isRoot() {
+  _proto.isRoot = function isRoot() {
     return !this.path.length;
-  };
-
+  }
   /**
    * Method returning whether the cursor is at leaf level.
    *
    * @return {boolean} - Is the cursor a leaf?
    */
+  ;
 
-
-  Cursor.prototype.isLeaf = function isLeaf() {
-    return _type2.default.primitive(this._get().data);
-  };
-
+  _proto.isLeaf = function isLeaf() {
+    return _type["default"].primitive(this._get().data);
+  }
   /**
    * Method returning whether the cursor is at branch level.
    *
    * @return {boolean} - Is the cursor a branch?
    */
+  ;
 
-
-  Cursor.prototype.isBranch = function isBranch() {
+  _proto.isBranch = function isBranch() {
     return !this.isRoot() && !this.isLeaf();
-  };
-
+  }
   /**
    * Traversal Methods
    * ------------------
@@ -1403,12 +1315,11 @@ var Cursor = function (_Emitter) {
    *
    * @return {Baobab} - The root cursor.
    */
+  ;
 
-
-  Cursor.prototype.root = function root() {
+  _proto.root = function root() {
     return this.tree.select();
-  };
-
+  }
   /**
    * Method selecting a subpath as a new cursor.
    *
@@ -1420,119 +1331,96 @@ var Cursor = function (_Emitter) {
    *
    * @return {Cursor}       - The created cursor.
    */
+  ;
 
-
-  Cursor.prototype.select = function select(path) {
+  _proto.select = function select(path) {
     if (arguments.length > 1) path = (0, _helpers.arrayFrom)(arguments);
-
     return this.tree.select(this.path.concat(path));
-  };
-
+  }
   /**
    * Method returning the parent node of the cursor or else `null` if the
    * cursor is already at root level.
    *
    * @return {Baobab} - The parent cursor.
    */
+  ;
 
-
-  Cursor.prototype.up = function up() {
+  _proto.up = function up() {
     if (!this.isRoot()) return this.tree.select(this.path.slice(0, -1));
-
     return null;
-  };
-
+  }
   /**
    * Method returning the child node of the cursor.
    *
    * @return {Baobab} - The child cursor.
    */
+  ;
 
-
-  Cursor.prototype.down = function down() {
+  _proto.down = function down() {
     checkPossibilityOfDynamicTraversal('down', this.solvedPath);
-
     if (!(this._get().data instanceof Array)) throw Error('Baobab.Cursor.down: cannot go down on a non-list type.');
-
     return this.tree.select(this.solvedPath.concat(0));
-  };
-
+  }
   /**
    * Method returning the left sibling node of the cursor if this one is
    * pointing at a list. Returns `null` if this cursor is already leftmost.
    *
    * @return {Baobab} - The left sibling cursor.
    */
+  ;
 
-
-  Cursor.prototype.left = function left() {
+  _proto.left = function left() {
     checkPossibilityOfDynamicTraversal('left', this.solvedPath);
-
     var last = +this.solvedPath[this.solvedPath.length - 1];
-
     if (isNaN(last)) throw Error('Baobab.Cursor.left: cannot go left on a non-list type.');
-
     return last ? this.tree.select(this.solvedPath.slice(0, -1).concat(last - 1)) : null;
-  };
-
+  }
   /**
    * Method returning the right sibling node of the cursor if this one is
    * pointing at a list. Returns `null` if this cursor is already rightmost.
    *
    * @return {Baobab} - The right sibling cursor.
    */
+  ;
 
-
-  Cursor.prototype.right = function right() {
+  _proto.right = function right() {
     checkPossibilityOfDynamicTraversal('right', this.solvedPath);
-
     var last = +this.solvedPath[this.solvedPath.length - 1];
-
     if (isNaN(last)) throw Error('Baobab.Cursor.right: cannot go right on a non-list type.');
-
     if (last + 1 === this.up()._get().data.length) return null;
-
     return this.tree.select(this.solvedPath.slice(0, -1).concat(last + 1));
-  };
-
+  }
   /**
    * Method returning the leftmost sibling node of the cursor if this one is
    * pointing at a list.
    *
    * @return {Baobab} - The leftmost sibling cursor.
    */
+  ;
 
-
-  Cursor.prototype.leftmost = function leftmost() {
+  _proto.leftmost = function leftmost() {
     checkPossibilityOfDynamicTraversal('leftmost', this.solvedPath);
-
     var last = +this.solvedPath[this.solvedPath.length - 1];
-
     if (isNaN(last)) throw Error('Baobab.Cursor.leftmost: cannot go left on a non-list type.');
-
     return this.tree.select(this.solvedPath.slice(0, -1).concat(0));
-  };
-
+  }
   /**
    * Method returning the rightmost sibling node of the cursor if this one is
    * pointing at a list.
    *
    * @return {Baobab} - The rightmost sibling cursor.
    */
+  ;
 
-
-  Cursor.prototype.rightmost = function rightmost() {
+  _proto.rightmost = function rightmost() {
     checkPossibilityOfDynamicTraversal('rightmost', this.solvedPath);
-
     var last = +this.solvedPath[this.solvedPath.length - 1];
-
     if (isNaN(last)) throw Error('Baobab.Cursor.rightmost: cannot go right on a non-list type.');
 
     var list = this.up()._get().data;
 
     return this.tree.select(this.solvedPath.slice(0, -1).concat(list.length - 1));
-  };
-
+  }
   /**
    * Method mapping the children nodes of the cursor.
    *
@@ -1540,21 +1428,19 @@ var Cursor = function (_Emitter) {
    * @param  {object}   [scope] - An optional scope.
    * @return {array}            - The resultant array.
    */
+  ;
 
-
-  Cursor.prototype.map = function map(fn, scope) {
+  _proto.map = function map(fn, scope) {
     checkPossibilityOfDynamicTraversal('map', this.solvedPath);
 
     var array = this._get().data,
         l = arguments.length;
 
-    if (!_type2.default.array(array)) throw Error('baobab.Cursor.map: cannot map a non-list type.');
-
+    if (!_type["default"].array(array)) throw Error('baobab.Cursor.map: cannot map a non-list type.');
     return array.map(function (item, i) {
       return fn.call(l > 1 ? scope : this, this.select(i), i, array);
     }, this);
-  };
-
+  }
   /**
    * Getter Methods
    * ---------------
@@ -1570,19 +1456,23 @@ var Cursor = function (_Emitter) {
    * @return {mixed}  info.data       - Data at path.
    * @return {array}  info.solvedPath - The path solved when getting.
    */
+  ;
 
+  _proto._get = function _get(path) {
+    if (path === void 0) {
+      path = [];
+    }
 
-  Cursor.prototype._get = function _get() {
-    var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-
-
-    if (!_type2.default.path(path)) throw (0, _helpers.makeError)('Baobab.Cursor.getters: invalid path.', { path: path });
-
-    if (!this.solvedPath) return { data: undefined, solvedPath: null, exists: false };
-
+    if (!_type["default"].path(path)) throw (0, _helpers.makeError)('Baobab.Cursor.getters: invalid path.', {
+      path: path
+    });
+    if (!this.solvedPath) return {
+      data: undefined,
+      solvedPath: null,
+      exists: false
+    };
     return (0, _helpers.getIn)(this.tree._data, this.solvedPath.concat(path));
-  };
-
+  }
   /**
    * Method used to check whether a certain path exists in the tree starting
    * from the current cursor.
@@ -1595,16 +1485,13 @@ var Cursor = function (_Emitter) {
    *
    * @return {boolean}               - Does the given path exists?
    */
+  ;
 
-
-  Cursor.prototype.exists = function exists(path) {
+  _proto.exists = function exists(path) {
     path = (0, _helpers.coercePath)(path);
-
     if (arguments.length > 1) path = (0, _helpers.arrayFrom)(arguments);
-
     return this._get(path).exists;
-  };
-
+  }
   /**
    * Method used to get data from the tree. Will fire a `get` event from the
    * tree so that the user may sometimes react upon it to fetch data, for
@@ -1618,25 +1505,24 @@ var Cursor = function (_Emitter) {
    *
    * @return {mixed}                 - Data at path.
    */
+  ;
 
-
-  Cursor.prototype.get = function get(path) {
+  _proto.get = function get(path) {
     path = (0, _helpers.coercePath)(path);
-
     if (arguments.length > 1) path = (0, _helpers.arrayFrom)(arguments);
 
-    var _get2 = this._get(path),
-        data = _get2.data,
-        solvedPath = _get2.solvedPath;
-
-    // Emitting the event
+    var _this$_get = this._get(path),
+        data = _this$_get.data,
+        solvedPath = _this$_get.solvedPath; // Emitting the event
 
 
-    this.tree.emit('get', { data: data, solvedPath: solvedPath, path: this.path.concat(path) });
-
+    this.tree.emit('get', {
+      data: data,
+      solvedPath: solvedPath,
+      path: this.path.concat(path)
+    });
     return data;
-  };
-
+  }
   /**
    * Method used to shallow clone data from the tree.
    *
@@ -1648,14 +1534,12 @@ var Cursor = function (_Emitter) {
    *
    * @return {mixed}                 - Cloned data at path.
    */
+  ;
 
-
-  Cursor.prototype.clone = function clone() {
+  _proto.clone = function clone() {
     var data = this.get.apply(this, arguments);
-
     return (0, _helpers.shallowClone)(data);
-  };
-
+  }
   /**
    * Method used to deep clone data from the tree.
    *
@@ -1667,14 +1551,12 @@ var Cursor = function (_Emitter) {
    *
    * @return {mixed}                 - Cloned data at path.
    */
+  ;
 
-
-  Cursor.prototype.deepClone = function deepClone() {
+  _proto.deepClone = function deepClone() {
     var data = this.get.apply(this, arguments);
-
     return (0, _helpers.deepClone)(data);
-  };
-
+  }
   /**
    * Method used to return raw data from the tree, by carefully avoiding
    * computed one.
@@ -1690,24 +1572,21 @@ var Cursor = function (_Emitter) {
    *
    * @return {mixed}                 - The retrieved raw data.
    */
+  ;
 
-
-  Cursor.prototype.serialize = function serialize(path) {
+  _proto.serialize = function serialize(path) {
     path = (0, _helpers.coercePath)(path);
-
     if (arguments.length > 1) path = (0, _helpers.arrayFrom)(arguments);
-
-    if (!_type2.default.path(path)) throw (0, _helpers.makeError)('Baobab.Cursor.getters: invalid path.', { path: path });
-
+    if (!_type["default"].path(path)) throw (0, _helpers.makeError)('Baobab.Cursor.getters: invalid path.', {
+      path: path
+    });
     if (!this.solvedPath) return undefined;
-
     var fullPath = this.solvedPath.concat(path);
-
     var data = (0, _helpers.deepClone)((0, _helpers.getIn)(this.tree._data, fullPath).data),
         monkeys = (0, _helpers.getIn)(this.tree._monkeys, fullPath).data;
 
     var dropComputedData = function dropComputedData(d, m) {
-      if (!_type2.default.object(m) || !_type2.default.object(d)) return;
+      if (!_type["default"].object(m) || !_type["default"].object(d)) return;
 
       for (var k in m) {
         if (m[k] instanceof _monkey.Monkey) delete d[k];else dropComputedData(d[k], m[k]);
@@ -1716,34 +1595,38 @@ var Cursor = function (_Emitter) {
 
     dropComputedData(data, monkeys);
     return data;
-  };
-
+  }
   /**
    * Method used to project some of the data at cursor onto a map or a list.
    *
    * @param  {object|array} projection - The projection's formal definition.
    * @return {object|array}            - The resultant map/list.
    */
+  ;
 
-
-  Cursor.prototype.project = function project(projection) {
-    if (_type2.default.object(projection)) {
+  _proto.project = function project(projection) {
+    if (_type["default"].object(projection)) {
       var data = {};
 
       for (var k in projection) {
         data[k] = this.get(projection[k]);
-      }return data;
-    } else if (_type2.default.array(projection)) {
+      }
+
+      return data;
+    } else if (_type["default"].array(projection)) {
       var _data = [];
 
       for (var i = 0, l = projection.length; i < l; i++) {
         _data.push(this.get(projection[i]));
-      }return _data;
+      }
+
+      return _data;
     }
 
-    throw (0, _helpers.makeError)('Baobab.Cursor.project: wrong projection.', { projection: projection });
-  };
-
+    throw (0, _helpers.makeError)('Baobab.Cursor.project: wrong projection.', {
+      projection: projection
+    });
+  }
   /**
    * History Methods
    * ----------------
@@ -1757,95 +1640,83 @@ var Cursor = function (_Emitter) {
    *                                  will keep everything.
    * @return {Cursor}               - The cursor instance for chaining purposes.
    */
+  ;
 
-
-  Cursor.prototype.startRecording = function startRecording(maxRecords) {
+  _proto.startRecording = function startRecording(maxRecords) {
     maxRecords = maxRecords || Infinity;
-
     if (maxRecords < 1) throw (0, _helpers.makeError)('Baobab.Cursor.startRecording: invalid max records.', {
       value: maxRecords
     });
-
     this.state.recording = true;
+    if (this.archive) return this; // Lazy binding
 
-    if (this.archive) return this;
-
-    // Lazy binding
     this._lazyBind();
 
     this.archive = new _helpers.Archive(maxRecords);
     return this;
-  };
-
+  }
   /**
    * Methods stopping to record the cursor's successive states.
    *
    * @return {Cursor} - The cursor instance for chaining purposes.
    */
+  ;
 
-
-  Cursor.prototype.stopRecording = function stopRecording() {
+  _proto.stopRecording = function stopRecording() {
     this.state.recording = false;
     return this;
-  };
-
+  }
   /**
    * Methods undoing n steps of the cursor's recorded states.
    *
    * @param  {integer} [steps=1] - The number of steps to rollback.
    * @return {Cursor}            - The cursor instance for chaining purposes.
    */
+  ;
 
-
-  Cursor.prototype.undo = function undo() {
-    var steps = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+  _proto.undo = function undo(steps) {
+    if (steps === void 0) {
+      steps = 1;
+    }
 
     if (!this.state.recording) throw new Error('Baobab.Cursor.undo: cursor is not recording.');
-
     var record = this.archive.back(steps);
-
     if (!record) throw Error('Baobab.Cursor.undo: cannot find a relevant record.');
-
     this.state.undoing = true;
     this.set(record);
-
     return this;
-  };
-
+  }
   /**
    * Methods returning whether the cursor has a recorded history.
    *
    * @return {boolean} - `true` if the cursor has a recorded history?
    */
+  ;
 
-
-  Cursor.prototype.hasHistory = function hasHistory() {
+  _proto.hasHistory = function hasHistory() {
     return !!(this.archive && this.archive.get().length);
-  };
-
+  }
   /**
    * Methods returning the cursor's history.
    *
    * @return {array} - The cursor's history.
    */
+  ;
 
-
-  Cursor.prototype.getHistory = function getHistory() {
+  _proto.getHistory = function getHistory() {
     return this.archive ? this.archive.get() : [];
-  };
-
+  }
   /**
    * Methods clearing the cursor's history.
    *
    * @return {Cursor} - The cursor instance for chaining purposes.
    */
+  ;
 
-
-  Cursor.prototype.clearHistory = function clearHistory() {
+  _proto.clearHistory = function clearHistory() {
     if (this.archive) this.archive.clear();
     return this;
-  };
-
+  }
   /**
    * Releasing
    * ----------
@@ -1854,29 +1725,23 @@ var Cursor = function (_Emitter) {
   /**
    * Methods releasing the cursor from memory.
    */
+  ;
 
-
-  Cursor.prototype.release = function release() {
-
+  _proto.release = function release() {
     // Removing listeners on parent
     if (this._dynamicPath) this.tree.off('write', this._writeHandler);
+    this.tree.off('update', this._updateHandler); // Unsubscribe from the parent
 
-    this.tree.off('update', this._updateHandler);
+    if (this.hash) delete this.tree._cursors[this.hash]; // Dereferencing
 
-    // Unsubscribe from the parent
-    if (this.hash) delete this.tree._cursors[this.hash];
-
-    // Dereferencing
     delete this.tree;
     delete this.path;
     delete this.solvedPath;
-    delete this.archive;
+    delete this.archive; // Killing emitter
 
-    // Killing emitter
     this.kill();
     this.state.killed = true;
-  };
-
+  }
   /**
    * Output
    * -------
@@ -1887,26 +1752,24 @@ var Cursor = function (_Emitter) {
    *
    * @return {mixed} - Data at cursor.
    */
+  ;
 
-
-  Cursor.prototype.toJSON = function toJSON() {
+  _proto.toJSON = function toJSON() {
     return this.serialize();
-  };
-
+  }
   /**
    * Overriding the `toString` method for debugging purposes.
    *
    * @return {string} - The cursor's identity.
    */
+  ;
 
-
-  Cursor.prototype.toString = function toString() {
+  _proto.toString = function toString() {
     return this._identity;
   };
 
   return Cursor;
-}(_emmett2.default);
-
+}(_emmett["default"]);
 /**
  * Method used to allow iterating over cursors containing list-type data.
  *
@@ -1916,18 +1779,16 @@ var Cursor = function (_Emitter) {
  */
 
 
-exports.default = Cursor;
+exports["default"] = Cursor;
+
 if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
   Cursor.prototype[Symbol.iterator] = function () {
     var array = this._get().data;
 
-    if (!_type2.default.array(array)) throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
-
+    if (!_type["default"].array(array)) throw Error('baobab.Cursor.@@iterate: cannot iterate a non-list type.');
     var i = 0;
-
     var cursor = this,
         length = array.length;
-
     return {
       next: function next() {
         if (i < length) {
@@ -1943,21 +1804,20 @@ if (typeof Symbol === 'function' && typeof Symbol.iterator !== 'undefined') {
     };
   };
 }
-
 /**
  * Setter Methods
  * ---------------
  *
  * Those methods are dynamically assigned to the class for DRY reasons.
  */
-
 // Not using a Set so that ES5 consumers don't pay a bundle size price
+
+
 var INTRANSITIVE_SETTERS = {
   unset: true,
   pop: true,
   shift: true
 };
-
 /**
  * Function creating a setter method for the Cursor class.
  *
@@ -1965,8 +1825,8 @@ var INTRANSITIVE_SETTERS = {
  * @param {function} [typeChecker] - a function checking that the given value is
  *                                   valid for the given operation.
  */
-function makeSetter(name, typeChecker) {
 
+function makeSetter(name, typeChecker) {
   /**
    * Binding a setter method to the Cursor class and having the following
    * definition.
@@ -1987,62 +1847,59 @@ function makeSetter(name, typeChecker) {
    * @return {mixed}       - Data at path.
    */
   Cursor.prototype[name] = function (path, value) {
-
     // We should warn the user if he applies to many arguments to the function
-    if (arguments.length > 2) throw (0, _helpers.makeError)('Baobab.Cursor.' + name + ': too many arguments.');
+    if (arguments.length > 2) throw (0, _helpers.makeError)("Baobab.Cursor." + name + ": too many arguments."); // Handling arities
 
-    // Handling arities
     if (arguments.length === 1 && !INTRANSITIVE_SETTERS[name]) {
       value = path;
       path = [];
-    }
+    } // Coerce path
 
-    // Coerce path
-    path = (0, _helpers.coercePath)(path);
 
-    // Checking the path's validity
-    if (!_type2.default.path(path)) throw (0, _helpers.makeError)('Baobab.Cursor.' + name + ': invalid path.', { path: path });
+    path = (0, _helpers.coercePath)(path); // Checking the path's validity
 
-    // Checking the value's validity
-    if (typeChecker && !typeChecker(value)) throw (0, _helpers.makeError)('Baobab.Cursor.' + name + ': invalid value.', { path: path, value: value });
+    if (!_type["default"].path(path)) throw (0, _helpers.makeError)("Baobab.Cursor." + name + ": invalid path.", {
+      path: path
+    }); // Checking the value's validity
 
-    // Checking the solvability of the cursor's dynamic path
-    if (!this.solvedPath) throw (0, _helpers.makeError)('Baobab.Cursor.' + name + ': the dynamic path of the cursor cannot be solved.', { path: this.path });
+    if (typeChecker && !typeChecker(value)) throw (0, _helpers.makeError)("Baobab.Cursor." + name + ": invalid value.", {
+      path: path,
+      value: value
+    }); // Checking the solvability of the cursor's dynamic path
 
-    var fullPath = this.solvedPath.concat(path);
+    if (!this.solvedPath) throw (0, _helpers.makeError)("Baobab.Cursor." + name + ": the dynamic path of the cursor cannot be solved.", {
+      path: this.path
+    });
+    var fullPath = this.solvedPath.concat(path); // Filing the update to the tree
 
-    // Filing the update to the tree
     return this.tree.update(fullPath, {
       type: name,
       value: value
     });
   };
 }
-
 /**
  * Making the necessary setters.
  */
+
+
 makeSetter('set');
 makeSetter('unset');
-makeSetter('apply', _type2.default.function);
+makeSetter('apply', _type["default"]["function"]);
 makeSetter('push');
-makeSetter('concat', _type2.default.array);
+makeSetter('concat', _type["default"].array);
 makeSetter('unshift');
 makeSetter('pop');
 makeSetter('shift');
-makeSetter('splice', _type2.default.splicer);
-makeSetter('merge', _type2.default.object);
-makeSetter('deepMerge', _type2.default.object);
+makeSetter('splice', _type["default"].splicer);
+makeSetter('merge', _type["default"].object);
+makeSetter('deepMerge', _type["default"].object);
 
 },{"./helpers":4,"./monkey":5,"./type":6,"emmett":1}],4:[function(require,module,exports){
 (function (global){
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-exports.uniqid = exports.deepMerge = exports.shallowMerge = exports.deepFreeze = exports.freeze = exports.deepClone = exports.shallowClone = exports.Archive = undefined;
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 exports.arrayFrom = arrayFrom;
 exports.before = before;
 exports.coercePath = coercePath;
@@ -2052,27 +1909,25 @@ exports.hashPath = hashPath;
 exports.solveRelativePath = solveRelativePath;
 exports.solveUpdate = solveUpdate;
 exports.splice = splice;
+exports.uniqid = exports.deepMerge = exports.shallowMerge = exports.deepFreeze = exports.freeze = exports.deepClone = exports.shallowClone = exports.Archive = void 0;
 
-var _monkey = require('./monkey');
+var _monkey = require("./monkey");
 
-var _type = require('./type');
+var _type = _interopRequireDefault(require("./type"));
 
-var _type2 = _interopRequireDefault(_type);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+/* eslint eqeqeq: 0 */
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /* eslint eqeqeq: 0 */
 /* eslint no-use-before-define: 0 */
+
 /**
  * Baobab Helpers
  * ===============
  *
  * Miscellaneous helper functions.
  */
-
-
 var hasOwnProp = {}.hasOwnProperty;
-
 /**
  * Function returning the index of the first element of a list matching the
  * given predicate.
@@ -2081,32 +1936,34 @@ var hasOwnProp = {}.hasOwnProperty;
  * @param  {function}  fn - The predicate function.
  * @return {mixed}        - The index of the first matching item or -1.
  */
+
 function index(a, fn) {
-  var i = void 0,
-      l = void 0;
+  var i, l;
+
   for (i = 0, l = a.length; i < l; i++) {
     if (fn(a[i])) return i;
   }
+
   return -1;
 }
-
 /**
  * Efficient slice function used to clone arrays or parts of them.
  *
  * @param  {array} array - The array to slice.
  * @return {array}       - The sliced array.
  */
+
+
 function slice(array) {
   var newArray = new Array(array.length);
-
-  var i = void 0,
-      l = void 0;
+  var i, l;
 
   for (i = 0, l = array.length; i < l; i++) {
     newArray[i] = array[i];
-  }return newArray;
-}
+  }
 
+  return newArray;
+}
 /**
  * Archive abstraction
  *
@@ -2114,14 +1971,14 @@ function slice(array) {
  * @param {integer} size - Maximum number of records to store.
  */
 
-var Archive = exports.Archive = function () {
-  function Archive(size) {
-    _classCallCheck(this, Archive);
 
+var Archive =
+/*#__PURE__*/
+function () {
+  function Archive(size) {
     this.size = size;
     this.records = [];
   }
-
   /**
    * Method retrieving the records.
    *
@@ -2129,57 +1986,52 @@ var Archive = exports.Archive = function () {
    */
 
 
-  Archive.prototype.get = function get() {
-    return this.records;
-  };
+  var _proto = Archive.prototype;
 
+  _proto.get = function get() {
+    return this.records;
+  }
   /**
    * Method adding a record to the archive
    *
    * @param {object}  record - The record to store.
    * @return {Archive}       - The archive itself for chaining purposes.
    */
+  ;
 
+  _proto.add = function add(record) {
+    this.records.unshift(record); // If the number of records is exceeded, we truncate the records
 
-  Archive.prototype.add = function add(record) {
-    this.records.unshift(record);
-
-    // If the number of records is exceeded, we truncate the records
     if (this.records.length > this.size) this.records.length = this.size;
-
     return this;
-  };
-
+  }
   /**
    * Method clearing the records.
    *
    * @return {Archive} - The archive itself for chaining purposes.
    */
+  ;
 
-
-  Archive.prototype.clear = function clear() {
+  _proto.clear = function clear() {
     this.records = [];
     return this;
-  };
-
+  }
   /**
    * Method to go back in time.
    *
    * @param {integer} steps - Number of steps we should go back by.
    * @return {number}       - The last record.
    */
+  ;
 
-
-  Archive.prototype.back = function back(steps) {
+  _proto.back = function back(steps) {
     var record = this.records[steps - 1];
-
     if (record) this.records = this.records.slice(steps);
     return record;
   };
 
   return Archive;
 }();
-
 /**
  * Function creating a real array from what should be an array but is not.
  * I'm looking at you nasty `arguments`...
@@ -2189,10 +2041,11 @@ var Archive = exports.Archive = function () {
  */
 
 
+exports.Archive = Archive;
+
 function arrayFrom(culprit) {
   return slice(culprit);
 }
-
 /**
  * Function decorating one function with another that will be called before the
  * decorated one.
@@ -2201,13 +2054,14 @@ function arrayFrom(culprit) {
  * @param  {function} fn        - The function to decorate.
  * @return {function}           - The decorated function.
  */
+
+
 function before(decorator, fn) {
   return function () {
     decorator.apply(null, arguments);
     fn.apply(null, arguments);
   };
 }
-
 /**
  * Function cloning the given regular expression. Supports `y` and `u` flags
  * already.
@@ -2215,20 +2069,18 @@ function before(decorator, fn) {
  * @param  {RegExp} re - The target regular expression.
  * @return {RegExp}    - The cloned regular expression.
  */
+
+
 function cloneRegexp(re) {
   var pattern = re.source;
-
   var flags = '';
-
   if (re.global) flags += 'g';
   if (re.multiline) flags += 'm';
   if (re.ignoreCase) flags += 'i';
   if (re.sticky) flags += 'y';
   if (re.unicode) flags += 'u';
-
   return new RegExp(pattern, flags);
 }
-
 /**
  * Function cloning the given variable.
  *
@@ -2238,37 +2090,39 @@ function cloneRegexp(re) {
  * @param  {mixed}   item - The variable to clone
  * @return {mixed}        - The cloned variable.
  */
-function cloner(deep, item) {
-  if (!item || (typeof item === 'undefined' ? 'undefined' : _typeof(item)) !== 'object' || item instanceof Error || item instanceof _monkey.MonkeyDefinition || item instanceof _monkey.Monkey || 'ArrayBuffer' in global && item instanceof ArrayBuffer) return item;
 
-  // Array
-  if (_type2.default.array(item)) {
+
+function cloner(deep, item) {
+  if (!item || typeof item !== 'object' || item instanceof Error || item instanceof _monkey.MonkeyDefinition || item instanceof _monkey.Monkey || 'ArrayBuffer' in global && item instanceof ArrayBuffer) return item; // Array
+
+  if (_type["default"].array(item)) {
     if (deep) {
       var a = new Array(item.length);
 
       for (var i = 0, l = item.length; i < l; i++) {
         a[i] = cloner(true, item[i]);
-      }return a;
+      }
+
+      return a;
     }
 
     return slice(item);
-  }
+  } // Date
 
-  // Date
-  if (item instanceof Date) return new Date(item.getTime());
 
-  // RegExp
-  if (item instanceof RegExp) return cloneRegexp(item);
+  if (item instanceof Date) return new Date(item.getTime()); // RegExp
 
-  // Object
-  if (_type2.default.object(item)) {
-    var o = {};
+  if (item instanceof RegExp) return cloneRegexp(item); // Object
 
-    // NOTE: could be possible to erase computed properties through `null`.
+  if (_type["default"].object(item)) {
+    var o = {}; // NOTE: could be possible to erase computed properties through `null`.
+
     var props = Object.getOwnPropertyNames(item);
+
     for (var _i = 0, _l = props.length; _i < _l; _i++) {
       var name = props[_i];
       var k = Object.getOwnPropertyDescriptor(item, name);
+
       if (k.enumerable === true) {
         if (k.get && k.get.isLazyGetter) {
           Object.defineProperty(o, name, {
@@ -2288,20 +2142,21 @@ function cloner(deep, item) {
         });
       }
     }
+
     return o;
   }
 
   return item;
 }
-
 /**
  * Exporting shallow and deep cloning functions.
  */
+
+
 var shallowClone = cloner.bind(null, false),
     deepClone = cloner.bind(null, true);
-
-exports.shallowClone = shallowClone;
 exports.deepClone = deepClone;
+exports.shallowClone = shallowClone;
 
 /**
  * Coerce the given variable into a full-fledged path.
@@ -2309,12 +2164,10 @@ exports.deepClone = deepClone;
  * @param  {mixed} target - The variable to coerce.
  * @return {array}        - The array path.
  */
-
 function coercePath(target) {
   if (target || target === 0 || target === '') return target;
   return [];
 }
-
 /**
  * Function comparing an object's properties to a given descriptive
  * object.
@@ -2323,18 +2176,19 @@ function coercePath(target) {
  * @param  {object} description - The description's mapping.
  * @return {boolean}            - Whether the object matches the description.
  */
+
+
 function compare(object, description) {
   var ok = true,
-      k = void 0;
-
-  // If we reached here via a recursive call, object may be undefined because
+      k; // If we reached here via a recursive call, object may be undefined because
   // not all items in a collection will have the same deep nesting structure.
+
   if (!object) return false;
 
   for (k in description) {
-    if (_type2.default.object(description[k])) {
+    if (_type["default"].object(description[k])) {
       ok = ok && compare(object[k], description[k]);
-    } else if (_type2.default.array(description[k])) {
+    } else if (_type["default"].array(description[k])) {
       ok = ok && !!~description[k].indexOf(object[k]);
     } else {
       if (object[k] !== description[k]) return false;
@@ -2343,7 +2197,6 @@ function compare(object, description) {
 
   return ok;
 }
-
 /**
  * Function freezing the given variable if possible.
  *
@@ -2351,33 +2204,27 @@ function compare(object, description) {
  * @param  {object}  o    - The variable to freeze.
  * @return {object}    - The merged object.
  */
+
+
 function freezer(deep, o) {
-  if ((typeof o === 'undefined' ? 'undefined' : _typeof(o)) !== 'object' || o === null || o instanceof _monkey.Monkey) return;
-
+  if (typeof o !== 'object' || o === null || o instanceof _monkey.Monkey) return;
   Object.freeze(o);
-
   if (!deep) return;
 
   if (Array.isArray(o)) {
-
     // Iterating through the elements
-    var i = void 0,
-        l = void 0;
+    var i, l;
 
     for (i = 0, l = o.length; i < l; i++) {
       deepFreeze(o[i]);
     }
   } else {
-    var p = void 0,
-        k = void 0;
+    var p, k;
 
     for (k in o) {
-      if (_type2.default.lazyGetter(o, k)) continue;
-
+      if (_type["default"].lazyGetter(o, k)) continue;
       p = o[k];
-
-      if (!p || !hasOwnProp.call(o, k) || (typeof p === 'undefined' ? 'undefined' : _typeof(p)) !== 'object' || Object.isFrozen(p)) continue;
-
+      if (!p || !hasOwnProp.call(o, k) || typeof p !== 'object' || Object.isFrozen(p)) continue;
       deepFreeze(p);
     }
   }
@@ -2385,9 +2232,8 @@ function freezer(deep, o) {
 
 var freeze = freezer.bind(null, false),
     deepFreeze = freezer.bind(null, true);
-
-exports.freeze = freeze;
 exports.deepFreeze = deepFreeze;
+exports.freeze = freeze;
 
 /**
  * Function retrieving nested data within the given object and according to
@@ -2403,19 +2249,20 @@ exports.deepFreeze = deepFreeze;
  * @return {array}   result.solvedPath - The solved path or `null`.
  * @return {boolean} result.exists     - Does the path exists in the tree?
  */
-
-var NOT_FOUND_OBJECT = { data: undefined, solvedPath: null, exists: false };
+var NOT_FOUND_OBJECT = {
+  data: undefined,
+  solvedPath: null,
+  exists: false
+};
 
 function getIn(object, path) {
   if (!path) return NOT_FOUND_OBJECT;
-
   var solvedPath = [];
-
   var exists = true,
       c = object,
-      idx = void 0,
-      i = void 0,
-      l = void 0;
+      idx,
+      i,
+      l;
 
   for (i = 0, l = path.length; i < l; i++) {
     if (!c) return {
@@ -2425,33 +2272,32 @@ function getIn(object, path) {
     };
 
     if (typeof path[i] === 'function') {
-      if (!_type2.default.array(c)) return NOT_FOUND_OBJECT;
-
+      if (!_type["default"].array(c)) return NOT_FOUND_OBJECT;
       idx = index(c, path[i]);
       if (!~idx) return NOT_FOUND_OBJECT;
-
       solvedPath.push(idx);
       c = c[idx];
-    } else if (_typeof(path[i]) === 'object') {
-      if (!_type2.default.array(c)) return NOT_FOUND_OBJECT;
-
+    } else if (typeof path[i] === 'object') {
+      if (!_type["default"].array(c)) return NOT_FOUND_OBJECT;
       idx = index(c, function (e) {
         return compare(e, path[i]);
       });
       if (!~idx) return NOT_FOUND_OBJECT;
-
       solvedPath.push(idx);
       c = c[idx];
     } else {
       solvedPath.push(path[i]);
-      exists = (typeof c === 'undefined' ? 'undefined' : _typeof(c)) === 'object' && path[i] in c;
+      exists = typeof c === 'object' && path[i] in c;
       c = c[path[i]];
     }
   }
 
-  return { data: c, solvedPath: solvedPath, exists: exists };
+  return {
+    data: c,
+    solvedPath: solvedPath,
+    exists: exists
+  };
 }
-
 /**
  * Little helper returning a JavaScript error carrying some data with it.
  *
@@ -2459,14 +2305,17 @@ function getIn(object, path) {
  * @param  {object} [data]  - Optional data to assign to the error.
  * @return {Error}          - The created error.
  */
+
+
 function makeError(message, data) {
   var err = new Error(message);
 
   for (var k in data) {
     err[k] = data[k];
-  }return err;
-}
+  }
 
+  return err;
+}
 /**
  * Function taking n objects to merge them together.
  * Note 1): the latter object will take precedence over the first one.
@@ -2477,23 +2326,21 @@ function makeError(message, data) {
  * @param  {...object} objects - Objects to merge.
  * @return {object}            - The merged object.
  */
+
+
 function merger(deep) {
-  for (var _len = arguments.length, objects = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+  for (var _len = arguments.length, objects = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
     objects[_key - 1] = arguments[_key];
   }
 
   var o = objects[0];
-
-  var t = void 0,
-      i = void 0,
-      l = void 0,
-      k = void 0;
+  var t, i, l, k;
 
   for (i = 1, l = objects.length; i < l; i++) {
     t = objects[i];
 
     for (k in t) {
-      if (deep && _type2.default.object(t[k]) && !(t[k] instanceof _monkey.Monkey)) {
+      if (deep && _type["default"].object(t[k]) && !(t[k] instanceof _monkey.Monkey)) {
         o[k] = merger(true, o[k] || {}, t[k]);
       } else {
         o[k] = t[k];
@@ -2503,15 +2350,15 @@ function merger(deep) {
 
   return o;
 }
-
 /**
  * Exporting both `shallowMerge` and `deepMerge` functions.
  */
+
+
 var shallowMerge = merger.bind(null, false),
     deepMerge = merger.bind(null, true);
-
-exports.shallowMerge = shallowMerge;
 exports.deepMerge = deepMerge;
+exports.shallowMerge = shallowMerge;
 
 /**
  * Function returning a string hash from a non-dynamic path expressed as an
@@ -2520,15 +2367,12 @@ exports.deepMerge = deepMerge;
  * @param  {array}  path - The path to hash.
  * @return {string} string - The resultant hash.
  */
-
 function hashPath(path) {
   return 'λ' + path.map(function (step) {
-    if (_type2.default.function(step) || _type2.default.object(step)) return '#' + uniqid() + '#';
-
+    if (_type["default"]["function"](step) || _type["default"].object(step)) return "#" + uniqid() + "#";
     return step;
   }).join('λ');
 }
-
 /**
  * Solving a potentially relative path.
  *
@@ -2536,10 +2380,11 @@ function hashPath(path) {
  * @param  {array} to   - The subpath to reach.
  * @param  {array}      - The solved absolute path.
  */
-function solveRelativePath(base, to) {
-  var solvedPath = [];
 
-  // Coercing to array
+
+function solveRelativePath(base, to) {
+  var solvedPath = []; // Coercing to array
+
   to = [].concat(to);
 
   for (var i = 0, l = to.length; i < l; i++) {
@@ -2556,7 +2401,6 @@ function solveRelativePath(base, to) {
 
   return solvedPath;
 }
-
 /**
  * Function determining whether some paths in the tree were affected by some
  * updates that occurred at the given paths. This helper is mainly used at
@@ -2575,38 +2419,25 @@ function solveRelativePath(base, to) {
  * @return {boolean}             - Is the update relevant to the compared
  *                                 paths?
  */
-function solveUpdate(affectedPaths, comparedPaths) {
-  var i = void 0,
-      j = void 0,
-      k = void 0,
-      l = void 0,
-      m = void 0,
-      n = void 0,
-      p = void 0,
-      c = void 0,
-      s = void 0;
 
-  // Looping through possible paths
+
+function solveUpdate(affectedPaths, comparedPaths) {
+  var i, j, k, l, m, n, p, c, s; // Looping through possible paths
+
   for (i = 0, l = affectedPaths.length; i < l; i++) {
     p = affectedPaths[i];
+    if (!p.length) return true; // Looping through logged paths
 
-    if (!p.length) return true;
-
-    // Looping through logged paths
     for (j = 0, m = comparedPaths.length; j < m; j++) {
       c = comparedPaths[j];
+      if (!c || !c.length) return true; // Looping through steps
 
-      if (!c || !c.length) return true;
-
-      // Looping through steps
       for (k = 0, n = c.length; k < n; k++) {
-        s = c[k];
-
-        // If path is not relevant, we break
+        s = c[k]; // If path is not relevant, we break
         // NOTE: the '!=' instead of '!==' is required here!
-        if (s != p[k]) break;
 
-        // If we reached last item and we are relevant
+        if (s != p[k]) break; // If we reached last item and we are relevant
+
         if (k + 1 === n || k + 1 === p.length) return true;
       }
     }
@@ -2614,7 +2445,6 @@ function solveUpdate(affectedPaths, comparedPaths) {
 
   return false;
 }
-
 /**
  * Non-mutative version of the splice array method.
  *
@@ -2624,35 +2454,34 @@ function solveUpdate(affectedPaths, comparedPaths) {
  * @param  {...mixed} elements     - Elements to append after splicing.
  * @return {array}                 - The spliced array.
  */
+
+
 function splice(array, startIndex, nb) {
-  for (var _len2 = arguments.length, elements = Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
+  for (var _len2 = arguments.length, elements = new Array(_len2 > 3 ? _len2 - 3 : 0), _key2 = 3; _key2 < _len2; _key2++) {
     elements[_key2 - 3] = arguments[_key2];
   }
 
-  if (nb === undefined && arguments.length === 2) nb = array.length - startIndex;else if (nb === null || nb === undefined) nb = 0;else if (isNaN(+nb)) throw new Error('argument nb ' + nb + ' can not be parsed into a number!');
-  nb = Math.max(0, nb);
+  if (nb === undefined && arguments.length === 2) nb = array.length - startIndex;else if (nb === null || nb === undefined) nb = 0;else if (isNaN(+nb)) throw new Error("argument nb " + nb + " can not be parsed into a number!");
+  nb = Math.max(0, nb); // Solving startIndex
 
-  // Solving startIndex
-  if (_type2.default.function(startIndex)) startIndex = index(array, startIndex);
-  if (_type2.default.object(startIndex)) startIndex = index(array, function (e) {
+  if (_type["default"]["function"](startIndex)) startIndex = index(array, startIndex);
+  if (_type["default"].object(startIndex)) startIndex = index(array, function (e) {
     return compare(e, startIndex);
-  });
+  }); // Positive index
 
-  // Positive index
-  if (startIndex >= 0) return array.slice(0, startIndex).concat(elements).concat(array.slice(startIndex + nb));
+  if (startIndex >= 0) return array.slice(0, startIndex).concat(elements).concat(array.slice(startIndex + nb)); // Negative index
 
-  // Negative index
   return array.slice(0, array.length + startIndex).concat(elements).concat(array.slice(array.length + startIndex + nb));
 }
-
 /**
  * Function returning a unique incremental id each time it is called.
  *
  * @return {integer} - The latest unique id.
  */
+
+
 var uniqid = function () {
   var i = 0;
-
   return function () {
     return i++;
   };
@@ -2662,30 +2491,25 @@ exports.uniqid = uniqid;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./monkey":5,"./type":6}],5:[function(require,module,exports){
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-exports.Monkey = exports.MonkeyDefinition = undefined;
+exports.Monkey = exports.MonkeyDefinition = void 0;
 
-var _type = require('./type');
+var _type = _interopRequireDefault(require("./type"));
 
-var _type2 = _interopRequireDefault(_type);
+var _update2 = _interopRequireDefault(require("./update"));
 
-var _update2 = require('./update');
+var _helpers = require("./helpers");
 
-var _update3 = _interopRequireDefault(_update2);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _helpers = require('./helpers');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
-                                                                                                                                                           * Baobab Monkeys
-                                                                                                                                                           * ===============
-                                                                                                                                                           *
-                                                                                                                                                           * Exposing both handy monkey definitions and the underlying working class.
-                                                                                                                                                           */
-
+/**
+ * Baobab Monkeys
+ * ===============
+ *
+ * Exposing both handy monkey definitions and the underlying working class.
+ */
 
 /**
  * Monkey Definition class
@@ -2695,15 +2519,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * @constructor
  * @param {array|object} definition - The formal definition of the monkey.
  */
-var MonkeyDefinition = exports.MonkeyDefinition = function MonkeyDefinition(definition) {
+var MonkeyDefinition = function MonkeyDefinition(definition) {
   var _this = this;
 
-  _classCallCheck(this, MonkeyDefinition);
+  var monkeyType = _type["default"].monkeyDefinition(definition);
 
-  var monkeyType = _type2.default.monkeyDefinition(definition);
-
-  if (!monkeyType) throw (0, _helpers.makeError)('Baobab.monkey: invalid definition.', { definition: definition });
-
+  if (!monkeyType) throw (0, _helpers.makeError)('Baobab.monkey: invalid definition.', {
+    definition: definition
+  });
   this.type = monkeyType;
 
   if (this.type === 'object') {
@@ -2717,7 +2540,7 @@ var MonkeyDefinition = exports.MonkeyDefinition = function MonkeyDefinition(defi
     var offset = 1,
         options = {};
 
-    if (_type2.default.object(definition[definition.length - 1])) {
+    if (_type["default"].object(definition[definition.length - 1])) {
       offset++;
       options = definition[definition.length - 1];
     }
@@ -2726,17 +2549,15 @@ var MonkeyDefinition = exports.MonkeyDefinition = function MonkeyDefinition(defi
     this.projection = definition.slice(0, -offset);
     this.paths = this.projection;
     this.options = options;
-  }
+  } // Coercing paths for convenience
 
-  // Coercing paths for convenience
+
   this.paths = this.paths.map(function (p) {
     return [].concat(p);
-  });
+  }); // Does the definition contain dynamic paths
 
-  // Does the definition contain dynamic paths
-  this.hasDynamicPaths = this.paths.some(_type2.default.dynamicPath);
+  this.hasDynamicPaths = this.paths.some(_type["default"].dynamicPath);
 };
-
 /**
  * Monkey core class
  *
@@ -2746,18 +2567,19 @@ var MonkeyDefinition = exports.MonkeyDefinition = function MonkeyDefinition(defi
  */
 
 
-var Monkey = exports.Monkey = function () {
+exports.MonkeyDefinition = MonkeyDefinition;
+
+var Monkey =
+/*#__PURE__*/
+function () {
   function Monkey(tree, pathInTree, definition) {
     var _this2 = this;
-
-    _classCallCheck(this, Monkey);
 
     // Properties
     this.tree = tree;
     this.path = pathInTree;
-    this.definition = definition;
+    this.definition = definition; // Adapting the definition's paths & projection to this monkey's case
 
-    // Adapting the definition's paths & projection to this monkey's case
     var projection = definition.projection,
         relative = _helpers.solveRelativePath.bind(null, pathInTree.slice(0, -1));
 
@@ -2772,13 +2594,12 @@ var Monkey = exports.Monkey = function () {
     } else {
       this.projection = projection.map(relative);
       this.depPaths = this.projection;
-    }
+    } // Internal state
 
-    // Internal state
+
     this.state = {
       killed: false
     };
-
     /**
      * Listener on the tree's `write` event.
      *
@@ -2786,17 +2607,14 @@ var Monkey = exports.Monkey = function () {
      * are of any use to the monkey and, if so, will update the tree's node
      * where the monkey sits.
      */
+
     this.writeListener = function (_ref) {
       var path = _ref.data.path;
+      if (_this2.state.killed) return; // Is the monkey affected by the current write event?
 
-      if (_this2.state.killed) return;
-
-      // Is the monkey affected by the current write event?
       var concerned = (0, _helpers.solveUpdate)([path], _this2.relatedPaths());
-
       if (concerned) _this2.update();
     };
-
     /**
      * Listener on the tree's `monkey` event.
      *
@@ -2804,30 +2622,26 @@ var Monkey = exports.Monkey = function () {
      * updated paths are of any use to the monkey and, if so, will update the
      * tree's node where the monkey sits.
      */
+
+
     this.recursiveListener = function (_ref2) {
       var _ref2$data = _ref2.data,
           monkey = _ref2$data.monkey,
           path = _ref2$data.path;
+      if (_this2.state.killed) return; // Breaking if this is the same monkey
 
-      if (_this2.state.killed) return;
+      if (_this2 === monkey) return; // Is the monkey affected by the current monkey event?
 
-      // Breaking if this is the same monkey
-      if (_this2 === monkey) return;
-
-      // Is the monkey affected by the current monkey event?
       var concerned = (0, _helpers.solveUpdate)([path], _this2.relatedPaths(false));
-
       if (concerned) _this2.update();
-    };
+    }; // Binding listeners
 
-    // Binding listeners
+
     this.tree.on('write', this.writeListener);
-    this.tree.on('_monkey', this.recursiveListener);
+    this.tree.on('_monkey', this.recursiveListener); // Updating relevant node
 
-    // Updating relevant node
     this.update();
   }
-
   /**
    * Method returning solved paths related to the monkey.
    *
@@ -2836,44 +2650,41 @@ var Monkey = exports.Monkey = function () {
    */
 
 
-  Monkey.prototype.relatedPaths = function relatedPaths() {
+  var _proto = Monkey.prototype;
+
+  _proto.relatedPaths = function relatedPaths(recursive) {
     var _this3 = this;
 
-    var recursive = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+    if (recursive === void 0) {
+      recursive = true;
+    }
 
-    var paths = void 0;
-
+    var paths;
     if (this.definition.hasDynamicPaths) paths = this.depPaths.map(function (p) {
       return (0, _helpers.getIn)(_this3.tree._data, p).solvedPath;
     });else paths = this.depPaths;
-
     var isRecursive = recursive && this.depPaths.some(function (p) {
-      return !!_type2.default.monkeyPath(_this3.tree._monkeys, p);
+      return !!_type["default"].monkeyPath(_this3.tree._monkeys, p);
     });
-
     if (!isRecursive) return paths;
-
     return paths.reduce(function (accumulatedPaths, path) {
-      var monkeyPath = _type2.default.monkeyPath(_this3.tree._monkeys, path);
+      var monkeyPath = _type["default"].monkeyPath(_this3.tree._monkeys, path);
 
-      if (!monkeyPath) return accumulatedPaths.concat([path]);
+      if (!monkeyPath) return accumulatedPaths.concat([path]); // Solving recursive path
 
-      // Solving recursive path
       var relatedMonkey = (0, _helpers.getIn)(_this3.tree._monkeys, monkeyPath).data;
-
       return accumulatedPaths.concat(relatedMonkey.relatedPaths());
     }, []);
-  };
-
+  }
   /**
    * Method used to update the tree's internal data with a lazy getter holding
    * the computed data.
    *
    * @return {Monkey} - Returns itself for chaining purposes.
    */
+  ;
 
-
-  Monkey.prototype.update = function update() {
+  _proto.update = function update() {
     var _this4 = this;
 
     var deps = this.tree.project(this.projection);
@@ -2881,18 +2692,13 @@ var Monkey = exports.Monkey = function () {
     var lazyGetter = function (tree, def, data) {
       var cache = null,
           alreadyComputed = false;
-
       return function () {
-
         if (!alreadyComputed) {
           cache = def.getter.apply(tree, def.type === 'object' ? [data] : data);
+          if (tree.options.immutable && def.options.immutable !== false) (0, _helpers.deepFreeze)(cache); // update tree affected paths
 
-          if (tree.options.immutable && def.options.immutable !== false) (0, _helpers.deepFreeze)(cache);
-
-          // update tree affected paths
           var hash = (0, _helpers.hashPath)(_this4.path);
           tree._affectedPathsIndex[hash] = true;
-
           alreadyComputed = true;
         }
 
@@ -2900,47 +2706,44 @@ var Monkey = exports.Monkey = function () {
       };
     }(this.tree, this.definition, deps);
 
-    lazyGetter.isLazyGetter = true;
+    lazyGetter.isLazyGetter = true; // Should we write the lazy getter in the tree or solve it right now?
 
-    // Should we write the lazy getter in the tree or solve it right now?
     if (this.tree.options.lazyMonkeys) {
-      this.tree._data = (0, _update3.default)(this.tree._data, this.path, {
+      this.tree._data = (0, _update2["default"])(this.tree._data, this.path, {
         type: 'monkey',
         value: lazyGetter
       }, this.tree.options).data;
     } else {
-      var result = (0, _update3.default)(this.tree._data, this.path, {
+      var result = (0, _update2["default"])(this.tree._data, this.path, {
         type: 'set',
         value: lazyGetter(),
         options: {
           mutableLeaf: !this.definition.options.immutable
         }
       }, this.tree.options);
-
       if ('data' in result) this.tree._data = result.data;
-    }
+    } // Notifying the monkey's update so we can handle recursivity
 
-    // Notifying the monkey's update so we can handle recursivity
-    this.tree.emit('_monkey', { monkey: this, path: this.path });
 
+    this.tree.emit('_monkey', {
+      monkey: this,
+      path: this.path
+    });
     return this;
-  };
-
+  }
   /**
    * Method releasing the monkey from memory.
    */
+  ;
 
-
-  Monkey.prototype.release = function release() {
-
+  _proto.release = function release() {
     // Unbinding events
     this.tree.off('write', this.writeListener);
     this.tree.off('_monkey', this.recursiveListener);
-    this.state.killed = true;
-
-    // Deleting properties
+    this.state.killed = true; // Deleting properties
     // NOTE: not deleting this.definition because some strange things happen
     // in the _refreshMonkeys method. See #372.
+
     delete this.projection;
     delete this.depPaths;
     delete this.tree;
@@ -2949,25 +2752,25 @@ var Monkey = exports.Monkey = function () {
   return Monkey;
 }();
 
+exports.Monkey = Monkey;
+
 },{"./helpers":4,"./type":6,"./update":7}],6:[function(require,module,exports){
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; /**
-                                                                                                                                                                                                                                                                               * Baobab Type Checking
-                                                                                                                                                                                                                                                                               * =====================
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               * Helpers functions used throughout the library to perform some type
-                                                                                                                                                                                                                                                                               * tests at runtime.
-                                                                                                                                                                                                                                                                               *
-                                                                                                                                                                                                                                                                               */
+var _monkey = require("./monkey");
 
-
-var _monkey = require('./monkey');
-
+/**
+ * Baobab Type Checking
+ * =====================
+ *
+ * Helpers functions used throughout the library to perform some type
+ * tests at runtime.
+ *
+ */
 var type = {};
-
 /**
  * Helpers
  * --------
@@ -2982,12 +2785,12 @@ var type = {};
  * @param  {array} allowed - Array of allowed types.
  * @return {boolean}
  */
+
 function anyOf(target, allowed) {
   return allowed.some(function (t) {
     return type[t](target);
   });
 }
-
 /**
  * Simple types
  * -------------
@@ -2999,60 +2802,66 @@ function anyOf(target, allowed) {
  * @param  {mixed} target - Variable to test.
  * @return {boolean}
  */
+
+
 type.array = function (target) {
   return Array.isArray(target);
 };
-
 /**
  * Checking whether the given variable is an object.
  *
  * @param  {mixed} target - Variable to test.
  * @return {boolean}
  */
-type.object = function (target) {
-  return target && (typeof target === 'undefined' ? 'undefined' : _typeof(target)) === 'object' && !Array.isArray(target) && !(target instanceof Date) && !(target instanceof RegExp) && !(typeof Map === 'function' && target instanceof Map) && !(typeof Set === 'function' && target instanceof Set);
-};
 
+
+type.object = function (target) {
+  return target && typeof target === 'object' && !Array.isArray(target) && !(target instanceof Date) && !(target instanceof RegExp) && !(typeof Map === 'function' && target instanceof Map) && !(typeof Set === 'function' && target instanceof Set);
+};
 /**
  * Checking whether the given variable is a string.
  *
  * @param  {mixed} target - Variable to test.
  * @return {boolean}
  */
+
+
 type.string = function (target) {
   return typeof target === 'string';
 };
-
 /**
  * Checking whether the given variable is a number.
  *
  * @param  {mixed} target - Variable to test.
  * @return {boolean}
  */
+
+
 type.number = function (target) {
   return typeof target === 'number';
 };
-
 /**
  * Checking whether the given variable is a function.
  *
  * @param  {mixed} target - Variable to test.
  * @return {boolean}
  */
-type.function = function (target) {
+
+
+type["function"] = function (target) {
   return typeof target === 'function';
 };
-
 /**
  * Checking whether the given variable is a JavaScript primitive.
  *
  * @param  {mixed} target - Variable to test.
  * @return {boolean}
  */
+
+
 type.primitive = function (target) {
   return target !== Object(target);
 };
-
 /**
  * Complex types
  * --------------
@@ -3065,13 +2874,13 @@ type.primitive = function (target) {
  * @param  {array} [allowed] - Optional valid types in path.
  * @return {boolean}
  */
+
+
 type.splicer = function (target) {
   if (!type.array(target) || target.length < 1) return false;
   if (target.length > 1 && isNaN(+target[1])) return false;
-
   return anyOf(target[0], ['number', 'function', 'object']);
 };
-
 /**
  * Checking whether the given variable is a valid cursor path.
  *
@@ -3079,30 +2888,30 @@ type.splicer = function (target) {
  * @param  {array} [allowed] - Optional valid types in path.
  * @return {boolean}
  */
-
 // Order is important for performance reasons
+
+
 var ALLOWED_FOR_PATH = ['string', 'number', 'function', 'object'];
 
 type.path = function (target) {
   if (!target && target !== 0 && target !== '') return false;
-
   return [].concat(target).every(function (step) {
     return anyOf(step, ALLOWED_FOR_PATH);
   });
 };
-
 /**
  * Checking whether the given path is a dynamic one.
  *
  * @param  {mixed} path - The path to test.
  * @return {boolean}
  */
+
+
 type.dynamicPath = function (path) {
   return path.some(function (step) {
-    return type.function(step) || type.object(step);
+    return type["function"](step) || type.object(step);
   });
 };
-
 /**
  * Retrieve any monkey subpath in the given path or null if the path never comes
  * across computed data.
@@ -3111,26 +2920,23 @@ type.dynamicPath = function (path) {
  * @param  {array} path - The path to test.
  * @return {boolean}
  */
+
+
 type.monkeyPath = function (data, path) {
   var subpath = [];
-
   var c = data,
-      i = void 0,
-      l = void 0;
+      i,
+      l;
 
   for (i = 0, l = path.length; i < l; i++) {
     subpath.push(path[i]);
-
-    if ((typeof c === 'undefined' ? 'undefined' : _typeof(c)) !== 'object') return null;
-
+    if (typeof c !== 'object') return null;
     c = c[path[i]];
-
     if (c instanceof _monkey.Monkey) return subpath;
   }
 
   return null;
 };
-
 /**
  * Check if the given object property is a lazy getter used by a monkey.
  *
@@ -3138,82 +2944,79 @@ type.monkeyPath = function (data, path) {
  * @param  {string}  propertyKey - The property to test.
  * @return {boolean}
  */
+
+
 type.lazyGetter = function (o, propertyKey) {
   var descriptor = Object.getOwnPropertyDescriptor(o, propertyKey);
-
   return descriptor && descriptor.get && descriptor.get.isLazyGetter === true;
 };
-
 /**
  * Returns the type of the given monkey definition or `null` if invalid.
  *
  * @param  {mixed} definition - The definition to check.
  * @return {string|null}
  */
-type.monkeyDefinition = function (definition) {
 
+
+type.monkeyDefinition = function (definition) {
   if (type.object(definition)) {
-    if (!type.function(definition.get) || definition.cursors && (!type.object(definition.cursors) || !Object.keys(definition.cursors).every(function (k) {
+    if (!type["function"](definition.get) || definition.cursors && (!type.object(definition.cursors) || !Object.keys(definition.cursors).every(function (k) {
       return type.path(definition.cursors[k]);
     }))) return null;
-
     return 'object';
   } else if (type.array(definition)) {
     var offset = 1;
-
     if (type.object(definition[definition.length - 1])) offset++;
-
-    if (!type.function(definition[definition.length - offset]) || !definition.slice(0, -offset).every(function (p) {
+    if (!type["function"](definition[definition.length - offset]) || !definition.slice(0, -offset).every(function (p) {
       return type.path(p);
     })) return null;
-
     return 'array';
   }
 
   return null;
 };
-
 /**
  * Checking whether the given watcher definition is valid.
  *
  * @param  {mixed}   definition - The definition to check.
  * @return {boolean}
  */
+
+
 type.watcherMapping = function (definition) {
   return type.object(definition) && Object.keys(definition).every(function (k) {
     return type.path(definition[k]);
   });
 };
-
 /**
  * Checking whether the given string is a valid operation type.
  *
  * @param  {mixed} string - The string to test.
  * @return {boolean}
  */
-
 // Ordered by likeliness
+
+
 var VALID_OPERATIONS = ['set', 'apply', 'push', 'unshift', 'concat', 'pop', 'shift', 'deepMerge', 'merge', 'splice', 'unset'];
 
 type.operationType = function (string) {
   return typeof string === 'string' && !!~VALID_OPERATIONS.indexOf(string);
 };
 
-exports.default = type;
+var _default = type;
+exports["default"] = _default;
 
 },{"./monkey":5}],7:[function(require,module,exports){
-'use strict';
+"use strict";
 
 exports.__esModule = true;
-exports.default = update;
+exports["default"] = update;
 
-var _type = require('./type');
+var _type = _interopRequireDefault(require("./type"));
 
-var _type2 = _interopRequireDefault(_type);
+var _helpers = require("./helpers");
 
-var _helpers = require('./helpers');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 /**
  * Baobab Update
@@ -3222,9 +3025,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * The tree's update scheme.
  */
 function err(operation, expectedTarget, path) {
-  return (0, _helpers.makeError)('Baobab.update: cannot apply the "' + operation + '" on ' + ('a non ' + expectedTarget + ' (path: /' + path.join('/') + ').'), { path: path });
+  return (0, _helpers.makeError)("Baobab.update: cannot apply the \"" + operation + "\" on " + ("a non " + expectedTarget + " (path: /" + path.join('/') + ")."), {
+    path: path
+  });
 }
-
 /**
  * Function aiming at applying a single update operation on the given tree's
  * data.
@@ -3235,47 +3039,48 @@ function err(operation, expectedTarget, path) {
  * @param  {object} [opts]    - Optional options.
  * @return {mixed}            - Both the new tree's data and the updated node.
  */
-function update(data, path, operation) {
-  var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+
+function update(data, path, operation, opts) {
+  if (opts === void 0) {
+    opts = {};
+  }
+
   var operationType = operation.type,
       value = operation.value,
       _operation$options = operation.options,
-      operationOptions = _operation$options === undefined ? {} : _operation$options;
+      operationOptions = _operation$options === void 0 ? {} : _operation$options; // Dummy root, so we can shift and alter the root
 
-  // Dummy root, so we can shift and alter the root
-
-  var dummy = { root: data },
+  var dummy = {
+    root: data
+  },
       dummyPath = ['root'].concat(path),
-      currentPath = [];
+      currentPath = []; // Walking the path
 
-  // Walking the path
   var p = dummy,
-      i = void 0,
-      l = void 0,
-      s = void 0;
+      i,
+      l,
+      s;
 
   for (i = 0, l = dummyPath.length; i < l; i++) {
-
     // Current item's reference is therefore p[s]
     // The reason why we don't create a variable here for convenience
     // is because we actually need to mutate the reference.
-    s = dummyPath[i];
+    s = dummyPath[i]; // Updating the path
 
-    // Updating the path
-    if (i > 0) currentPath.push(s);
+    if (i > 0) currentPath.push(s); // If we reached the end of the path, we apply the operation
 
-    // If we reached the end of the path, we apply the operation
     if (i === l - 1) {
-
       /**
        * Set
        */
       if (operationType === 'set') {
-
         // Purity check
-        if (opts.pure && p[s] === value) return { node: p[s] };
+        if (opts.pure && p[s] === value) return {
+          node: p[s]
+        };
 
-        if (_type2.default.lazyGetter(p, s)) {
+        if (_type["default"].lazyGetter(p, s)) {
           Object.defineProperty(p, s, {
             value: value,
             enumerable: true,
@@ -3287,7 +3092,6 @@ function update(data, path, operation) {
           p[s] = value;
         }
       }
-
       /**
        * Monkey
        */
@@ -3298,17 +3102,17 @@ function update(data, path, operation) {
             configurable: true
           });
         }
-
         /**
          * Apply
          */
         else if (operationType === 'apply') {
-            var result = value(p[s]);
+            var result = value(p[s]); // Purity check
 
-            // Purity check
-            if (opts.pure && p[s] === result) return { node: p[s] };
+            if (opts.pure && p[s] === result) return {
+              node: p[s]
+            };
 
-            if (_type2.default.lazyGetter(p, s)) {
+            if (_type["default"].lazyGetter(p, s)) {
               Object.defineProperty(p, s, {
                 value: result,
                 enumerable: true,
@@ -3320,148 +3124,113 @@ function update(data, path, operation) {
               p[s] = result;
             }
           }
-
           /**
            * Push
            */
           else if (operationType === 'push') {
-              if (!_type2.default.array(p[s])) throw err('push', 'array', currentPath);
-
+              if (!_type["default"].array(p[s])) throw err('push', 'array', currentPath);
               if (opts.persistent) p[s] = p[s].concat([value]);else p[s].push(value);
             }
-
             /**
              * Unshift
              */
             else if (operationType === 'unshift') {
-                if (!_type2.default.array(p[s])) throw err('unshift', 'array', currentPath);
-
+                if (!_type["default"].array(p[s])) throw err('unshift', 'array', currentPath);
                 if (opts.persistent) p[s] = [value].concat(p[s]);else p[s].unshift(value);
               }
-
               /**
                * Concat
                */
               else if (operationType === 'concat') {
-                  if (!_type2.default.array(p[s])) throw err('concat', 'array', currentPath);
-
+                  if (!_type["default"].array(p[s])) throw err('concat', 'array', currentPath);
                   if (opts.persistent) p[s] = p[s].concat(value);else p[s].push.apply(p[s], value);
                 }
-
                 /**
                  * Splice
                  */
                 else if (operationType === 'splice') {
-                    if (!_type2.default.array(p[s])) throw err('splice', 'array', currentPath);
-
+                    if (!_type["default"].array(p[s])) throw err('splice', 'array', currentPath);
                     if (opts.persistent) p[s] = _helpers.splice.apply(null, [p[s]].concat(value));else p[s].splice.apply(p[s], value);
                   }
-
                   /**
                    * Pop
                    */
                   else if (operationType === 'pop') {
-                      if (!_type2.default.array(p[s])) throw err('pop', 'array', currentPath);
-
+                      if (!_type["default"].array(p[s])) throw err('pop', 'array', currentPath);
                       if (opts.persistent) p[s] = (0, _helpers.splice)(p[s], -1, 1);else p[s].pop();
                     }
-
                     /**
                      * Shift
                      */
                     else if (operationType === 'shift') {
-                        if (!_type2.default.array(p[s])) throw err('shift', 'array', currentPath);
-
+                        if (!_type["default"].array(p[s])) throw err('shift', 'array', currentPath);
                         if (opts.persistent) p[s] = (0, _helpers.splice)(p[s], 0, 1);else p[s].shift();
                       }
-
                       /**
                        * Unset
                        */
                       else if (operationType === 'unset') {
-                          if (_type2.default.object(p)) delete p[s];else if (_type2.default.array(p)) p.splice(s, 1);
+                          if (_type["default"].object(p)) delete p[s];else if (_type["default"].array(p)) p.splice(s, 1);
                         }
-
                         /**
                          * Merge
                          */
                         else if (operationType === 'merge') {
-                            if (!_type2.default.object(p[s])) throw err('merge', 'object', currentPath);
-
+                            if (!_type["default"].object(p[s])) throw err('merge', 'object', currentPath);
                             if (opts.persistent) p[s] = (0, _helpers.shallowMerge)({}, p[s], value);else p[s] = (0, _helpers.shallowMerge)(p[s], value);
                           }
-
                           /**
                            * Deep merge
                            */
                           else if (operationType === 'deepMerge') {
-                              if (!_type2.default.object(p[s])) throw err('deepMerge', 'object', currentPath);
-
+                              if (!_type["default"].object(p[s])) throw err('deepMerge', 'object', currentPath);
                               if (opts.persistent) p[s] = (0, _helpers.deepMerge)({}, p[s], value);else p[s] = (0, _helpers.deepMerge)(p[s], value);
-                            }
+                            } // Deep freezing the resulting value
 
-      // Deep freezing the resulting value
+
       if (opts.immutable && !operationOptions.mutableLeaf) (0, _helpers.deepFreeze)(p);
-
       break;
-    }
-
-    // If we reached a leaf, we override by setting an empty object
-    else if (_type2.default.primitive(p[s])) {
+    } // If we reached a leaf, we override by setting an empty object
+    else if (_type["default"].primitive(p[s])) {
         p[s] = {};
-      }
-
-      // Else, we shift the reference and continue the path
+      } // Else, we shift the reference and continue the path
       else if (opts.persistent) {
           p[s] = (0, _helpers.shallowClone)(p[s]);
-        }
+        } // Should we freeze the current step before continuing?
 
-    // Should we freeze the current step before continuing?
+
     if (opts.immutable && l > 0) (0, _helpers.freeze)(p);
-
     p = p[s];
-  }
+  } // If we are updating a dynamic node, we need not return the affected node
 
-  // If we are updating a dynamic node, we need not return the affected node
-  if (_type2.default.lazyGetter(p, s)) return { data: dummy.root };
 
-  // Returning new data object
-  return { data: dummy.root, node: p[s] };
+  if (_type["default"].lazyGetter(p, s)) return {
+    data: dummy.root
+  }; // Returning new data object
+
+  return {
+    data: dummy.root,
+    node: p[s]
+  };
 }
 
 },{"./helpers":4,"./type":6}],8:[function(require,module,exports){
-'use strict';
+"use strict";
 
 exports.__esModule = true;
+exports["default"] = void 0;
 
-var _emmett = require('emmett');
+var _emmett = _interopRequireDefault(require("emmett"));
 
-var _emmett2 = _interopRequireDefault(_emmett);
+var _cursor = _interopRequireDefault(require("./cursor"));
 
-var _cursor = require('./cursor');
+var _type = _interopRequireDefault(require("./type"));
 
-var _cursor2 = _interopRequireDefault(_cursor);
+var _helpers = require("./helpers");
 
-var _type = require('./type');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-var _type2 = _interopRequireDefault(_type);
-
-var _helpers = require('./helpers');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Baobab Watchers
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * ================
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Abstraction used to listen and retrieve data from multiple parts of a
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Baobab tree at once.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
-
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
 
 /**
  * Watcher class.
@@ -3470,26 +3239,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @param {Baobab} tree     - The watched tree.
  * @param {object} mapping  - A mapping of the paths to watch in the tree.
  */
-var Watcher = function (_Emitter) {
-  _inherits(Watcher, _Emitter);
+var Watcher =
+/*#__PURE__*/
+function (_Emitter) {
+  _inheritsLoose(Watcher, _Emitter);
 
   function Watcher(tree, mapping) {
-    _classCallCheck(this, Watcher);
+    var _this;
 
-    // Properties
-    var _this = _possibleConstructorReturn(this, _Emitter.call(this));
+    _this = _Emitter.call(this) || this; // Properties
 
     _this.tree = tree;
     _this.mapping = null;
-
     _this.state = {
       killed: false
-    };
+    }; // Initializing
 
-    // Initializing
-    _this.refresh(mapping);
+    _this.refresh(mapping); // Listening
 
-    // Listening
+
     _this.handler = function (e) {
       if (_this.state.killed) return;
 
@@ -3499,9 +3267,9 @@ var Watcher = function (_Emitter) {
     };
 
     _this.tree.on('update', _this.handler);
+
     return _this;
   }
-
   /**
    * Method used to get the current watched paths.
    *
@@ -3509,96 +3277,85 @@ var Watcher = function (_Emitter) {
    */
 
 
-  Watcher.prototype.getWatchedPaths = function getWatchedPaths() {
+  var _proto = Watcher.prototype;
+
+  _proto.getWatchedPaths = function getWatchedPaths() {
     var _this2 = this;
 
     var rawPaths = Object.keys(this.mapping).map(function (k) {
-      var v = _this2.mapping[k];
+      var v = _this2.mapping[k]; // Watcher mappings can accept a cursor
 
-      // Watcher mappings can accept a cursor
-      if (v instanceof _cursor2.default) return v.solvedPath;
-
+      if (v instanceof _cursor["default"]) return v.solvedPath;
       return _this2.mapping[k];
     });
-
     return rawPaths.reduce(function (cp, p) {
-
       // Handling path polymorphisms
-      p = [].concat(p);
+      p = [].concat(p); // Dynamic path?
 
-      // Dynamic path?
-      if (_type2.default.dynamicPath(p)) p = (0, _helpers.getIn)(_this2.tree._data, p).solvedPath;
+      if (_type["default"].dynamicPath(p)) p = (0, _helpers.getIn)(_this2.tree._data, p).solvedPath;
+      if (!p) return cp; // Facet path?
 
-      if (!p) return cp;
-
-      // Facet path?
-      var monkeyPath = _type2.default.monkeyPath(_this2.tree._monkeys, p);
+      var monkeyPath = _type["default"].monkeyPath(_this2.tree._monkeys, p);
 
       if (monkeyPath) return cp.concat((0, _helpers.getIn)(_this2.tree._monkeys, monkeyPath).data.relatedPaths());
-
       return cp.concat([p]);
     }, []);
-  };
-
+  }
   /**
    * Method used to return a map of the watcher's cursors.
    *
    * @return {object} - TMap of relevant cursors.
    */
+  ;
 
-
-  Watcher.prototype.getCursors = function getCursors() {
+  _proto.getCursors = function getCursors() {
     var _this3 = this;
 
     var cursors = {};
-
     Object.keys(this.mapping).forEach(function (k) {
       var path = _this3.mapping[k];
-
-      if (path instanceof _cursor2.default) cursors[k] = path;else cursors[k] = _this3.tree.select(path);
+      if (path instanceof _cursor["default"]) cursors[k] = path;else cursors[k] = _this3.tree.select(path);
     });
-
     return cursors;
-  };
-
+  }
   /**
    * Method used to refresh the watcher's mapping.
    *
    * @param  {object}  mapping  - The new mapping to apply.
    * @return {Watcher}          - Itself for chaining purposes.
    */
+  ;
 
+  _proto.refresh = function refresh(mapping) {
+    if (!_type["default"].watcherMapping(mapping)) throw (0, _helpers.makeError)('Baobab.watch: invalid mapping.', {
+      mapping: mapping
+    });
+    this.mapping = mapping; // Creating the get method
 
-  Watcher.prototype.refresh = function refresh(mapping) {
-
-    if (!_type2.default.watcherMapping(mapping)) throw (0, _helpers.makeError)('Baobab.watch: invalid mapping.', { mapping: mapping });
-
-    this.mapping = mapping;
-
-    // Creating the get method
     var projection = {};
 
     for (var k in mapping) {
-      projection[k] = mapping[k] instanceof _cursor2.default ? mapping[k].path : mapping[k];
-    }this.get = this.tree.project.bind(this.tree, projection);
-  };
+      projection[k] = mapping[k] instanceof _cursor["default"] ? mapping[k].path : mapping[k];
+    }
 
+    this.get = this.tree.project.bind(this.tree, projection);
+  }
   /**
    * Methods releasing the watcher from memory.
    */
+  ;
 
-
-  Watcher.prototype.release = function release() {
-
+  _proto.release = function release() {
     this.tree.off('update', this.handler);
     this.state.killed = true;
     this.kill();
   };
 
   return Watcher;
-}(_emmett2.default);
+}(_emmett["default"]);
 
-exports.default = Watcher;
+exports["default"] = Watcher;
 
 },{"./cursor":3,"./helpers":4,"./type":6,"emmett":1}]},{},[2])(2)
 });
+

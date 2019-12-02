@@ -7,29 +7,31 @@
     "emmett": "^3.1.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "7.7.4",
+    "@babel/register": "^7.7.4",
     "@yomguithereal/eslint-config": "^4.0.0",
-    "add-banner": "^0.1.0",
-    "async": "^2.5.0",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
-    "babelify": "^8.0.0",
+    "async": "^3.1.0",
+    "babelify": "^10.0.0",
     "benchmark": "^2.1.4",
-    "browserify": "^14.5.0",
-    "eslint": "^4.10.0",
+    "browserify": "^16.5.0",
+    "eslint": "^6.7.2",
+    "fs-extra": "^8.1.0",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
-    "mocha": "^4.0.1",
-    "uglify-js": "^3.1.6"
+    "mocha": "^6.2.2",
+    "terser": "^4.4.2"
   },
   "scripts": {
-    "benchmark": "babel-node benchmark.js",
-    "build": "mkdirp build && browserify ./src/baobab.js -s Baobab -o ./build/baobab.js && uglifyjs ./build/baobab.js -c -m -o ./build/baobab.min.js && node ./scripts/banner.js",
+    "benchmark": "babel-node --presets @babel/preset-env benchmark.js",
+    "build": "node ./scripts/build.js",
     "check": "npm test && npm run lint && npm run build",
-    "dist": "babel ./src --out-dir dist",
+    "dist": "babel ./src --out-dir dist --presets @babel/preset-env",
     "lint": "eslint -c eslint.config.js ./src ./test",
-    "prepublish": "npm run dist",
-    "test": "mocha -R spec --require babel-core/register ./test/endpoint.js"
+    "prepublish": "npm run check && npm run dist",
+    "test": "mocha -R spec --require ./test/register.js ./test/endpoint.js"
   },
   "repository": {
     "type": "git",
@@ -49,27 +51,5 @@
   "bugs": {
     "url": "https://github.com/Yomguithereal/baobab/issues"
   },
-  "homepage": "https://github.com/Yomguithereal/baobab",
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "presets": [
-            [
-              "es2015",
-              {
-                "loose": true
-              }
-            ]
-          ]
-        }
-      ]
-    ]
-  },
-  "babel": {
-    "presets": [
-      "es2015"
-    ]
-  }
+  "homepage": "https://github.com/Yomguithereal/baobab"
 }
