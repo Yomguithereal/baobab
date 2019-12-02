@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.5.3
+
+* Refreshing the library's build to fix `babel` issues when consuming the library.
+
 ## v2.5.2
 
 * Fixing the library's export.

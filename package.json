@@ -1,6 +1,6 @@
 {
   "name": "baobab",
-  "version": "2.5.2",
+  "version": "2.5.3",
   "description": "JavaScript persistent data tree with cursors.",
   "main": "./dist/baobab.js",
   "dependencies": {

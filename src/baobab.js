@@ -583,7 +583,7 @@ Baobab.helpers = helpers;
 /**
  * Version.
  */
-Baobab.VERSION = '2.5.2';
+Baobab.VERSION = '2.5.3';
 
 /**
  * Exporting.
