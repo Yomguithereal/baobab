@@ -2,11 +2,14 @@
  * Baobab Core Unit Tests
  * =======================
  */
-import assert from 'assert';
-import Baobab from '../../src/baobab';
-import Cursor from '../../src/cursor';
+import {strict as assert} from 'assert';
+import Baobab, {Cursor, Path} from '../../src/baobab';
+// @ts-ignore
 import type from '../../src/type';
 import state from '../state';
+import {assertIsFrozen} from "../utils";
+
+const noop = () => undefined;
 
 describe('Baobab API', function() {
 
@@ -210,14 +213,15 @@ describe('Baobab API', function() {
             one = tree.select('one'),
             two = tree.select('two');
 
-      tree.on('update', Function.prototype);
-      one.on('update', Function.prototype);
-      two.on('update', Function.prototype);
+      tree.on('update', noop);
+      one.on('update', noop);
+      two.on('update', noop);
 
       one.release();
       tree.release();
 
-      assert(tree.data === undefined);
+      // @ts-ignore
+      assert(tree._data === undefined);
     });
 
     it('the tree should shift references on updates.', function() {
@@ -291,7 +295,7 @@ describe('Baobab API', function() {
     it('should be possible to validate the tree and rollback on fail.', function() {
       let invalidCount = 0;
 
-      function v(previousState, nextState) {
+      function v(this: Baobab, previousState: any, nextState: any) {
         assert(this instanceof Baobab);
 
         if (typeof nextState.hello !== 'string')
@@ -321,7 +325,7 @@ describe('Baobab API', function() {
     it('should be possible to validate the tree and let the tree update on fail.', function() {
       let invalidCount = 0;
 
-      function v(previousState, nextState) {
+      function v(this: Baobab, previousState: any, nextState: any) {
         assert(this instanceof Baobab);
 
         if (typeof nextState.hello !== 'string')
@@ -349,7 +353,7 @@ describe('Baobab API', function() {
     });
 
     it('should be possible to validate the initial data of the tree.', function() {
-      function validate(previousState, nextState, paths) {
+      function validate(this: Baobab, previousState: any, nextState: any, paths?: Path[]) {
         assert.deepEqual(paths, [[]]);
 
         if (nextState.one !== 1)
@@ -386,13 +390,13 @@ describe('Baobab API', function() {
       function checkFridge() {
         const targetData = tree.get();
 
-        assert.isFrozen(targetData);
-        assert.isFrozen(targetData.one);
-        assert.isFrozen(targetData.one.two);
-        assert.isFrozen(targetData.one.two.three);
+        assertIsFrozen(targetData);
+        assertIsFrozen(targetData.one);
+        assertIsFrozen(targetData.one.two);
+        assertIsFrozen(targetData.one.two.three);
 
         if (targetData.one.two.three.four)
-          assert.isFrozen(targetData.one.two.three.four);
+          assertIsFrozen(targetData.one.two.three.four);
       }
 
       checkFridge();
@@ -411,23 +415,23 @@ describe('Baobab API', function() {
 
       data = tree.get();
 
-      assert.isFrozen(data);
-      assert.isFrozen(data.one);
+      assertIsFrozen(data);
+      assertIsFrozen(data.one);
 
       // Arrays
       tree.set([{nb: 1}, {nb: 2}]);
 
       data = tree.get();
 
-      assert.isFrozen(data);
-      assert.isFrozen(data[0]);
-      assert.isFrozen(data[1]);
+      assertIsFrozen(data);
+      assertIsFrozen(data[0]);
+      assertIsFrozen(data[1]);
 
       tree.set(0, {nb: 3});
 
-      assert.isFrozen(data);
-      assert.isFrozen(data[0]);
-      assert.isFrozen(data[1]);
+      assertIsFrozen(data);
+      assertIsFrozen(data[0]);
+      assertIsFrozen(data[1]);
 
       tree.set({one: {}});
 
@@ -439,10 +443,10 @@ describe('Baobab API', function() {
 
       data = tree.get();
 
-      assert.isFrozen(data);
-      assert.isFrozen(data.one);
-      assert.isFrozen(data.one.subone);
-      assert.isFrozen(data.one.subtwo);
+      assertIsFrozen(data);
+      assertIsFrozen(data.one);
+      assertIsFrozen(data.one.subone);
+      assertIsFrozen(data.one.subtwo);
     });
 
     it('should be possible to disable immutability.', function() {

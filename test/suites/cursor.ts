@@ -2,9 +2,9 @@
  * Baobab Core Unit Tests
  * =======================
  */
-import assert from 'assert';
-import async from 'async';
-import Baobab from '../../src/baobab';
+import {strict as assert} from 'assert';
+import {parallel} from 'async';
+import Baobab, {Cursor} from '../../src/baobab';
 import state from '../state';
 
 describe('Cursor API', function() {
@@ -49,7 +49,7 @@ describe('Cursor API', function() {
       });
 
       it('should be possible to retrieve items using a function in path.', function() {
-        const yellow = tree.get('one', 'subtwo', 'colors', i => i === 'yellow');
+        const yellow = tree.get('one', 'subtwo', 'colors', (i: string) => i === 'yellow');
 
         assert.strictEqual(yellow, 'yellow');
       });
@@ -264,6 +264,7 @@ describe('Cursor API', function() {
               cursor = tree.select('items');
 
         assert.throws(function() {
+          // @ts-ignore
           cursor.set('this', 'is', 'my', 'destiny!');
         }, /too many/);
       });
@@ -273,6 +274,7 @@ describe('Cursor API', function() {
             cursor = tree.select('items');
 
         assert.throws(function() {
+          // @ts-ignore
           cursor.set(/test/, '45');
         }, /invalid path/);
       });
@@ -331,8 +333,8 @@ describe('Cursor API', function() {
 
         cursor.set('universe');
         assert.equal(cursor.get(), 'universe');
-        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'id').enumerable, true);
-        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'hello').enumerable, false);
+        assert.equal((Object.getOwnPropertyDescriptor(tree.get(), 'id') || {}).enumerable, true);
+        assert.equal((Object.getOwnPropertyDescriptor(tree.get(), 'hello') || {}).enumerable, false);
       });
 
       it('should support setting deep non-enumerable properties', function() {
@@ -356,9 +358,9 @@ describe('Cursor API', function() {
 
         cursor.set('four');
         assert.equal(tree.get(['one', 'two']), 'four');
-        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'id').enumerable, true);
-        assert.equal(Object.getOwnPropertyDescriptor(tree.get(), 'one').enumerable, false);
-        assert.equal(Object.getOwnPropertyDescriptor(tree.get('one'), 'two').enumerable, false);
+        assert.equal((Object.getOwnPropertyDescriptor(tree.get(), 'id') || {}).enumerable, true);
+        assert.equal((Object.getOwnPropertyDescriptor(tree.get(), 'one') || {}).enumerable, false);
+        assert.equal((Object.getOwnPropertyDescriptor(tree.get('one'), 'two') || {}).enumerable, false);
       });
 
       it('should be possible to shallow merge two objects.', function(done) {
@@ -536,14 +538,17 @@ describe('Cursor API', function() {
         const cursor = (new Baobab()).root;
 
         assert.throws(function() {
+          // @ts-ignore
           cursor.merge('John');
         }, /value/);
 
         assert.throws(function() {
+          // @ts-ignore
           cursor.splice('John');
         });
 
         assert.throws(function() {
+          // @ts-ignore
           cursor.apply('John');
         });
       });
@@ -574,9 +579,9 @@ describe('Cursor API', function() {
 
       let count = 0;
 
-      async.parallel({
+      parallel({
         parent(next) {
-          parent.on('update', function() {
+          parent.on('update', function(this: Cursor) {
             assert.deepEqual({firstname: 'Napoleon', lastname: 'Bonaparte'}, this.get());
             count++;
             next();
@@ -603,7 +608,7 @@ describe('Cursor API', function() {
 
       let count = 0;
 
-      async.parallel({
+      parallel({
         parent(next) {
           parent.on('update', function() {
             count++;
@@ -639,7 +644,7 @@ describe('Cursor API', function() {
       let count = 0;
       const handler = () => count++;
 
-      async.parallel({
+      parallel({
         node(next) {
           parent.on('update', handler);
           setTimeout(next, 30);
@@ -723,7 +728,7 @@ describe('Cursor API', function() {
         current: Baobab.monkey([
           ['list'],
           ['currentItem'],
-          function(list, i) {
+          function(list: string[], i: number) {
             return list[i];
           }
         ])
@@ -761,7 +766,7 @@ describe('Cursor API', function() {
     const tree = new Baobab(state);
 
     it('should be possible to tell whether cursor is root.', function() {
-      assert(tree.select('one').up().isRoot());
+      assert(tree.select('one').up()!.isRoot());
       assert(!tree.select('one').isRoot());
     });
 
@@ -772,7 +777,7 @@ describe('Cursor API', function() {
 
     it('should be possible to tell whether cursor is branch.', function() {
       assert(tree.select('one').isBranch());
-      assert(!tree.select('one').up().isBranch());
+      assert(!tree.select('one').up()!.isBranch());
       assert(!tree.select('primitive').isBranch());
     });
   });
@@ -793,12 +798,12 @@ describe('Cursor API', function() {
 
     it('should be possible to go up.', function() {
       const parent = colorCursor.up();
-      assert.deepEqual(parent.get(), state.one.subtwo);
+      assert.deepEqual(parent!.get(), state.one.subtwo);
     });
 
     it('a cusor going up to root cannot go higher and returns null.', function() {
       const up = tree.select('one').up(),
-            upper = up.up();
+            upper = up!.up();
 
       assert.strictEqual(upper, null);
     });
@@ -806,8 +811,8 @@ describe('Cursor API', function() {
     it('should be possible to go left.', function() {
       const left = colorCursor.select(1).left();
 
-      assert.strictEqual(left.get(), 'blue');
-      assert.strictEqual(left.left(), null);
+      assert.strictEqual(left!.get(), 'blue');
+      assert.strictEqual(left!.left(), null);
 
       assert.throws(function() {
         colorCursor.left();
@@ -817,8 +822,8 @@ describe('Cursor API', function() {
     it('should be possible to go right.', function() {
       const right = colorCursor.select(0).right();
 
-      assert.strictEqual(right.get(), 'yellow');
-      assert.strictEqual(right.right(), null);
+      assert.strictEqual(right!.get(), 'yellow');
+      assert.strictEqual(right!.right(), null);
 
       assert.throws(function() {
         colorCursor.right();
@@ -830,8 +835,8 @@ describe('Cursor API', function() {
 
       assert.deepEqual(list.down().get(), [1, 2]);
       assert.strictEqual(colorCursor.down().get(), 'blue');
-      assert.strictEqual(colorCursor.down().up().up().select('colors').down().get(), 'blue');
-      assert.strictEqual(list.down().right().down().right().get(), 4);
+      assert.strictEqual(colorCursor.down().up()!.up()!.select('colors').down().get(), 'blue');
+      assert.strictEqual(list.down().right()!.down().right()!.get(), 4);
 
       assert.throws(function() {
         oneCursor.down();
@@ -842,14 +847,14 @@ describe('Cursor API', function() {
       const listItem = tree.select('longList', 2);
 
       assert.strictEqual(listItem.get(), 3);
-      assert.strictEqual(listItem.leftmost().get(), 1);
+      assert.strictEqual(listItem.leftmost()!.get(), 1);
     });
 
     it('should be possible to get to the rightmost item of a list.', function() {
       const listItem = tree.select('longList', 2);
 
       assert.strictEqual(listItem.get(), 3);
-      assert.strictEqual(listItem.rightmost().get(), 4);
+      assert.strictEqual(listItem.rightmost()!.get(), 4);
     });
 
     it('should be possible to iterate over an array.', function() {
@@ -871,7 +876,7 @@ describe('Cursor API', function() {
     it('should be possible to map an array.', function() {
       let count = 0;
 
-      const array = colorCursor.map(function(cursor, i) {
+      const array = colorCursor.map(function(this: Cursor, cursor, i) {
         assert(this === colorCursor);
         assert(count++ === i);
 
@@ -884,11 +889,12 @@ describe('Cursor API', function() {
       );
 
       const scope = {hello: 'world'};
-      colorCursor.map(function() {
+      colorCursor.map(function(this: {}) {
         assert(this === scope);
       }, scope);
 
       assert.throws(function() {
+        // @ts-ignore
         oneCursor.map(Function.prototype);
       }, /non-list/);
     });
@@ -896,7 +902,7 @@ describe('Cursor API', function() {
     it('should be supported correctly with dynamic cursors.', function() {
       const cursor = tree.select('one', 'subtwo', 'colors', {id: 23});
 
-      assert.deepEqual(cursor.up().path, ['one', 'subtwo', 'colors']);
+      assert.deepEqual(cursor.up()!.path, ['one', 'subtwo', 'colors']);
       assert.deepEqual(cursor.select('test').path, ['one', 'subtwo', 'colors', {id: 23}, 'test']);
       assert.deepEqual(cursor.root().get(), tree.root.get());
 
@@ -921,6 +927,7 @@ describe('Cursor API', function() {
       }, /rightmost/);
 
       assert.throws(function() {
+        // @ts-ignore
         cursor.map();
       }, /map/);
     });
@@ -1066,7 +1073,7 @@ describe('Cursor API', function() {
       const tree = new Baobab({number: 1});
 
       tree.set('number', 2);
-      tree.update(['number'], {type: 'apply', value: x => x + 2});
+      tree.update(['number'], {type: 'apply', value: (x: number) => x + 2});
 
       tree.on('update', function() {
         assert.strictEqual(tree.get('number'), 4);
