@@ -4,7 +4,7 @@
   "description": "JavaScript persistent data tree with cursors.",
   "main": "./dist/baobab.js",
   "dependencies": {
-    "emmett": "^3.1.1"
+    "emmett": "^3.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.4",
@@ -12,6 +12,11 @@
     "@babel/node": "^7.7.4",
     "@babel/preset-env": "7.7.4",
     "@babel/register": "^7.7.4",
+    "@types/async": "^3.0.7",
+    "@types/expect": "^24.3.0",
+    "@types/lodash": "^4.14.149",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.0",
     "@yomguithereal/eslint-config": "^4.0.0",
     "async": "^3.1.0",
     "babelify": "^10.0.0",
@@ -21,17 +26,20 @@
     "fs-extra": "^8.1.0",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
-    "mocha": "^6.2.2",
-    "terser": "^4.4.2"
+    "mocha": "^7.0.1",
+    "terser": "^4.4.2",
+    "ts-mocha": "^6.0.0",
+    "tslint": "^6.0.0",
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "benchmark": "babel-node --presets @babel/preset-env benchmark.js",
     "build": "node ./scripts/build.js",
     "check": "npm test && npm run lint && npm run build",
-    "dist": "babel ./src --out-dir dist --presets @babel/preset-env",
-    "lint": "eslint -c eslint.config.js ./src ./test",
+    "dist": "babel ./src --out-dir dist --presets @babel/preset-env && cp src/baobab.d.ts dist/.",
+    "lint": "eslint -c eslint.config.js ./src ./test && tslint src/baobab.d.ts test/suites/*.ts",
     "prepublish": "npm run check && npm run dist",
-    "test": "mocha -R spec --require ./test/register.js ./test/endpoint.js"
+    "test": "ts-mocha --reporter spec --require test/register.js test/suites/*.ts"
   },
   "repository": {
     "type": "git",

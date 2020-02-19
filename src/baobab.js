@@ -571,21 +571,21 @@ Baobab.monkey = function(...args) {
 };
 Baobab.dynamicNode = Baobab.monkey;
 
+export const monkey = Baobab.monkey;
+export const dynamic = Baobab.dynamic;
+
 /**
  * Exposing some internals for convenience
  */
-Baobab.Cursor = Cursor;
-Baobab.MonkeyDefinition = MonkeyDefinition;
-Baobab.Monkey = Monkey;
-Baobab.type = type;
-Baobab.helpers = helpers;
+export {Cursor, MonkeyDefinition, Monkey, type, helpers};
 
 /**
  * Version.
  */
 Baobab.VERSION = '2.5.3';
+export const VERSION = Baobab.VERSION;
 
 /**
  * Exporting.
  */
-module.exports = Baobab;
+export default Baobab;

@@ -2,9 +2,8 @@
  * Baobab Watchers Unit Tests
  * ===========================
  */
-import assert from 'assert';
-import Baobab from '../../src/baobab';
-import Cursor from '../../src/cursor';
+import {strict as assert} from 'assert';
+import Baobab, {Cursor} from '../../src/baobab';
 
 describe('Watchers', function() {
 

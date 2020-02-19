@@ -2,13 +2,14 @@
  * Baobab Helpers Unit Tests
  * ==========================
  */
-import assert from 'assert';
+import {strict as assert} from 'assert';
 import {
   deepMerge,
   getIn,
   shallowMerge,
   splice,
   solveRelativePath
+// @ts-ignore
 } from '../../src/helpers';
 
 describe('Helpers', function() {
@@ -46,7 +47,7 @@ describe('Helpers', function() {
       const otherData = {a: [{id: 45}]};
 
       assert.deepEqual(
-        getIn(otherData, ['a', e => e.id === 46]),
+        getIn(otherData, ['a', (e: any) => e.id === 46]),
         {data: undefined, solvedPath: null, exists: false}
       );
     });
@@ -214,7 +215,7 @@ describe('Helpers', function() {
       ];
 
       assert.deepEqual(
-        splice(collection, e => e.name === 'Jack', 1, {name: 'Paul'}),
+        splice(collection, (e: any) => e.name === 'Jack', 1, {name: 'Paul'}),
         [{name: 'John'}, {name: 'Paul'}]
       );
 

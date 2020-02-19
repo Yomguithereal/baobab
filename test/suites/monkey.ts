@@ -2,13 +2,16 @@
  * Baobab Monkey Unit Tests
  * =========================
  */
-import assert from 'assert';
+import {strict as assert} from 'assert';
 import Baobab from '../../src/baobab';
+// @ts-ignore
 import {Monkey, MonkeyDefinition} from '../../src/monkey';
+// @ts-ignore
 import type from '../../src/type';
-import _ from 'lodash';
+import {assertIsFrozen, assertIsNotFrozen} from '../utils';
+import {filter, find} from 'lodash';
 
-const noop = Function.prototype;
+const noop = () => undefined;
 const monkey = Baobab.monkey;
 
 const getExampleState = () => ({
@@ -22,7 +25,7 @@ const getExampleState = () => ({
         messages: ['data', 'messages']
       },
       get({messages}) {
-        return _.filter(messages, {from: 'John'});
+        return filter(messages, {from: 'John'});
       }
     })
   }
@@ -50,6 +53,7 @@ describe('Monkeys', function() {
     assert(arrayNode instanceof MonkeyDefinition);
 
     assert.throws(function() {
+      // @ts-ignore
       monkey({hello: 'world'});
     }, /invalid/);
   });
@@ -106,7 +110,7 @@ describe('Monkeys', function() {
     const tree = new Baobab(getExampleState()),
           computedData = tree.get('data', 'fromJohn');
 
-    assert.isFrozen(computedData);
+    assertIsFrozen(computedData);
   });
 
   it('should be possible to access data from beyond monkeys.', function() {
@@ -250,7 +254,7 @@ describe('Monkeys', function() {
   });
 
   it('should work recursively.', function(done) {
-    const inc = x => x + 1;
+    const inc = (x: number) => x + 1;
 
     const tree = new Baobab({
       data: {
@@ -338,7 +342,7 @@ describe('Monkeys', function() {
         ['activePageNumber'],
         ['pages'],
         (activePageNumber, pages) => {
-          return _.find(pages, page => page.number === activePageNumber);
+          return find(pages, page => page.number === activePageNumber);
         }
       )
     }, {asynchronous: false, lazyMonkeys: false});
@@ -376,7 +380,7 @@ describe('Monkeys', function() {
       visibleRowsData: monkey([
         ['specialRows'],
         ['visibleRows'],
-        function(specialRows, visibleRows) {
+        function(specialRows: number[], visibleRows: {start: number; end: number;}) {
           count++;
           return specialRows.slice(visibleRows.start, visibleRows.end);
         }
@@ -394,16 +398,16 @@ describe('Monkeys', function() {
     const tree = new Baobab(getExampleState()),
           data = tree.get();
 
-    assert.isFrozen(data.data);
-    assert.isFrozen(data.data.fromJohn);
-    assert.isFrozen(data.data.fromJohn[0]);
+    assertIsFrozen(data.data);
+    assertIsFrozen(data.data.fromJohn);
+    assertIsFrozen(data.data.fromJohn[0]);
 
     const mutableTree = new Baobab(getExampleState(), {immutable: false}),
           mutableData = mutableTree.get();
 
-    assert.isNotFrozen(mutableData.data);
-    assert.isNotFrozen(mutableData.data.fromJohn);
-    assert.isNotFrozen(mutableData.data.fromJohn[0]);
+    assertIsNotFrozen(mutableData.data);
+    assertIsNotFrozen(mutableData.data.fromJohn);
+    assertIsNotFrozen(mutableData.data.fromJohn[0]);
   });
 
   it('should warn the user when he attempts to update a path beneath a monkey.', function() {
@@ -424,8 +428,8 @@ describe('Monkeys', function() {
       {asynchronous: false}
     );
 
-    const final = monkey(['data', 'colors'], cl => cl.filter(c => c.slice(-1)[0] === 'e')),
-          leading = monkey(['data', 'colors'], cl => cl.filter(c => c[0] === 'y'));
+    const final = monkey(['data', 'colors'], cl => cl.filter((c: string[]) => c.slice(-1)[0] === 'e')),
+          leading = monkey(['data', 'colors'], cl => cl.filter((c: string[]) => c[0] === 'y'));
 
     tree.set(['data', 'filtered'], final);
 
@@ -646,7 +650,7 @@ describe('Monkeys', function() {
   });
 
   it('should be possible to use relative paths when defining monkeys\' dependencies.', function() {
-    const fullname = (name, surname) => `${name} ${surname}`;
+    const fullname = (name: string, surname: string) => `${name} ${surname}`;
 
     const tree = new Baobab({
       data: {
@@ -797,7 +801,7 @@ describe('Monkeys', function() {
       })
     });
 
-    assert.isNotFrozen(tree.get('node'));
+    assertIsNotFrozen(tree.get('node'));
     assert.deepEqual(tree.get('node'), {hello: 'world'});
   });
 
@@ -806,17 +810,19 @@ describe('Monkeys', function() {
       node: monkey(() => ({hello: 'world'}), {immutable: false})
     });
 
-    assert.isNotFrozen(tree.get('node'));
+    assertIsNotFrozen(tree.get('node'));
     assert.deepEqual(tree.get('node'), {hello: 'world'});
   });
 
   it('monkey\'s laziness should not mess things up when a monkey\'s immutability is disabled.', function() {
     class Record {
+      list: number[];
+
       constructor() {
         this.list = [];
       }
 
-      add(nb) {
+      add(nb: number) {
         this.list.push(nb);
       }
     }
