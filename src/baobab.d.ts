@@ -5,12 +5,12 @@ interface PlainObject<T = any> {
 }
 
 type Predicate = (data: any) => boolean;
-type Constraints = object;
+type Constraints = PlainObject;
 type PathKey = string | number;
 type PathElement = PathKey | Predicate | Constraints;
 export type Path = PathElement[] | PathKey;
 
-type Splicer = [number | object | ((...args: any[]) => any), ...any[]];
+type Splicer = [number | PlainObject | ((...args: any[]) => any), ...any[]];
 
 /**
  * This class is empty purposely. Baobab must be able to identify in an initial
@@ -59,18 +59,17 @@ export abstract class CommonBaobabMethods extends Emitter {
   deepClone(...args: PathElement[]): any;
   deepClone(path?: Path): any;
 
-  deepMerge(path: Path, value: object): any;
-  deepMerge(value: object): any;
+  deepMerge(path: Path, value: PlainObject): any;
+  deepMerge(value: PlainObject): any;
 
   exists(...args: PathElement[]): boolean;
-
   exists(path?: Path): boolean;
 
   get(...args: PathElement[]): any;
   get(path: Path): any;
 
-  merge(path: Path, value: object): any;
-  merge(value: object): any;
+  merge(path: Path, value: PlainObject): any;
+  merge(value: PlainObject): any;
 
   pop(path?: Path): any;
 
