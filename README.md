@@ -2,7 +2,7 @@
 
 # Baobab
 
-**Baobab** is a JavaScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and [immutable](http://en.wikipedia.org/wiki/Immutable_object) (at least by default) data tree supporting cursors and enabling developers to easily navigate and monitor nested data through events.
+**Baobab** is a JavaScript & TypeScript [persistent](http://en.wikipedia.org/wiki/Persistent_data_structure) and [immutable](http://en.wikipedia.org/wiki/Immutable_object) (at least by default) data tree supporting cursors and enabling developers to easily navigate and monitor nested data through events.
 
 It is mainly inspired by functional [zippers](http://clojuredocs.org/clojure.zip/zipper) (such as Clojure's ones) and by [Om](https://github.com/swannodette/om)'s cursors.
 
@@ -77,6 +77,8 @@ npm install git+https://github.com/Yomguithereal/baobab.git
 ```
 
 If you want to use it in the browser, just include the minified script located [here](https://raw.githubusercontent.com/Yomguithereal/baobab/master/build/baobab.min.js).
+
+Note that the library comes along with its own declaration files so you can use it comfortably with TypeScript also.
 
 ```html
 <script src="baobab.min.js"></script>
