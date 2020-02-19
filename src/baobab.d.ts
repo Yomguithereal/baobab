@@ -1,4 +1,4 @@
-import Emitter from "emmett";
+import Emitter from 'emmett';
 
 interface PlainObject<T = any> {
   [key: string]: T;
