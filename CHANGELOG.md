@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.6.1
+
+* Fixing prototype pollution issue ([@arjunshibu](https://github.com/arjunshibu)).
+
 ## v2.6.0
 
 * Adding TypeScript declaration files.

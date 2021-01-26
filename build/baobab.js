@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.6.0
+ * Version: 2.6.1
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -1108,7 +1108,7 @@ exports.dynamic = dynamic;
 /**
  * Version.
  */
-Baobab.VERSION = '2.6.0';
+Baobab.VERSION = '2.6.1';
 var VERSION = Baobab.VERSION;
 /**
  * Exporting.
@@ -2364,7 +2364,7 @@ function merger(deep) {
     t = objects[i];
 
     for (k in t) {
-      if (deep && _type["default"].object(t[k]) && !(t[k] instanceof _monkey.Monkey)) {
+      if (deep && _type["default"].object(t[k]) && !(t[k] instanceof _monkey.Monkey) && k !== '__proto__' && k !== 'constructor' && k !== 'prototype') {
         o[k] = merger(true, o[k] || {}, t[k]);
       } else {
         o[k] = t[k];

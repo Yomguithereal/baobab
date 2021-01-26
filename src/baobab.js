@@ -582,7 +582,7 @@ export {Cursor, MonkeyDefinition, Monkey, type, helpers};
 /**
  * Version.
  */
-Baobab.VERSION = '2.6.0';
+Baobab.VERSION = '2.6.1';
 export const VERSION = Baobab.VERSION;
 
 /**
