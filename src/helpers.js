@@ -625,5 +625,5 @@ export {uniqid};
  * @return {boolean} - Key is blacklisted or not
  */
 function isPrototypePolluted(key) {
-  return /__proto__|constructor|prototype/.test(key);
+  return ['__proto__', 'constructor', 'prototype'].includes(key);
 }
