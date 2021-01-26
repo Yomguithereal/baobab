@@ -94,6 +94,14 @@ describe('Helpers', function() {
         {one: {two: [3, 4]}, three: 3}
       );
     });
+
+    it('merge should not pollute object prototype.', function() {
+      const data = JSON.parse('{"__proto__": {"polluted": true}}');
+
+      deepMerge({}, data);
+
+      assert.equal(Object.keys(Object.prototype).includes('polluted'), false);
+    });
   });
 
   /**

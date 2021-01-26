@@ -444,7 +444,8 @@ function merger(deep, ...objects) {
     for (k in t) {
       if (deep &&
           type.object(t[k]) &&
-          !(t[k] instanceof Monkey)) {
+          !(t[k] instanceof Monkey) &&
+          !isPrototypePolluted(k)) {
         o[k] = merger(true, o[k] || {}, t[k]);
       }
       else {
@@ -617,3 +618,12 @@ const uniqid = (function() {
 })();
 
 export {uniqid};
+
+/**
+ * Blacklist certain keys to prevent Prototype Pollution
+ * @param {any} key  - Object key to check
+ * @return {boolean} - Key is blacklisted or not
+ */
+function isPrototypePolluted(key) {
+  return /__proto__|constructor|prototype/.test(key);
+}
