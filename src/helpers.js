@@ -445,7 +445,10 @@ function merger(deep, ...objects) {
       if (deep &&
           type.object(t[k]) &&
           !(t[k] instanceof Monkey) &&
-          !(k === '__proto__' || k === 'constructor' || k === 'prototype')) {
+          k !== '__proto__' &&
+          k !== 'constructor' &&
+          k !== 'prototype'
+      ) {
         o[k] = merger(true, o[k] || {}, t[k]);
       }
       else {
