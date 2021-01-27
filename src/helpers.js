@@ -100,10 +100,12 @@ export class Archive {
    * @return {number}       - The last record.
    */
   back(steps) {
-    const record = this.records[steps - 1];
+    if (this.records.length === 0) 
+      throw new Error('Baobab.Cursor.undo: cannot find a relevant record.');
 
-    if (record)
-      this.records = this.records.slice(steps);
+    const record = this.records[steps - 1];
+    this.records = this.records.slice(steps);
+    
     return record;
   }
 }
