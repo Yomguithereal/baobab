@@ -1,5 +1,7 @@
 /** Stricter and more informative types for Baobab. Otherwise identical. */
 import Emitter from 'emmett';
+import {BaobabOptions, Monkey, MonkeyDefinition, MonkeyOptions} from './baobab';
+import type {Im, DP, DI} from './util';
 
 interface PlainObject<T = any> {
   [key: string]: T;
@@ -14,42 +16,29 @@ export type Path = PathElement[] | PathKey;
 type Splicer = [number | PlainObject | ((...args: any[]) => any), ...any[]];
 
 /**
- * This class is empty purposely. Baobab must be able to identify in an initial
- * state when it has to deal with Monkeys instanciation, and uses this dummy
- * class in that purpose.
- */
-export class MonkeyDefinition {
-  // Empty class intended
-}
-
-export class Monkey {
-  // TODO
-}
-
-export interface BaobabOptions {
-  autoCommit: boolean;
-  asynchronous: boolean;
-  immutable: boolean;
-  lazyMonkeys: boolean;
-  monkeyBusiness: boolean;
-  persistent: boolean;
-  pure: boolean;
-  validate: null | ((previousData: any, data: any, affectedPaths?: Path[]) => (Error | undefined));
-  validationBehavior: string;
-}
-
-export interface MonkeyOptions {
-  immutable: boolean;
-}
-
-/**
  * This class only exists to group methods that are common to the Baobab and
  * Cursor classes. Since `Baobab.root` is a property while `Cursor#root` is a
  * method, Baobab cannot extend Cursor.
  */
-export abstract class SCommonBaobabMethods extends Emitter {
-  apply(path: Path, value: (state: any) => any): any;
-  apply(value: (state: any) => any): any;
+export abstract class SCommonBaobabMethods<T> extends Emitter {
+
+  apply(getNew: (state: T) => T): T;
+  apply<K extends keyof T>(path: K, getNew: (state: Im<T[K]>) => Im<T[K]>): SCursor<T[K]>;
+  apply<K extends DP<T>>(path: K, getNew: (state: Im<T[K]>) => Im<T[K]>): DI<T, K>;
+  // apply<K extends keyof T>(path: K, getNew: (state: T[K]) => T[K]): SCursor<T[K]>
+  // apply<K extends DP<T>>(path: K, getNew: (state: T[K]) => T[K]): DI<T, K> 
+
+  select<K extends keyof T>(path: K): SCursor<T[K]>;
+  select<K extends DP<T>>(path: K): SCursor<DI<T, K>>;
+  // select<K extends DP<T>>(...path: K): SCursor<DI<T, K>> 
+
+  set(value: T): T;
+  set<K extends keyof T>(path: K, value: T[K]): T[K];
+  set<K extends DP<T>>(path: K, value: T[K]): DI<T, K>;
+
+  get(): T;
+  get<K extends keyof T>(path: K): T[K];
+  get<K extends DP<T>>(path: K): DI<T, K>;
 
   clone(...args: PathElement[]): any;
   clone(path?: Path): any;
@@ -65,9 +54,6 @@ export abstract class SCommonBaobabMethods extends Emitter {
 
   exists(...args: PathElement[]): boolean;
   exists(path?: Path): boolean;
-
-  get(...args: PathElement[]): any;
-  get(path: Path): any;
 
   merge(path: Path, value: PlainObject): any;
   merge(value: PlainObject): any;
@@ -102,17 +88,17 @@ export abstract class SCommonBaobabMethods extends Emitter {
   unshift(value: any): any;
 }
 
-export class SWatcher extends Emitter {
-  constructor(tree: SBaobab, mapping: PlainObject<Path | SCursor>);
+export class SWatcher<T> extends Emitter {
+  constructor(tree: SBaobab, mapping: PlainObject<Path | SCursor<T>>);
 
   get(): PlainObject;
   getWatchedPaths(): Path[];
-  getCursors(): PlainObject<SCursor>;
-  refresh(mappings: PlainObject<Path | SCursor>): void;
+  getCursors(): PlainObject<SCursor<T>>;
+  refresh(mappings: PlainObject<Path | SCursor<T>>): void;
   release(): void;
 }
 
-export class SCursor extends SCommonBaobabMethods implements Iterable<any> {
+export class SCursor<T> extends SCommonBaobabMethods<T> implements Iterable<any> {
   path?: Path;
   solvedPath?: PathKey[];
   state: {
@@ -124,13 +110,13 @@ export class SCursor extends SCommonBaobabMethods implements Iterable<any> {
   [Symbol.iterator](): IterableIterator<any>;
 
   // Navigation:
-  up(): SCursor | null;
-  down(): SCursor;
-  left(): SCursor | null;
-  right(): SCursor | null;
-  leftmost(): SCursor | null;
-  rightmost(): SCursor | null;
-  root(): SCursor;
+  up(): SCursor<T> | null;
+  down(): SCursor<T>;
+  left(): SCursor<T> | null;
+  right(): SCursor<T> | null;
+  leftmost(): SCursor<T> | null;
+  rightmost(): SCursor<T> | null;
+  root(): SCursor<T>;
 
   // Predicates:
   isLeaf(): boolean;
@@ -153,11 +139,11 @@ export class SCursor extends SCommonBaobabMethods implements Iterable<any> {
 }
 
 /** Stricter and more informative types for Baobab. Otherwise identical. */
-export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabMethods {
+export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabMethods<T> {
   constructor(initialState?: PlainObject, options?: Partial<BaobabOptions>);
   debugType: T;
 
-  root: SCursor;
+  root: SCursor<T>;
   options: BaobabOptions;
 
   update(
@@ -175,7 +161,7 @@ export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabM
 
   getMonkey(path: Path): Monkey;
 
-  watch(mappings: PlainObject<Path | SCursor>): SWatcher;
+  watch(mappings: PlainObject<Path | SCursor<T>>): SWatcher<T>;
 
   static monkey(definition: {cursors?: PlainObject<Path>; get(data: PlainObject): any; options?: MonkeyOptions;}): MonkeyDefinition;
 
