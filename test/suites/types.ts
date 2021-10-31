@@ -48,26 +48,26 @@ describe('Types', function() {
     numbersList.exists();
     tree.serialize();
     tree.serialize(['somewhat', 'nested']);
-    var watcher = tree.watch({
+    const watcher = tree.watch({
         pname: ['palette', 'name'],
         somenest: ['somewhat', 'nested']
     });
     watcher.get();
     const liox = numbersList.clone();
     const ampw = numbersList.deepClone();
-    var sdtn = tree.pop(['lists', 0]);
-    var newList = tree.concat(['lists', 0], ['d', 'e', 'f']);
-    var newList = tree.concat(['lists', 0], [36]); // invalid
-    var newList = tree.concat(['lists', 1], ['a']); // invalid
+    const sdtn = tree.pop(['lists', 0]);
+    const ncow = tree.concat(['lists', 0], ['d', 'e', 'f']);
+    const oczw = tree.concat(['lists', 0], [36]); // invalid
+    const nbto = tree.concat(['lists', 1], ['a']); // invalid
     tree.apply('palette', p => ({...p, name: p.name + 'wow'}));
     tree.merge('palette', {name: 'newname'});
     tree.deepMerge({somewhat: {nested: {objects: 'really are'}}});
-    var complexCursor = tree.select('lists', 2, {key: 'obj1'}, 'val');
+    const complexCursor = tree.select('lists', 2, {key: 'obj1'}, 'val');
 
     tree.on('update', e => {
-        var rjks = e.type;
-        var wxhj = e.target;
-        var vvst = e.data;
+        const rjks = e.type;
+        const wxhj = e.target;
+        const vvst = e.data;
     });
 
     tree.on('write', function(e) {
@@ -95,46 +95,46 @@ describe('Types', function() {
     });
 
     tree.select('lists', e => {
-        var v1 = e.type;
-        var v2 = e.target;
-        var v3 = e.data;
+        const v1 = e.type;
+        const v2 = e.target;
+        const v3 = e.data;
     });
     numbersList.splice([1, 1, 100]);
     tree.select('numberIn', 'here').apply(x => x + 1);
     tree.select('numberIn').apply('here', x => x + 1);
-    var zsxb = tree.select('palette', 'colors');
-    var rfmy = tree.select('palette');
-    var hzbk = tree.select('palette', 'colors');
-    var ayco = tree.select('palette', 'colors', 2);
-    var xbzu = tree.set('hello', 'monde');
-    var opoc = tree.select('palette', 'colors', function(color) {
+    const zsxb = tree.select('palette', 'colors');
+    const rfmy = tree.select('palette');
+    const hzbk = tree.select('palette', 'colors');
+    const ayco = tree.select('palette', 'colors', 2);
+    const xbzu = tree.set('hello', 'monde');
+    const opoc = tree.select('palette', 'colors', function(color) {
         return color === 'green';
     });
 
-    var fyjb = tree.get('palette', 'colors', function(color) {
+    const fyjb = tree.get('palette', 'colors', function(color) {
         return color === 'green';
     });
 
-    var stou = tree.set({hello: 'bonjour', palette: {colors: ['green', 'red'], name: 'lame colors', invalidKey: 'should error'}});
-    var hecg = tree.unset('hello');
-    var vtyy = tree.project({
+    const stou = tree.set({hello: 'bonjour', palette: {colors: ['green', 'red'], name: 'lame colors', invalidKey: 'should error'}});
+    const hecg = tree.unset('hello');
+    const vtyy = tree.project({
         name: ['one', 'name'],
         surname: ['two', 'surname']
     });
-    var qssn = tree.set(initialState);
-    var gzlk = tree.project([
+    const qssn = tree.set(initialState);
+    const gzlk = tree.project([
         ['hello'],
         ['lists']
     ]);
-    var dscz = hzbk.root();
+    const dscz = hzbk.root();
     // tree.debugType
 
-    var arqw = new SBaobab({
+    const arqw = new SBaobab({
         list: [[1, 2], [3, 4]],
         longList: ['one', 'two', 'three', 'four']
     });
 
-    var krfq = arqw.select('list'),
+    const krfq = arqw.select('list'),
         ipfw = arqw.select('longList', 1);
 
     krfq.down().right().get();
@@ -150,7 +150,7 @@ describe('Types', function() {
     //   >>> 'one'
 
 
-    var rfdi = new SBaobab({list: [1, 2, 3]});
+    const rfdi = new SBaobab({list: [1, 2, 3]});
 
     rfdi.select('list').map(function(cursor, i) {
         console.log(cursor.get());
@@ -160,7 +160,7 @@ describe('Types', function() {
     atke.isBranch();
     atke.isLeaf();
 
-    var dwuz = new SBaobab({x: 1, y: {z: 3}}, {
+    const dwuz = new SBaobab({x: 1, y: {z: 3}}, {
         validate: (_previousState, _newState, _affectedPaths) => {return undefined;}
     });
 
