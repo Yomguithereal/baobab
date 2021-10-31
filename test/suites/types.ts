@@ -9,7 +9,7 @@ describe('Types', function() {
         hello: 'world',
         palette: {
             colors: ['yellow', 'purple', 'green'],
-            name: name
+            name
         },
         numberIn: {
             here: 5
@@ -39,7 +39,7 @@ describe('Types', function() {
     const tree = new SBaobab(initialState);
     const rnjt = tree.get();
     const ljda = rnjt.hello.name;
-    const yxwi = rnjt.invalid.key; // invalid
+    const yxwi = rnjt?.invalid?.key; // invalid
     assert.strictEqual(tree.get('palette', 'name'), name);
     const numbersList = tree.select('lists', 1);
     numbersList.push(60);
@@ -49,8 +49,8 @@ describe('Types', function() {
     tree.serialize();
     tree.serialize(['somewhat', 'nested']);
     const watcher = tree.watch({
-        pname: ['palette', 'name'],
-        somenest: ['somewhat', 'nested']
+        name: ['palette', 'name'],
+        nested: ['somewhat', 'nested']
     });
     watcher.get();
     const liox = numbersList.clone();
@@ -74,20 +74,14 @@ describe('Types', function() {
         const v1 = e.data.path;
     });
 
-
-
     tree.on('invalid', function(e) {
         const v2 = e.data.error;
     });
-
-
     tree.on('get', function(e) {
         const v3 = e.data.path;
         const v4 = e.data.solvedPath;
         const v5 = e.data.data;
     });
-
-
 
     tree.on('select', function(e) {
         const v6 = e.data.path;
@@ -148,12 +142,10 @@ describe('Types', function() {
 
     ipfw.leftmost().get();
     //   >>> 'one'
-
-
     const rfdi = new SBaobab({list: [1, 2, 3]});
 
     rfdi.select('list').map(function(cursor, i) {
-        console.log(cursor.get());
+        const nbuv = cursor.get();
     });
     const atke = rfdi.select('list');
     atke.isRoot();
