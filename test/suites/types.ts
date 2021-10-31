@@ -37,12 +37,28 @@ describe('Types', function() {
     };
     type InitialState = typeof initialState;
     const tree = new SBaobab(initialState);
+    const rnjt = tree.get();
+    const ljda = rnjt.hello.name;
+    const yxwi = rnjt.invalid.key; // invalid
     assert.strictEqual(tree.get('palette', 'name'), name);
     const numbersList = tree.select('lists', 1);
     numbersList.push(60);
     numbersList.push('foo'); // should throw error
     numbersList.unshift(0); // should throw error
+    numbersList.exists();
+    tree.serialize();
+    tree.serialize(['somewhat', 'nested']);
+    var watcher = tree.watch({
+        pname: ['palette', 'name'],
+        somenest: ['somewhat', 'nested']
+    });
+    watcher.get();
+    const liox = numbersList.clone();
+    const ampw = numbersList.deepClone();
     var sdtn = tree.pop(['lists', 0]);
+    var newList = tree.concat(['lists', 0], ['d', 'e', 'f']);
+    var newList = tree.concat(['lists', 0], [36]); // invalid
+    var newList = tree.concat(['lists', 1], ['a']); // invalid
     tree.apply('palette', p => ({...p, name: p.name + 'wow'}));
     tree.merge('palette', {name: 'newname'});
     tree.deepMerge({somewhat: {nested: {objects: 'really are'}}});
