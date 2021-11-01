@@ -16,84 +16,57 @@ type ImmutableMap<K, V> = ReadonlyMap<Immutable<K>, Immutable<V>>;
 type ImmutableSet<T> = ReadonlySet<Immutable<T>>;
 type ImmutableObject<T> = {readonly [K in keyof T]: Immutable<T[K]>};
 
+
 type Vals<T> = T[keyof T];
-type PathsOf<T> =
-    T extends Array<infer X> ? X extends object ? [number, ...PathsOf<X>] : [number] :
-    Vals<{
-        [P in keyof T]-?: T[P] extends object
-        ? [P] | [P, ...PathsOf<T[P]>]
-        : [P];
-    }>;
+// https://stackoverflow.com/questions/58434389
+// type PathsOf<T> =
+//     T extends object ?
+//     T extends Array<infer Item> ?
+//     [] | [number, ...PathsOf<Item>] :
+//     Vals<{[P in keyof T]-?: [] | [P, ...PathsOf<T[P]>]}> :
+//     [];
 
 
 type Predicate<T> = (data: T) => boolean;
 type Constraint<T> = Partial<T>;
 
-type FullPathTree<T> = {
-    [P in keyof T]-?: T[P] extends object
-    ? [P] | [Predicate<P>] | [Constraint<P>] | [P, ...FullDeepPath<T[P]>] | [Predicate<P>, ...FullDeepPath<T[P]>] | [Constraint<P>, ...FullDeepPath<T[P]>]
-    : [P];
-};
-
-
-
-export type FullDeepPath<T> = FullPathTree<T>[keyof PathTree<T>];
+type FullPathsOf<T> =
+    T extends object ?
+    T extends Array<infer Item> ?
+    [] | [number, ...FullPathsOf<Item>] | [Predicate<Item>, ...FullPathsOf<Item>] | (Item extends object ? [Constraint<Item>, ...FullPathsOf<Item>] : []) :
+    Vals<{[P in keyof T]-?: [] | [P, ...FullPathsOf<T[P]>]}> :
+    [];
 
 // https://stackoverflow.com/a/61648690
-type Keys = readonly PropertyKey[];
-export type DeepIndex<T, KS extends Keys, Fail = undefined> =
-    KS extends [infer F, ...infer R] ?
-    F extends keyof T ?
-    R extends Keys ?
-    DeepIndex<T[F], R, Fail> :
-    Fail :
-    Fail :
-    T;
+//  type DeepIndex<T, KS extends PropertyKey[], Fail = undefined> =
+//     KS extends [infer F, ...infer R] ?
+//     F extends keyof T ?
+//     R extends PropertyKey[] ?
+//     DeepIndex<T[F], R, Fail> :
+//     Fail :
+//     Fail :
+//     T;
 
 interface Fail1 {}
 interface Fail2 {}
 interface Fail3 {}
-interface Fail4 {}
-interface Fail5 {}
-interface Fail6 {}
-
-interface Wrapper1<T> {val: T;}
-interface Wrapper2<T> {val: T;}
-interface Wrapper3<T> {val: T;}
-interface Wrapper4<T> {val: T;}
 
 type Obj = Record<PropertyKey, unknown>;
 export type FullKeys = (PropertyKey | Obj | Function)[];
-export type FullDeepIndex<T, KS extends FullKeys> =  //, Fail = undefined> =
-    KS extends [infer Keyish, ...infer Rest] // have a key?
-    ? Rest extends FullKeys // rest is an array?
-    ? Keyish extends Obj | Function // key is special
-    ? T extends Array<unknown> // value is array
-    ? FullDeepIndex<T[number], Rest> // descend with special key
-    : Fail1 // special key on non-array value
-    : Keyish extends keyof T // (key not special) key is valid
+export type FullDeepIndex<T, KS extends FullKeys> =
+    KS extends [infer Keyish, ...infer Rest] // A: have a key?
+    ? Rest extends FullKeys // B: rest is an array?
+    ? Keyish extends Obj | Function // C: key is special?
+    ? T extends Array<unknown> // D: value is array?
+    ? FullDeepIndex<T[number], Rest> // descend with special key.
+    : Fail1 // not D: special key on non-array value
+    : Keyish extends keyof T // (not C) E: key is valid
     ? FullDeepIndex<T[Keyish], Rest> // descend with regular key
-    : Fail2 // invalid key
-    : Fail3 // not an array at all
-    : T; // otherwise
+    : Fail2 // not E: invalid key
+    : Fail3 // not B: not an array at all
+    : T; // not A: stop descending
 
 
 export type Im<T> = Immutable<T>;
-// export type DP<T> = DeepPath<T>;
-export type DP<T> = FullDeepPath<T>;
-export type DI<T, KS extends FullKeys> = FullDeepIndex<T, KS>;
-
-export type At<T, K> = K extends keyof T ? T[K] : K extends FullKeys ? FullDeepIndex<T, K> : Fail4;
-export type Ks<T> = keyof T | FullDeepPath<T>;
-
-// const o = {x: 1};
-// function f() {}
-// type Test<T> = T extends Obj ? number : string;
-// type T1 = Test<typeof o>;
-// type T2 = Test<typeof f>;
-
-const o1 = {x: {y: {z: 1}}};
-type T1 = At<typeof o1, ['x', 'y', 'z']>;
-type O2 = {x: {y: {k: number; val: string;}[];};};
-type T2 = At<O2, ['x', 'y', {k: 4;}, 'val']>;
-type DP1 = DeepPath<{nums: {key: string, val: string;}[];}>;
+export type DP<T> = FullPathsOf<T>;
+export type DI<T, Path extends FullKeys> = FullDeepIndex<T, Path>;
