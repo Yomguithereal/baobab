@@ -144,18 +144,20 @@ describe('Types', function() {
     const ayco = tree.select('palette', 'colors', 2);
     const xbzu = tree.set('hello', 'monde');
     // const opoc = tree.select('palette', 'colors', function(color) { return color === 'green'; });
-    const opoc = tree.get('palette', 'colors', function(color) {return color === 'green';});
+    const opoc = tree.get(['palette', 'colors', (color: string) => color === 'green']);
 
-    const fyjb = tree.get('palette', 'colors', function(color) {
+    const fyjb = tree.get('palette', 'colors', function(color: string) {
         return color === 'green';
     });
 
     const stou = tree.set({hello: 'bonjour', palette: {colors: ['green', 'red'], name: 'lame colors', invalidKey: 'should error'}});
     const hecg = tree.unset('hello');
     const vtyy = tree.project({
-        name: ['one', 'name'],
-        surname: ['two', 'surname']
+        abmw: ['very', 'deeply', 'nested'],
+        ispn: ['lists'],
     });
+    const geza = tree.project([['very', 'deeply', 'nested'], ['lists']]);
+    const aweu = tree.project({some: ['unknownkey']}); // invalid
     const qssn = tree.set(initialState);
     const gzlk = tree.project([
         ['hello'],
