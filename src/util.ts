@@ -1,4 +1,7 @@
 // https://stackoverflow.com/a/58993872/4941530
+
+import {Path} from "./baobab";
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ImmutablePrimitive = undefined | null | boolean | string | number | Function;
 
@@ -13,25 +16,27 @@ type ImmutableMap<K, V> = ReadonlyMap<Immutable<K>, Immutable<V>>;
 type ImmutableSet<T> = ReadonlySet<Immutable<T>>;
 type ImmutableObject<T> = {readonly [K in keyof T]: Immutable<T[K]>};
 
+type Vals<T> = T[keyof T];
+type PathsOf<T> =
+    T extends Array<infer X> ? X extends object ? [number, ...PathsOf<X>] : [number] :
+    Vals<{
+        [P in keyof T]-?: T[P] extends object
+        ? [P] | [P, ...PathsOf<T[P]>]
+        : [P];
+    }>;
 
-// https://stackoverflow.com/a/65963590
-type PathTree<T> = {
-    [P in keyof T]-?: T[P] extends object
-    ? [P] | [P, ...DeepPath<T[P]>]
-    : [P];
-};
 
 type Predicate<T> = (data: T) => boolean;
 type Constraint<T> = Partial<T>;
 
 type FullPathTree<T> = {
     [P in keyof T]-?: T[P] extends object
-    ? [P] | [Predicate<P>] | [Constraint<P>] | [P, ...DeepPath<T[P]>] | [Predicate<P>, ...DeepPath<T[P]>] | [Constraint<P>, ...DeepPath<T[P]>]
+    ? [P] | [Predicate<P>] | [Constraint<P>] | [P, ...FullDeepPath<T[P]>] | [Predicate<P>, ...FullDeepPath<T[P]>] | [Constraint<P>, ...FullDeepPath<T[P]>]
     : [P];
 };
 
 
-export type DeepPath<T> = PathTree<T>[keyof PathTree<T>];
+
 export type FullDeepPath<T> = FullPathTree<T>[keyof PathTree<T>];
 
 // https://stackoverflow.com/a/61648690
@@ -58,7 +63,7 @@ interface Wrapper3<T> {val: T;}
 interface Wrapper4<T> {val: T;}
 
 type Obj = Record<PropertyKey, unknown>;
-type FullKeys = (PropertyKey | Obj | Function)[];
+export type FullKeys = (PropertyKey | Obj | Function)[];
 export type FullDeepIndex<T, KS extends FullKeys> =  //, Fail = undefined> =
     KS extends [infer Keyish, ...infer Rest] // have a key?
     ? Rest extends FullKeys // rest is an array?
@@ -91,3 +96,4 @@ const o1 = {x: {y: {z: 1}}};
 type T1 = At<typeof o1, ['x', 'y', 'z']>;
 type O2 = {x: {y: {k: number; val: string;}[];};};
 type T2 = At<O2, ['x', 'y', {k: 4;}, 'val']>;
+type DP1 = DeepPath<{nums: {key: string, val: string;}[];}>;
