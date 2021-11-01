@@ -1,20 +1,16 @@
-/** Stricter and more informative types for Baobab. Otherwise identical. */
+/** Stricter and more informative types for Baobab. Otherwise identical. 
+ * TODO? Putting a couple more specific overloads of each function might improve client typechecking performance?
+*/
 import Emitter from 'emmett';
 import {BaobabOptions, Monkey, MonkeyDefinition, MonkeyOptions} from './baobab';
-import type {Im, Ks, At, DP, DI} from './util';
+import type {DeepPartial, DI, DP, Im, ImDI} from './util';
 
 interface PlainObject<T = any> {
   [key: string]: T;
 }
 
-type Predicate<T> = (data: T) => boolean;
-type Constraints<T> = Partial<T>;
-// type PathKey = string | number;
-// type PathElement = PathKey | Predicate | Constraints;
-// export type Path = PathElement[] | PathKey;
 
-type Splicer = [number | PlainObject | ((...args: any[]) => any), ...any[]];
-
+type Splicer<T extends any[]> = [number] | [number, number] | [number, number, (oldVals: T) => T] | [number, number, ...T];
 /**
  * This class only exists to group methods that are common to the Baobab and
  * Cursor classes. Since `Baobab.root` is a property while `Cursor#root` is a
@@ -22,71 +18,68 @@ type Splicer = [number | PlainObject | ((...args: any[]) => any), ...any[]];
  */
 export abstract class SCommonBaobabMethods<T> extends Emitter {
 
+
+  //TODO?: problematic overload? https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#use-union-types
   apply(getNew: (state: T) => T): T;
-  apply<K extends keyof T>(path: K, getNew: (state: Im<T[K]>) => Im<T[K]>): SCursor<T[K]>;
-  apply<K extends DP<T>>(path: K, getNew: (state: Im<T[K]>) => Im<T[K]>): DI<T, K>;
-  // apply<K extends keyof T>(path: K, getNew: (state: T[K]) => T[K]): SCursor<T[K]>
-  // apply<K extends DP<T>>(path: K, getNew: (state: T[K]) => T[K]): DI<T, K> 
+  apply<K extends keyof T>(key: K, getNew: (state: Im<T[K]>) => Im<T[K]>): Im<T[K]>;
+  apply<P extends DP<T>>(path: P, getNew: (state: ImDI<T, P>) => ImDI<T, P>): ImDI<T, P>;
 
-  select<K extends keyof T>(path: K): SCursor<T[K]>;
-  select<K extends DP<T>>(path: K): SCursor<DI<T, K>>;
-  // select<K extends DP<T>>(...path: K): SCursor<DI<T, K>> 
+  clone(): Im<T>;
+  clone<P extends DP<T>>(...path: P): ImDI<T, P>;
+  clone<P extends DP<T>>(path: DI<T, P>): ImDI<T, P>;
 
-  set(value: T): T;
-  set<K extends keyof T>(path: K, value: T[K]): T[K];
-  set<K extends DP<T>>(path: K, value: T[K]): DI<T, K>;
+  // TODO: type guard for array
+  concat(value: T): Im<T>;
+  concat<P extends DP<T>>(path: P, value: DI<T, P>): ImDI<T, P>;
 
-  get(): T;
-  // get<K extends Ks<T>>(path: K): At<T, K>;
-  // get<P extends DP<T>>(path: P): DI<T, P>;
-  get<P extends DP<T>>(...path: P): DI<T, P>;
+  deepClone<P extends DP<T>>(...args: P): ImDI<T, P>;
+  deepClone<P extends DP<T>>(path?: P): ImDI<T, P>;
 
-  clone(...args: PathElement[]): any;
-  clone(path?: Path): any;
+  deepMerge(value: DeepPartial<T>): Im<T>;
+  deepMerge<P extends DP<T>>(path: P, value: DeepPartial<DI<T, P>>): ImDI<T, P>;
 
-  concat(path: Path, value: any[]): any;
-  concat(value: any[]): any;
+  exists<P extends DP<T>>(...args: P): ImDI<T, P>;
+  exists<P extends DP<T>>(path?: P): ImDI<T, P>;
 
-  deepClone(...args: PathElement[]): any;
-  deepClone(path?: Path): any;
+  get<P extends DP<T>>(...path: P): ImDI<T, P>;
+  get<P extends DP<T>>(path: P): ImDI<T, P>;
 
-  deepMerge(path: Path, value: PlainObject): any;
-  deepMerge(value: PlainObject): any;
+  merge(value: Partial<T>): Im<T>;
+  merge<P extends DP<T>>(path: P, value: Partial<DI<T, P>>): ImDI<T, P>;
 
-  exists(...args: PathElement[]): boolean;
-  exists(path?: Path): boolean;
+  pop(): T[number];
+  pop<P extends DP<T>>(path: P): ImDI<T, P>[number];// TODO: type gaurds
 
-  merge(path: Path, value: PlainObject): any;
-  merge(value: PlainObject): any;
+  project(projection: Record<string, DP<T>>): Record<string, DI<T, P>>; // TODO
+  project<Proj extends DP<T>[]>(projection: Proj): unknown[];
 
-  pop(path?: Path): any;
-
-  project(projection: (Path)[]): any[];
-  project(projection: PlainObject<Path>): PlainObject;
-
-  push(path: Path, value: any): any;
-  push(value: any): any;
+  push(value: T[number]): Im<T>;
+  push<P extends DP<T>>(path: P, value: DI<T, P>[number]): ImDI<T, P>;
 
   release(): void;
 
-  select(...args: PathElement[]): SCursor;
-  select(path: Path): SCursor;
+  select<P extends DP<T>>(...path: P): SCursor<DI<T, P>>;
+  select<P extends DP<T>>(path: P): SCursor<DI<T, P>>;
 
-  serialize(...args: PathElement[]): any;
-  serialize(path: Path): any;
+  serialize<P extends DP<T>>(...args: P): string;
+  serialize<P extends DP<T>>(path: P): string;
 
-  set(path: Path, value: any): any;
-  set(value: any): any;
+  set(value: T): Im<T>;
+  set<K extends keyof T>(key: K, value: T[K]): T[K];
+  set<P extends DP<T>>(path: P, value: DI<T, P>): ImDI<T, P>;
 
-  shift(path?: Path): any;
+  shift(value: T[number]): Im<T>;
+  shift<P extends DP<T>>(path: P, value: DI<T, P>[number]): ImDI<T, P>;
 
-  splice(path: Path, value: Splicer): any;
-  splice(value: Splicer): any;
+  splice(value: Splicer<T>): Im<T>; // TODO
+  splice<P extends DP<T>>(path: P, value: Splicer<DI<T, P>>): ImDI<T, P>;
 
-  unset(path?: Path): any;
+  unset(): void;
+  unset<K extends keyof T>(key: K): void;
+  unset<P extends DP<T>>(path: P): void;
 
-  unshift(path: Path, value: any): any;
-  unshift(value: any): any;
+  unshift(value: T[number]): Im<T>;
+  unshift<P extends DP<T>>(path: P, value: DI<T, P>[number]): ImDI<T, P>;
 }
 
 export class SWatcher<T> extends Emitter {
