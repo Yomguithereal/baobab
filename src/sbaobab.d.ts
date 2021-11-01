@@ -36,6 +36,7 @@ export abstract class SCommonBaobabMethods<T> extends Emitter {
   deepClone<P extends DP<T>>(path?: P): ImDI<T, P>;
 
   deepMerge(value: DeepPartial<T>): Im<T>;
+  deepMerge<K extends keyof T>(path: K, value: DeepPartial<T[K]>): Im<T[K]>;
   deepMerge<P extends DP<T>>(path: P, value: DeepPartial<DI<T, P>>): ImDI<T, P>;
 
   exists<P extends DP<T>>(...args: P): ImDI<T, P>;
@@ -45,6 +46,7 @@ export abstract class SCommonBaobabMethods<T> extends Emitter {
   get<P extends DP<T>>(path: P): ImDI<T, P>;
 
   merge(value: Partial<T>): Im<T>;
+  merge<K extends keyof T>(path: K, value: Partial<T[K]>): Im<T[K]>;
   merge<P extends DP<T>>(path: P, value: Partial<DI<T, P>>): ImDI<T, P>;
 
   pop(): T[number];

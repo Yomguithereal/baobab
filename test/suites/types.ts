@@ -25,11 +25,11 @@ const initialState = {
         },
         also: 'okay'
     },
-    lists: [
-        ['a', 'b', 'c'],
-        [0, 10, 20, 30, 40, 50],
-        [{key: 'obj1', val: 'wow'}, {key: 'obj2', val: 'okay'}]
-    ]
+    lists: {
+        0: ['a', 'b', 'c'],
+        1: [0, 10, 20, 30, 40, 50],
+        2: [{key: 'obj1', val: 'wow'}, {key: 'obj2', val: 'okay'}]
+    }
 };
 interface InitialState {
     hello: string,
@@ -38,7 +38,7 @@ interface InitialState {
         name: string;
     },
     numberIn: {
-        here: 5;
+        here: number;
     },
     very: {
         deeply: {
@@ -55,11 +55,11 @@ interface InitialState {
         },
         also: string;
     },
-    lists: [
-        string[],
-        number[],
-        {key: string, val: string;}[]
-    ];
+    lists: {
+        0: string[],
+        1: number[],
+        2: {key: string, val: string;}[];
+    };
 };
 
 
@@ -70,16 +70,22 @@ describe('Types', function() {
         assert.strictEqual(2 + 2, 4);
     });
 
-    type InitialState = typeof initialState;
     const tree = new SBaobab<InitialState>(initialState);
     const rnjt = tree.get();
     const ljda = rnjt.palette.name;
     const yxwi = rnjt?.invalid?.key; // invalid
-    const getName = tree.get('palette', 'name');
-    assert.strictEqual(getName, name);
+    // const getName = tree.get(['palette', 'name']);
+    const getName2 = tree.get(['palette', 'name']);
+    const wtep = tree.get('palette', 'name');
+    const foo = tree.get();
+    const vrpf = tree.get(['somewhat', 'nested']);
+    const fxwo = tree.get('lists', 2, {key: 'obj1'});
+    const seci = tree.apply(['lists', 2, {key: 'obj1'}], o => o);
+    // assert.strictEqual(getName, name);
     const numbersList = tree.select('lists', 1);
+    // const complexCursor = tree.get('lists', 2, {key: 'obj1'}, 'val');
     numbersList.push(60);
-    numbersList.push('foo'); // should throw error
+    numbersList.push('foo'); // should have error
     numbersList.unshift(0); // should throw error
     numbersList.exists();
     tree.serialize();
@@ -124,7 +130,7 @@ describe('Types', function() {
         const v7 = e.data.cursor;
     });
 
-    tree.select('lists', e => {
+    tree.select('lists').on('update', e => {
         const v1 = e.type;
         const v2 = e.target;
         const v3 = e.data;
@@ -137,9 +143,8 @@ describe('Types', function() {
     const hzbk = tree.select('palette', 'colors');
     const ayco = tree.select('palette', 'colors', 2);
     const xbzu = tree.set('hello', 'monde');
-    const opoc = tree.select('palette', 'colors', function(color) {
-        return color === 'green';
-    });
+    // const opoc = tree.select('palette', 'colors', function(color) { return color === 'green'; });
+    const opoc = tree.get('palette', 'colors', function(color) {return color === 'green';});
 
     const fyjb = tree.get('palette', 'colors', function(color) {
         return color === 'green';

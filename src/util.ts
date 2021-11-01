@@ -68,5 +68,11 @@ export type FullDeepIndex<T, KS extends FullKeys> =
 
 
 export type Im<T> = Immutable<T>;
-export type DP<T> = FullPathsOf<T>;
+export type ImDI<T, P extends FullKeys> = Immutable<FullDeepIndex<T, P>>;
+export type DP<T> = FullPathsOf<T>; // TODO? as FullKeys
 export type DI<T, Path extends FullKeys> = FullDeepIndex<T, Path>;
+
+
+export type DeepPartial<T> = {
+    [P in keyof T]?: DeepPartial<T[P]>;
+};
