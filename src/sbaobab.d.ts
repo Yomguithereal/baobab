@@ -91,11 +91,11 @@ export abstract class SCommonBaobabMethods<Root, Path extends DP<Root>, T> exten
   unshift<P extends DP<T>>(path: P, value: DI<T, P>[number]): ImDI<T, P>;
 }
 
-export class SWatcher<T, Mapping extends Record<string, SP>> extends Emitter {
+export class SWatcher<T, Mapping extends Record<string, DP<T>> | Record<string, keyof T>> extends Emitter {
   // TODO?: initialized with cursors
   constructor(tree: SBaobab, mapping: Mapping);
 
-  get(): {[Name in keyof Mapping]: ImDI<T, Mapping[Name]>};
+  get(): Mapping extends Record<string, keyof T> ? {[Name in keyof Mapping]: T[Mapping[Name]]} : {[Name in keyof Mapping]: ImDI<T, Mapping[Name]>};
   getWatchedPaths(): Mapping[keyof Mapping];
   getCursors(): unknown; // TODO
   refresh(mappings: Mapping): void;
@@ -178,7 +178,7 @@ export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabM
 
   getMonkey(path: SP): SMonkey<T>;
 
-  watch(mappings: PlainObject<SP | SCursor<T, infer P>>): SWatcher<typeof mappings>;
+  watch<Mappings extends Record<string, DP<T>> | Record<string, keyof T>>(mappings: Mappings): SWatcher<T, Mappings>;
 
   static monkey(definition: {cursors?: PlainObject<SP>; get(data: PlainObject): any; options?: MonkeyOptions;}): MonkeyDefinition;
 
