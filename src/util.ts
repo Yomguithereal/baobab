@@ -76,3 +76,10 @@ export type DI<T, Path extends FullKeys> = FullDeepIndex<T, Path>;
 export type DeepPartial<T> = {
     [P in keyof T]?: DeepPartial<T[P]>;
 };
+
+interface HeadOfErr {}
+export type HeadOf<T extends any[]> = T extends [...infer Head, infer Last] ? Head : HeadOfErr;
+
+export type IfEquals<T, U, Y = unknown, N = never> =
+    (<G>() => G extends T ? 1 : 2) extends
+    (<G>() => G extends U ? 1 : 2) ? Y : N;

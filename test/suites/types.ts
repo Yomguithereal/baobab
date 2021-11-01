@@ -83,7 +83,6 @@ describe('Types', function() {
     const seci = tree.apply(['lists', 2, {key: 'obj1'}], o => o);
     // assert.strictEqual(getName, name);
     const numbersList = tree.select('lists', 1);
-    // const complexCursor = tree.get('lists', 2, {key: 'obj1'}, 'val');
     const mgfy = numbersList.push(60);
     numbersList.push('foo'); // should have error
     numbersList.unshift(0); // should throw error
@@ -101,9 +100,9 @@ describe('Types', function() {
     const ncow = tree.concat(['lists', 0], ['d', 'e', 'f']);
     const oczw = tree.concat(['lists', 0], [36]); // invalid
     const nbto = tree.concat(['lists', 1], ['a']); // invalid
-    tree.apply('palette', p => ({...p, name: p.name + 'wow'}));
-    tree.merge('palette', {name: 'newname'});
-    tree.deepMerge({somewhat: {nested: {objects: 'really are'}}});
+    const xpmw = tree.apply('palette', p => ({...p, name: p.name + 'wow'}));
+    const kwba = tree.merge('palette', {name: 'newname'});
+    const eipo = tree.deepMerge({somewhat: {nested: {objects: 'really are'}}});
     const complexCursor = tree.select('lists', 2, {key: 'obj1'}, 'val');
 
     tree.on('update', e => {
@@ -150,7 +149,7 @@ describe('Types', function() {
         return color === 'green';
     });
 
-    const stou = tree.set({hello: 'bonjour', palette: {colors: ['green', 'red'], name: 'lame colors', invalidKey: 'should error'}});
+    const stou = tree.set({hello: 'bonjour', palette: {colors: ['green', 'red'], name: 'lame colors', invalidKey: 'should error'}}); // invalid
     const hecg = tree.unset('hello');
     const vtyy = tree.project({
         abmw: ['very', 'deeply', 'nested'],
@@ -158,7 +157,7 @@ describe('Types', function() {
     });
     const geza = tree.project([['very', 'deeply', 'nested'], ['lists']]);
     const aweu = tree.project({some: ['unknownkey']}); // invalid
-    const qssn = tree.set(initialState);
+    const qssn = tree.set({...initialState, invalidKey: 'foo'}); // invalid
     const gzlk = tree.project([
         ['hello'],
         ['lists']
@@ -171,20 +170,14 @@ describe('Types', function() {
         longList: ['one', 'two', 'three', 'four']
     });
 
-    const krfq = arqw.select('list'),
-        ipfw = arqw.select('longList', 1);
-
-    krfq.down().right().get();
-    //   >>> [3, 4]
-
-    krfq.select(1).down().right().get();
-    //   >>> 4
-
-    krfq.select(1).down().right().left().get();
-    //   >>> 3
-
-    ipfw.leftmost().get();
-    //   >>> 'one'
+    const krfq = arqw.select('list');
+    const ipfw = arqw.select('longList', 1);
+    const yklt = krfq.up();
+    const vppy = krfq.up(); // TODO: should error
+    const pelj = krfq?.down()?.right()?.get(); // [3, 4]
+    const rwpi = krfq?.select(1)?.down()?.right()?.get();// 4
+    const ivxr = krfq?.select(1)?.down()?.right()?.left()?.get();// 3
+    const mxgc = ipfw?.leftmost()?.get();// 'one'
     const rfdi = new SBaobab({list: [1, 2, 3]});
 
     rfdi.select('list').map(function(cursor, i) {
@@ -199,8 +192,10 @@ describe('Types', function() {
         validate: (_previousState, _newState, _affectedPaths) => {return undefined;}
     });
 
-    var bzqd = new SBaobab({list: [1, 2, 3]});
-    bzqd.select('list').map(function(cursor, i) {
-        console.log(cursor.get());
+    const bzqd = new SBaobab({list: [1, 2, 3]});
+    const thcc = bzqd.select('list');
+    const opwb = thcc.map(function(cursor, i) {
+        const dxyk = cursor.get();
+        console.log(dxyk);
     });
 });
