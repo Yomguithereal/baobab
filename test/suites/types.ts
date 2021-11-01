@@ -84,7 +84,7 @@ describe('Types', function() {
     // assert.strictEqual(getName, name);
     const numbersList = tree.select('lists', 1);
     // const complexCursor = tree.get('lists', 2, {key: 'obj1'}, 'val');
-    numbersList.push(60);
+    const mgfy = numbersList.push(60);
     numbersList.push('foo'); // should have error
     numbersList.unshift(0); // should throw error
     numbersList.exists();
@@ -199,4 +199,8 @@ describe('Types', function() {
         validate: (_previousState, _newState, _affectedPaths) => {return undefined;}
     });
 
+    var bzqd = new SBaobab({list: [1, 2, 3]});
+    bzqd.select('list').map(function(cursor, i) {
+        console.log(cursor.get());
+    });
 });

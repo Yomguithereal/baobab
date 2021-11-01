@@ -131,7 +131,7 @@ export class SCursor<T> extends SCommonBaobabMethods<T> implements Iterable<any>
   toJSON(): string;
   toString(): string;
 
-  map(fn: (v: any, index?: number) => any, scope?: any): any[];
+  map<S>(fn: (v: SCursor<T[number]>, index: number) => S, scope?: any): S[];
 }
 
 /** Stricter and more informative types for Baobab. Otherwise identical. */
