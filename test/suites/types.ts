@@ -1,46 +1,82 @@
 import SBaobab from '../../src/sbaobab';
 import {strict as assert} from 'assert';
+
+const initialState = {
+    hello: 'world',
+    palette: {
+        colors: ['yellow', 'purple', 'green'],
+        name: 'Glorious colors'
+    },
+    numberIn: {
+        here: 5
+    },
+    very: {
+        deeply: {
+            nested: {
+                objects: {
+                    are: 'okay'
+                }
+            }
+        }
+    },
+    somewhat: {
+        nested: {
+            objects: 'are',
+        },
+        also: 'okay'
+    },
+    lists: [
+        ['a', 'b', 'c'],
+        [0, 10, 20, 30, 40, 50],
+        [{key: 'obj1', val: 'wow'}, {key: 'obj2', val: 'okay'}]
+    ]
+};
+interface InitialState {
+    hello: string,
+    palette: {
+        colors: string[];
+        name: string;
+    },
+    numberIn: {
+        here: 5;
+    },
+    very: {
+        deeply: {
+            nested: {
+                objects: {
+                    are: string;
+                };
+            };
+        };
+    },
+    somewhat: {
+        nested: {
+            objects: string,
+        },
+        also: string;
+    },
+    lists: [
+        string[],
+        number[],
+        {key: string, val: string;}[]
+    ];
+};
+
+
+
+
 describe('Types', function() {
     it('should have all the right types but this test doesn\'t actually test that', function() {
         assert.strictEqual(2 + 2, 4);
     });
-    const name = 'Glorious colors';
-    const initialState = {
-        hello: 'world',
-        palette: {
-            colors: ['yellow', 'purple', 'green'],
-            name
-        },
-        numberIn: {
-            here: 5
-        },
-        very: {
-            deeply: {
-                nested: {
-                    objects: {
-                        are: 'okay'
-                    }
-                }
-            }
-        },
-        somewhat: {
-            nested: {
-                objects: 'are',
-            },
-            also: 'okay'
-        },
-        lists: [
-            ['a', 'b', 'c'],
-            [0, 10, 20, 30, 40, 50],
-            [{key: 'obj1', val: 'wow'}, {key: 'obj2', val: 'okay'}]
-        ]
-    };
+
     type InitialState = typeof initialState;
-    const tree = new SBaobab(initialState);
+    const tree = new SBaobab<InitialState>(initialState);
     const rnjt = tree.get();
-    const ljda = rnjt.hello.name;
+    const ljda = rnjt.palette.name;
     const yxwi = rnjt?.invalid?.key; // invalid
-    assert.strictEqual(tree.get('palette', 'name'), name);
+    const getName = tree.get('palette', 'name');
+    assert.strictEqual(getName, name);
     const numbersList = tree.select('lists', 1);
     numbersList.push(60);
     numbersList.push('foo'); // should throw error

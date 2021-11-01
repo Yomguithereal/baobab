@@ -21,15 +21,73 @@ type PathTree<T> = {
     : [P];
 };
 
+type Predicate<T> = (data: T) => boolean;
+type Constraint<T> = Partial<T>;
+
+type FullPathTree<T> = {
+    [P in keyof T]-?: T[P] extends object
+    ? [P] | [Predicate<P>] | [Constraint<P>] | [P, ...DeepPath<T[P]>] | [Predicate<P>, ...DeepPath<T[P]>] | [Constraint<P>, ...DeepPath<T[P]>]
+    : [P];
+};
+
+
 export type DeepPath<T> = PathTree<T>[keyof PathTree<T>];
+export type FullDeepPath<T> = FullPathTree<T>[keyof PathTree<T>];
 
 // https://stackoverflow.com/a/61648690
 type Keys = readonly PropertyKey[];
 export type DeepIndex<T, KS extends Keys, Fail = undefined> =
-    KS extends [infer F, ...infer R] ? F extends keyof T ? R extends Keys ?
-    DeepIndex<T[F], R, Fail> : Fail : Fail : T;
+    KS extends [infer F, ...infer R] ?
+    F extends keyof T ?
+    R extends Keys ?
+    DeepIndex<T[F], R, Fail> :
+    Fail :
+    Fail :
+    T;
+
+interface Fail1 {}
+interface Fail2 {}
+interface Fail3 {}
+interface Fail4 {}
+interface Fail5 {}
+interface Fail6 {}
+
+interface Wrapper1<T> {val: T;}
+interface Wrapper2<T> {val: T;}
+interface Wrapper3<T> {val: T;}
+interface Wrapper4<T> {val: T;}
+
+type Obj = Record<PropertyKey, unknown>;
+type FullKeys = (PropertyKey | Obj | Function)[];
+export type FullDeepIndex<T, KS extends FullKeys> =  //, Fail = undefined> =
+    KS extends [infer Keyish, ...infer Rest] // have a key?
+    ? Rest extends FullKeys // rest is an array?
+    ? Keyish extends Obj | Function // key is special
+    ? T extends Array<unknown> // value is array
+    ? FullDeepIndex<T[number], Rest> // descend with special key
+    : Fail1 // special key on non-array value
+    : Keyish extends keyof T // (key not special) key is valid
+    ? FullDeepIndex<T[Keyish], Rest> // descend with regular key
+    : Fail2 // invalid key
+    : Fail3 // not an array at all
+    : T; // otherwise
 
 
 export type Im<T> = Immutable<T>;
-export type DP<T> = DeepPath<T>;
-export type DI<T, KS extends Keys, Fail = undefined> = DeepIndex<T, KS, Fail>;
+// export type DP<T> = DeepPath<T>;
+export type DP<T> = FullDeepPath<T>;
+export type DI<T, KS extends FullKeys> = FullDeepIndex<T, KS>;
+
+export type At<T, K> = K extends keyof T ? T[K] : K extends FullKeys ? FullDeepIndex<T, K> : Fail4;
+export type Ks<T> = keyof T | FullDeepPath<T>;
+
+// const o = {x: 1};
+// function f() {}
+// type Test<T> = T extends Obj ? number : string;
+// type T1 = Test<typeof o>;
+// type T2 = Test<typeof f>;
+
+const o1 = {x: {y: {z: 1}}};
+type T1 = At<typeof o1, ['x', 'y', 'z']>;
+type O2 = {x: {y: {k: number; val: string;}[];};};
+type T2 = At<O2, ['x', 'y', {k: 4;}, 'val']>;

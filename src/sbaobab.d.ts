@@ -1,17 +1,17 @@
 /** Stricter and more informative types for Baobab. Otherwise identical. */
 import Emitter from 'emmett';
 import {BaobabOptions, Monkey, MonkeyDefinition, MonkeyOptions} from './baobab';
-import type {Im, DP, DI} from './util';
+import type {Im, Ks, At, DP, DI} from './util';
 
 interface PlainObject<T = any> {
   [key: string]: T;
 }
 
-type Predicate = (data: any) => boolean;
-type Constraints = PlainObject;
-type PathKey = string | number;
-type PathElement = PathKey | Predicate | Constraints;
-export type Path = PathElement[] | PathKey;
+type Predicate<T> = (data: T) => boolean;
+type Constraints<T> = Partial<T>;
+// type PathKey = string | number;
+// type PathElement = PathKey | Predicate | Constraints;
+// export type Path = PathElement[] | PathKey;
 
 type Splicer = [number | PlainObject | ((...args: any[]) => any), ...any[]];
 
@@ -37,8 +37,9 @@ export abstract class SCommonBaobabMethods<T> extends Emitter {
   set<K extends DP<T>>(path: K, value: T[K]): DI<T, K>;
 
   get(): T;
-  get<K extends keyof T>(path: K): T[K];
-  get<K extends DP<T>>(path: K): DI<T, K>;
+  // get<K extends Ks<T>>(path: K): At<T, K>;
+  // get<P extends DP<T>>(path: P): DI<T, P>;
+  get<P extends DP<T>>(...path: P): DI<T, P>;
 
   clone(...args: PathElement[]): any;
   clone(path?: Path): any;
@@ -140,7 +141,7 @@ export class SCursor<T> extends SCommonBaobabMethods<T> implements Iterable<any>
 
 /** Stricter and more informative types for Baobab. Otherwise identical. */
 export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabMethods<T> {
-  constructor(initialState?: PlainObject, options?: Partial<BaobabOptions>);
+  constructor(initialState?: T, options?: Partial<BaobabOptions>);
   debugType: T;
 
   root: SCursor<T>;
