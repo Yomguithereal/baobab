@@ -19,7 +19,7 @@ type Splicer<T extends any[]> = [number] | [number, number] | [number, number, (
  * Cursor classes. Since `Baobab.root` is a property while `Cursor#root` is a
  * method, Baobab cannot extend Cursor.
  */
-export abstract class SCommonBaobabMethods<T, Root = unknown, FullPath = unknown> extends Emitter {
+export abstract class SCommonBaobabMethods<T> extends Emitter {
 
 
   //TODO?: problematic overload? https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#use-union-types
@@ -67,10 +67,6 @@ export abstract class SCommonBaobabMethods<T, Root = unknown, FullPath = unknown
 
   release(): void;
 
-  select<K extends keyof T>(key: K): SCursor<T[K], [...FullPath, K], Root>;
-  select<P extends DP<T>>(...path: P): SCursor<DI<T, P>, [...FullPath, ...P], Root>;
-  select<P extends DP<T>>(path: P): SCursor<DI<T, P>, [...FullPath, ...P], Root>;
-
   serialize<P extends DP<T>>(...args: P): string;
   serialize<P extends DP<T>>(path: P): string;
 
@@ -92,6 +88,8 @@ export abstract class SCommonBaobabMethods<T, Root = unknown, FullPath = unknown
   unshift(value: T[number]): Im<T>;
   shift<K extends keyof T>(key: K, value: T[K][number]): T[K];
   unshift<P extends DP<T>>(path: P, value: DI<T, P>[number]): ImDI<T, P>;
+
+
 }
 
 export class SWatcher<T, Mapping extends Record<string, DP<T>> | Record<string, keyof T>> extends Emitter {
@@ -118,7 +116,7 @@ export class SMonkey<Root>  {
 }
 
 
-export class SCursor<T, FullPath extends DP<Root> = unknown, Root = unknown> extends SCommonBaobabMethods<T, Root, FullPath> implements Iterable<any> {
+export class SCursor<T, FullPath extends DP<Root> = unknown, Root = unknown> extends SCommonBaobabMethods<T> implements Iterable<any> {
   constructor(tree: SBaobab<Root>, path: FullPath, hash: string);
   path?: FullPath;
   solvedPath?: SimplePath;
@@ -156,10 +154,18 @@ export class SCursor<T, FullPath extends DP<Root> = unknown, Root = unknown> ext
   toString(): string;
 
   map<Return>(fn: (v: SCursor<T[number], [...FullPath, number], Root>, index: number) => Return, scope?: any): Return[];
+  on(name: 'update', handler: (e: {data: {currentData: T, previousData: T;};}) => void): this;
+
+
+  select<K extends keyof T>(key: K): SCursor<T[K], [...FullPath, K], Root>;
+  select<P extends DP<T>>(...path: P): SCursor<DI<T, P>, [...FullPath, ...P], Root>; // TODO: forbid empty path
+  select<P extends DP<T>>(path: P): SCursor<DI<T, P>, [...FullPath, ...P], Root>;
+
+
 }
 
 /** Stricter and more informative types for Baobab. Otherwise identical. */
-export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabMethods<T, [], T> {
+export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabMethods<T> {
   constructor(initialState?: T, options?: Partial<BaobabOptions>);
   debugType: T;
 
@@ -208,4 +214,16 @@ export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabM
   /* tslint:enable:unified-signatures */
 
   static dynamicNode: typeof SBaobab.monkey;
+
+  on(name: 'write', handler: (e: {data: {path: SimplePath;};}) => void): this;
+  on(name: 'invalid', handler: (e: {data: {error: unknown;};}) => void): this;
+  on(name: 'get', handler: (e: {data: {path: unknown, solvedPath: SimplePath, data: unknown;};}) => void): this;
+  on(name: 'select', handler: (e: {data: {path: unknown, cursor: unknown;};}) => void): this;
+  on(name: 'update', handler: (e: {data: {currentData: T, previousData: T; transaction: unknown; paths: unknown;};}) => void): this;
+
+  select(): SCursor<T, [], T>;
+  select<K extends keyof T>(key: K): SCursor<T[K], [...FullPath, K], T>;
+  select<P extends DP<T>>(...path: P): SCursor<DI<T, P>, [...FullPath, ...P], T>;
+  select<P extends DP<T>>(path: P): SCursor<DI<T, P>, [...FullPath, ...P], T>;
+
 }
