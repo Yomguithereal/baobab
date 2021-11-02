@@ -42,7 +42,3 @@ function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && 
 
 var _default = _baobab["default"];
 exports["default"] = _default;
-for (var exportedName in exports)
-  Baobab[exportedName] = exports[exportedName];
-
-module.exports = Baobab;

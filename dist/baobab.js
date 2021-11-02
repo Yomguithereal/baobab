@@ -5,16 +5,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _exportNames = {
-  monkey: true,
-  dynamic: true,
-  VERSION: true,
-  Cursor: true,
-  MonkeyDefinition: true,
-  Monkey: true,
-  type: true,
-  helpers: true
-};
 Object.defineProperty(exports, "Cursor", {
   enumerable: true,
   get: function get() {
@@ -56,20 +46,6 @@ var _update2 = _interopRequireDefault(require("./update"));
 var helpers = _interopRequireWildcard(require("./helpers"));
 
 exports.helpers = helpers;
-
-var _sbaobab = require("./sbaobab");
-
-Object.keys(_sbaobab).forEach(function (key) {
-  if (key === "default" || key === "__esModule") return;
-  if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _sbaobab[key]) return;
-  Object.defineProperty(exports, key, {
-    enumerable: true,
-    get: function get() {
-      return _sbaobab[key];
-    }
-  });
-});
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
@@ -607,5 +583,10 @@ var VERSION = Baobab.VERSION;
  */
 
 exports.VERSION = VERSION;
-var _default = Baobab;
+var _default = Baobab; // export * from './sbaobab';
+
 exports["default"] = _default;
+for (var exportedName in exports)
+  Baobab[exportedName] = exports[exportedName];
+
+module.exports = Baobab;
