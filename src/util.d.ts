@@ -1,7 +1,5 @@
 // https://stackoverflow.com/a/58993872/4941530
 
-import {Path} from "./baobab";
-
 // eslint-disable-next-line @typescript-eslint/ban-types
 type ImmutablePrimitive = undefined | null | boolean | string | number | Function;
 
@@ -66,9 +64,11 @@ export type FullDeepIndex<T, KS extends FullKeys> =
     : Fail3 // not B: not an array at all
     : T; // not A: stop descending
 
-
-export type Im<T> = Immutable<T>;
-export type ImDI<T, P extends FullKeys> = Immutable<FullDeepIndex<T, P>>;
+// TODO: immutable types causing tons problems in other packages using baobab
+// export type Im<T> = Immutable<T>;
+export type Im<T> = T;
+// export type ImDI<T, P extends FullKeys> = Immutable<FullDeepIndex<T, P>>;
+export type ImDI<T, P extends FullKeys> = FullDeepIndex<T, P>;
 export type DP<T> = FullPathsOf<T>; // TODO? as FullKeys
 export type DI<T, Path extends FullKeys> = FullDeepIndex<T, Path>;
 
@@ -83,3 +83,6 @@ export type HeadOf<T extends any[]> = T extends [...infer Head, infer Last] ? He
 export type IfEquals<T, U, Y = unknown, N = never> =
     (<G>() => G extends T ? 1 : 2) extends
     (<G>() => G extends U ? 1 : 2) ? Y : N;
+
+type Foo = 'blarg' | 'smarf';
+type IMFoo = Immutable<Foo>;

@@ -1,4 +1,5 @@
 import Emitter from 'emmett';
+import {SBaobab} from '../dist/sbaobab';
 
 interface PlainObject<T = any> {
   [key: string]: T;
@@ -163,8 +164,8 @@ export class Baobab extends CommonBaobabMethods {
       type: string,
       value: any,
       options?: {
-        mutableLeaf?: boolean
-      }
+        mutableLeaf?: boolean;
+      };
     }
   ): this;
 
@@ -174,7 +175,7 @@ export class Baobab extends CommonBaobabMethods {
 
   watch(mappings: PlainObject<Path | Cursor>): Watcher;
 
-  static monkey(definition: { cursors?: PlainObject<Path>; get(data: PlainObject): any; options?: MonkeyOptions }): MonkeyDefinition;
+  static monkey(definition: {cursors?: PlainObject<Path>; get(data: PlainObject): any; options?: MonkeyOptions;}): MonkeyDefinition;
 
   /* tslint:disable:unified-signatures */
   // Polymorphisms for:
@@ -202,3 +203,4 @@ export class Baobab extends CommonBaobabMethods {
 }
 
 export default Baobab;
+export * from './sbaobab';

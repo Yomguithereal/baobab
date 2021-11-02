@@ -19,7 +19,7 @@ type Splicer<T extends any[]> = [number] | [number, number] | [number, number, (
  * Cursor classes. Since `Baobab.root` is a property while `Cursor#root` is a
  * method, Baobab cannot extend Cursor.
  */
-export abstract class SCommonBaobabMethods<Root, Path extends DP<Root>, T> extends Emitter {
+export abstract class SCommonBaobabMethods<T, Root = unknown, FullPath = unknown> extends Emitter {
 
 
   //TODO?: problematic overload? https://www.typescriptlang.org/docs/handbook/declaration-files/do-s-and-don-ts.html#use-union-types
@@ -44,6 +44,8 @@ export abstract class SCommonBaobabMethods<Root, Path extends DP<Root>, T> exten
   exists<P extends DP<T>>(...args: P): ImDI<T, P>;
   exists<P extends DP<T>>(path: P): ImDI<T, P>;
 
+  get(): Im<T>;
+  get<K extends keyof T>(key: K): Im<T[K]>;
   get<P extends DP<T>>(...path: P): ImDI<T, P>;
   get<P extends DP<T>>(path: P): ImDI<T, P>;
 
@@ -65,8 +67,9 @@ export abstract class SCommonBaobabMethods<Root, Path extends DP<Root>, T> exten
 
   release(): void;
 
-  select<P extends DP<T>>(...path: P): SCursor<Root, P>;
-  select<P extends DP<T>>(path: P): SCursor<Root, P>;
+  select<K extends keyof T>(key: K): SCursor<T[K], [...FullPath, K], Root>;
+  select<P extends DP<T>>(...path: P): SCursor<DI<T, P>, [...FullPath, ...P], Root>;
+  select<P extends DP<T>>(path: P): SCursor<DI<T, P>, [...FullPath, ...P], Root>;
 
   serialize<P extends DP<T>>(...args: P): string;
   serialize<P extends DP<T>>(path: P): string;
@@ -115,9 +118,9 @@ export class SMonkey<Root>  {
 }
 
 
-export class SCursor<Root, P extends DP<Root>> extends SCommonBaobabMethods<Root, P, DI<Root, P>> implements Iterable<any> {
-  constructor(tree: SBaobab<Root>, path: P, hash: string);
-  path?: P;
+export class SCursor<T, FullPath extends DP<Root> = unknown, Root = unknown> extends SCommonBaobabMethods<T, Root, FullPath> implements Iterable<any> {
+  constructor(tree: SBaobab<Root>, path: FullPath, hash: string);
+  path?: FullPath;
   solvedPath?: SimplePath;
   state: {
     killed: boolean;
@@ -127,13 +130,13 @@ export class SCursor<Root, P extends DP<Root>> extends SCommonBaobabMethods<Root
 
   [Symbol.iterator](): IterableIterator<any>;
   // Navigation:
-  up(): SCursor<Root, HeadOf<P>>;
-  down(): SCursor<Root, [...P, number]>;
-  left(): SCursor<Root, P> | null;
-  right(): SCursor<Root, P> | null;
-  leftmost(): SCursor<Root, P> | null;
-  rightmost(): SCursor<Root, P> | null;
-  root(): SCursor<Root, []>;
+  up(): SCursor<DI<Root, HeadOf<FullPath>>, HeadOf<FullPath>, Root>;
+  down(): SCursor<DI<Root, [...FullPath, number]>, [...FullPath, number], Root>;
+  left(): SCursor<T, FullPath, Root> | null;
+  right(): SCursor<T, FullPath, Root> | null;
+  leftmost(): SCursor<T, FullPath, Root> | null;
+  rightmost(): SCursor<T, FullPath, Root> | null;
+  root(): SCursor<Root, [], Root>;
 
   // Predicates:
   isLeaf(): boolean;
@@ -152,7 +155,7 @@ export class SCursor<Root, P extends DP<Root>> extends SCommonBaobabMethods<Root
   toJSON(): string;
   toString(): string;
 
-  map<Return>(fn: (v: SCursor<Root, [...P, number]>, index: number) => Return, scope?: any): S[];
+  map<Return>(fn: (v: SCursor<T[number], [...FullPath, number], Root>, index: number) => Return, scope?: any): Return[];
 }
 
 /** Stricter and more informative types for Baobab. Otherwise identical. */
@@ -160,7 +163,7 @@ export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabM
   constructor(initialState?: T, options?: Partial<BaobabOptions>);
   debugType: T;
 
-  root: SCursor<T, []>;
+  root: SCursor<T, [], T>;
   options: BaobabOptions;
 
   update(
@@ -206,5 +209,3 @@ export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabM
 
   static dynamicNode: typeof SBaobab.monkey;
 }
-
-export default SBaobab;

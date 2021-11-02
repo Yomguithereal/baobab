@@ -188,7 +188,7 @@ class Baobab extends Emitter {
 
       // Should we sit a monkey in the tree?
       if (data instanceof MonkeyDefinition ||
-          data instanceof Monkey) {
+        data instanceof Monkey) {
         const monkeyInstance = new Monkey(
           this,
           p,
@@ -467,7 +467,7 @@ class Baobab extends Emitter {
 
     // Caching to keep original references before we change them
     const transaction = this._transaction,
-          previousData = this._previousData;
+      previousData = this._previousData;
 
     this._affectedPathsIndex = {};
     this._transaction = [];
@@ -589,3 +589,4 @@ export const VERSION = Baobab.VERSION;
  * Exporting.
  */
 export default Baobab;
+export * from './sbaobab';

@@ -1,4 +1,4 @@
-import SBaobab from '../../src/sbaobab';
+import {SBaobab} from '../../src/sbaobab';
 import {strict as assert} from 'assert';
 
 const initialState = {
@@ -172,6 +172,7 @@ describe('Types', function() {
 
     const krfq = arqw.select('list');
     const ipfw = arqw.select('longList', 1);
+    const vmzg = ipfw.get();
     const yklt = krfq.up();
     const vppy = krfq.up(); // TODO: should error
     const pelj = krfq?.down()?.right()?.get(); // [3, 4]
@@ -196,6 +197,5 @@ describe('Types', function() {
     const thcc = bzqd.select('list');
     const opwb = thcc.map(function(cursor, i) {
         const dxyk = cursor.get();
-        console.log(dxyk);
     });
 });
