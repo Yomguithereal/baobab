@@ -1,0 +1,71 @@
+diff --git a/test/suites/watcher.ts b/test/suites/watcher.ts
+index 3ea3c67..8b5461b 100644
+--- a/test/suites/watcher.ts
++++ b/test/suites/watcher.ts
+@@ -3,12 +3,20 @@
+  * ===========================
+  */
+ import {strict as assert} from 'assert';
+-import Baobab, {Cursor} from '../../src/baobab';
++// import Baobab, {Cursor} from '../../src/baobab';
++import {SBaobab as Baobab, SCursor as Cursor} from '../../src/sbaobab';
+ 
+ describe('Watchers', function() {
+ 
+   it('should be possible to track some paths within the tree.', function() {
+-    const tree = new Baobab({
++    type Tree = {
++      data: {
++        greeting?: string;
++        name?: string;
++      };
++      hey?: string;
++    };
++    const tree = new Baobab<Tree>({
+       data: {
+         greeting: 'Hello',
+         name: 'Jack'
+@@ -38,16 +46,27 @@ describe('Watchers', function() {
+   });
+ 
+   it('should be possible to give cursors to a watcher.', function() {
+-    const tree = new Baobab({
++    type Tree = {
++      data: {
++        greeting?: string;
++        name?: string;
++      };
++      hey?: string;
++    };
++    const tree = new Baobab<Tree>({
+       data: {
+         greeting: 'Hello',
+         name: 'Jack'
+       }
+     }, {asynchronous: false});
+ 
++    // const watcher = tree.watch({
++    //   greeting: tree.select(['data', 'greeting']),
++    //   name: tree.select(['data', 'name'])
++    // });
+     const watcher = tree.watch({
+-      greeting: tree.select(['data', 'greeting']),
+-      name: tree.select(['data', 'name'])
++      greeting: ['data', 'greeting'],
++      name: ['data', 'name']
+     });
+ 
+     let count = 0;
+@@ -83,7 +102,11 @@ describe('Watchers', function() {
+   });
+ 
+   it('should be possible to use dynamic paths.', function() {
+-    const tree = new Baobab({
++    type Tree = {
++      data?: {id: number, txt: string;}[] | {};
++      hey?: string;
++    };
++    const tree = new Baobab<Tree>({
+       data: [{id: 0, txt: 'Hello'}, {id: 1, txt: 'World'}]
+     }, {asynchronous: false});
+ 

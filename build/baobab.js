@@ -2,7 +2,7 @@
  * Baobab
  *
  * Homepage: https://github.com/Yomguithereal/baobab
- * Version: 2.6.1
+ * Version: 2.6.2
  * Author: Yomguithereal (Guillaume Plique)
  * License: MIT
  */
@@ -578,7 +578,7 @@ module.exports = Emitter;
 "use strict";
 
 exports.__esModule = true;
-exports.helpers = exports["default"] = exports.VERSION = exports.dynamic = exports.monkey = void 0;
+exports.monkey = exports.helpers = exports.dynamic = exports["default"] = exports.VERSION = void 0;
 
 var _emmett = _interopRequireDefault(require("emmett"));
 
@@ -603,15 +603,17 @@ var helpers = _interopRequireWildcard(require("./helpers"));
 
 exports.helpers = helpers;
 
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var arrayFrom = helpers.arrayFrom,
     coercePath = helpers.coercePath,
@@ -663,9 +665,7 @@ var DEFAULTS = {
  * @param {string}       [opts.validationBehaviour] - "rollback" or "notify".
  */
 
-var Baobab =
-/*#__PURE__*/
-function (_Emitter) {
+var Baobab = /*#__PURE__*/function (_Emitter) {
   _inheritsLoose(Baobab, _Emitter);
 
   function Baobab(initialData, opts) {
@@ -1115,7 +1115,8 @@ var VERSION = Baobab.VERSION;
  */
 
 exports.VERSION = VERSION;
-var _default = Baobab;
+var _default = Baobab; // export * from './sbaobab';
+
 exports["default"] = _default;
 
 },{"./cursor":3,"./helpers":4,"./monkey":5,"./type":6,"./update":7,"./watcher":8,"emmett":1}],3:[function(require,module,exports){
@@ -1136,7 +1137,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "d
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 /**
  * Traversal helper function for dynamic cursors. Will throw a legible error
@@ -1160,9 +1163,7 @@ function checkPossibilityOfDynamicTraversal(method, solvedPath) {
  */
 
 
-var Cursor =
-/*#__PURE__*/
-function (_Emitter) {
+var Cursor = /*#__PURE__*/function (_Emitter) {
   _inheritsLoose(Cursor, _Emitter);
 
   function Cursor(tree, path, hash) {
@@ -1920,20 +1921,23 @@ makeSetter('merge', _type["default"].object);
 makeSetter('deepMerge', _type["default"].object);
 
 },{"./helpers":4,"./monkey":5,"./type":6,"emmett":1}],4:[function(require,module,exports){
-(function (global){
+(function (global){(function (){
 "use strict";
 
 exports.__esModule = true;
+exports.Archive = void 0;
 exports.arrayFrom = arrayFrom;
 exports.before = before;
 exports.coercePath = coercePath;
+exports.freeze = exports.deepMerge = exports.deepFreeze = exports.deepClone = void 0;
 exports.getIn = getIn;
-exports.makeError = makeError;
 exports.hashPath = hashPath;
+exports.makeError = makeError;
+exports.shallowMerge = exports.shallowClone = void 0;
 exports.solveRelativePath = solveRelativePath;
 exports.solveUpdate = solveUpdate;
 exports.splice = splice;
-exports.uniqid = exports.deepMerge = exports.shallowMerge = exports.deepFreeze = exports.freeze = exports.deepClone = exports.shallowClone = exports.Archive = void 0;
+exports.uniqid = void 0;
 
 var _monkey = require("./monkey");
 
@@ -1996,9 +2000,7 @@ function slice(array) {
  */
 
 
-var Archive =
-/*#__PURE__*/
-function () {
+var Archive = /*#__PURE__*/function () {
   function Archive(size) {
     this.size = size;
     this.records = [];
@@ -2513,12 +2515,12 @@ var uniqid = function () {
 
 exports.uniqid = uniqid;
 
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./monkey":5,"./type":6}],5:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
-exports.Monkey = exports.MonkeyDefinition = void 0;
+exports.MonkeyDefinition = exports.Monkey = void 0;
 
 var _type = _interopRequireDefault(require("./type"));
 
@@ -2593,9 +2595,7 @@ var MonkeyDefinition = function MonkeyDefinition(definition) {
 
 exports.MonkeyDefinition = MonkeyDefinition;
 
-var Monkey =
-/*#__PURE__*/
-function () {
+var Monkey = /*#__PURE__*/function () {
   function Monkey(tree, pathInTree, definition) {
     var _this2 = this;
 
@@ -3120,107 +3120,107 @@ function update(data, path, operation, opts) {
        * Monkey
        */
       else if (operationType === 'monkey') {
+        Object.defineProperty(p, s, {
+          get: value,
+          enumerable: true,
+          configurable: true
+        });
+      }
+      /**
+       * Apply
+       */
+      else if (operationType === 'apply') {
+        var result = value(p[s]); // Purity check
+
+        if (opts.pure && p[s] === result) return {
+          node: p[s]
+        };
+
+        if (_type["default"].lazyGetter(p, s)) {
           Object.defineProperty(p, s, {
-            get: value,
+            value: result,
             enumerable: true,
             configurable: true
           });
+        } else if (opts.persistent) {
+          p[s] = (0, _helpers.shallowClone)(result);
+        } else {
+          p[s] = result;
         }
-        /**
-         * Apply
-         */
-        else if (operationType === 'apply') {
-            var result = value(p[s]); // Purity check
-
-            if (opts.pure && p[s] === result) return {
-              node: p[s]
-            };
-
-            if (_type["default"].lazyGetter(p, s)) {
-              Object.defineProperty(p, s, {
-                value: result,
-                enumerable: true,
-                configurable: true
-              });
-            } else if (opts.persistent) {
-              p[s] = (0, _helpers.shallowClone)(result);
-            } else {
-              p[s] = result;
-            }
-          }
-          /**
-           * Push
-           */
-          else if (operationType === 'push') {
-              if (!_type["default"].array(p[s])) throw err('push', 'array', currentPath);
-              if (opts.persistent) p[s] = p[s].concat([value]);else p[s].push(value);
-            }
-            /**
-             * Unshift
-             */
-            else if (operationType === 'unshift') {
-                if (!_type["default"].array(p[s])) throw err('unshift', 'array', currentPath);
-                if (opts.persistent) p[s] = [value].concat(p[s]);else p[s].unshift(value);
-              }
-              /**
-               * Concat
-               */
-              else if (operationType === 'concat') {
-                  if (!_type["default"].array(p[s])) throw err('concat', 'array', currentPath);
-                  if (opts.persistent) p[s] = p[s].concat(value);else p[s].push.apply(p[s], value);
-                }
-                /**
-                 * Splice
-                 */
-                else if (operationType === 'splice') {
-                    if (!_type["default"].array(p[s])) throw err('splice', 'array', currentPath);
-                    if (opts.persistent) p[s] = _helpers.splice.apply(null, [p[s]].concat(value));else p[s].splice.apply(p[s], value);
-                  }
-                  /**
-                   * Pop
-                   */
-                  else if (operationType === 'pop') {
-                      if (!_type["default"].array(p[s])) throw err('pop', 'array', currentPath);
-                      if (opts.persistent) p[s] = (0, _helpers.splice)(p[s], -1, 1);else p[s].pop();
-                    }
-                    /**
-                     * Shift
-                     */
-                    else if (operationType === 'shift') {
-                        if (!_type["default"].array(p[s])) throw err('shift', 'array', currentPath);
-                        if (opts.persistent) p[s] = (0, _helpers.splice)(p[s], 0, 1);else p[s].shift();
-                      }
-                      /**
-                       * Unset
-                       */
-                      else if (operationType === 'unset') {
-                          if (_type["default"].object(p)) delete p[s];else if (_type["default"].array(p)) p.splice(s, 1);
-                        }
-                        /**
-                         * Merge
-                         */
-                        else if (operationType === 'merge') {
-                            if (!_type["default"].object(p[s])) throw err('merge', 'object', currentPath);
-                            if (opts.persistent) p[s] = (0, _helpers.shallowMerge)({}, p[s], value);else p[s] = (0, _helpers.shallowMerge)(p[s], value);
-                          }
-                          /**
-                           * Deep merge
-                           */
-                          else if (operationType === 'deepMerge') {
-                              if (!_type["default"].object(p[s])) throw err('deepMerge', 'object', currentPath);
-                              if (opts.persistent) p[s] = (0, _helpers.deepMerge)({}, p[s], value);else p[s] = (0, _helpers.deepMerge)(p[s], value);
-                            } // Deep freezing the resulting value
+      }
+      /**
+       * Push
+       */
+      else if (operationType === 'push') {
+        if (!_type["default"].array(p[s])) throw err('push', 'array', currentPath);
+        if (opts.persistent) p[s] = p[s].concat([value]);else p[s].push(value);
+      }
+      /**
+       * Unshift
+       */
+      else if (operationType === 'unshift') {
+        if (!_type["default"].array(p[s])) throw err('unshift', 'array', currentPath);
+        if (opts.persistent) p[s] = [value].concat(p[s]);else p[s].unshift(value);
+      }
+      /**
+       * Concat
+       */
+      else if (operationType === 'concat') {
+        if (!_type["default"].array(p[s])) throw err('concat', 'array', currentPath);
+        if (opts.persistent) p[s] = p[s].concat(value);else p[s].push.apply(p[s], value);
+      }
+      /**
+       * Splice
+       */
+      else if (operationType === 'splice') {
+        if (!_type["default"].array(p[s])) throw err('splice', 'array', currentPath);
+        if (opts.persistent) p[s] = _helpers.splice.apply(null, [p[s]].concat(value));else p[s].splice.apply(p[s], value);
+      }
+      /**
+       * Pop
+       */
+      else if (operationType === 'pop') {
+        if (!_type["default"].array(p[s])) throw err('pop', 'array', currentPath);
+        if (opts.persistent) p[s] = (0, _helpers.splice)(p[s], -1, 1);else p[s].pop();
+      }
+      /**
+       * Shift
+       */
+      else if (operationType === 'shift') {
+        if (!_type["default"].array(p[s])) throw err('shift', 'array', currentPath);
+        if (opts.persistent) p[s] = (0, _helpers.splice)(p[s], 0, 1);else p[s].shift();
+      }
+      /**
+       * Unset
+       */
+      else if (operationType === 'unset') {
+        if (_type["default"].object(p)) delete p[s];else if (_type["default"].array(p)) p.splice(s, 1);
+      }
+      /**
+       * Merge
+       */
+      else if (operationType === 'merge') {
+        if (!_type["default"].object(p[s])) throw err('merge', 'object', currentPath);
+        if (opts.persistent) p[s] = (0, _helpers.shallowMerge)({}, p[s], value);else p[s] = (0, _helpers.shallowMerge)(p[s], value);
+      }
+      /**
+       * Deep merge
+       */
+      else if (operationType === 'deepMerge') {
+        if (!_type["default"].object(p[s])) throw err('deepMerge', 'object', currentPath);
+        if (opts.persistent) p[s] = (0, _helpers.deepMerge)({}, p[s], value);else p[s] = (0, _helpers.deepMerge)(p[s], value);
+      } // Deep freezing the resulting value
 
 
       if (opts.immutable && !operationOptions.mutableLeaf) (0, _helpers.deepFreeze)(p);
       break;
     } // If we reached a leaf, we override by setting an empty object
     else if (_type["default"].primitive(p[s])) {
-        p[s] = {};
-      } // Else, we shift the reference and continue the path
-      else if (opts.persistent) {
-          p[s] = (0, _helpers.shallowClone)(p[s]);
-        } // Should we freeze the current step before continuing?
+      p[s] = {};
+    } // Else, we shift the reference and continue the path
+    else if (opts.persistent) {
+      p[s] = (0, _helpers.shallowClone)(p[s]);
+    } // Should we freeze the current step before continuing?
 
 
     if (opts.immutable && l > 0) (0, _helpers.freeze)(p);
@@ -3254,7 +3254,9 @@ var _helpers = require("./helpers");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
+function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 /**
  * Watcher class.
@@ -3263,9 +3265,7 @@ function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.crea
  * @param {Baobab} tree     - The watched tree.
  * @param {object} mapping  - A mapping of the paths to watch in the tree.
  */
-var Watcher =
-/*#__PURE__*/
-function (_Emitter) {
+var Watcher = /*#__PURE__*/function (_Emitter) {
   _inheritsLoose(Watcher, _Emitter);
 
   function Watcher(tree, mapping) {
