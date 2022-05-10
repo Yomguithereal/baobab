@@ -1,4 +1,4 @@
-/** Stricter and more informative types for Baobab. Otherwise identical. 
+/** Stricter and more informative types for Baobab. Otherwise identical.
  * TODO? Putting a couple more specific overloads of each function might improve client typechecking performance?
 */
 import Emitter from 'emmett';
@@ -227,3 +227,16 @@ export class SBaobab<T extends PlainObject = PlainObject> extends SCommonBaobabM
   select<P extends DP<T>>(path: P): SCursor<DI<T, P>, [...FullPath, ...P], T>;
 
 }
+
+export type ROBaobab<T extends PlainObject = PlainObject> = Pick<SBaobab<T>, 'clone' | 'deepClone' | 'exists' | 'watch' | 'serialize' | 'project' | 'options' | 'get' | 'getMonkey' | 'on'> & {
+  select(): ROCursor<T, [], T>;
+  select<K extends keyof T>(key: K): ROCursor<T[K], [...FullPath, K], T>;
+  select<P extends DP<T>>(...path: P): ROCursor<DI<T, P>, [...FullPath, ...P], T>;
+  select<P extends DP<T>>(path: P): ROCursor<DI<T, P>, [...FullPath, ...P], T>;
+};
+
+export type ROCursor<T, FullPath extends DP<Root> = unknown, Root = unknown> = Pick<SCursor<T, FullPath, Root>, 'clone' | 'deepClone' | 'exists' | 'serialize' | 'project' | 'get' | 'on'> & {
+  select<K extends keyof T>(key: K): ROCursor<T[K], [...FullPath, K], Root>;
+  select<P extends DP<T>>(...path: P): ROCursor<DI<T, P>, [...FullPath, ...P], Root>; // TODO: forbid empty path
+  select<P extends DP<T>>(path: P): ROCursor<DI<T, P>, [...FullPath, ...P], Root>;
+};
